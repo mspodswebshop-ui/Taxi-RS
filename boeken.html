@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Boeken — Weblity</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<nav id="nav">
+  <a href="index.html" class="logo">Weblity</a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="diensten.html">Diensten</a></li>
+    <li><a href="prijzen.html">Prijzen</a></li>
+    <li><a href="boeken.html" class="active">Boeken</a></li>
+  </ul>
+  <a href="boeken.html" class="nav-cta">Boek een gesprek</a>
+</nav>
+
+<header class="page-hero">
+  <div class="blob blob1"></div>
+  <div class="blob blob2"></div>
+  <div class="hero-content">
+    <span class="eyebrow">Boekingssysteem</span>
+    <h1>Boek een <span class="grad">gratis kennismaking</span></h1>
+    <p class="sub">Vul het formulier in en we bevestigen je afspraak via WhatsApp of telefoon.</p>
+  </div>
+</header>
+
+<section>
+  <div class="booking-wrap">
+    <form id="booking-form" class="booking-form reveal">
+      <div class="field">
+        <label for="naam">Naam</label>
+        <input type="text" id="naam" name="naam" placeholder="Je naam" required>
+      </div>
+      <div class="field">
+        <label for="telefoon">Telefoonnummer</label>
+        <input type="tel" id="telefoon" name="telefoon" placeholder="04XX XX XX XX" required>
+      </div>
+      <div class="field">
+        <label for="dienst">Gewenste dienst</label>
+        <select id="dienst" name="dienst">
+          <option value="website">Website — €200</option>
+          <option value="webshop">Webshop + boekingssysteem — €300</option>
+          <option value="boeking">Boekingssysteem — €200</option>
+          <option value="anders">Iets anders / weet ik nog niet</option>
+        </select>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label for="datum">Gewenste datum</label>
+          <input type="date" id="datum" name="datum">
+        </div>
+        <div class="field">
+          <label for="tijd">Gewenste tijd</label>
+          <input type="time" id="tijd" name="tijd">
+        </div>
+      </div>
+      <div class="field">
+        <label for="bericht">Bericht (optioneel)</label>
+        <textarea id="bericht" name="bericht" placeholder="Vertel kort iets over je bedrijf of wens..."></textarea>
+      </div>
+      <button type="submit" class="btn-primary">Boek via WhatsApp</button>
+      <div id="booking-confirm" class="booking-confirm">
+        ✅ Bedankt! WhatsApp opent met je aanvraag — stuur het bericht gewoon door en we bevestigen je afspraak zo snel mogelijk.
+      </div>
+    </form>
+
+    <div class="contact-card reveal">
+      <h3>Liever direct contact?</h3>
+      <p>Bel of app ons rechtstreeks, we helpen je graag verder.</p>
+      <div class="contact-row">
+        <div class="icon-sm">📞</div>
+        <a href="tel:+32469226035">0469 22 60 35</a>
+      </div>
+      <div class="contact-row">
+        <div class="icon-sm">💬</div>
+        <a href="https://wa.me/32469226035">WhatsApp ons</a>
+      </div>
+      <p>We reageren meestal binnen enkele uren, ook in het weekend.</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span class="logo">Weblity</span>
+  &copy; 2026 Weblity — Alle rechten voorbehouden
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
