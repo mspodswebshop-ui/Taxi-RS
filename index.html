@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Weblity — Websites &amp; Webshops op maat</title>
+<style>
+  :root{
+    --bg:#0b0e17;
+    --bg-alt:#11162654;
+    --card:#141a2b;
+    --border:#232a40;
+    --text:#eef1fa;
+    --muted:#9aa3bd;
+    --accent:#7c5cff;
+    --accent2:#22d3ee;
+    --accent-grad: linear-gradient(135deg,#7c5cff,#22d3ee);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.6;
+    overflow-x:hidden;
+  }
+  a{color:inherit;}
+
+  /* ---------- Nav ---------- */
+  nav{
+    position:fixed;top:0;left:0;right:0;z-index:100;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:18px 6vw;
+    background:rgba(11,14,23,0.7);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid transparent;
+    transition:border-color .3s ease, background .3s ease;
+  }
+  nav.scrolled{border-color:var(--border); background:rgba(11,14,23,0.92);}
+  .logo{
+    font-weight:800;font-size:1.4rem;letter-spacing:-0.02em;
+    background:var(--accent-grad);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .nav-links{display:flex;gap:32px;list-style:none;margin:0;padding:0;}
+  .nav-links a{
+    text-decoration:none;color:var(--muted);font-weight:500;font-size:.95rem;
+    position:relative;transition:color .2s ease;
+  }
+  .nav-links a:hover{color:var(--text);}
+  .nav-links a::after{
+    content:"";position:absolute;left:0;bottom:-4px;width:0;height:2px;
+    background:var(--accent-grad);transition:width .25s ease;
+  }
+  .nav-links a:hover::after{width:100%;}
+  .nav-cta{
+    padding:10px 20px;border-radius:999px;background:var(--accent-grad);
+    color:#0b0e17;font-weight:700;font-size:.9rem;text-decoration:none;
+    box-shadow:0 8px 24px -8px rgba(124,92,255,.6);
+    transition:transform .2s ease, box-shadow .2s ease;
+  }
+  .nav-cta:hover{transform:translateY(-2px);box-shadow:0 12px 28px -6px rgba(124,92,255,.75);}
+
+  /* ---------- Hero ---------- */
+  header.hero{
+    position:relative;
+    min-height:100vh;
+    display:flex;align-items:center;justify-content:center;
+    text-align:center;
+    padding:120px 6vw 80px;
+    overflow:hidden;
+  }
+  .blob{
+    position:absolute;border-radius:50%;
+    filter:blur(70px);opacity:.45;
+    animation:float 14s ease-in-out infinite;
+  }
+  .blob1{width:420px;height:420px;background:#7c5cff;top:-120px;left:-100px;}
+  .blob2{width:360px;height:360px;background:#22d3ee;bottom:-140px;right:-80px;animation-delay:-6s;}
+  .blob3{width:260px;height:260px;background:#ff5cb1;top:40%;left:60%;animation-delay:-3s;}
+  @keyframes float{
+    0%,100%{transform:translate(0,0) scale(1);}
+    33%{transform:translate(30px,-40px) scale(1.08);}
+    66%{transform:translate(-25px,25px) scale(0.95);}
+  }
+  .hero-content{position:relative;z-index:2;max-width:760px;}
+  .eyebrow{
+    display:inline-block;padding:6px 16px;border-radius:999px;
+    border:1px solid var(--border);background:var(--card);
+    color:var(--accent2);font-size:.8rem;font-weight:600;letter-spacing:.03em;
+    margin-bottom:24px;
+    animation:fadeInUp .7s ease both;
+  }
+  h1{
+    font-size:clamp(2.4rem,5.5vw,4rem);
+    font-weight:800;letter-spacing:-0.03em;margin:0 0 20px;
+    animation:fadeInUp .7s ease .1s both;
+  }
+  h1 .grad{
+    background:var(--accent-grad);-webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .hero p.sub{
+    color:var(--muted);font-size:1.15rem;max-width:560px;margin:0 auto 36px;
+    animation:fadeInUp .7s ease .2s both;
+  }
+  .hero-buttons{
+    display:flex;gap:16px;justify-content:center;flex-wrap:wrap;
+    animation:fadeInUp .7s ease .3s both;
+  }
+  .btn-primary{
+    padding:15px 30px;border-radius:999px;background:var(--accent-grad);
+    color:#0b0e17;font-weight:700;text-decoration:none;font-size:1rem;
+    box-shadow:0 10px 30px -8px rgba(124,92,255,.6);
+    transition:transform .2s ease, box-shadow .2s ease;
+    display:inline-flex;align-items:center;gap:8px;
+  }
+  .btn-primary:hover{transform:translateY(-3px);box-shadow:0 16px 34px -6px rgba(124,92,255,.75);}
+  .btn-ghost{
+    padding:15px 30px;border-radius:999px;border:1px solid var(--border);
+    color:var(--text);text-decoration:none;font-weight:600;font-size:1rem;
+    transition:border-color .2s ease, background .2s ease;
+  }
+  .btn-ghost:hover{border-color:var(--accent2);background:var(--card);}
+
+  @keyframes fadeInUp{
+    from{opacity:0;transform:translateY(24px);}
+    to{opacity:1;transform:translateY(0);}
+  }
+
+  /* ---------- Sections ---------- */
+  section{padding:110px 6vw;max-width:1180px;margin:0 auto;}
+  .section-head{text-align:center;max-width:640px;margin:0 auto 60px;}
+  .section-head span{
+    color:var(--accent2);font-weight:700;font-size:.85rem;letter-spacing:.08em;text-transform:uppercase;
+  }
+  .section-head h2{font-size:clamp(1.8rem,3.5vw,2.6rem);margin:12px 0 14px;letter-spacing:-0.02em;}
+  .section-head p{color:var(--muted);margin:0;}
+
+  .reveal{opacity:0;transform:translateY(30px);transition:opacity .7s ease, transform .7s ease;}
+  .reveal.in{opacity:1;transform:translateY(0);}
+
+  /* ---------- Services ---------- */
+  .grid-3{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:28px;}
+  .card{
+    background:var(--card);border:1px solid var(--border);border-radius:20px;
+    padding:34px 28px;transition:transform .3s ease, border-color .3s ease, box-shadow .3s ease;
+  }
+  .card:hover{transform:translateY(-8px);border-color:var(--accent);box-shadow:0 20px 40px -20px rgba(124,92,255,.5);}
+  .card .icon{
+    width:52px;height:52px;border-radius:14px;background:var(--accent-grad);
+    display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin-bottom:20px;
+  }
+  .card h3{margin:0 0 10px;font-size:1.2rem;}
+  .card p{color:var(--muted);margin:0 0 18px;font-size:.95rem;}
+  .card .price{font-size:1.6rem;font-weight:800;}
+  .card .price small{font-size:.85rem;color:var(--muted);font-weight:500;}
+
+  /* ---------- Pricing ---------- */
+  .pricing-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:28px;}
+  .price-card{
+    background:var(--card);border:1px solid var(--border);border-radius:22px;
+    padding:36px 30px;position:relative;
+    transition:transform .3s ease, box-shadow .3s ease, border-color .3s ease;
+  }
+  .price-card:hover{transform:translateY(-6px);box-shadow:0 24px 48px -24px rgba(124,92,255,.55);}
+  .price-card.featured{border:1px solid var(--accent);}
+  .badge{
+    position:absolute;top:-14px;right:24px;
+    background:var(--accent-grad);color:#0b0e17;font-weight:700;font-size:.75rem;
+    padding:6px 14px;border-radius:999px;
+  }
+  .price-card h3{margin:0 0 8px;font-size:1.1rem;color:var(--muted);font-weight:600;}
+  .price-card .amount{font-size:2.4rem;font-weight:800;margin:6px 0 20px;}
+  .price-card .amount span{font-size:1rem;color:var(--muted);font-weight:500;}
+  .price-card ul{list-style:none;padding:0;margin:0 0 26px;display:flex;flex-direction:column;gap:12px;}
+  .price-card li{display:flex;align-items:flex-start;gap:10px;color:var(--text);font-size:.95rem;}
+  .price-card li::before{content:"✓";color:var(--accent2);font-weight:700;}
+  .price-card .btn-primary,.price-card .btn-ghost{width:100%;justify-content:center;text-align:center;}
+
+  .note{
+    margin-top:44px;text-align:center;color:var(--muted);font-size:.9rem;
+    border:1px dashed var(--border);border-radius:16px;padding:18px 24px;
+  }
+  .note strong{color:var(--text);}
+
+  /* ---------- Why us ---------- */
+  .why-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:26px;}
+  .why-item{text-align:center;padding:10px;}
+  .why-item .n{
+    width:48px;height:48px;margin:0 auto 16px;border-radius:50%;
+    border:1px solid var(--border);display:flex;align-items:center;justify-content:center;
+    color:var(--accent2);font-weight:700;
+  }
+  .why-item h4{margin:0 0 8px;font-size:1.05rem;}
+  .why-item p{color:var(--muted);font-size:.9rem;margin:0;}
+
+  /* ---------- Contact ---------- */
+  .contact-box{
+    background:var(--card);border:1px solid var(--border);border-radius:24px;
+    padding:56px 6vw;display:flex;flex-wrap:wrap;gap:40px;justify-content:space-between;align-items:center;
+  }
+  .contact-box h2{margin:0 0 12px;font-size:clamp(1.6rem,3vw,2.2rem);}
+  .contact-box p{color:var(--muted);margin:0;max-width:420px;}
+  .contact-actions{display:flex;gap:14px;flex-wrap:wrap;}
+
+  footer{
+    padding:36px 6vw;text-align:center;color:var(--muted);font-size:.85rem;
+    border-top:1px solid var(--border);
+  }
+  footer .logo{font-size:1.1rem;display:block;margin-bottom:8px;}
+
+  @media (max-width:760px){
+    .nav-links{display:none;}
+    section{padding:80px 6vw;}
+    .contact-box{flex-direction:column;text-align:center;}
+    .contact-box p{max-width:100%;}
+  }
+</style>
+</head>
+<body>
+
+<nav id="nav">
+  <div class="logo">Weblity</div>
+  <ul class="nav-links">
+    <li><a href="#diensten">Diensten</a></li>
+    <li><a href="#prijzen">Prijzen</a></li>
+    <li><a href="#waarom">Waarom Weblity</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <a href="#contact" class="nav-cta">Vraag offerte aan</a>
+</nav>
+
+<header class="hero">
+  <div class="blob blob1"></div>
+  <div class="blob blob2"></div>
+  <div class="blob blob3"></div>
+  <div class="hero-content">
+    <span class="eyebrow">🚀 Websites &amp; webshops op maat</span>
+    <h1>Een website met <span class="grad">wow-factor</span>,<br>zonder torenhoge prijs</h1>
+    <p class="sub">Weblity bouwt moderne, snelle websites met vloeiende animaties, webshops en boekingssystemen — betaalbaar en snel geleverd.</p>
+    <div class="hero-buttons">
+      <a href="#prijzen" class="btn-primary">Bekijk prijzen →</a>
+      <a href="#contact" class="btn-ghost">Neem contact op</a>
+    </div>
+  </div>
+</header>
+
+<section id="diensten">
+  <div class="section-head reveal">
+    <span>Diensten</span>
+    <h2>Alles wat je nodig hebt om online te starten</h2>
+    <p>Van een frisse website tot een volledige webshop met boekingssysteem.</p>
+  </div>
+  <div class="grid-3">
+    <div class="card reveal">
+      <div class="icon">🖥️</div>
+      <h3>Website met animaties</h3>
+      <p>Een moderne, responsieve website met vloeiende animaties die opvalt bij je bezoekers.</p>
+      <div class="price">€200 <small>eenmalig</small></div>
+    </div>
+    <div class="card reveal">
+      <div class="icon">🛒</div>
+      <h3>Webshop + boekingssysteem</h3>
+      <p>Verkoop producten online en laat klanten meteen een afspraak of reservatie boeken.</p>
+      <div class="price">€300 <small>eenmalig</small></div>
+    </div>
+    <div class="card reveal">
+      <div class="icon">📅</div>
+      <h3>Boekingssysteem</h3>
+      <p>Een los boekingssysteem waarmee klanten eenvoudig online afspraken inplannen.</p>
+      <div class="price">€200 <small>eenmalig</small></div>
+    </div>
+  </div>
+</section>
+
+<section id="prijzen">
+  <div class="section-head reveal">
+    <span>Prijzen</span>
+    <h2>Duidelijke prijzen, geen verrassingen</h2>
+    <p>Kies het pakket dat bij jouw bedrijf past. Alles eenmalig, geen verborgen kosten.</p>
+  </div>
+  <div class="pricing-grid">
+    <div class="price-card reveal">
+      <h3>Website</h3>
+      <div class="amount">€200</div>
+      <ul>
+        <li>Responsive design</li>
+        <li>Vloeiende animaties</li>
+        <li>Contactformulier</li>
+        <li>Snelle oplevering</li>
+      </ul>
+      <a href="#contact" class="btn-ghost">Kies dit pakket</a>
+    </div>
+    <div class="price-card featured reveal">
+      <span class="badge">Meest gekozen</span>
+      <h3>Webshop + boekingssysteem</h3>
+      <div class="amount">€300</div>
+      <ul>
+        <li>Volledige webshop</li>
+        <li>Online boekingssysteem</li>
+        <li>Betaalintegratie</li>
+        <li>Beheer via dashboard</li>
+      </ul>
+      <a href="#contact" class="btn-primary">Kies dit pakket</a>
+    </div>
+    <div class="price-card reveal">
+      <h3>Boekingssysteem</h3>
+      <div class="amount">€200</div>
+      <ul>
+        <li>Online afspraken plannen</li>
+        <li>Automatische bevestiging</li>
+        <li>Kalenderoverzicht</li>
+        <li>Eenvoudig te beheren</li>
+      </ul>
+      <a href="#contact" class="btn-ghost">Kies dit pakket</a>
+    </div>
+  </div>
+  <div class="note reveal">
+    <strong>Domeinnaam &amp; hosting:</strong> vanaf €20 per jaar — wij regelen dit graag voor je.
+  </div>
+</section>
+
+<section id="waarom">
+  <div class="section-head reveal">
+    <span>Waarom Weblity</span>
+    <h2>Snel, betaalbaar en met oog voor detail</h2>
+  </div>
+  <div class="why-grid">
+    <div class="why-item reveal">
+      <div class="n">1</div>
+      <h4>Snelle levering</h4>
+      <p>Je website staat vaak al binnen enkele dagen online.</p>
+    </div>
+    <div class="why-item reveal">
+      <div class="n">2</div>
+      <h4>Moderne animaties</h4>
+      <p>Elke site voelt levendig aan dankzij vloeiende, subtiele animaties.</p>
+    </div>
+    <div class="why-item reveal">
+      <div class="n">3</div>
+      <h4>Eerlijke prijzen</h4>
+      <p>Geen verborgen kosten — alleen jaarlijkse domein- en hostingkosten.</p>
+    </div>
+    <div class="why-item reveal">
+      <div class="n">4</div>
+      <h4>Persoonlijk contact</h4>
+      <p>Rechtstreeks contact, geen ellenlange wachttijden of tickets.</p>
+    </div>
+  </div>
+</section>
+
+<section id="contact">
+  <div class="contact-box reveal">
+    <div>
+      <h2>Klaar voor jouw nieuwe website?</h2>
+      <p>Neem contact op met Weblity en we bespreken vrijblijvend wat het beste bij jouw bedrijf past.</p>
+    </div>
+    <div class="contact-actions">
+      <a href="mailto:info@weblity.be" class="btn-primary">Mail ons</a>
+      <a href="#" class="btn-ghost">WhatsApp</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span class="logo">Weblity</span>
+  &copy; 2026 Weblity — Alle rechten voorbehouden
+</footer>
+
+<script>
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 10);
+  });
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) entry.target.classList.add('in');
+    });
+  }, { threshold: 0.15 });
+
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>
