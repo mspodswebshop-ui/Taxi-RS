@@ -10,14 +10,20 @@
 
 <nav id="nav">
   <a href="index.html" class="logo">Weblity</a>
-  <ul class="nav-links">
+  <ul class="nav-links" id="nav-links">
     <li><a href="index.html" class="active">Home</a></li>
     <li><a href="diensten.html">Diensten</a></li>
     <li><a href="prijzen.html">Prijzen</a></li>
+    <li><a href="reviews.html">Reviews</a></li>
     <li><a href="boeken.html">Boeken</a></li>
+    <li><a href="boeken.html" class="nav-mobile-cta">Boek een gesprek</a></li>
   </ul>
   <a href="boeken.html" class="nav-cta">Boek een gesprek</a>
+  <button class="nav-toggle" id="nav-toggle" aria-label="Menu openen">
+    <span></span><span></span><span></span>
+  </button>
 </nav>
+<div class="nav-overlay" id="nav-overlay"></div>
 
 <header class="hero">
   <div class="blob blob1"></div>
@@ -33,6 +39,27 @@
     </div>
   </div>
 </header>
+
+<section>
+  <div class="stats-grid">
+    <div class="stat reveal">
+      <span class="counter" data-target="20" data-suffix="+">0</span>
+      <div class="stat-label">Projecten opgeleverd</div>
+    </div>
+    <div class="stat reveal">
+      <span class="counter" data-target="4.9" data-decimals="1" data-suffix="/5">0</span>
+      <div class="stat-label">Gemiddelde beoordeling</div>
+    </div>
+    <div class="stat reveal">
+      <span class="counter" data-target="48" data-suffix="u">0</span>
+      <div class="stat-label">Gemiddelde levertijd</div>
+    </div>
+    <div class="stat reveal">
+      <span class="counter" data-target="100" data-suffix="%">0</span>
+      <div class="stat-label">Persoonlijk contact</div>
+    </div>
+  </div>
+</section>
 
 <section id="diensten">
   <div class="section-head reveal">
@@ -91,6 +118,43 @@
       <h4>Persoonlijk contact</h4>
       <p>Rechtstreeks contact via telefoon of WhatsApp, geen wachttijden.</p>
     </div>
+  </div>
+</section>
+
+<section id="reviews">
+  <div class="section-head reveal">
+    <span>Reviews</span>
+    <h2>Wat klanten over Weblity zeggen</h2>
+    <p>Een greep uit de reacties van ondernemers waarvoor we al een website bouwden.</p>
+  </div>
+  <div class="reviews-grid">
+    <div class="review-card reveal">
+      <div class="stars">★★★★★</div>
+      <p class="quote">"Binnen een week stond onze nieuwe website online, en de animaties geven het net dat extra tikkeltje professionaliteit."</p>
+      <div class="review-author">
+        <div class="avatar">SV</div>
+        <div class="who"><strong>Sofie V.</strong><span>Kapsalon Bella</span></div>
+      </div>
+    </div>
+    <div class="review-card reveal">
+      <div class="stars">★★★★★</div>
+      <p class="quote">"Het boekingssysteem bespaart ons elke week uren telefoonwerk. Klanten boeken nu zelf hun afspraak online."</p>
+      <div class="review-author">
+        <div class="avatar">TD</div>
+        <div class="who"><strong>Tom D.</strong><span>PowerFit Studio</span></div>
+      </div>
+    </div>
+    <div class="review-card reveal">
+      <div class="stars">★★★★★</div>
+      <p class="quote">"Duidelijke prijzen, snelle communicatie en een webshop die er echt verzorgd uitziet. Aanrader!"</p>
+      <div class="review-author">
+        <div class="avatar">AM</div>
+        <div class="who"><strong>Anke M.</strong><span>Bloemenwinkel Flora</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="reveal" style="text-align:center;margin-top:40px;">
+    <a href="reviews.html" class="btn-ghost">Bekijk alle reviews →</a>
   </div>
 </section>
 

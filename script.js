@@ -13,6 +13,58 @@ const observer = new IntersectionObserver((entries) => {
 
 document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
+// Hamburger / mobile nav
+const navToggle = document.getElementById('nav-toggle');
+const navLinks = document.getElementById('nav-links');
+const navOverlay = document.getElementById('nav-overlay');
+if (navToggle && navLinks) {
+  const closeMenu = () => {
+    navToggle.classList.remove('open');
+    navLinks.classList.remove('open');
+    navOverlay?.classList.remove('open');
+    document.body.style.overflow = '';
+  };
+  const openMenu = () => {
+    navToggle.classList.add('open');
+    navLinks.classList.add('open');
+    navOverlay?.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  };
+  navToggle.addEventListener('click', () => {
+    navLinks.classList.contains('open') ? closeMenu() : openMenu();
+  });
+  navOverlay?.addEventListener('click', closeMenu);
+  navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMenu));
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 760) closeMenu();
+  });
+}
+
+// Animated stat counters
+const counters = document.querySelectorAll('.counter');
+if (counters.length) {
+  const counterObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      const el = entry.target;
+      const target = parseFloat(el.dataset.target);
+      const suffix = el.dataset.suffix || '';
+      const decimals = el.dataset.decimals ? parseInt(el.dataset.decimals, 10) : 0;
+      const duration = 1400;
+      const start = performance.now();
+      const tick = (now) => {
+        const progress = Math.min((now - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        el.textContent = (eased * target).toFixed(decimals) + suffix;
+        if (progress < 1) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+      counterObserver.unobserve(el);
+    });
+  }, { threshold: 0.4 });
+  counters.forEach(el => counterObserver.observe(el));
+}
+
 const WHATSAPP_NUMBER = '32469226035';
 
 const bookingForm = document.getElementById('booking-form');
