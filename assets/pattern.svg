@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="160" height="160" viewBox="0 0 160 160">
+  <g fill="none" stroke="#C9AE86" stroke-width="1" stroke-linejoin="round" opacity="0.55">
+    <!-- centrale 8-puntige ster (khatam) -->
+    <rect x="42" y="42" width="76" height="76"/>
+    <rect x="42" y="42" width="76" height="76" transform="rotate(45 80 80)"/>
+    <!-- hoekfragmenten zodat de tegel naadloos doorloopt -->
+    <rect x="-38" y="-38" width="76" height="76"/>
+    <rect x="-38" y="-38" width="76" height="76" transform="rotate(45 0 0)"/>
+    <rect x="122" y="-38" width="76" height="76"/>
+    <rect x="122" y="-38" width="76" height="76" transform="rotate(45 160 0)"/>
+    <rect x="-38" y="122" width="76" height="76"/>
+    <rect x="-38" y="122" width="76" height="76" transform="rotate(45 0 160)"/>
+    <rect x="122" y="122" width="76" height="76"/>
+    <rect x="122" y="122" width="76" height="76" transform="rotate(45 160 160)"/>
+    <!-- verbindende ruiten -->
+    <path d="M80 12 L108 40 L80 68 L52 40 Z"/>
+    <path d="M80 92 L108 120 L80 148 L52 120 Z"/>
+    <path d="M12 80 L40 108 L68 80 L40 52 Z"/>
+    <path d="M92 80 L120 108 L148 80 L120 52 Z"/>
+  </g>
+</svg>
