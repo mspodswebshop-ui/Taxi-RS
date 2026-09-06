@@ -1,8 +1,8 @@
 # Finesse Decore — website
 
-Eenpagina-website voor **Finesse Decore** (bruiloft- en eventdecoratie), in de stijl van
-het handgemaakte welkomstbord: ivoor en zand, satijnen champagne-goud, arabesk motieven
-en een klassieke serif.
+Website voor **Finesse Decore** (bruiloft- en eventdecoratie), in de stijl van het
+handgemaakte welkomstbord: ivoor en zand, satijnen champagne-goud, arabesk motieven en
+een klassieke serif. Vijf pagina's: home, diensten, werkwijze, galerij en contact.
 
 Statische site — geen build, geen server nodig. Openen kan gewoon door `index.html`
 in de browser te slepen.
@@ -11,9 +11,13 @@ in de browser te slepen.
 
 | Bestand | Wat het doet |
 |---|---|
-| `index.html` | De volledige pagina (hero, diensten, werkwijze, prijzen, galerij, contact) |
-| `styles.css` | Alle styling, kleuren en responsief gedrag |
-| `script.js` | Mobiel menu, scroll-animaties, offerteformulier |
+| `index.html` | Startpagina — hero, intro, uitgelichte diensten en werk |
+| `diensten.html` | Alle diensten, elk met een knop "Vraag offerte aan" |
+| `werkwijze.html` | De vier stappen van kennismaking tot afbraak + veelgestelde vragen |
+| `galerij.html` | Portfolio |
+| `contact.html` | Offerteformulier en contactgegevens |
+| `styles.css` | Alle styling, kleuren en responsief gedrag (gedeeld door alle pagina's) |
+| `script.js` | Mobiel menu, scroll-animaties, offerteformulier (gedeeld) |
 | `assets/logo.svg` | Het logo als vector, transparante achtergrond |
 | `assets/logo-light.svg` | Lichte versie voor donkere achtergronden |
 | `assets/logo-badge.svg` | Het logo in de beige cirkel — footer, en scherpe vervanger van je profielfoto |
@@ -38,19 +42,23 @@ bruikbaar voor drukwerk, folie en borduurwerk.
 * Het logo zit in de website als inline SVG (`<symbol id="fd-logo">` bovenaan
   `index.html`) en neemt de tekstkleur over; in `styles.css` bepaalt `--wine` die kleur.
 
+## Geen prijzen op de site
+
+Er staan nergens bedragen. Overal waar iemand naar de prijs zou zoeken — bij elke dienst,
+onderaan elke pagina en in de navigatie — staat een knop **"Vraag offerte aan"** die naar
+`contact.html` leidt. Wil je later toch met vaste tarieven werken, laat het weten, dan
+bouwen we daar een aparte pagina voor.
+
 ## Nog zelf in te vullen
 
-Alle plekken staan gemarkeerd met een zoekwoord in de code:
+Twee dingen staan nog op voorbeeldwaarden. Ze komen op **elke pagina** voor, dus vervang
+ze in alle vijf de HTML-bestanden (of gebruik zoek-en-vervang over de hele map):
 
-1. **`INVULLEN:PRIJZEN`** — de bedragen in de pakketten (Essentials / Signature / Couture)
-   en in de tabel "Losse onderdelen & verhuur" zijn **plaatshouders**. Vervang ze door je
-   echte tarieven. Wil je (nog) geen bedragen tonen, zet er dan `Op aanvraag` en verwijder
-   de regel `<span class="price__from">vanaf</span>`.
-2. **`INVULLEN:CONTACT`** — telefoon/WhatsApp, e-mailadres, Instagram-link en de regio.
-   Staan nu op voorbeeldwaarden (`+32 000 00 00 00`, `info@finessedecore.be`).
-   Het e-mailadres staat óók bovenaan `script.js` in `MAIL_TO`.
-3. **`INVULLEN:FOTO`** — zet je eigen foto's in `assets/` en vervang de `src` van de
-   `<img>`-tags. De galerij heeft nu vier tegels met "Binnenkort"; vervang zo'n
+1. **`INVULLEN:CONTACT`** — WhatsApp-nummer (`+32 000 00 00 00`), e-mailadres
+   (`info@finessedecore.be`), Instagram-link en de regio. Het e-mailadres staat ook
+   bovenaan `script.js` in `MAIL_TO`.
+2. **`INVULLEN:FOTO`** — zet je eigen foto's in `assets/` en vervang de `src` van de
+   `<img>`-tags. In `galerij.html` staan tegels met "Binnenkort"; vervang zo'n
    `<figure class="gallery__item gallery__item--empty">` door:
 
    ```html
@@ -66,7 +74,7 @@ Alle plekken staan gemarkeerd met een zoekwoord in de code:
 
 Het formulier opent standaard het mailprogramma van de bezoeker met alles ingevuld.
 Wil je de aanvragen liever rechtstreeks in je mailbox zonder mailclient, maak dan een
-gratis account op [formspree.io](https://formspree.io) en vervang in `index.html`:
+gratis account op [formspree.io](https://formspree.io) en vervang in `contact.html`:
 
 ```html
 <form class="form reveal" id="quoteForm" action="https://formspree.io/f/JOUW_ID" method="POST">
@@ -77,6 +85,7 @@ en verwijder de `submit`-handler onderaan `script.js`.
 ## Online zetten
 
 Met GitHub Pages: **Settings → Pages → Source: deze branch, map `/root`**.
+`index.html` wordt dan de startpagina, de andere pagina's volgen automatisch.
 Werkt ook op elke andere hosting — het zijn gewone bestanden.
 
 ---

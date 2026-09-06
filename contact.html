@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vraag offerte aan — Finesse Decore</title>
+<meta name="description" content="Vertel ons over je feest en ontvang binnen 48 uur een persoonlijk voorstel. Gratis en vrijblijvend.">
+
+<!--
+  =====================================================================
+  FINESSE DECORE — NOG ZELF IN TE VULLEN
+  ---------------------------------------------------------------------
+  CONTACTGEGEVENS -> zoek op "INVULLEN:CONTACT" (WhatsApp-nummer, e-mail,
+    Instagram, regio). Staan nu op voorbeeldwaarden, op ELKE pagina.
+  FOTO'S          -> zoek op "INVULLEN:FOTO" (vooral galerij.html).
+  Prijzen staan nergens op de site: overal verwijst alles naar
+  "Vraag offerte aan".
+  =====================================================================
+-->
+
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<meta property="og:title" content="Vraag offerte aan — Finesse Decore">
+<meta property="og:description" content="Vertel ons over je feest en ontvang binnen 48 uur een persoonlijk voorstel. Gratis en vrijblijvend.">
+<meta property="og:image" content="assets/social-card.jpg">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="nav" id="nav">
+  <div class="nav__inner">
+    <a class="nav__brand" href="index.html" aria-label="Finesse Decore — naar de startpagina">
+      <img class="nav__logo" src="assets/logo.svg" alt="Finesse Decore" width="2027" height="783">
+    </a>
+    <nav class="nav__links" id="navLinks">
+      <a href="index.html">Home</a>
+      <a href="diensten.html">Diensten</a>
+      <a href="werkwijze.html">Werkwijze</a>
+      <a href="galerij.html">Galerij</a>
+      <a href="contact.html" class="nav__cta">Vraag offerte aan</a>
+    </nav>
+    <button class="nav__burger" id="navBurger" aria-label="Menu openen" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<section class="pagehead">
+  <div class="pagehead__pattern" aria-hidden="true"></div>
+  <div class="wrap wrap--narrow center pagehead__inner reveal">
+    <span class="eyebrow">Laten we praten</span>
+    <h1 class="display">Vraag offerte aan</h1>
+    <p class="body">Vertel ons kort over je feest: de datum, de locatie en de sfeer die je voor ogen hebt. Je krijgt binnen 48 uur een persoonlijk voorstel. Gratis en vrijblijvend.</p>
+    <div class="ornament" aria-hidden="true"></div>
+  </div>
+</section>
+
+<section class="section section--top">
+  <div class="wrap contact">
+
+    <div class="contact__intro reveal">
+      <h2 class="display display--sm">Rechtstreeks contact</h2>
+      <p class="body">
+        Liever even bellen of appen? Dat mag altijd. Stuur gerust foto's of een moodboard mee —
+        hoe meer we weten, hoe scherper ons voorstel.
+      </p>
+
+      <!-- INVULLEN:CONTACT — pas WhatsApp, e-mail, Instagram en regio aan -->
+      <ul class="contact__list">
+        <li><span class="contact__label">WhatsApp</span><a href="https://wa.me/32000000000">+32 000 00 00 00</a></li>
+        <li><span class="contact__label">E-mail</span><a href="mailto:info@finessedecore.be">info@finessedecore.be</a></li>
+        <li><span class="contact__label">Instagram</span><a href="https://www.instagram.com/finesse.decore/" target="_blank" rel="noopener">@finesse.decore</a></li>
+        <li><span class="contact__label">Regio</span><span>Antwerpen &amp; omstreken — heel Belgi&euml; op aanvraag</span></li>
+      </ul>
+
+      <div class="note reveal">
+        <h3>Wat kost het?</h3>
+        <p>
+          Elk decor is maatwerk, dus we werken niet met vaste prijzen. Vertel ons wat je nodig hebt,
+          dan krijg je een voorstel dat past bij jouw dag en je budget.
+        </p>
+      </div>
+    </div>
+
+    <form class="form reveal" id="quoteForm" novalidate>
+      <div class="field">
+        <label for="name">Naam</label>
+        <input type="text" id="name" name="name" required>
+      </div>
+      <div class="field field--half">
+        <label for="email">E-mail</label>
+        <input type="email" id="email" name="email" required>
+      </div>
+      <div class="field field--half">
+        <label for="phone">Telefoon</label>
+        <input type="tel" id="phone" name="phone">
+      </div>
+      <div class="field field--half">
+        <label for="date">Datum van het feest</label>
+        <input type="date" id="date" name="date">
+      </div>
+      <div class="field field--half">
+        <label for="type">Soort feest</label>
+        <select id="type" name="type">
+          <option>Bruiloft</option>
+          <option>Verloving / khotba</option>
+          <option>Babyshower / geboorte</option>
+          <option>Verjaardag</option>
+          <option>Zakelijk event</option>
+          <option>Anders</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="message">Vertel ons over je dag</label>
+        <textarea id="message" name="message" rows="5" placeholder="Locatie, aantal gasten, kleuren, welke onderdelen je nodig hebt..."></textarea>
+      </div>
+      <button type="submit" class="btn btn--solid btn--block">Verstuur aanvraag</button>
+      <p class="form__note" id="formNote">Je mailprogramma opent met je bericht klaar om te versturen.</p>
+    </form>
+
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="wrap footer__inner">
+    <img src="assets/logo-badge.svg" alt="Finesse Decore" class="footer__logo" width="132" height="132">
+    <p class="footer__tag">Decor met finesse &middot; bruiloften &amp; events</p>
+    <nav class="footer__links">
+      <a href="index.html">Home</a>
+      <a href="diensten.html">Diensten</a>
+      <a href="werkwijze.html">Werkwijze</a>
+      <a href="galerij.html">Galerij</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+    <!-- INVULLEN:CONTACT -->
+    <p class="footer__contact">
+      <a href="https://wa.me/32000000000">WhatsApp</a> &middot;
+      <a href="mailto:info@finessedecore.be">info@finessedecore.be</a> &middot;
+      <a href="https://www.instagram.com/finesse.decore/" target="_blank" rel="noopener">Instagram</a>
+    </p>
+    <p class="footer__copy">&copy; <span id="year">2026</span> Finesse Decore. Alle rechten voorbehouden.</p>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
