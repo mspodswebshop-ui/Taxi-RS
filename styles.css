@@ -555,6 +555,14 @@ main,header,footer{position:relative;z-index:3;}
 }
 .review-by strong{display:block;font-size:.95rem;font-weight:600;}
 .review-by span{color:var(--muted);font-size:.83rem;}
+.review-site{
+  display:inline-flex;align-items:center;gap:8px;align-self:flex-start;
+  padding-top:4px;
+  font-size:.88rem;font-weight:600;color:var(--c);
+  transition:gap .3s var(--ease),color .3s ease;
+}
+.review-site:hover{gap:13px;color:#7ce9fb;}
+.review-site::after{content:"↗";font-size:.95rem;}
 
 /* =========================================================
    Steps
