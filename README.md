@@ -14,32 +14,29 @@ in de browser te slepen.
 | `index.html` | De volledige pagina (hero, diensten, werkwijze, prijzen, galerij, contact) |
 | `styles.css` | Alle styling, kleuren en responsief gedrag |
 | `script.js` | Mobiel menu, scroll-animaties, offerteformulier |
-| `assets/logo.svg` | Het logo, horizontale versie (roos + FINESSE DECORE) |
-| `assets/logo-stacked.svg` | Het logo gestapeld — voor drukwerk, borden en grote formaten |
+| `assets/logo.svg` | Het logo als vector, transparante achtergrond |
 | `assets/logo-light.svg` | Lichte versie voor donkere achtergronden |
-| `assets/logo-badge.svg` | Rond embleem/zegel — gebruikt in de footer, ook geschikt als profielfoto |
-| `assets/favicon.svg` | Roos in een cirkel — het tabblad-icoon |
+| `assets/logo-badge.svg` | Het logo in de beige cirkel — footer, en scherpe vervanger van je profielfoto |
+| `assets/rose.svg` | Alleen de roos — voor kleine accenten |
+| `assets/favicon.svg` | De roos in een cirkel — tabblad-icoon (tekst is te klein op 16 px) |
 | `assets/apple-touch-icon.png` | Icoon voor "Zet op beginscherm" (180×180) |
 | `assets/social-card.jpg` | Deelafbeelding voor WhatsApp/Facebook/Instagram (1200×630) |
-| `assets/logo-origineel.png` | Je bestaande logo uit de Instagram-profielfoto (wordt niet gebruikt) |
+| `assets/logo-origineel.png` | De originele profielfoto waaruit het logo is nagetekend (bron) |
 | `assets/welcome-board.jpg` | Sfeerfoto van het welkomstbord |
 | `assets/pattern.svg` | Het arabesk motief dat als achtergrond gebruikt wordt |
 
 ## Het logo
 
-Het logo is opnieuw getekend als **vector** (SVG), zodat het scherp blijft op elk formaat —
-van een favicon van 16 pixels tot een spandoek van drie meter.
+Het bestaande Finesse Decore-logo is **nagetekend als vector**. Het ontwerp is niet
+veranderd — dezelfde letters, dezelfde roos, dezelfde tekst — maar het is nu opgebouwd
+uit vectorpaden in plaats van een screenshot van 640 pixels. Daardoor blijft het scherp
+op elk formaat: van een favicon van 16 pixels tot een spandoek van drie meter, en het is
+bruikbaar voor drukwerk, folie en borduurwerk.
 
-* **Woordmerk**: `FINESSE` in Cormorant Garamond Light met ruime letterafstand, daaronder
-  `DECORE` in Jost Light, exact even breed uitgespatieerd.
-* **Beeldmerk**: een roos in één doorlopende lijn, opgebouwd uit zeven buitenste en vijf
-  binnenste blaadjes rond een open spiraal.
-* **Kleuren**: wijnrood `#8E2F35` (uit je bestaande logo), champagne-goud `#A98A5C`,
-  espresso `#2B231C`.
-
-In de website zit het logo als inline SVG (bovenaan `index.html`, `<symbol id="fd-lockup">`)
-en neemt het de tekstkleur over. Wil je de kleur van de roos aanpassen, wijzig dan
-`--fd-rose` in `styles.css`.
+* **Inktkleur:** `#701E19` — uit het origineel gemeten
+* **Achtergrond van het ronde embleem:** `#DBC6BA` — dezelfde tint als je profielfoto
+* Het logo zit in de website als inline SVG (`<symbol id="fd-logo">` bovenaan
+  `index.html`) en neemt de tekstkleur over; in `styles.css` bepaalt `--wine` die kleur.
 
 ## Nog zelf in te vullen
 
