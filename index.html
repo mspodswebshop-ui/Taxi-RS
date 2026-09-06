@@ -4,161 +4,250 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Weblity — Websites &amp; Webshops op maat</title>
+
+<meta name="description" content="Weblity bouwt moderne websites, webshops en boekingssystemen met vloeiende animaties, vanaf €200.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Weblity">
-<meta property="og:title" content="Weblity — Websites & Webshops op maat">
+<meta property="og:title" content="Weblity — Websites &amp; Webshops op maat">
 <meta property="og:description" content="Weblity bouwt moderne websites, webshops en boekingssystemen met vloeiende animaties, vanaf €200.">
 <meta property="og:image" content="og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Weblity — Websites & Webshops op maat">
+<meta name="twitter:title" content="Weblity — Websites &amp; Webshops op maat">
 <meta name="twitter:description" content="Weblity bouwt moderne websites, webshops en boekingssystemen met vloeiende animaties, vanaf €200.">
 <meta name="twitter:image" content="og-image.png">
-<meta name="description" content="Weblity bouwt moderne websites, webshops en boekingssystemen met vloeiende animaties, vanaf €200.">
+<meta name="theme-color" content="#06070c">
+
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="icon" href="favicon.png" sizes="180x180">
+<link rel="apple-touch-icon" href="favicon.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script>document.documentElement.className += ' js';</script>
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
+<div class="curtain"><div class="curtain-logo">Weblity</div></div>
+<div class="progress"></div>
+<div class="aurora"><span class="a1"></span><span class="a2"></span><span class="a3"></span></div>
+<div class="spotlight"></div>
+<div class="grain"></div>
+
 <nav id="nav">
-  <a href="index.html" class="logo">Weblity</a>
-  <ul class="nav-links" id="nav-links">
+  <a class="logo" href="index.html">
+    <span class="logo-mark">W</span>
+    <span class="logo-text">Weblity</span>
+  </a>
+  <ul class="nav-links">
     <li><a href="index.html" class="active">Home</a></li>
     <li><a href="diensten.html">Diensten</a></li>
     <li><a href="prijzen.html">Prijzen</a></li>
     <li><a href="reviews.html">Reviews</a></li>
     <li><a href="boeken.html">Boeken</a></li>
-    <li><a href="boeken.html" class="nav-mobile-cta">Boek een gesprek</a></li>
   </ul>
-  <a href="boeken.html" class="nav-cta">Boek een gesprek</a>
-  <button class="nav-toggle" id="nav-toggle" aria-label="Menu openen">
+  <a class="nav-cta" href="boeken.html">Boek een gesprek</a>
+  <button class="nav-toggle" id="nav-toggle" type="button" aria-label="Menu openen" aria-expanded="false" aria-controls="mobile-menu">
     <span></span><span></span><span></span>
   </button>
 </nav>
-<div class="nav-overlay" id="nav-overlay"></div>
+
+<div class="menu" id="mobile-menu">
+  <ul>
+    <li style="--i:0"><a href="index.html" class="active"><span class="menu-num">01</span>Home</a></li>
+    <li style="--i:1"><a href="diensten.html"><span class="menu-num">02</span>Diensten</a></li>
+    <li style="--i:2"><a href="prijzen.html"><span class="menu-num">03</span>Prijzen</a></li>
+    <li style="--i:3"><a href="reviews.html"><span class="menu-num">04</span>Reviews</a></li>
+    <li style="--i:4"><a href="boeken.html"><span class="menu-num">05</span>Boeken</a></li>
+  </ul>
+  <div class="menu-foot">
+    <a class="btn btn-primary" href="boeken.html">Boek een gesprek</a>
+    <a class="btn btn-ghost" href="tel:+32469226035">0469 22 60 35</a>
+  </div>
+</div>
 
 <header class="hero">
-  <div class="blob blob1"></div>
-  <div class="blob blob2"></div>
-  <div class="blob blob3"></div>
-  <div class="hero-content">
-    <span class="eyebrow">🚀 Websites &amp; webshops op maat</span>
-    <h1>Een website met <span class="grad">wow-factor</span>,<br>zonder torenhoge prijs</h1>
-    <p class="sub">Weblity bouwt moderne, snelle websites met vloeiende animaties, webshops en boekingssystemen — betaalbaar en snel geleverd.</p>
-    <div class="hero-buttons">
-      <a href="prijzen.html" class="btn-primary">Bekijk prijzen →</a>
-      <a href="boeken.html" class="btn-ghost">Boek een gesprek</a>
+  <div class="hero-inner" data-parallax="0.12">
+    <span class="eyebrow"><i class="dot"></i> Websites &amp; webshops op maat</span>
+    <h1>
+      <span class="word" style="--d:.35"><span>Een</span></span>
+      <span class="word" style="--d:.41"><span>website</span></span>
+      <span class="word" style="--d:.47"><span>met</span></span>
+      <span class="word" style="--d:.53"><span class="gradient-text">wow-factor</span></span><br>
+      <span class="word" style="--d:.61"><span>zonder</span></span>
+      <span class="word" style="--d:.67"><span>torenhoge</span></span>
+      <span class="word" style="--d:.73"><span>prijs</span></span>
+    </h1>
+    <p class="lead">Wij bouwen snelle, moderne sites met filmische animaties — plus webshops en boekingssystemen waarmee je klanten zichzelf inplannen.</p>
+    <div class="hero-actions">
+      <a class="btn btn-primary btn-lg" href="boeken.html">Boek een gratis gesprek</a>
+      <a class="btn btn-ghost btn-lg" href="prijzen.html">Bekijk prijzen</a>
+    </div>
+    <div class="hero-meta">
+      <span><i class="tick">✓</i> Klaar in enkele dagen</span>
+      <span><i class="tick">✓</i> Vanaf €200 eenmalig</span>
+      <span><i class="tick">✓</i> Domein vanaf €20/jaar</span>
     </div>
   </div>
+  <div class="scroll-hint"><span>Scroll</span><i></i></div>
 </header>
 
-<section>
-  <div class="stats-grid">
-    <div class="stat reveal">
-      <span class="counter" data-target="20" data-suffix="+">0</span>
+<main>
+
+<div class="marquee">
+  <div class="marquee-track">
+    <span>Websites <b>·</b> Webshops <b>·</b> Boekingssystemen <b>·</b> Animaties <b>·</b> Responsive design <b>·</b> Snelle levering <b>·</b></span>
+    <span>Websites <b>·</b> Webshops <b>·</b> Boekingssystemen <b>·</b> Animaties <b>·</b> Responsive design <b>·</b> Snelle levering <b>·</b></span>
+  </div>
+</div>
+
+<section class="section section-tight">
+  <div class="grid grid-4">
+    <div class="stat reveal" style="--i:0">
+      <span class="stat-value" data-target="20" data-suffix="+">0</span>
       <div class="stat-label">Projecten opgeleverd</div>
     </div>
-    <div class="stat reveal">
-      <span class="counter" data-target="4.9" data-decimals="1" data-suffix="/5">0</span>
+    <div class="stat reveal" style="--i:1">
+      <span class="stat-value" data-target="4.9" data-decimals="1" data-suffix="/5">0</span>
       <div class="stat-label">Gemiddelde beoordeling</div>
     </div>
-    <div class="stat reveal">
-      <span class="counter" data-target="48" data-suffix="u">0</span>
+    <div class="stat reveal" style="--i:2">
+      <span class="stat-value" data-target="48" data-suffix="u">0</span>
       <div class="stat-label">Gemiddelde levertijd</div>
     </div>
-    <div class="stat reveal">
-      <span class="counter" data-target="100" data-suffix="%">0</span>
+    <div class="stat reveal" style="--i:3">
+      <span class="stat-value" data-target="100" data-suffix="%">0</span>
       <div class="stat-label">Persoonlijk contact</div>
     </div>
   </div>
 </section>
 
-<section class="reveal" style="text-align:center;padding-top:60px;padding-bottom:60px;">
-  <h2 style="margin:0 0 16px;font-size:clamp(1.5rem,3vw,2rem);">Benieuwd wat we voor je kunnen bouwen?</h2>
-  <p style="color:var(--muted);margin:0 0 28px;">Bekijk onze drie pakketten — website, webshop met boekingssysteem, of een los boekingssysteem.</p>
-  <a href="diensten.html" class="btn-primary">Bekijk onze diensten →</a>
+<section class="section">
+  <div class="cta reveal-scale">
+    <div>
+      <h2>Benieuwd wat we voor je bouwen?</h2>
+      <p>Drie duidelijke pakketten: een website, een webshop met boekingssysteem, of een los boekingssysteem.</p>
+    </div>
+    <div class="cta-actions">
+      <a class="btn btn-primary" href="diensten.html">Bekijk onze diensten</a>
+      <a class="btn btn-ghost" href="prijzen.html">Prijzen</a>
+    </div>
+  </div>
 </section>
 
-<section id="waarom">
+<section class="section">
   <div class="section-head reveal">
-    <span>Waarom Weblity</span>
+    <span class="eyebrow"><i class="dot"></i> Waarom Weblity</span>
     <h2>Snel, betaalbaar en met oog voor detail</h2>
+    <p>Geen ellenlange trajecten of verrassingen achteraf — gewoon een site waar je trots op bent.</p>
   </div>
-  <div class="why-grid">
-    <div class="why-item reveal">
-      <div class="n">1</div>
+  <div class="grid grid-4">
+    <div class="step reveal" style="--i:0">
+      <div class="num">01</div>
       <h4>Snelle levering</h4>
       <p>Je website staat vaak al binnen enkele dagen online.</p>
     </div>
-    <div class="why-item reveal">
-      <div class="n">2</div>
-      <h4>Moderne animaties</h4>
-      <p>Elke site voelt levendig aan dankzij vloeiende, subtiele animaties.</p>
+    <div class="step reveal" style="--i:1">
+      <div class="num">02</div>
+      <h4>Filmische animaties</h4>
+      <p>Vloeiende bewegingen die je site levendig en professioneel maken.</p>
     </div>
-    <div class="why-item reveal">
-      <div class="n">3</div>
+    <div class="step reveal" style="--i:2">
+      <div class="num">03</div>
       <h4>Eerlijke prijzen</h4>
-      <p>Geen verborgen kosten — alleen jaarlijkse domein- en hostingkosten.</p>
+      <p>Eenmalig betalen, daarna alleen domein- en hostingkosten.</p>
     </div>
-    <div class="why-item reveal">
-      <div class="n">4</div>
+    <div class="step reveal" style="--i:3">
+      <div class="num">04</div>
       <h4>Persoonlijk contact</h4>
-      <p>Rechtstreeks contact via telefoon of WhatsApp, geen wachttijden.</p>
+      <p>Rechtstreeks via telefoon of WhatsApp, zonder wachttijden.</p>
     </div>
   </div>
 </section>
 
-<section id="reviews">
+<section class="section">
   <div class="section-head reveal">
-    <span>Reviews</span>
+    <span class="eyebrow"><i class="dot"></i> Reviews</span>
     <h2>Wat klanten over Weblity zeggen</h2>
-    <p>Een greep uit de reacties van ondernemers waarvoor we al een website bouwden.</p>
+    <p>Een greep uit de reacties van ondernemers waarvoor we al bouwden.</p>
   </div>
-  <div class="reviews-grid">
-    <div class="review-card reveal">
+  <div class="grid grid-3">
+    <article class="review reveal" style="--i:0">
       <div class="stars">★★★★★</div>
-      <p class="quote">"Binnen een week stond onze nieuwe website online, en de animaties geven het net dat extra tikkeltje professionaliteit."</p>
-      <div class="review-author">
+      <q>Binnen een week stond onze nieuwe website online, en de animaties geven het net dat extra tikkeltje professionaliteit.</q>
+      <div class="review-by">
         <div class="avatar">SV</div>
-        <div class="who"><strong>Sofie V.</strong><span>Kapsalon Bella</span></div>
+        <div><strong>Sofie V.</strong><span>Kapsalon Bella</span></div>
       </div>
-    </div>
-    <div class="review-card reveal">
+    </article>
+    <article class="review reveal" style="--i:1">
       <div class="stars">★★★★★</div>
-      <p class="quote">"Het boekingssysteem bespaart ons elke week uren telefoonwerk. Klanten boeken nu zelf hun afspraak online."</p>
-      <div class="review-author">
+      <q>Het boekingssysteem bespaart ons elke week uren telefoonwerk. Klanten boeken nu zelf hun afspraak online.</q>
+      <div class="review-by">
         <div class="avatar">TD</div>
-        <div class="who"><strong>Tom D.</strong><span>PowerFit Studio</span></div>
+        <div><strong>Tom D.</strong><span>PowerFit Studio</span></div>
       </div>
-    </div>
-    <div class="review-card reveal">
+    </article>
+    <article class="review reveal" style="--i:2">
       <div class="stars">★★★★★</div>
-      <p class="quote">"Duidelijke prijzen, snelle communicatie en een webshop die er echt verzorgd uitziet. Aanrader!"</p>
-      <div class="review-author">
+      <q>Duidelijke prijzen, snelle communicatie en een webshop die er echt verzorgd uitziet. Aanrader!</q>
+      <div class="review-by">
         <div class="avatar">AM</div>
-        <div class="who"><strong>Anke M.</strong><span>Bloemenwinkel Flora</span></div>
+        <div><strong>Anke M.</strong><span>Bloemenwinkel Flora</span></div>
       </div>
-    </div>
+    </article>
   </div>
   <div class="reveal" style="text-align:center;margin-top:40px;">
-    <a href="reviews.html" class="btn-ghost">Bekijk alle reviews →</a>
+    <a class="btn btn-ghost" href="reviews.html">Bekijk alle reviews</a>
   </div>
 </section>
 
-<section>
-  <div class="cta-box reveal">
+<section class="section">
+  <div class="cta reveal-scale">
     <div>
       <h2>Klaar voor jouw nieuwe website?</h2>
-      <p>Boek gratis en vrijblijvend een gesprek en we bespreken wat het beste bij jouw bedrijf past.</p>
+      <p>Boek gratis en vrijblijvend een gesprek. We bespreken samen wat het beste past bij jouw bedrijf.</p>
     </div>
     <div class="cta-actions">
-      <a href="boeken.html" class="btn-primary">Boek een gesprek</a>
-      <a href="tel:+32469226035" class="btn-ghost">📞 0469 22 60 35</a>
+      <a class="btn btn-primary" href="boeken.html">Boek een gesprek</a>
+      <a class="btn btn-ghost" href="tel:+32469226035">0469 22 60 35</a>
     </div>
   </div>
 </section>
 
+</main>
+
 <footer>
-  <span class="logo">Weblity</span>
-  &copy; 2026 Weblity — Alle rechten voorbehouden
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <a class="logo" href="index.html"><span class="logo-mark">W</span><span class="logo-text">Weblity</span></a>
+      <p>Moderne websites, webshops en boekingssystemen voor ondernemers — snel geleverd en eerlijk geprijsd.</p>
+    </div>
+    <div class="footer-col">
+      <h5>Pagina's</h5>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="diensten.html">Diensten</a></li>
+        <li><a href="prijzen.html">Prijzen</a></li>
+        <li><a href="reviews.html">Reviews</a></li>
+        <li><a href="boeken.html">Boeken</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h5>Contact</h5>
+      <ul>
+        <li><a href="tel:+32469226035">0469 22 60 35</a></li>
+        <li><a href="https://wa.me/32469226035">WhatsApp ons</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>&copy; 2026 Weblity — Alle rechten voorbehouden</span>
+    <span>Domein &amp; hosting vanaf €20 per jaar</span>
+  </div>
 </footer>
 
 <script src="script.js"></script>
