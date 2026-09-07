@@ -28,13 +28,21 @@
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap"></noscript>
-<script>document.documentElement.className += ' js';</script>
+<script>(function(){var d=document.documentElement;d.className+=' js';try{if(sessionStorage.getItem('wbl'))d.className+=' seen';sessionStorage.setItem('wbl','1');}catch(e){}})();</script>
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-<div class="curtain"><div class="curtain-logo">Weblity</div></div>
+<div class="loader" id="loader">
+  <div class="loader-inner">
+    <div class="loader-logo">Weblity</div>
+    <div class="loader-bar"><i></i></div>
+    <div class="loader-pct" id="loader-pct">0%</div>
+  </div>
+</div>
+
 <div class="progress"></div>
+<canvas id="particles" aria-hidden="true"></canvas>
 <div class="aurora"><span class="a1"></span><span class="a2"></span><span class="a3"></span></div>
 <div class="spotlight"></div>
 <div class="grain"></div>
@@ -47,9 +55,11 @@
   <ul class="nav-links">
     <li><a href="index.html">Home</a></li>
     <li><a href="diensten.html">Diensten</a></li>
+    <li><a href="werk.html">Werk</a></li>
     <li><a href="prijzen.html">Prijzen</a></li>
     <li><a href="reviews.html">Reviews</a></li>
-    <li><a href="boeken.html" class="active">Boeken</a></li>
+    <li><a href="faq.html">FAQ</a></li>
+    <li><a href="contact.html">Contact</a></li>
   </ul>
   <a class="nav-cta" href="boeken.html">Boek een gesprek</a>
   <button class="nav-toggle" id="nav-toggle" type="button" aria-label="Menu openen" aria-expanded="false" aria-controls="mobile-menu">
@@ -61,9 +71,12 @@
   <ul>
     <li style="--i:0"><a href="index.html"><span class="menu-num">01</span>Home</a></li>
     <li style="--i:1"><a href="diensten.html"><span class="menu-num">02</span>Diensten</a></li>
-    <li style="--i:2"><a href="prijzen.html"><span class="menu-num">03</span>Prijzen</a></li>
-    <li style="--i:3"><a href="reviews.html"><span class="menu-num">04</span>Reviews</a></li>
-    <li style="--i:4"><a href="boeken.html" class="active"><span class="menu-num">05</span>Boeken</a></li>
+    <li style="--i:2"><a href="werk.html"><span class="menu-num">03</span>Werk</a></li>
+    <li style="--i:3"><a href="prijzen.html"><span class="menu-num">04</span>Prijzen</a></li>
+    <li style="--i:4"><a href="reviews.html"><span class="menu-num">05</span>Reviews</a></li>
+    <li style="--i:5"><a href="faq.html"><span class="menu-num">06</span>FAQ</a></li>
+    <li style="--i:6"><a href="contact.html"><span class="menu-num">07</span>Contact</a></li>
+    <li style="--i:7"><a href="boeken.html" class="active"><span class="menu-num">08</span>Boeken</a></li>
   </ul>
   <div class="menu-foot">
     <a class="btn btn-primary" href="boeken.html">Boek een gesprek</a>
@@ -184,8 +197,16 @@
       <ul>
         <li><a href="index.html">Home</a></li>
         <li><a href="diensten.html">Diensten</a></li>
+        <li><a href="werk.html">Werk</a></li>
         <li><a href="prijzen.html">Prijzen</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h5>Meer</h5>
+      <ul>
         <li><a href="reviews.html">Reviews</a></li>
+        <li><a href="faq.html">FAQ</a></li>
+        <li><a href="contact.html">Contact</a></li>
         <li><a href="boeken.html">Boeken</a></li>
       </ul>
     </div>
