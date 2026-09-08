@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arena FC 26 — Squad Builder</title>
+<meta name="description" content="Bouw je droomelftal: kies spelers, formaties en zie direct je teamrating en chemie.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand"><span class="dot"></span>ARENA <span>FC 26</span></div>
+  <nav class="nav">
+    <a href="#builder">Squad Builder</a>
+    <a href="#spelers">Spelers</a>
+    <a href="#top">Top 10</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <h1>Bouw jouw <em>droomelftal</em></h1>
+  <p>Kies uit ruim vijftig spelers en iconen, wissel van formatie en zie meteen wat je team waard is.
+     Je opstelling wordt automatisch bewaard in je browser.</p>
+</section>
+
+<div class="wrap">
+
+  <h2 class="section-title" id="builder">Squad Builder</h2>
+  <div class="builder">
+    <div class="pitch" id="pitch">
+      <div class="lines">
+        <i class="l-outer"></i>
+        <i class="l-mid"></i>
+        <i class="l-circle"></i>
+        <i class="l-box-b"></i>
+        <i class="l-box-t"></i>
+      </div>
+    </div>
+
+    <aside class="panel">
+      <h3>Teamoverzicht</h3>
+      <div class="stat-row">
+        <div class="stat"><b id="stat-rating">–</b><small>Rating</small></div>
+        <div class="stat"><b id="stat-chem">0</b><small>Chemie</small></div>
+        <div class="stat"><b id="stat-filled">0/11</b><small>Bezet</small></div>
+      </div>
+      <div class="bar"><i id="bar-chem" style="width:0%"></i></div>
+
+      <div class="field" style="margin-top:18px">
+        <label for="f-formation">Formatie</label>
+        <select id="f-formation"></select>
+      </div>
+
+      <button class="btn primary" id="btn-best">Sterkste elftal</button>
+      <button class="btn" id="btn-random">Willekeurig elftal</button>
+      <button class="btn" id="btn-clear">Team wissen</button>
+
+      <h3 style="margin-top:22px">Verbindingen</h3>
+      <ul class="chem-list" id="chem-list"></ul>
+    </aside>
+  </div>
+
+  <h2 class="section-title" id="spelers">Spelers <span id="market-count" style="letter-spacing:0;text-transform:none"></span></h2>
+  <div class="filters">
+    <div class="field" style="margin:0">
+      <label for="f-search">Zoeken</label>
+      <input type="search" id="f-search" placeholder="Naam, club of land…">
+    </div>
+    <div class="field" style="margin:0">
+      <label for="f-line">Linie</label>
+      <select id="f-line">
+        <option value="all">Alle linies</option>
+        <option value="GK">Keepers</option>
+        <option value="DEF">Verdediging</option>
+        <option value="MID">Middenveld</option>
+        <option value="ATT">Aanval</option>
+      </select>
+    </div>
+    <div class="field" style="margin:0">
+      <label for="f-club">Club</label>
+      <select id="f-club"></select>
+    </div>
+    <div class="field" style="margin:0">
+      <label for="f-sort">Sorteer op</label>
+      <select id="f-sort">
+        <option value="rating">Rating</option>
+        <option value="pac">Snelheid</option>
+        <option value="sho">Schot</option>
+        <option value="pas">Passing</option>
+        <option value="dri">Dribbelen</option>
+        <option value="def">Verdedigen</option>
+        <option value="phy">Fysiek</option>
+      </select>
+    </div>
+  </div>
+  <div class="grid" id="market"></div>
+
+  <h2 class="section-title" id="top">Top 10 spelers</h2>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>#</th><th>Speler</th><th>Positie</th><th>Club</th><th>Land</th><th>Rating</th></tr>
+      </thead>
+      <tbody id="leaderboard"></tbody>
+    </table>
+  </div>
+
+</div>
+
+<div class="modal" id="modal" hidden>
+  <div class="box">
+    <div class="head">
+      <h3 id="modal-title">Kies een speler</h3>
+      <button id="modal-close" aria-label="Sluiten">&times;</button>
+    </div>
+    <div class="field"><input type="search" id="modal-search" placeholder="Zoek een speler…"></div>
+    <div id="modal-list"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast" hidden></div>
+
+<footer>
+  Arena FC 26 — fanproject, niet verbonden aan een uitgever of club. Alle ratings zijn fictief.
+</footer>
+
+<script src="players.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
