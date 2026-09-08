@@ -4,6 +4,8 @@
   --radius: 14px;
 }
 * { box-sizing: border-box; }
+/* Eigen display-regels overrulen anders het hidden-attribuut. */
+[hidden] { display: none !important; }
 html, body { height: 100%; }
 body {
   margin: 0; background: radial-gradient(1200px 700px at 50% -20%, #14224a 0%, transparent 60%), var(--bg);
@@ -259,3 +261,10 @@ textarea {
   letter-spacing: .08em; text-transform: uppercase; padding: 5px 10px; border-radius: 6px;
 }
 #restart-note { top: 44px; }
+
+.wissels { margin-top: 18px; text-align: left; }
+.wissels .bank { grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: 7px; }
+.wissels .kaart { padding: 6px; }
+.wissels .kaart .naam { font-size: 10px; }
+.wissels .kaart .stats { display: none; }
+.wissels .kaart.gekozen { outline: 3px solid var(--accent); }

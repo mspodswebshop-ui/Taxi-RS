@@ -13,13 +13,14 @@
   let lastTs = 0, acc = 0, bannerTimer = 0;
   let replayIdx = 0, replayHold = 0, anthemSkip = null;
   let netTick = 0, remoteInput = null, guestState = null;
+  let meldingBlessure = false, meldingPen = false;
 
   /* Speler 1 stuurt het thuisteam, speler 2 de tegenstander. */
   const P = [
-    { team: 0, color: "#ff2f2f", power: 0, keys: { up: "KeyW", down: "KeyS", left: "KeyA", right: "KeyD",
-        shoot: "Space", pass: "KeyE", loft: "KeyQ", sprint: "ShiftLeft" } },
-    { team: 1, color: "#3d8bff", power: 0, keys: { up: "ArrowUp", down: "ArrowDown", left: "ArrowLeft", right: "ArrowRight",
-        shoot: "Enter", pass: "Slash", loft: "Period", sprint: "ShiftRight" } }
+    { team: 0, color: "#ff2f2f", power: 0, manual: null, manualT: 0, keys: { up: "KeyW", down: "KeyS", left: "KeyA", right: "KeyD",
+        shoot: "Space", pass: "KeyE", loft: "KeyQ", sprint: "ShiftLeft", wissel: "KeyC" } },
+    { team: 1, color: "#3d8bff", power: 0, manual: null, manualT: 0, keys: { up: "ArrowUp", down: "ArrowDown", left: "ArrowLeft", right: "ArrowRight",
+        shoot: "Enter", pass: "Slash", loft: "Period", sprint: "ShiftRight", wissel: "Comma" } }
   ];
 
   /* ---------------- Schermen ---------------- */
@@ -162,7 +163,20 @@
   }
 
   /* ---------------- Besturing ---------------- */
+  function cycleSwitch(t) {
+    const lijst = S.players
+      .filter((p) => p.team === t && !p.isGK && !p.off)
+      .sort((a, b) => Match.dist(a, S.ball) - Match.dist(b, S.ball));
+    if (!lijst.length) return;
+    const nu = activeFor(t);
+    P[t].manual = lijst[(lijst.indexOf(nu) + 1) % lijst.length];
+    P[t].manualT = 4;
+  }
+
   function activeFor(team) {
+    const pl = P[team];
+    /* Handmatig gekozen speler blijft even geselecteerd. */
+    if (pl.manual && pl.manualT > 0 && !pl.manual.off) return pl.manual;
     if (S.owner && S.owner.team === team) return S.owner;
     const out = S.players.filter((p) => p.team === team && !p.isGK);
     let best = out[0], bd = 1e9;
@@ -322,6 +336,7 @@
   function updateCamera() {
     if (flow === "walkout") View.setCamera(PITCH.L / 2 + Math.sin(S.flowTimer * 0.35) * 130, 0.92);
     else if (flow === "anthem") View.setCamera(PITCH.L / 2 - 60 + Math.sin(Date.now() * 0.0004) * 110, 1.05);
+    else if (S.phase === "penalty" && S.pen) View.setCamera(S.pen.gx - S.pen.dir * 150, 1.45);
     else if (S.phase === "goal" && S.celebrate && S.celebrate.scorer) View.setCamera(S.celebrate.scorer.x, 1.5);
     else View.setCamera(S.ball.x, S.owner ? 1.05 : 1.0);
   }
@@ -382,7 +397,10 @@
       ["Tackles", st.tackles[0], st.tackles[1]],
       ["Hoekschoppen", st.corners[0], st.corners[1]],
       ["Overtredingen", st.fouls[0], st.fouls[1]],
-      ["Gele kaarten", st.cards[0], st.cards[1]]
+      ["Gele kaarten", st.cards[0], st.cards[1]],
+      ["Buitenspel", st.offsides[0], st.offsides[1]],
+      ["Rode kaarten", st.reds[0], st.reds[1]],
+      ["Strafschoppen", st.pens[0], st.pens[1]]
     ];
     return "<table><thead><tr><th>" + S.teams[0].abbr + "</th><th></th><th>" + S.teams[1].abbr +
       "</th></tr></thead><tbody>" + rows.map((r) =>
@@ -439,18 +457,70 @@
     Sound.crowdLevel(0.4);
   }
 
+  /* Wisselpaneel in het rustscherm: klik een speler, klik dan een invaller. */
+  let subKeuze = null;
+  function bouwWissels() {
+    const team = S.userTeam;
+    const wrap = document.createElement("div");
+    wrap.className = "wissels";
+    const titel = document.createElement("h4");
+    titel.className = "kopje";
+    titel.textContent = "Wissels — nog " + (3 - S.subs[team]) + " over";
+    wrap.appendChild(titel);
+
+    const rij = (lijst, isBank) => {
+      const r = document.createElement("div");
+      r.className = "bank";
+      lijst.forEach((entry) => {
+        const src = isBank ? entry : entry.src;
+        const kaart = Squad.cardEl(src, S.teams[team], { klein: true });
+        if (!isBank && subKeuze === entry) kaart.classList.add("gekozen");
+        if (!isBank && entry.off) kaart.classList.add("bezet");
+        kaart.addEventListener("click", () => {
+          if (!isBank) { subKeuze = entry; toonWissels(); return; }
+          if (!subKeuze) return;
+          if (Match.substitute(team, subKeuze, entry)) { subKeuze = null; toonWissels(); }
+        });
+        r.appendChild(kaart);
+      });
+      return r;
+    };
+
+    const opVeld = S.players.filter((p) => p.team === team);
+    const label1 = document.createElement("div");
+    label1.className = "klein";
+    label1.textContent = subKeuze ? "Gekozen: " + subKeuze.name + " — klik nu een invaller"
+                                  : "Klik een speler die eruit mag";
+    wrap.appendChild(label1);
+    wrap.appendChild(rij(opVeld, false));
+    const label2 = document.createElement("div");
+    label2.className = "kopje";
+    label2.textContent = "Reservebank";
+    wrap.appendChild(label2);
+    wrap.appendChild(rij(Match.benchOf(team), true));
+    return wrap;
+  }
+
+  function toonWissels() {
+    const oud = document.querySelector(".wissels");
+    if (oud) oud.replaceWith(bouwWissels());
+  }
+
   function handleHalfTime() {
     if (flow === "halftime") return;
     flow = "halftime";
+    subKeuze = null;
     verslag("Rust.");
     showOverlay("Rust", S.teams[0].name + " " + S.score[0] + " – " + S.score[1] + " " + S.teams[1].name,
       statsTable(), "Tweede helft", () => {
         $("#overlay").hidden = true;
         flow = "match";
         Match.startSecondHalf();
+        meldingBlessure = false;
         Sound.whistle("short");
         verslag("De tweede helft is begonnen.");
       });
+    if (mode !== "gast" && humanTeams().length) $("#ov-body").appendChild(bouwWissels());
   }
 
   function handleFullTime() {
@@ -489,6 +559,13 @@
     } else if (flow === "anthem") {
       Match.step(null);
     } else if (flow === "match") {
+      P.forEach((pl, t) => {
+        if (pl.manualT > 0) {
+          pl.manualT -= 1 / 60;
+          if (S.owner && S.owner.team === t && S.owner !== pl.manual) pl.manualT = 0;
+        }
+        if (pl.manualT <= 0) pl.manual = null;
+      });
       const actives = [];
       humanTeams().forEach((t) => {
         const p = activeFor(t);
@@ -501,7 +578,21 @@
         actives.push(p1);
         if (S.phase === "play" && remoteInput) control(P[1], p1, remoteInput);
       }
-      Match.step({ actives: S.phase === "play" ? actives : [] });
+      const penMens = S.pen && humanTeams().indexOf(S.pen.team) !== -1;
+      /* Alleen het indrukken telt; anders geldt loslaten als een tweede druk. */
+      const penDruk = penMens && tapped[P[S.pen.team].keys.shoot];
+      Match.step({ actives: S.phase === "play" ? actives : [], penaltyPress: !!penDruk });
+      if (S.addedShown && !meldingBlessure) {
+        meldingBlessure = true;
+        banner("BLESSURETIJD", "+" + S.addedMin + " minuten", 3);
+        verslag("De vierde official geeft " + S.addedMin + " minuten bij.");
+      }
+      if (S.phase === "penalty" && !meldingPen) {
+        meldingPen = true;
+        banner("STRAFSCHOP", S.teams[S.pen.team].name + " — " + (S.pen.taker ? S.pen.taker.name : ""), 3);
+        verslag("Strafschop! Richt met de schiettoets: eerst de hoek, dan de hoogte.");
+      }
+      if (S.phase !== "penalty") meldingPen = false;
       if (S.phase === "goal") handleGoal();
       if (S.phase === "halftime") handleHalfTime();
       if (S.phase === "fulltime") handleFullTime();
@@ -539,6 +630,11 @@
     if (!keys[e.code]) tapped[e.code] = true;
     keys[e.code] = true;
     if (e.code === "Escape" && flow === "anthem") kickOff();
+    if (flow === "match" && (e.code === "Tab" || e.code === P[0].keys.wissel)) {
+      e.preventDefault();
+      if (humanTeams().indexOf(0) !== -1) cycleSwitch(0);
+    }
+    if (flow === "match" && e.code === P[1].keys.wissel && humanTeams().indexOf(1) !== -1) cycleSwitch(1);
   });
   document.addEventListener("keyup", (e) => {
     keys[e.code] = false;

@@ -9,7 +9,7 @@ const View = (function () {
 
   let ctx = null, canvas = null;
   const cam = { x: PITCH.L / 2, zoom: 1, targetX: PITCH.L / 2, targetZoom: 1, shake: 0 };
-  let crowdSeed = [];
+  let crowdSeed = [], spin = 0;
 
   function attach(el) {
     canvas = el;
@@ -75,6 +75,26 @@ const View = (function () {
       }
     });
 
+    /* Lichtmasten boven de tribune */
+    [0.16, 0.84].forEach((f) => {
+      const x = CW * f;
+      ctx.fillStyle = "#0a0f1c";
+      ctx.fillRect(x - 3, 8, 6, 46);
+      ctx.fillStyle = "#141d33";
+      ctx.fillRect(x - 30, 2, 60, 16);
+      for (let i = 0; i < 5; i++) {
+        for (let j = 0; j < 2; j++) {
+          ctx.fillStyle = "#fdfbe8";
+          ctx.fillRect(x - 26 + i * 11, 4 + j * 7, 8, 5);
+        }
+      }
+      const glow = ctx.createRadialGradient(x, 12, 4, x, 12, 150);
+      glow.addColorStop(0, "rgba(255,252,220,.30)");
+      glow.addColorStop(1, "rgba(255,252,220,0)");
+      ctx.fillStyle = glow;
+      ctx.fillRect(x - 150, -40, 300, 200);
+    });
+
     /* Dak met steunbalken */
     ctx.fillStyle = "#05080f";
     ctx.beginPath();
@@ -138,6 +158,16 @@ const View = (function () {
       fillQuad(project(x0, 0, 0), project(x1, 0, 0), project(x1, PITCH.W, 0), project(x0, PITCH.W, 0),
         i % 2 ? "#186b3a" : "#146032");
     }
+    /* Lichtbundels van de masten over het gras */
+    [0.30, 0.70].forEach((f) => {
+      const cxs = CW * f;
+      const g2 = ctx.createRadialGradient(cxs, HORIZON + 40, 20, cxs, HORIZON + 120, 420);
+      g2.addColorStop(0, "rgba(255,250,220,.10)");
+      g2.addColorStop(1, "rgba(255,250,220,0)");
+      ctx.fillStyle = g2;
+      ctx.fillRect(0, HORIZON, CW, CH - HORIZON);
+    });
+
     rect(0, 0, PITCH.L, PITCH.W);
     line(PITCH.L / 2, 0, PITCH.L / 2, PITCH.W);
 
@@ -228,14 +258,24 @@ const View = (function () {
     /* Broek */
     ctx.fillStyle = kit.short;
     ctx.fillRect(-3.1 * s, -10.5 * s, 6.2 * s, 4.2 * s);
-    /* Shirt */
-    ctx.fillStyle = kit.shirt;
+    /* Shirt, met mouwen in de tweede kleur en eventueel strepen */
+    ctx.save();
     ctx.beginPath();
     ctx.moveTo(-3.4 * s + lean * s * 0.2, -10.5 * s);
     ctx.lineTo(-3.9 * s + lean * s * 0.3, -17.5 * s);
     ctx.lineTo(3.9 * s + lean * s * 0.3, -17.5 * s);
     ctx.lineTo(3.4 * s + lean * s * 0.2, -10.5 * s);
-    ctx.closePath(); ctx.fill();
+    ctx.closePath();
+    ctx.fillStyle = kit.shirt; ctx.fill();
+    ctx.clip();
+    if (kit.streep) {
+      ctx.fillStyle = kit.sock;
+      for (let i = -2; i <= 2; i += 2) ctx.fillRect(i * 1.55 * s, -18 * s, 1.45 * s, 9 * s);
+    }
+    ctx.fillStyle = kit.short;
+    ctx.fillRect(-4.2 * s, -17.6 * s, 1.5 * s, 8 * s);
+    ctx.fillRect(2.7 * s, -17.6 * s, 1.5 * s, 8 * s);
+    ctx.restore();
     /* Armen */
     ctx.strokeStyle = "#e8c9a4"; ctx.lineWidth = 1.7 * s;
     ctx.beginPath();
@@ -293,13 +333,59 @@ const View = (function () {
     ctx.ellipse(shadow.x, shadow.y, 2.6 * s, 1.2 * s, 0, 0, Math.PI * 2);
     ctx.fillStyle = "rgba(0,0,0," + (0.34 - Math.min(0.2, b.z / 160)) + ")";
     ctx.fill();
+    const rr = 2.6 * s;
     ctx.beginPath();
-    ctx.arc(p.x, p.y, 2.5 * s, 0, Math.PI * 2);
+    ctx.arc(p.x, p.y, rr, 0, Math.PI * 2);
     ctx.fillStyle = "#ffffff"; ctx.fill();
     ctx.lineWidth = 0.8 * s; ctx.strokeStyle = "#20242c"; ctx.stroke();
+    /* De bal draait mee met de afgelegde weg. */
+    spin += Math.hypot(b.vx || 0, b.vy || 0) * 0.09;
+    ctx.save();
+    ctx.beginPath(); ctx.arc(p.x, p.y, rr, 0, Math.PI * 2); ctx.clip();
+    ctx.fillStyle = "#23272f";
+    for (let i = 0; i < 3; i++) {
+      const a = spin + (i * Math.PI * 2) / 3;
+      ctx.beginPath();
+      ctx.arc(p.x + Math.cos(a) * rr * 0.62, p.y + Math.sin(a) * rr * 0.62, rr * 0.42, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  /* Richtkruis bij een strafschop, geprojecteerd op de doelmond. */
+  function drawPenaltyAim(pen) {
+    if (!pen || (pen.stage !== "richten" && pen.stage !== "hoogte")) return;
+    const y1 = PITCH.W / 2 - PITCH.GOAL_W / 2;
+    const ty = y1 + pen.aim * PITCH.GOAL_W;
+    const tz = pen.hoogte * (PITCH.GOAL_H + 6);
+    const p = project(pen.gx, ty, tz);
+
+    /* Doelmond aftekenen */
+    const a = project(pen.gx, y1, 0), b = project(pen.gx, y1 + PITCH.GOAL_W, 0);
+    const at = project(pen.gx, y1, PITCH.GOAL_H), bt = project(pen.gx, y1 + PITCH.GOAL_W, PITCH.GOAL_H);
+    ctx.strokeStyle = "rgba(0,255,178,.35)"; ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.arc(p.x - 0.6 * s, p.y - 0.6 * s, 0.9 * s, 0, Math.PI * 2);
-    ctx.fillStyle = "#2b3038"; ctx.fill();
+    ctx.moveTo(a.x, a.y); ctx.lineTo(at.x, at.y); ctx.lineTo(bt.x, bt.y); ctx.lineTo(b.x, b.y);
+    ctx.stroke();
+
+    const r = 13;
+    ctx.strokeStyle = pen.stage === "hoogte" ? "#ffd400" : "#00ffb2";
+    ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.arc(p.x, p.y, r, 0, Math.PI * 2); ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(p.x - r - 7, p.y); ctx.lineTo(p.x - 4, p.y);
+    ctx.moveTo(p.x + 4, p.y); ctx.lineTo(p.x + r + 7, p.y);
+    ctx.moveTo(p.x, p.y - r - 7); ctx.lineTo(p.x, p.y - 4);
+    ctx.moveTo(p.x, p.y + 4); ctx.lineTo(p.x, p.y + r + 7);
+    ctx.stroke();
+
+    ctx.font = "bold 13px system-ui, sans-serif";
+    ctx.textAlign = "center"; ctx.textBaseline = "bottom";
+    ctx.fillStyle = "#fff";
+    ctx.strokeStyle = "rgba(0,0,0,.7)"; ctx.lineWidth = 3;
+    const tekst = pen.stage === "richten" ? "richting — druk op schieten" : "hoogte — druk op schieten";
+    ctx.strokeText(tekst, p.x, p.y - r - 14);
+    ctx.fillText(tekst, p.x, p.y - r - 14);
   }
 
   /* ---------------- Frame ---------------- */
@@ -316,6 +402,7 @@ const View = (function () {
     const marks = (opts && opts.markers) || [];
     const order = S.players.slice().sort((a, b) => a.y - b.y);
     order.forEach((p) => {
+      if (p.off) return;                     // rode kaart: van het veld
       const team = S.teams[p.team];
       const kit = p.isGK ? team.gkKit : team.kit;
       const m = marks.filter((x) => x && x.player === p)[0];
@@ -324,6 +411,7 @@ const View = (function () {
 
     drawBall(S.ball);
     drawGoals(true);
+    if (S.phase === "penalty") drawPenaltyAim(S.pen);
 
     ctx.restore();
   }

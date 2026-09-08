@@ -130,7 +130,7 @@ const TEAMS = [
     ] },
 
   { id: "arg", name: "Argentinië", abbr: "ARG", anthem: "argentina", anthemName: "Himno Nacional Argentino",
-    kit: { shirt: "#7ec8e8", short: "#101a3c", sock: "#ffffff", num: "#101a3c" },
+    kit: { shirt: "#7ec8e8", short: "#101a3c", sock: "#ffffff", num: "#101a3c", streep: true },
     gkKit: { shirt: "#12d18e", short: "#052b1e", sock: "#12d18e", num: "#052b1e" },
     squad: [
       ["E. Martínez", "GK", 86, 23], ["Molina", "RB", 82, 26], ["Romero", "CB", 85, 13],

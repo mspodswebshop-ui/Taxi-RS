@@ -16,7 +16,10 @@ tv-uitzending. Openen kan door `fc27/index.html` in een browser te openen.
 - Een **rode driehoek** met kleine naam wijst de speler aan die jij bestuurt; speler 2
   krijgt een blauwe. Linksonder staat zijn portret met schotkracht en conditie,
   linksboven het scorebord.
-- Inworpen, hoekschoppen, doeltrappen, overtredingen en gele kaarten.
+- **Spelregels**: buitenspel, gele en rode kaarten (met tien man verder), strafschoppen
+  met richtmeter en duikende keeper, blessuretijd, drie wissels per ploeg in de rust,
+  plus inworpen, hoekschoppen, doeltrappen en vrije trappen.
+- Zelf van speler wisselen met `C` of `Tab`.
 - Rust met statistieken, tweede helft, eindstand, man of the match en een herhaling
   in slow motion na elk doelpunt.
 
@@ -41,7 +44,8 @@ opgeslagen als lijsten van `[toon, tellen]` in `data.js`. Gesproken commentaar i
 wat er gebeurt lees je in de balk onder het veld.
 
 **Wat er niet in zit:** geen 3D, geen motion capture, geen licenties, geen opnames.
-Buitenspel, wissels en strafschoppen ontbreken. Alle ratings zijn verzonnen.
+Er zijn nog geen toernooien, geen strafschoppenserie en geen vrijetrapmuur.
+Alle ratings zijn verzonnen.
 
 Handig bij het sleutelen: `index.html?debug` zet een inspectiehaak op `window.__fc27`.
 

@@ -30,7 +30,11 @@ BESTURING
      .  (punt) ............ hoge bal
      rechter Shift ........ sprinten
 
+  C of Tab ................. zelf van speler wisselen
   Esc ...................... volkslied overslaan
+
+  Bij een strafschop druk je twee keer op je schiettoets:
+  eerst voor de hoek, daarna voor de hoogte.
 
 De RODE DRIEHOEK boven een speler is degene die jij bestuurt; zijn naam
 staat er klein boven. Speler 2 krijgt een BLAUWE driehoek. Je bestuurt
@@ -86,11 +90,26 @@ Er is geen gesproken commentaar meer. Wat er gebeurt, lees je in de
 balk onder het veld.
 
 
+SPELREGELS DIE MEEDOEN
+----------------------
+  - Buitenspel: sta je bij de pass voorbij de voorlaatste verdediger op
+    de helft van de tegenstander, dan wordt er teruggefloten.
+  - Gele kaarten, en bij de tweede een rode: je ploeg speelt verder met
+    tien man.
+  - Een overtreding in het strafschopgebied is een penalty, met een
+    richtmeter en een duikende keeper.
+  - Blessuretijd aan het eind van elke helft, langer bij veel
+    overtredingen, kaarten en doelpunten.
+  - Drie wissels per ploeg, te maken in de rust.
+  - Inworpen, hoekschoppen, doeltrappen en vrije trappen.
+
+
 WAT ER NIET IN ZIT
 ------------------
 Dit is geen FIFA. Geen 3D, geen motion capture, geen licenties en geen
-opnames. Buitenspel wordt niet gefloten, er zijn geen wissels en geen
-strafschoppen. Spelersnamen zijn echt, alle ratings zijn verzonnen.
+opnames; dat is in een browser zonder bestanden ook niet te maken.
+Er zijn nog geen toernooien, geen strafschoppenserie na een gelijkspel
+en geen vrijetrapmuur. Spelersnamen zijn echt, alle ratings verzonnen.
 
 
 BESTANDEN
