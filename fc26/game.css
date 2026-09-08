@@ -1,0 +1,92 @@
+.game-shell { max-width: 1000px; margin: 0 auto; padding: 18px 18px 60px; }
+
+.hud {
+  display: flex; align-items: center; gap: 14px;
+  background: linear-gradient(180deg, var(--panel), var(--panel-2));
+  border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 12px 16px; margin-bottom: 12px;
+}
+.hud .team { flex: 1; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; font-size: 14px; }
+.hud .team.away { text-align: right; }
+.hud .team i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 7px; vertical-align: 1px; }
+.hud .score {
+  font-size: 30px; font-weight: 900; letter-spacing: .04em;
+  min-width: 118px; text-align: center; color: var(--accent);
+}
+.hud .clock {
+  font-variant-numeric: tabular-nums; font-size: 15px; font-weight: 700;
+  color: var(--muted); min-width: 62px; text-align: center;
+}
+
+.stage { position: relative; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--line); }
+canvas#pitch-canvas { display: block; width: 100%; height: auto; background: #0d3a24; touch-action: none; }
+
+.overlay {
+  position: absolute; inset: 0; z-index: 5;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 14px; text-align: center; padding: 24px;
+  background: rgba(3, 6, 14, .84); backdrop-filter: blur(3px);
+}
+.overlay[hidden] { display: none; }
+.overlay h2 { margin: 0; font-size: clamp(26px, 5vw, 44px); text-transform: uppercase; letter-spacing: -.01em; }
+.overlay h2 em { font-style: normal; background: linear-gradient(100deg, var(--accent), var(--accent-2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.overlay p { margin: 0; color: var(--muted); max-width: 460px; }
+.overlay .btn { width: auto; min-width: 220px; }
+.overlay .keys { display: grid; grid-template-columns: auto auto; gap: 6px 16px; font-size: 13px; color: var(--muted); }
+.overlay .keys b { color: var(--txt); font-weight: 700; }
+.overlay .keys span { text-align: left; }
+kbd {
+  display: inline-block; padding: 2px 7px; border-radius: 5px;
+  background: #0a0f22; border: 1px solid var(--line); border-bottom-width: 2px;
+  font-family: inherit; font-size: 12px; font-weight: 700; color: var(--txt);
+}
+.flash {
+  position: absolute; inset: 0; z-index: 4; display: flex; align-items: center; justify-content: center;
+  font-size: clamp(40px, 11vw, 96px); font-weight: 900; letter-spacing: .08em;
+  color: var(--accent); text-shadow: 0 0 30px rgba(0, 255, 178, .55); pointer-events: none;
+}
+.flash[hidden] { display: none; }
+
+.controls { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; align-items: center; }
+.controls .btn { width: auto; min-width: 130px; margin: 0; }
+.controls .spacer { flex: 1; }
+.power {
+  flex: 0 0 190px; height: 10px; border-radius: 99px; background: #0a0f22;
+  border: 1px solid var(--line); overflow: hidden;
+}
+.power > i { display: block; height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent-2), var(--accent)); }
+.meter-label { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+
+.lineups { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 22px; }
+@media (max-width: 700px) { .lineups { grid-template-columns: 1fr; } }
+.lineups .panel h3 { margin-bottom: 10px; }
+.lineups ul { list-style: none; margin: 0; padding: 0; font-size: 14px; }
+.lineups li { display: flex; justify-content: space-between; gap: 10px; padding: 7px 0; border-bottom: 1px solid var(--line); }
+.lineups li span { color: var(--muted); font-size: 12px; }
+.lineups li b { color: var(--accent); }
+
+.touch-pad { position: absolute; inset: 0; z-index: 3; display: none; }
+.touch-pad.on { display: block; }
+.touch-pad .stick, .touch-pad .fire {
+  position: absolute; border-radius: 50%; border: 2px solid rgba(255, 255, 255, .35);
+  background: rgba(0, 0, 0, .25);
+}
+.touch-pad .stick { left: 4%; bottom: 6%; width: 108px; height: 108px; }
+.touch-pad .stick i {
+  position: absolute; left: 50%; top: 50%; width: 44px; height: 44px; margin: -22px 0 0 -22px;
+  border-radius: 50%; background: rgba(255, 255, 255, .5);
+}
+.touch-pad .fire {
+  right: 5%; bottom: 8%; width: 86px; height: 86px;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 800; color: #fff; font-size: 13px; letter-spacing: .1em;
+}
+
+.meters { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+@media (max-width: 700px) {
+  .controls { gap: 8px; }
+  .controls .btn { min-width: 104px; }
+  .power { flex-basis: 110px; }
+  .hud .score { font-size: 24px; min-width: 96px; }
+  .hud .team { font-size: 12px; }
+}

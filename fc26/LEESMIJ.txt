@@ -1,0 +1,48 @@
+ARENA FC 26
+===========
+
+Een voetbalgame met squad builder. Geen installatie nodig.
+
+STARTEN
+-------
+Dubbelklik op "index.html" om je elftal samen te stellen,
+of op "game.html" om meteen een wedstrijd te spelen.
+Werkt in Chrome, Firefox, Edge en Safari.
+
+BESTURING
+---------
+  W A S D of pijltjes ....... lopen
+  Spatie .................... schieten (ingedrukt houden = harder)
+  E ......................... passen naar de best vrijstaande medespeler
+  Shift ..................... sprinten (kost conditie)
+  Spatie zonder bal ......... druk zetten en tackelen
+  P of Esc .................. pauzeren
+
+Op een telefoon of tablet verschijnen vanzelf een looppad
+linksonder en een schotknop rechtsonder.
+
+HOE HET WERKT
+-------------
+Je speelt 5 tegen 5 met de vijf sterkste spelers uit de opstelling
+die je in de squad builder hebt gemaakt. Je bestuurt steeds de speler
+die het dichtst bij de bal staat; de rest speelt automatisch.
+
+De statistieken van je spelers doen er echt toe:
+  snelheid    -> hoe hard ze lopen
+  schot       -> hoe hard ze schieten
+  verdedigen  -> kans op een geslaagde tackle
+  dribbelen   -> hoe makkelijk ze de bal kwijtraken
+  reflexen    -> de actieradius van je keeper
+
+BESTANDEN
+---------
+  index.html .... squad builder
+  game.html ..... de wedstrijd
+  players.js .... spelersdata (hier pas je spelers en ratings aan)
+  app.js ........ logica van de squad builder
+  game.js ....... de spellogica
+  style.css ..... opmaak van de site
+  game.css ...... opmaak van het wedstrijdscherm
+
+De ratings zijn fictief. Dit is een fanproject en staat los van
+welke uitgever of club dan ook.

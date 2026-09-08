@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arena FC 26 — Wedstrijd</title>
+<meta name="description" content="Speel een 5-tegen-5 wedstrijd met het elftal dat je zelf hebt samengesteld.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='%23fff'/%3E%3Cpath d='M16 7l5 3.6-1.9 5.9h-6.2L11 10.6z' fill='%23111'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="game.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand"><span class="dot"></span>ARENA <span>FC 26</span></div>
+  <nav class="nav">
+    <a href="index.html">Squad Builder</a>
+    <a href="index.html#spelers">Spelers</a>
+    <a href="game.html">Wedstrijd</a>
+  </nav>
+</header>
+
+<div class="game-shell">
+
+  <div class="hud">
+    <div class="team" id="name-home"><i style="background:#00ffb2"></i>Jouw XI</div>
+    <div class="clock" id="clock">3:00</div>
+    <div class="score" id="score">0 – 0</div>
+    <div class="clock">&nbsp;</div>
+    <div class="team away" id="name-away">Rivalen FC <i style="background:#ff5a5f"></i></div>
+  </div>
+
+  <div class="stage">
+    <canvas id="pitch-canvas" width="940" height="580"></canvas>
+
+    <div class="touch-pad" id="touch">
+      <div class="stick" id="stick"><i id="knob"></i></div>
+      <div class="fire" id="fire">SCHOT</div>
+    </div>
+
+    <div class="flash" id="flash" hidden></div>
+
+    <div class="overlay" id="overlay">
+      <h2 id="ov-title">Klaar voor de <em>aftrap</em>?</h2>
+      <p id="ov-text">Je speelt 5 tegen 5 met de vijf sterkste spelers uit je opgeslagen opstelling.
+         Je bestuurt automatisch de speler die het dichtst bij de bal staat.</p>
+      <div class="keys" id="ov-keys">
+        <b><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> / pijltjes</b><span>Lopen</span>
+        <b><kbd>Spatie</kbd></b><span>Schieten — ingedrukt houden voor meer kracht</span>
+        <b><kbd>E</kbd></b><span>Passen naar de best vrijstaande medespeler</span>
+        <b><kbd>Shift</kbd></b><span>Sprinten (kost conditie)</span>
+        <b><kbd>Spatie</kbd> zonder bal</b><span>Druk zetten en tackelen</span>
+        <b><kbd>P</kbd> / <kbd>Esc</kbd></b><span>Pauzeren</span>
+      </div>
+      <button class="btn primary" id="ov-start">Aftrappen</button>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button class="btn" id="btn-pause">Pauze</button>
+    <button class="btn" id="btn-restart">Herstart</button>
+
+    <label class="meter-label" for="opt-diff">Niveau</label>
+    <select id="opt-diff" style="width:auto">
+      <option value="0">Makkelijk</option>
+      <option value="1" selected>Normaal</option>
+      <option value="2">Moeilijk</option>
+    </select>
+
+    <label class="meter-label" for="opt-length">Speelduur</label>
+    <select id="opt-length" style="width:auto">
+      <option value="120">2 minuten</option>
+      <option value="180" selected>3 minuten</option>
+      <option value="300">5 minuten</option>
+    </select>
+
+    <label class="meter-label"><input type="checkbox" id="opt-sound" checked> Geluid</label>
+
+    <div class="spacer"></div>
+
+    <div class="meters">
+      <span class="meter-label">Schot</span>
+      <div class="power"><i id="power-bar"></i></div>
+      <span class="meter-label">Conditie</span>
+      <div class="power"><i id="stamina-bar" style="width:100%"></i></div>
+    </div>
+  </div>
+
+  <div class="lineups">
+    <div class="panel">
+      <h3>Jouw opstelling</h3>
+      <ul id="lineup-home"></ul>
+      <a class="btn" href="index.html" style="text-align:center;text-decoration:none;display:block;margin-top:14px">Team aanpassen</a>
+    </div>
+    <div class="panel">
+      <h3>Tegenstander</h3>
+      <ul id="lineup-away"></ul>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  Arena FC 26 — fanproject, niet verbonden aan een uitgever of club. Alle ratings zijn fictief.
+</footer>
+
+<script src="players.js"></script>
+<script src="game.js"></script>
+</body>
+</html>
