@@ -54,15 +54,22 @@ const Match = (function () {
   const ownGoalX = (team) => (team === 0 ? 0 : PITCH.L);
 
   /* ---------------- Opzetten ---------------- */
-  function makePlayers(team, side, squad) {
-    return squad.filter((p) => p.starter).map((p, i) => {
+  function makePlayers(team, side, squad, lineup) {
+    /* Een zelfgemaakte opstelling is een lijst met elf namen in formatievolgorde. */
+    let chosen = null;
+    if (lineup && lineup.length === 11) {
+      chosen = lineup.map((n) => squad.filter((p) => p.name === n)[0]);
+      if (chosen.some((p) => !p) || new Set(chosen).size !== 11) chosen = null;
+    }
+    if (!chosen) chosen = squad.filter((p) => p.starter);
+    return chosen.map((p, i) => {
       const f = FORMATION[i];
       const st = p.stats;
       const fx = side === 0 ? f.x : 1 - f.x;
       const fy = side === 0 ? f.y : 1 - f.y;
       return {
         team: side, src: p, name: p.name, number: p.number, role: f.role,
-        isGK: f.role === "GK",
+        isGK: f.role === "GK" || p.pos === "GK",
         maxSpeed: (p.isGK ? 0.95 : 0.98) + (st.pac / 100) * 0.52,
         accel: 0.16 + (st.dri / 100) * 0.10,
         power: 2.4 + (st.sho / 100) * 2.3,
@@ -83,7 +90,8 @@ const Match = (function () {
   function init(teamA, teamB, opts) {
     S.teams = [teamA, teamB];
     S.sides = [buildSquad(teamA), buildSquad(teamB)];
-    S.players = makePlayers(teamA, 0, S.sides[0]).concat(makePlayers(teamB, 1, S.sides[1]));
+    const lu = (opts && opts.lineups) || {};
+    S.players = makePlayers(teamA, 0, S.sides[0], lu[0]).concat(makePlayers(teamB, 1, S.sides[1], lu[1]));
     S.score = [0, 0];
     S.half = 1;
     S.halfLen = (opts && opts.halfLen) || 150;
@@ -661,18 +669,21 @@ const Match = (function () {
 
     const gk0 = S.players.filter((p) => p.team === 0 && p.isGK)[0];
     const gk1 = S.players.filter((p) => p.team === 1 && p.isGK)[0];
-    const act = input && input.active ? input.active : null;
-    const chase0 = nearest(S.ball, 0, act && act.team === 0 ? [gk0, act] : gk0);
-    const chase1 = nearest(S.ball, 1, act && act.team === 1 ? [gk1, act] : gk1);
-    const press0 = nearest(S.ball, 0, [gk0, chase0, act].filter(Boolean));
-    const press1 = nearest(S.ball, 1, [gk1, chase1, act].filter(Boolean));
+    const acts = (input && input.actives) || [];
+    const act = acts[0] || null;
+    const human0 = acts.filter((a) => a && a.team === 0);
+    const human1 = acts.filter((a) => a && a.team === 1);
+    const chase0 = nearest(S.ball, 0, [gk0].concat(human0));
+    const chase1 = nearest(S.ball, 1, [gk1].concat(human1));
+    const press0 = nearest(S.ball, 0, [gk0, chase0].concat(human0).filter(Boolean));
+    const press1 = nearest(S.ball, 1, [gk1, chase1].concat(human1).filter(Boolean));
 
     if (S.owner) { S.stats.poss[S.owner.team]++; S.passTo = null; }
     else if (S.passTo && --S.passTo.ttl <= 0) S.passTo = null;
 
     S.players.forEach((p) => {
       if (p.stun > 0) { p.stun -= STEP; p.vx *= 0.86; p.vy *= 0.86; }
-      else if (p === act) { /* aangestuurd door de speler, gebeurt in game.js */ }
+      else if (acts.indexOf(p) !== -1) { /* aangestuurd door een mens, gebeurt in game.js */ }
       else if (p.isGK) goalkeeper(p);
       else if (S.owner === p) withBall(p);
       else offBall(p, p.team === 0 ? chase0 : chase1, p.team === 0 ? press0 : press1);

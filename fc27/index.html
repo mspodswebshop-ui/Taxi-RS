@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Arena FC 27</title>
-<meta name="description" content="Voetbalgame met opkomst, volkslied en 11 tegen 11 op ware schaal.">
+<meta name="description" content="Voetbalgame met opkomst, volkslied, opstelling met kaarten en multiplayer.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='%23fff'/%3E%3Cpath d='M16 7l5 3.6-1.9 5.9h-6.2L11 10.6z' fill='%23111'/%3E%3C/svg%3E">
 <link rel="stylesheet" href="style.css">
 </head>
@@ -14,6 +14,7 @@
   <div class="stage">
     <canvas id="pitch" width="1000" height="620"></canvas>
 
+    <!-- Scorebord linksboven -->
     <div class="hud" id="hud" hidden>
       <div class="abbr" id="hud-home">NED</div>
       <div class="sc" id="hud-score">0 – 0</div>
@@ -22,13 +23,28 @@
       <div class="hf" id="hud-half">1e helft</div>
     </div>
 
-    <div class="meters" id="meters">
-      <div class="who" id="hud-name"></div>
-      <div class="lab">Schot</div><div class="bar"><i id="power-bar"></i></div>
-      <div class="lab">Conditie</div><div class="bar"><i id="stam-bar" style="width:100%"></i></div>
+    <!-- Wie je bestuurt -->
+    <div class="meters" id="meters" hidden>
+      <div class="wie">
+        <canvas class="kop-mini" id="face-p1" width="96" height="96"></canvas>
+        <div>
+          <div class="wie-naam"><i class="pijl p1"></i><span id="hud-name">—</span></div>
+          <div class="lab">Schot</div><div class="bar"><i id="power-bar"></i></div>
+          <div class="lab">Conditie</div><div class="bar"><i id="stam-bar" style="width:100%"></i></div>
+        </div>
+      </div>
+      <div class="wie tweede" id="p2-panel" hidden>
+        <canvas class="kop-mini" id="face-p2" width="96" height="96"></canvas>
+        <div>
+          <div class="wie-naam"><i class="pijl p2"></i><span id="hud-name2">—</span></div>
+          <div class="lab">Schot</div><div class="bar"><i id="power-bar2"></i></div>
+          <div class="lab">Conditie</div><div class="bar"><i id="stam-bar2" style="width:100%"></i></div>
+        </div>
+      </div>
     </div>
 
     <div id="restart-note" hidden></div>
+    <div id="net-note" hidden></div>
 
     <div class="banner" id="banner" hidden>
       <div class="main" id="banner-main"></div>
@@ -43,18 +59,30 @@
       <div class="btn-round" id="pass">PASS</div>
     </div>
 
-    <!-- Menu -->
-    <div class="sheet" id="menu">
-      <h1>Arena <em>FC 27</em></h1>
-      <p class="lead">Elf tegen elf op een veld van 105 bij 68 meter, met opkomst uit de tunnel,
-         volkslied, publiek, commentaar en herhalingen. Jij bestuurt de speler bij de bal.</p>
+    <!-- 1. Beginscherm -->
+    <div class="sheet titel" id="screen-title">
+      <div class="logo">
+        <div class="logo-bal"></div>
+        <h1>ARENA <em>FC 27</em></h1>
+        <p class="lead">Elf tegen elf, opkomst uit de tunnel, volkslied en een vol stadion.</p>
+      </div>
+      <div class="menu-knoppen">
+        <button class="btn primary groot" data-ga="screen-match">Wedstrijd spelen</button>
+        <button class="btn groot" data-ga="screen-squad">Opstelling maken</button>
+        <button class="btn groot" data-ga="screen-mp">Samen spelen</button>
+        <button class="btn groot" data-ga="screen-help">Uitleg en instellingen</button>
+      </div>
+      <p class="klein">Getekende spelersportretten, geen foto's. Fanproject, los van elke uitgever of club.</p>
+    </div>
 
+    <!-- 2. Wedstrijd instellen -->
+    <div class="sheet" id="screen-match" hidden>
+      <h2>Wedstrijd</h2>
       <div class="matchup">
         <div class="badge" id="badge-home">NED</div>
         <div class="vs">VS</div>
         <div class="badge" id="badge-away">FRA</div>
       </div>
-
       <div class="row">
         <div class="field"><label for="pick-home">Jouw land</label><select id="pick-home"></select></div>
         <div class="field"><label for="pick-away">Tegenstander</label><select id="pick-away"></select></div>
@@ -69,27 +97,109 @@
           </select>
         </div>
       </div>
-
       <div class="note" id="anthem-note"></div>
-
       <div class="checks">
         <label><input type="checkbox" id="opt-sound" checked> Geluid en volkslied</label>
-        <label><input type="checkbox" id="opt-speech" checked> Gesproken commentaar</label>
         <label><input type="checkbox" id="opt-demo"> Computer speelt beide teams</label>
       </div>
-
-      <button class="btn primary" id="start">Naar het stadion</button>
-
+      <div class="row">
+        <button class="btn primary" id="start">Naar het stadion</button>
+        <button class="btn" data-ga="screen-title">Terug</button>
+      </div>
       <div class="squads">
-        <div class="col"><h4>Jouw opstelling</h4><ul id="squad-home"></ul></div>
+        <div class="col"><h4>Jouw elftal <span id="opstel-bron"></span></h4><ul id="squad-home"></ul></div>
         <div class="col"><h4>Tegenstander</h4><ul id="squad-away"></ul></div>
       </div>
+    </div>
 
-      <p class="lead" style="font-size:13px">
-        <b>W A S D</b> of pijltjes lopen · <b>Spatie</b> schieten (vasthouden = harder) ·
-        <b>E</b> passen · <b>Q</b> hoge bal · <b>Shift</b> sprinten ·
-        <b>Spatie</b> zonder bal drukzetten · <b>Esc</b> volkslied overslaan
-      </p>
+    <!-- 3. Opstelling -->
+    <div class="sheet breed" id="screen-squad" hidden>
+      <div class="squad-kop">
+        <div class="badge" id="squad-badge">NED</div>
+        <div>
+          <h2 id="squad-team">Nederland</h2>
+          <div class="klein">Gemiddelde rating <b id="squad-rating">–</b> · klik een plek om te wisselen</div>
+        </div>
+        <div class="row" style="margin-left:auto">
+          <select id="squad-pick-team"></select>
+          <button class="btn" id="squad-best">Sterkste elftal</button>
+          <button class="btn primary" data-ga="screen-title">Klaar</button>
+        </div>
+      </div>
+      <div class="slot-grid" id="squad-slots"></div>
+      <h4 class="kopje">Reservebank</h4>
+      <div class="bank" id="squad-bench"></div>
+    </div>
+
+    <!-- 4. Samen spelen -->
+    <div class="sheet" id="screen-mp" hidden>
+      <h2>Samen spelen</h2>
+      <div class="mp-keuze">
+        <div class="mp-kaart">
+          <h3>Op één toetsenbord</h3>
+          <p class="lead">Twee spelers achter dezelfde computer. Speler 1 bestuurt het thuisteam,
+             speler 2 de tegenstander.</p>
+          <div class="toetsen">
+            <div><b>Speler 1</b><span><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> lopen · <kbd>Spatie</kbd> schot · <kbd>E</kbd> pass · <kbd>Q</kbd> hoge bal · <kbd>Shift</kbd> sprint</span></div>
+            <div><b>Speler 2</b><span>pijltjes lopen · <kbd>Enter</kbd> schot · <kbd>/</kbd> pass · <kbd>.</kbd> hoge bal · <kbd>Rechter Shift</kbd> sprint</span></div>
+          </div>
+          <button class="btn primary" id="mp-local">Start wedstrijd met z'n tweeën</button>
+        </div>
+
+        <div class="mp-kaart">
+          <h3>Online met een vriend</h3>
+          <p class="lead">Werkt zonder server: je stuurt elkaar een code, bijvoorbeeld via WhatsApp.
+             Eén van jullie nodigt uit, de ander doet mee.</p>
+          <div class="row">
+            <button class="btn" id="mp-host">Ik nodig uit</button>
+            <button class="btn" id="mp-join">Ik doe mee</button>
+          </div>
+
+          <div id="mp-host-box" hidden>
+            <p class="klein">1. Stuur deze uitnodigingscode naar je vriend:</p>
+            <textarea id="mp-code-out" readonly rows="3"></textarea>
+            <button class="btn" id="mp-copy">Code kopiëren</button>
+            <p class="klein">2. Plak hier het antwoord dat je terugkrijgt:</p>
+            <textarea id="mp-code-in" rows="3" placeholder="Antwoordcode van je vriend"></textarea>
+            <button class="btn primary" id="mp-accept">Verbinden en aftrappen</button>
+          </div>
+
+          <div id="mp-join-box" hidden>
+            <p class="klein">1. Plak hier de uitnodigingscode die je kreeg:</p>
+            <textarea id="mp-join-in" rows="3" placeholder="Uitnodigingscode"></textarea>
+            <button class="btn" id="mp-answer">Antwoord maken</button>
+            <p class="klein">2. Stuur dit antwoord terug naar degene die uitnodigde:</p>
+            <textarea id="mp-code-answer" readonly rows="3"></textarea>
+            <button class="btn" id="mp-copy2">Antwoord kopiëren</button>
+          </div>
+
+          <div class="mp-status" id="mp-status">Nog geen verbinding</div>
+        </div>
+      </div>
+      <button class="btn" data-ga="screen-title">Terug</button>
+    </div>
+
+    <!-- 5. Uitleg -->
+    <div class="sheet" id="screen-help" hidden>
+      <h2>Uitleg</h2>
+      <div class="uitleg">
+        <table>
+          <tr><td><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> of pijltjes</td><td>Lopen</td></tr>
+          <tr><td><kbd>Spatie</kbd></td><td>Schieten — vasthouden voor meer kracht</td></tr>
+          <tr><td><kbd>E</kbd></td><td>Passen</td></tr>
+          <tr><td><kbd>Q</kbd></td><td>Hoge bal of voorzet</td></tr>
+          <tr><td><kbd>Shift</kbd></td><td>Sprinten, kost conditie</td></tr>
+          <tr><td><kbd>Spatie</kbd> zonder bal</td><td>Druk zetten en tackelen</td></tr>
+          <tr><td><kbd>Esc</kbd></td><td>Volkslied overslaan</td></tr>
+        </table>
+        <p class="lead">De rode driehoek wijst de speler aan die jij bestuurt; zijn naam staat erboven.
+           Bij samen spelen krijgt speler 2 een blauwe driehoek. Je bestuurt steeds de man die het
+           dichtst bij de bal staat.</p>
+        <p class="klein">De portretten zijn getekend uit de naam van de speler, geen foto's.
+           Al het geluid wordt live gemaakt door de browser; er zitten geen geluidsbestanden in het spel.
+           De volksliederen zijn synthetische benaderingen van de openingsmaten.</p>
+      </div>
+      <button class="btn" data-ga="screen-title">Terug</button>
     </div>
 
     <!-- Rust en eindstand -->
@@ -99,16 +209,28 @@
       <div class="body" id="ov-body"></div>
       <button class="btn primary" id="ov-btn"></button>
     </div>
+
+    <!-- Spelerkiezer -->
+    <div class="sheet breed" id="picker" hidden>
+      <div class="squad-kop">
+        <h2 id="picker-title">Kies een speler</h2>
+        <button class="btn" style="margin-left:auto" id="picker-close">Sluiten</button>
+      </div>
+      <div class="bank" id="picker-list"></div>
+    </div>
   </div>
 
-  <div class="ticker" id="ticker-wrap" hidden><b>COMMENTAAR</b><span id="ticker"></span></div>
+  <div class="ticker" id="ticker-wrap" hidden><b>WEDSTRIJD</b><span id="ticker"></span></div>
 
 </div>
 
 <script src="data.js"></script>
+<script src="faces.js"></script>
 <script src="audio.js"></script>
 <script src="match.js"></script>
 <script src="render.js"></script>
+<script src="squad.js"></script>
+<script src="net.js"></script>
 <script src="game.js"></script>
 </body>
 </html>

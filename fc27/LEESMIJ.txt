@@ -1,75 +1,109 @@
 ARENA FC 27
 ===========
 
-Een voetbalgame met opkomst, volkslied en elf tegen elf.
+Een voetbalgame met opkomst, volkslied, een eigen opstelling en multiplayer.
 Geen installatie nodig: dubbelklik op index.html.
 
 
-STARTEN
--------
-Kies je land en je tegenstander, kies een niveau en een speelduur,
-en klik op "Naar het stadion". Dan volgt de opkomst uit de tunnel,
-het volkslied, en de aftrap.
+HET BEGINSCHERM
+---------------
+  Wedstrijd spelen ....... kies twee landen en speel tegen de computer
+  Opstelling maken ....... stel je elftal samen met spelerskaarten
+  Samen spelen ........... met z'n tweeën op één toetsenbord, of online
+  Uitleg ................. besturing en achtergrond
 
 
 BESTURING
 ---------
-  W A S D of pijltjes ....... lopen
-  Spatie .................... schieten (ingedrukt houden = harder)
-  E ......................... passen
-  Q ......................... hoge bal / voorzet
-  Shift ..................... sprinten (kost conditie)
-  Spatie zonder bal ......... druk zetten en tackelen
-  Esc ....................... volkslied overslaan
+  Speler 1 (thuisteam)
+     W A S D .............. lopen
+     Spatie ............... schieten (ingedrukt houden = harder)
+     E .................... passen
+     Q .................... hoge bal of voorzet
+     Shift ................ sprinten (kost conditie)
+     Spatie zonder bal .... druk zetten en tackelen
 
-Je bestuurt automatisch de speler die het dichtst bij de bal staat;
-hij heeft een witte ring om zich heen en zijn naam staat erboven.
-Op een telefoon verschijnen een looppad en knoppen voor schot en pass.
+  Speler 2 (tegenstander, alleen bij samen spelen)
+     pijltjes ............. lopen
+     Enter ................ schieten
+     /  (schuine streep) .. passen
+     .  (punt) ............ hoge bal
+     rechter Shift ........ sprinten
+
+  Esc ...................... volkslied overslaan
+
+De RODE DRIEHOEK boven een speler is degene die jij bestuurt; zijn naam
+staat er klein boven. Speler 2 krijgt een BLAUWE driehoek. Je bestuurt
+steeds automatisch de man die het dichtst bij de bal staat.
+Linksonder zie je van wie je de bal hebt, met zijn portret, schotkracht
+en conditie. Het scorebord staat linksboven.
 
 
-WAT ER IN ZIT
--------------
-  - Veld op ware schaal: 105 bij 68 meter, camera loopt mee met de bal.
-  - Acht landen met echte spelersnamen, eigen tenues en keeperstenues.
-  - Opkomst uit de tunnel, opstelling op de middenlijn, volkslied.
-  - Inworpen, hoekschoppen, doeltrappen, overtredingen en gele kaarten.
-  - Rust met statistieken, tweede helft, eindstand en man of the match.
-  - Herhaling in slow motion na elk doelpunt.
-  - Publiek dat aanzwelt bij kansen, scheidsrechterfluit, en gesproken
-    commentaar via de spraakmodule van je browser.
+ONLINE SPELEN MET EEN VRIEND
+----------------------------
+Er is geen server nodig; de twee browsers praten rechtstreeks met elkaar.
+
+  1. Eén van jullie klikt op "Ik nodig uit" en kopieert de code.
+  2. Stuur die code naar je vriend (WhatsApp, Discord, mail, maakt niet uit).
+  3. Je vriend klikt op "Ik doe mee", plakt de code en klikt op
+     "Antwoord maken". Hij stuurt de antwoordcode terug.
+  4. Jij plakt het antwoord en klikt op "Verbinden en aftrappen".
+
+Degene die uitnodigt speelt met het thuisteam en rekent de wedstrijd door;
+de ander bestuurt de tegenstander. Beide computers moeten internet hebben.
+Achter een streng bedrijfsnetwerk of een strikte firewall kan de verbinding
+mislukken; dan werkt samen op één toetsenbord altijd wel.
+
+
+OPSTELLING MAKEN
+----------------
+Elk land heeft achttien spelers. Klik op een plek in het elftal om te
+wisselen, of klik een reserve om hem meteen op zijn positie te zetten.
+"Sterkste elftal" vult automatisch de beste elf in. Je opstelling wordt
+bewaard per land en wordt gebruikt zodra je met dat land speelt.
+Staat een speler buiten zijn eigen positie, dan krijgt zijn kaart een
+rode rand.
+
+
+OVER DE PORTRETTEN
+------------------
+De gezichten zijn getekend, geen foto's. Elk portret wordt berekend uit de
+naam van de speler, dus dezelfde speler ziet er altijd hetzelfde uit, maar
+het is nadrukkelijk geen gelijkenis met de echte persoon. Foto's van echte
+voetballers kunnen hier niet in: er zitten geen afbeeldingen in het pakket
+en portretrechten staan dat niet toe.
 
 
 OVER HET GELUID
 ---------------
 Alle geluid wordt live gemaakt door de browser; er zitten geen
 audiobestanden in het spel. De volksliederen zijn synthetische
-benaderingen van de openingsmaten van de (rechtenvrije) melodieën,
-gespeeld met oscillatoren. Klinkt er een noot vals, dan pas je hem
-aan in data.js: elk lied is gewoon een lijst van [toon, tellen].
+benaderingen van de openingsmaten van de rechtenvrije melodieën.
+Klinkt er een noot vals, dan pas je hem aan in data.js: elk lied is
+gewoon een lijst van [toon, tellen].
 
-Het gesproken commentaar gebruikt de stemmen die in je browser en
-besturingssysteem zitten. Is er geen Nederlandse stem geïnstalleerd,
-dan pakt hij een andere stem, of blijft het bij tekst in de balk
-onder het veld.
+Er is geen gesproken commentaar meer. Wat er gebeurt, lees je in de
+balk onder het veld.
 
 
 WAT ER NIET IN ZIT
 ------------------
-Dit is geen FIFA. Er is geen 3D-engine, geen motion capture, geen
-licentie en geen enkele opgenomen geluidsopname. Buitenspel wordt
-niet gefloten, er zijn geen wissels en geen strafschoppen.
-Spelersnamen zijn echt, alle ratings zijn verzonnen.
+Dit is geen FIFA. Geen 3D, geen motion capture, geen licenties en geen
+opnames. Buitenspel wordt niet gefloten, er zijn geen wissels en geen
+strafschoppen. Spelersnamen zijn echt, alle ratings zijn verzonnen.
 
 
 BESTANDEN
 ---------
-  index.html .... de pagina
+  index.html .... de pagina met alle schermen
   data.js ....... landen, spelers, tenues en volksliedmelodieën
-  audio.js ...... geluid: publiek, fluit, volkslied, commentaar
+  faces.js ...... de gezichtengenerator
+  audio.js ...... publiek, fluit en volkslied
   match.js ...... de simulatie: spelers, bal, regels, statistieken
-  render.js ..... het beeld: perspectief, stadion, spelers
-  game.js ....... de regie: menu, opkomst, wedstrijd, rust, eindstand
+  render.js ..... het beeld: perspectief, stadion, spelers, driehoeken
+  squad.js ...... het opstellingsscherm met kaarten
+  net.js ........ online spelen zonder server
+  game.js ....... de regie: schermen, besturing, wedstrijdverloop
   style.css ..... opmaak
 
-Voor sleutelaars: index.html?demo=1 laat de computer beide teams
-spelen, en index.html?debug zet een inspectiehaak op window.__fc27.
+Voor sleutelaars: index.html?debug zet een inspectiehaak op window.__fc27.

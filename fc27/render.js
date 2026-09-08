@@ -192,7 +192,7 @@ const View = (function () {
   }
 
   /* ---------------- Spelers ---------------- */
-  function drawPlayer(p, kit, isActive, label) {
+  function drawPlayer(p, kit, marker) {
     const g = project(p.x, p.y, 0);
     if (g.x < -80 || g.x > CW + 80) return;
     const s = g.d * ZOOM * 0.62;
@@ -207,10 +207,10 @@ const View = (function () {
     ctx.ellipse(0, 0, 6.4 * s, 2.6 * s, 0, 0, Math.PI * 2);
     ctx.fillStyle = "rgba(0,0,0,.34)"; ctx.fill();
 
-    if (isActive) {
+    if (marker) {
       ctx.beginPath();
-      ctx.ellipse(0, 0, 9.5 * s, 4 * s, 0, 0, Math.PI * 2);
-      ctx.lineWidth = 1.6 * s; ctx.strokeStyle = "rgba(255,255,255,.85)"; ctx.stroke();
+      ctx.ellipse(0, 0, 9 * s, 3.8 * s, 0, 0, Math.PI * 2);
+      ctx.lineWidth = 1.3 * s; ctx.strokeStyle = marker.color; ctx.stroke();
     }
 
     /* Benen */
@@ -261,13 +261,27 @@ const View = (function () {
 
     ctx.restore();
 
-    if (label) {
-      ctx.font = "bold " + Math.max(9, 11 * g.d) + "px system-ui, sans-serif";
+    if (marker) {
+      /* Driehoek boven het hoofd, met de naam er klein boven. */
+      /* De tweede speler krijgt zijn naam hoger, anders lopen ze over elkaar heen. */
+      const lift = (marker.lift || 0) * Math.max(11, 13 * s);
+      const tipY = g.y - 25 * s - lift, size = Math.max(6.5, 4.8 * s);
+      ctx.beginPath();
+      ctx.moveTo(g.x, tipY);
+      ctx.lineTo(g.x - size, tipY - size * 1.35);
+      ctx.lineTo(g.x + size, tipY - size * 1.35);
+      ctx.closePath();
+      ctx.fillStyle = marker.color;
+      ctx.fill();
+      ctx.lineWidth = 1.5; ctx.strokeStyle = "rgba(0,0,0,.55)"; ctx.stroke();
+
+      const fs = Math.max(9, Math.min(13, 10.5 * g.d));
+      ctx.font = "bold " + fs.toFixed(1) + "px system-ui, sans-serif";
       ctx.textAlign = "center"; ctx.textBaseline = "bottom";
-      ctx.lineWidth = 3; ctx.strokeStyle = "rgba(0,0,0,.65)";
-      ctx.strokeText(label, g.x, g.y - 24 * s);
-      ctx.fillStyle = "#fff";
-      ctx.fillText(label, g.x, g.y - 24 * s);
+      ctx.lineWidth = 3.5; ctx.strokeStyle = "rgba(0,0,0,.75)";
+      ctx.strokeText(marker.label, g.x, tipY - size * 1.35 - 3);
+      ctx.fillStyle = "#ffffff";
+      ctx.fillText(marker.label, g.x, tipY - size * 1.35 - 3);
     }
   }
 
@@ -299,12 +313,13 @@ const View = (function () {
     drawPitch();
     drawGoals(false);
 
+    const marks = (opts && opts.markers) || [];
     const order = S.players.slice().sort((a, b) => a.y - b.y);
     order.forEach((p) => {
       const team = S.teams[p.team];
       const kit = p.isGK ? team.gkKit : team.kit;
-      const active = opts && opts.active === p;
-      drawPlayer(p, kit, active, active ? p.name : null);
+      const m = marks.filter((x) => x && x.player === p)[0];
+      drawPlayer(p, kit, m || null);
     });
 
     drawBall(S.ball);
@@ -326,7 +341,7 @@ const View = (function () {
     list.forEach((e) => {
       const ghost = Object.assign({}, e.p, { x: e.x, y: e.y, dir: e.dir, speed: e.speed, phase: e.p.phase });
       const team = S.teams[e.p.team];
-      drawPlayer(ghost, e.p.isGK ? team.gkKit : team.kit, false, null);
+      drawPlayer(ghost, e.p.isGK ? team.gkKit : team.kit, null);
     });
     drawBall({ x: snap.b[0], y: snap.b[1], z: snap.b[2] });
     drawGoals(true);

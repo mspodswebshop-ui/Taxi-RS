@@ -171,47 +171,15 @@ const Sound = (function () {
     anthemNodes = [];
   }
 
-  /* ---------- Commentaar via de spraakmodule van de browser ---------- */
-  let voice = null, speechOn = true;
-  function pickVoice() {
-    if (!("speechSynthesis" in window)) return null;
-    const all = window.speechSynthesis.getVoices();
-    return all.filter((v) => /nl[-_]/i.test(v.lang))[0] ||
-           all.filter((v) => /^en/i.test(v.lang))[0] || all[0] || null;
-  }
-  if ("speechSynthesis" in window) {
-    window.speechSynthesis.onvoiceschanged = () => { voice = pickVoice(); };
-    voice = pickVoice();
-  }
-
-  function say(text, priority) {
-    if (!speechOn || muted || !("speechSynthesis" in window)) return;
-    try {
-      if (priority) window.speechSynthesis.cancel();
-      else if (window.speechSynthesis.speaking) return;   // niet door elkaar heen praten
-      const u = new SpeechSynthesisUtterance(text);
-      if (!voice) voice = pickVoice();
-      if (voice) { u.voice = voice; u.lang = voice.lang; } else { u.lang = "nl-NL"; }
-      u.rate = 1.08; u.pitch = 1.0; u.volume = 0.95;
-      window.speechSynthesis.speak(u);
-    } catch (e) { /* spraak is optioneel */ }
-  }
-
   function setMuted(v) {
     muted = !!v;
     if (master) master.gain.value = muted ? 0 : 0.9;
-    if (muted && "speechSynthesis" in window) window.speechSynthesis.cancel();
-  }
-  function setSpeech(v) {
-    speechOn = !!v;
-    if (!speechOn && "speechSynthesis" in window) window.speechSynthesis.cancel();
   }
 
   return {
     init: init, resume: resume, ready: () => ready,
     startCrowd: startCrowd, stopCrowd: stopCrowd, crowdLevel: crowdLevel, roar: roar,
     whistle: whistle, kick: kick, post: post, save: save, blip: blip,
-    anthem: playAnthem, stopAnthem: stopAnthem,
-    say: say, setMuted: setMuted, setSpeech: setSpeech
+    anthem: playAnthem, stopAnthem: stopAnthem, setMuted: setMuted
   };
 })();

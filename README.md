@@ -7,37 +7,43 @@ Deze repository bevat drie losse webprojecten.
 De grote versie: elf tegen elf op een veld van 105 bij 68 meter, met de opzet van een
 tv-uitzending. Openen kan door `fc27/index.html` in een browser te openen.
 
+**Beginscherm** met vier keuzes: wedstrijd spelen, opstelling maken, samen spelen, uitleg.
+
 **De wedstrijd**
-- Acht landenteams met echte spelersnamen, eigen tenues en aparte keeperstenues.
-- Opkomst uit de tunnel, opstelling op de middenlijn en het volkslied van het thuisland,
-  daarna pas de aftrap. Overslaan kan met `Esc`.
+- Acht landen van elk achttien spelers, met eigen tenues en aparte keeperstenues.
+- Opkomst uit de tunnel, opstelling op de middenlijn en het volkslied van het thuisland.
 - Camera in perspectief die met de bal meeloopt, publiek op drie ringen, reclameborden.
+- Een **rode driehoek** met kleine naam wijst de speler aan die jij bestuurt; speler 2
+  krijgt een blauwe. Linksonder staat zijn portret met schotkracht en conditie,
+  linksboven het scorebord.
 - Inworpen, hoekschoppen, doeltrappen, overtredingen en gele kaarten.
-- Rust met statistieken, tweede helft, eindstand en man of the match.
-- Herhaling in slow motion na elk doelpunt, met de naam van de maker en de assist.
+- Rust met statistieken, tweede helft, eindstand, man of the match en een herhaling
+  in slow motion na elk doelpunt.
 
-**Besturing**
+**Opstelling maken** — spelerskaarten met portret, rating, positie en statistieken.
+Klik een plek om te wisselen of een reserve om hem op te stellen. Wordt per land
+bewaard en gebruikt zodra je met dat land speelt.
 
-| Toets | Actie |
-| --- | --- |
-| `W` `A` `S` `D` of pijltjes | Lopen |
-| `Spatie` | Schieten — vasthouden voor meer kracht |
-| `E` | Passen |
-| `Q` | Hoge bal of voorzet |
-| `Shift` | Sprinten (kost conditie) |
-| `Spatie` zonder bal | Druk zetten en tackelen |
-| `Esc` | Volkslied overslaan |
+**Samen spelen**
+- *Op één toetsenbord*: speler 1 met `WASD` + `Spatie`/`E`/`Q`/`Shift`,
+  speler 2 met de pijltjes + `Enter`/`/`/`.`/rechter `Shift`.
+- *Online*: werkt zonder server. De een klikt "Ik nodig uit" en stuurt de code door,
+  de ander plakt hem, maakt een antwoordcode en stuurt die terug. De uitnodiger rekent
+  de wedstrijd door en bestuurt het thuisteam.
+
+**Portretten** zijn getekend uit de naam van de speler — geen foto's, en nadrukkelijk
+geen gelijkenis met de echte persoon. Foto's van echte voetballers kunnen er niet in:
+er zitten geen afbeeldingen in het pakket en portretrechten staan dat niet toe.
 
 **Geluid** wordt volledig live gesynthetiseerd; er zit geen enkel audiobestand in het spel.
 De volksliederen zijn benaderingen van de openingsmaten van de rechtenvrije melodieën,
-opgeslagen als lijsten van `[toon, tellen]` in `data.js` en dus makkelijk aan te passen.
-Het gesproken commentaar gebruikt de stemmen van je eigen browser.
+opgeslagen als lijsten van `[toon, tellen]` in `data.js`. Gesproken commentaar is eruit;
+wat er gebeurt lees je in de balk onder het veld.
 
-**Wat er niet in zit:** geen 3D, geen motion capture, geen licenties, geen opgenomen geluid.
-Buitenspel wordt niet gefloten, en er zijn geen wissels of strafschoppen. Alle ratings zijn verzonnen.
+**Wat er niet in zit:** geen 3D, geen motion capture, geen licenties, geen opnames.
+Buitenspel, wissels en strafschoppen ontbreken. Alle ratings zijn verzonnen.
 
-Handig bij het sleutelen: `index.html?demo=1` laat de computer beide teams spelen,
-`index.html?debug` zet een inspectiehaak op `window.__fc27`.
+Handig bij het sleutelen: `index.html?debug` zet een inspectiehaak op `window.__fc27`.
 
 ## `fc26/` — Arena FC 26
 

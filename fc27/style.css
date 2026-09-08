@@ -149,3 +149,113 @@ td.l { text-align: center; color: var(--muted); font-size: 12px; }
   .meters { width: 150px; bottom: 8px; left: 8px; padding: 7px 9px; }
   .squads { grid-template-columns: 1fr; }
 }
+
+/* ---------- Beginscherm ---------- */
+.sheet.titel { justify-content: center; gap: 26px; }
+.logo { text-align: center; }
+.logo-bal {
+  width: 54px; height: 54px; margin: 0 auto 10px; border-radius: 50%;
+  background: radial-gradient(circle at 34% 30%, #fff 0 42%, #d8dde6 43% 100%);
+  box-shadow: 0 0 26px rgba(0, 255, 178, .35), inset -5px -6px 10px rgba(0,0,0,.35);
+  position: relative;
+}
+.logo-bal::after {
+  content: ""; position: absolute; inset: 34% 32% 30% 30%;
+  background: #12161d; clip-path: polygon(50% 0, 100% 38%, 80% 100%, 20% 100%, 0 38%);
+}
+.logo h1 { margin: 0; font-size: clamp(34px, 8vw, 64px); letter-spacing: .04em; }
+.menu-knoppen { display: flex; flex-direction: column; gap: 11px; width: min(340px, 90%); }
+.btn.groot { width: 100%; padding: 14px 20px; font-size: 15px; }
+.klein { font-size: 12px; color: var(--muted); text-align: center; max-width: 520px; margin: 0; }
+.sheet h2 { margin: 0; font-size: clamp(20px, 4vw, 30px); text-transform: uppercase; letter-spacing: .02em; }
+.sheet.breed { align-items: stretch; padding: 18px; }
+
+/* ---------- Spelerskaarten ---------- */
+.kaart {
+  position: relative; border-radius: 10px; padding: 8px 8px 7px;
+  background: linear-gradient(160deg, #f0dc94, #c39a37);
+  color: #241c05; border: 1px solid rgba(255,255,255,.4);
+  box-shadow: 0 6px 16px rgba(0,0,0,.42); cursor: pointer;
+  transition: transform .12s ease;
+}
+.kaart:hover { transform: translateY(-3px); }
+.kaart.elite { background: linear-gradient(160deg, #fff4d4, #b98b2e); }
+.kaart.zilver { background: linear-gradient(160deg, #e6ecf5, #94a3bb); color: #1a2030; }
+.kaart.bezet { opacity: .42; }
+.kaart.uit-positie { outline: 2px solid #ff5f5f; }
+.kaart .kop { display: flex; align-items: flex-start; gap: 6px; }
+.kaart .kop b { display: block; font-size: 22px; font-weight: 900; line-height: .9; }
+.kaart .kop span { font-size: 9px; font-weight: 800; letter-spacing: .08em; opacity: .85; }
+.kop-foto {
+  margin-left: auto; width: 52px; height: 52px; border-radius: 50%;
+  background: rgba(0,0,0,.10);
+}
+.kaart .naam {
+  margin: 5px 0 5px; font-size: 12px; font-weight: 800; text-transform: uppercase;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  border-bottom: 1px solid rgba(0,0,0,.22); padding-bottom: 4px;
+}
+.kaart .stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 2px 5px; font-size: 9.5px; }
+.kaart .stats div { display: flex; justify-content: space-between; }
+.kaart .stats b { font-weight: 900; }
+.kaart.klein .kop b { font-size: 19px; }
+.kaart.klein .kop-foto { width: 42px; height: 42px; }
+
+/* ---------- Opstellingsscherm ---------- */
+.squad-kop { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 14px; }
+.squad-kop h2 { margin: 0; }
+.slot-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; }
+@media (max-width: 820px) { .slot-grid { grid-template-columns: repeat(3, 1fr); } }
+.slot-kaart { position: relative; }
+.slot-kaart .rol {
+  font-size: 9px; letter-spacing: .16em; color: var(--muted);
+  text-transform: uppercase; margin-bottom: 4px; text-align: center;
+}
+.kopje { margin: 18px 0 8px; font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); }
+.bank { display: grid; grid-template-columns: repeat(auto-fill, minmax(124px, 1fr)); gap: 10px; }
+
+/* ---------- Samen spelen ---------- */
+.mp-keuze { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; width: 100%; max-width: 820px; }
+@media (max-width: 780px) { .mp-keuze { grid-template-columns: 1fr; } }
+.mp-kaart { background: rgba(13,20,38,.85); border: 1px solid var(--line); border-radius: 12px; padding: 16px; }
+.mp-kaart h3 { margin: 0 0 8px; font-size: 15px; letter-spacing: .04em; }
+.mp-kaart .lead { text-align: left; margin-bottom: 12px; }
+.toetsen { font-size: 12px; color: var(--muted); margin-bottom: 12px; }
+.toetsen div { margin-bottom: 6px; }
+.toetsen b { display: block; color: var(--txt); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; }
+kbd {
+  display: inline-block; padding: 1px 6px; border-radius: 4px; background: #0a1024;
+  border: 1px solid var(--line); border-bottom-width: 2px; font: inherit; font-size: 11px;
+  font-weight: 700; color: var(--txt); margin-right: 2px;
+}
+textarea {
+  width: 100%; margin: 6px 0; padding: 8px; border-radius: 8px; background: #070c1a;
+  color: var(--accent); border: 1px solid var(--line); font-family: ui-monospace, monospace;
+  font-size: 10px; resize: vertical;
+}
+.mp-status { margin-top: 10px; font-size: 12px; color: var(--accent); }
+.uitleg { max-width: 560px; }
+.uitleg table { margin-bottom: 14px; }
+.uitleg td { padding: 5px 8px; }
+.uitleg td:first-child { width: 46%; }
+
+/* ---------- Wie je bestuurt ---------- */
+.meters { width: auto; display: flex; flex-direction: column; gap: 8px; }
+.meters .wie { display: flex; gap: 9px; align-items: flex-start; width: 196px; }
+.kop-mini {
+  width: 42px; height: 42px; border-radius: 8px; flex: none;
+  background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.14);
+}
+.wie-naam { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 800; margin-bottom: 6px; }
+.wie > div { flex: 1; min-width: 0; }
+.wie-naam span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pijl { width: 0; height: 0; flex: none; border-left: 5px solid transparent; border-right: 5px solid transparent; }
+.pijl.p1 { border-top: 8px solid #ff2f2f; }
+.pijl.p2 { border-top: 8px solid #3d8bff; }
+
+#net-note {
+  position: absolute; top: 14px; right: 14px; z-index: 6;
+  background: rgba(61,139,255,.9); color: #04122c; font-weight: 800; font-size: 11px;
+  letter-spacing: .08em; text-transform: uppercase; padding: 5px 10px; border-radius: 6px;
+}
+#restart-note { top: 44px; }
