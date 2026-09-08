@@ -1,6 +1,43 @@
 # Taxi-RS
 
-Deze repository bevat twee losse webprojecten.
+Deze repository bevat drie losse webprojecten.
+
+## `fc27/` — Arena FC 27
+
+De grote versie: elf tegen elf op een veld van 105 bij 68 meter, met de opzet van een
+tv-uitzending. Openen kan door `fc27/index.html` in een browser te openen.
+
+**De wedstrijd**
+- Acht landenteams met echte spelersnamen, eigen tenues en aparte keeperstenues.
+- Opkomst uit de tunnel, opstelling op de middenlijn en het volkslied van het thuisland,
+  daarna pas de aftrap. Overslaan kan met `Esc`.
+- Camera in perspectief die met de bal meeloopt, publiek op drie ringen, reclameborden.
+- Inworpen, hoekschoppen, doeltrappen, overtredingen en gele kaarten.
+- Rust met statistieken, tweede helft, eindstand en man of the match.
+- Herhaling in slow motion na elk doelpunt, met de naam van de maker en de assist.
+
+**Besturing**
+
+| Toets | Actie |
+| --- | --- |
+| `W` `A` `S` `D` of pijltjes | Lopen |
+| `Spatie` | Schieten — vasthouden voor meer kracht |
+| `E` | Passen |
+| `Q` | Hoge bal of voorzet |
+| `Shift` | Sprinten (kost conditie) |
+| `Spatie` zonder bal | Druk zetten en tackelen |
+| `Esc` | Volkslied overslaan |
+
+**Geluid** wordt volledig live gesynthetiseerd; er zit geen enkel audiobestand in het spel.
+De volksliederen zijn benaderingen van de openingsmaten van de rechtenvrije melodieën,
+opgeslagen als lijsten van `[toon, tellen]` in `data.js` en dus makkelijk aan te passen.
+Het gesproken commentaar gebruikt de stemmen van je eigen browser.
+
+**Wat er niet in zit:** geen 3D, geen motion capture, geen licenties, geen opgenomen geluid.
+Buitenspel wordt niet gefloten, en er zijn geen wissels of strafschoppen. Alle ratings zijn verzonnen.
+
+Handig bij het sleutelen: `index.html?demo=1` laat de computer beide teams spelen,
+`index.html?debug` zet een inspectiehaak op `window.__fc27`.
 
 ## `fc26/` — Arena FC 26
 

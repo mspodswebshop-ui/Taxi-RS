@@ -1,0 +1,75 @@
+ARENA FC 27
+===========
+
+Een voetbalgame met opkomst, volkslied en elf tegen elf.
+Geen installatie nodig: dubbelklik op index.html.
+
+
+STARTEN
+-------
+Kies je land en je tegenstander, kies een niveau en een speelduur,
+en klik op "Naar het stadion". Dan volgt de opkomst uit de tunnel,
+het volkslied, en de aftrap.
+
+
+BESTURING
+---------
+  W A S D of pijltjes ....... lopen
+  Spatie .................... schieten (ingedrukt houden = harder)
+  E ......................... passen
+  Q ......................... hoge bal / voorzet
+  Shift ..................... sprinten (kost conditie)
+  Spatie zonder bal ......... druk zetten en tackelen
+  Esc ....................... volkslied overslaan
+
+Je bestuurt automatisch de speler die het dichtst bij de bal staat;
+hij heeft een witte ring om zich heen en zijn naam staat erboven.
+Op een telefoon verschijnen een looppad en knoppen voor schot en pass.
+
+
+WAT ER IN ZIT
+-------------
+  - Veld op ware schaal: 105 bij 68 meter, camera loopt mee met de bal.
+  - Acht landen met echte spelersnamen, eigen tenues en keeperstenues.
+  - Opkomst uit de tunnel, opstelling op de middenlijn, volkslied.
+  - Inworpen, hoekschoppen, doeltrappen, overtredingen en gele kaarten.
+  - Rust met statistieken, tweede helft, eindstand en man of the match.
+  - Herhaling in slow motion na elk doelpunt.
+  - Publiek dat aanzwelt bij kansen, scheidsrechterfluit, en gesproken
+    commentaar via de spraakmodule van je browser.
+
+
+OVER HET GELUID
+---------------
+Alle geluid wordt live gemaakt door de browser; er zitten geen
+audiobestanden in het spel. De volksliederen zijn synthetische
+benaderingen van de openingsmaten van de (rechtenvrije) melodieën,
+gespeeld met oscillatoren. Klinkt er een noot vals, dan pas je hem
+aan in data.js: elk lied is gewoon een lijst van [toon, tellen].
+
+Het gesproken commentaar gebruikt de stemmen die in je browser en
+besturingssysteem zitten. Is er geen Nederlandse stem geïnstalleerd,
+dan pakt hij een andere stem, of blijft het bij tekst in de balk
+onder het veld.
+
+
+WAT ER NIET IN ZIT
+------------------
+Dit is geen FIFA. Er is geen 3D-engine, geen motion capture, geen
+licentie en geen enkele opgenomen geluidsopname. Buitenspel wordt
+niet gefloten, er zijn geen wissels en geen strafschoppen.
+Spelersnamen zijn echt, alle ratings zijn verzonnen.
+
+
+BESTANDEN
+---------
+  index.html .... de pagina
+  data.js ....... landen, spelers, tenues en volksliedmelodieën
+  audio.js ...... geluid: publiek, fluit, volkslied, commentaar
+  match.js ...... de simulatie: spelers, bal, regels, statistieken
+  render.js ..... het beeld: perspectief, stadion, spelers
+  game.js ....... de regie: menu, opkomst, wedstrijd, rust, eindstand
+  style.css ..... opmaak
+
+Voor sleutelaars: index.html?demo=1 laat de computer beide teams
+spelen, en index.html?debug zet een inspectiehaak op window.__fc27.

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arena FC 27</title>
+<meta name="description" content="Voetbalgame met opkomst, volkslied en 11 tegen 11 op ware schaal.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='%23fff'/%3E%3Cpath d='M16 7l5 3.6-1.9 5.9h-6.2L11 10.6z' fill='%23111'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap">
+
+  <div class="stage">
+    <canvas id="pitch" width="1000" height="620"></canvas>
+
+    <div class="hud" id="hud" hidden>
+      <div class="abbr" id="hud-home">NED</div>
+      <div class="sc" id="hud-score">0 – 0</div>
+      <div class="abbr" id="hud-away">FRA</div>
+      <div class="cl" id="hud-clock">1'</div>
+      <div class="hf" id="hud-half">1e helft</div>
+    </div>
+
+    <div class="meters" id="meters">
+      <div class="who" id="hud-name"></div>
+      <div class="lab">Schot</div><div class="bar"><i id="power-bar"></i></div>
+      <div class="lab">Conditie</div><div class="bar"><i id="stam-bar" style="width:100%"></i></div>
+    </div>
+
+    <div id="restart-note" hidden></div>
+
+    <div class="banner" id="banner" hidden>
+      <div class="main" id="banner-main"></div>
+      <div class="sub" id="banner-sub"></div>
+    </div>
+
+    <button class="btn" id="skip" hidden>Volkslied overslaan</button>
+
+    <div class="touch-pad" id="touch">
+      <div class="stick" id="stick"><i id="knob"></i></div>
+      <div class="btn-round" id="fire">SCHOT</div>
+      <div class="btn-round" id="pass">PASS</div>
+    </div>
+
+    <!-- Menu -->
+    <div class="sheet" id="menu">
+      <h1>Arena <em>FC 27</em></h1>
+      <p class="lead">Elf tegen elf op een veld van 105 bij 68 meter, met opkomst uit de tunnel,
+         volkslied, publiek, commentaar en herhalingen. Jij bestuurt de speler bij de bal.</p>
+
+      <div class="matchup">
+        <div class="badge" id="badge-home">NED</div>
+        <div class="vs">VS</div>
+        <div class="badge" id="badge-away">FRA</div>
+      </div>
+
+      <div class="row">
+        <div class="field"><label for="pick-home">Jouw land</label><select id="pick-home"></select></div>
+        <div class="field"><label for="pick-away">Tegenstander</label><select id="pick-away"></select></div>
+        <div class="field"><label for="opt-diff">Niveau</label>
+          <select id="opt-diff"><option value="0">Amateur</option><option value="1" selected>Prof</option><option value="2">Legende</option></select>
+        </div>
+        <div class="field"><label for="opt-length">Helft duurt</label>
+          <select id="opt-length">
+            <option value="90">1,5 minuut</option>
+            <option value="150" selected>2,5 minuten</option>
+            <option value="240">4 minuten</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="note" id="anthem-note"></div>
+
+      <div class="checks">
+        <label><input type="checkbox" id="opt-sound" checked> Geluid en volkslied</label>
+        <label><input type="checkbox" id="opt-speech" checked> Gesproken commentaar</label>
+        <label><input type="checkbox" id="opt-demo"> Computer speelt beide teams</label>
+      </div>
+
+      <button class="btn primary" id="start">Naar het stadion</button>
+
+      <div class="squads">
+        <div class="col"><h4>Jouw opstelling</h4><ul id="squad-home"></ul></div>
+        <div class="col"><h4>Tegenstander</h4><ul id="squad-away"></ul></div>
+      </div>
+
+      <p class="lead" style="font-size:13px">
+        <b>W A S D</b> of pijltjes lopen · <b>Spatie</b> schieten (vasthouden = harder) ·
+        <b>E</b> passen · <b>Q</b> hoge bal · <b>Shift</b> sprinten ·
+        <b>Spatie</b> zonder bal drukzetten · <b>Esc</b> volkslied overslaan
+      </p>
+    </div>
+
+    <!-- Rust en eindstand -->
+    <div class="sheet" id="overlay" hidden>
+      <h1 id="ov-title"></h1>
+      <p class="lead" id="ov-sub"></p>
+      <div class="body" id="ov-body"></div>
+      <button class="btn primary" id="ov-btn"></button>
+    </div>
+  </div>
+
+  <div class="ticker" id="ticker-wrap" hidden><b>COMMENTAAR</b><span id="ticker"></span></div>
+
+</div>
+
+<script src="data.js"></script>
+<script src="audio.js"></script>
+<script src="match.js"></script>
+<script src="render.js"></script>
+<script src="game.js"></script>
+</body>
+</html>
