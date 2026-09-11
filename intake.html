@@ -478,26 +478,26 @@ footer a{color:var(--muted)}
               <legend>Wat heb je nodig?</legend>
               <div class="choices" id="pakket">
                 <label class="choice">
-                  <input type="radio" name="Pakket" value="Website (€200)" data-once="200" aria-describedby="err-pakket" required>
+                  <input type="radio" name="Pakket" value="Website (€200)" data-once="200" data-pages="4" aria-describedby="err-pakket" required>
                   <span>
                     <span class="t">Website</span>
-                    <span class="d">Een verzorgde site die je zaak toont en klanten laat contacteren.</span>
+                    <span class="d">Een verzorgde site die je zaak toont en klanten laat contacteren. Inclusief 4 pagina's.</span>
                   </span>
                   <span class="p">€200</span>
                 </label>
                 <label class="choice">
-                  <input type="radio" name="Pakket" value="Boekingssysteem (€250)" data-once="250" aria-describedby="err-pakket">
+                  <input type="radio" name="Pakket" value="Boekingssysteem (€250)" data-once="250" data-pages="3" aria-describedby="err-pakket">
                   <span>
                     <span class="t">Boekingssysteem</span>
-                    <span class="d">Website plus online afspraken, met automatische bevestiging.</span>
+                    <span class="d">Website plus online afspraken, met automatische bevestiging. Inclusief 3 pagina's.</span>
                   </span>
                   <span class="p">€250</span>
                 </label>
                 <label class="choice">
-                  <input type="radio" name="Pakket" value="Webshop (€300)" data-once="300" aria-describedby="err-pakket">
+                  <input type="radio" name="Pakket" value="Webshop (€300)" data-once="300" data-pages="5" aria-describedby="err-pakket">
                   <span>
                     <span class="t">Webshop</span>
-                    <span class="d">Website plus producten, winkelmandje en online betalen.</span>
+                    <span class="d">Website plus producten, winkelmandje en online betalen. Inclusief 5 pagina's.</span>
                   </span>
                   <span class="p">€300</span>
                 </label>
@@ -533,7 +533,7 @@ footer a{color:var(--muted)}
             <div class="field">
               <label for="extrap">Extra pagina's <span class="opt">— €50 per stuk</span></label>
               <input type="number" id="extrap" name="Extra pagina's" min="0" max="20" step="1" inputmode="numeric" value="0">
-              <p class="help">Enkel pagina's bovenop wat in je pakket zit. Maximaal 20.</p>
+              <p class="help" id="pagesHelp">Kies eerst een pakket, dan zie je hoeveel pagina's er al inbegrepen zijn.</p>
             </div>
             <div class="field">
               <label for="talen">Talen</label>
@@ -816,9 +816,13 @@ function calc(){
   const lines = [];
 
   const pak = form.querySelector('input[name="Pakket"]:checked');
+  const included = pak ? +pak.dataset.pages : 0;
   if(pak){
     once += +pak.dataset.once;
-    lines.push([pak.value.replace(/ \(.*\)/,""), money(+pak.dataset.once)]);
+    lines.push([
+      pak.value.replace(/ \(.*\)/,"") + " — " + included + " pagina's",
+      money(+pak.dataset.once)
+    ]);
   }
 
   const pages = extraPages();
@@ -857,6 +861,13 @@ function calc(){
     : "Nog geen pakket gekozen";
   document.getElementById("barRec").textContent = recText;
 
+  /* hoeveel pagina's zitten er al in het pakket? */
+  document.getElementById("pagesHelp").textContent = pak
+    ? "Je pakket bevat al " + included + " pagina's — wat je hier invult komt daarbovenop. "
+      + (pages > 0 ? "Samen " + (included + pages) + " pagina's. " : "")
+      + "Maximaal 20 extra."
+    : "Kies eerst een pakket, dan zie je hoeveel pagina's er al inbegrepen zijn.";
+
   /* het akkoordvakje benoemt waarmee je precies akkoord gaat */
   document.getElementById("agreeSum").textContent =
     (pak ? money(once) + " eenmalig" + (recText ? " — " + recText : "") + " " : "") +
@@ -885,8 +896,19 @@ function progress(){
       const set = sec.querySelectorAll(`[name="${n}"]`);
       return [...set].some(f => (f.type==="radio"||f.type==="checkbox") ? f.checked : f.value.trim()!=="");
     });
-    const touched = [...sec.querySelectorAll("input,select,textarea")]
-      .some(f => (f.type==="radio"||f.type==="checkbox") ? f.checked : f.value.trim()!=="");
+    /* Een vinkje mag pas verschijnen als er echt iets is ingevuld.
+       Voorgevulde standaarden en velden in een dichtgeklapt blok tellen niet. */
+    const touched = [...sec.querySelectorAll("input,select,textarea")].some(f=>{
+      const c = f.closest(".cond");
+      if(c && !c.classList.contains("on")) return false;
+      if(f.type==="radio" || f.type==="checkbox") return f.checked && !f.defaultChecked;
+      if(f.tagName === "SELECT"){
+        const def = [...f.options].findIndex(o=>o.defaultSelected);
+        return f.selectedIndex !== (def < 0 ? 0 : def);
+      }
+      if(f.type === "file") return f.files && f.files.length > 0;
+      return f.value.trim() !== "" && f.value !== f.defaultValue;
+    });
     li.classList.toggle("done", ok && touched);
   });
 }
@@ -1025,7 +1047,13 @@ function asText(){
   const n = pickedFiles().length;
   if(n) out.push("\nBestanden: " + n + (n===1 ? " bestand volgt" : " bestanden volgen") + " in dit gesprek.");
 
-  out.push("\nEenmalig totaal: " + document.getElementById("qOnce").textContent);
+  const pak = form.querySelector('input[name="Pakket"]:checked');
+  if(pak){
+    const inc = +pak.dataset.pages, ex = extraPages();
+    out.push("\nPagina's: " + (inc + ex) + " in totaal (" + inc + " inbegrepen"
+      + (ex ? " + " + ex + " extra" : "") + ")");
+  }
+  out.push("Eenmalig totaal: " + document.getElementById("qOnce").textContent);
   const rec = document.getElementById("qRec").textContent;
   if(rec) out.push(rec);
   return "BRIEFING — " + (document.getElementById("bedrijf").value || "naamloos") + "\n" + out.join("\n");
