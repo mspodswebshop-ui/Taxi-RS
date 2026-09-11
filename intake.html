@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Projectbriefing — Weblity</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#11151A;
+  --panel:#181E25;
+  --panel-2:#1F262F;
+  --line:#2C3641;
+  --line-soft:#232B34;
+  --text:#E9EEF3;
+  --muted:#93A0AD;
+  --brass:#D4A24C;
+  --brass-soft:rgba(212,162,76,.14);
+  --ok:#6FBF8B;
+  --err:#E0796B;
+  --r:10px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  background:var(--ink);
+  color:var(--text);
+  font-family:"Inter Tight",system-ui,-apple-system,sans-serif;
+  font-size:16px;
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ---------- layout ---------- */
+.wrap{
+  max-width:1160px;
+  margin:0 auto;
+  padding:0 24px 160px;
+  display:grid;
+  grid-template-columns:300px 1fr;
+  gap:56px;
+  align-items:start;
+}
+
+/* ---------- sidebar ---------- */
+.side{
+  position:sticky;
+  top:0;
+  padding:48px 0;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+}
+.brand{
+  font-family:"Newsreader",Georgia,serif;
+  font-size:26px;
+  letter-spacing:.01em;
+  margin:0 0 6px;
+}
+.brand span{color:var(--brass)}
+.side .tag{color:var(--muted);font-size:14px;margin:0 0 34px}
+
+.steps{list-style:none;margin:0 0 34px;padding:0;counter-reset:s}
+.steps li{
+  counter-increment:s;
+  display:flex;
+  gap:12px;
+  align-items:baseline;
+  padding:7px 0;
+  color:var(--muted);
+  font-size:14.5px;
+  transition:color .2s;
+}
+.steps li::before{
+  content:counter(s);
+  font-variant-numeric:tabular-nums;
+  font-size:12px;
+  color:var(--line);
+  border:1px solid var(--line-soft);
+  border-radius:50%;
+  width:22px;height:22px;
+  display:grid;place-items:center;
+  flex:0 0 22px;
+  transition:all .2s;
+}
+.steps li.done{color:var(--text)}
+.steps li.done::before{
+  content:"✓";
+  color:var(--ink);
+  background:var(--brass);
+  border-color:var(--brass);
+}
+.steps a{color:inherit;text-decoration:none}
+.steps a:hover{color:var(--brass)}
+
+.quote{
+  margin-top:auto;
+  border-top:1px solid var(--line-soft);
+  padding-top:22px;
+}
+.quote h3{
+  font-family:"Newsreader",serif;
+  font-weight:400;
+  font-size:17px;
+  margin:0 0 14px;
+}
+.q-row{display:flex;justify-content:space-between;gap:12px;font-size:14px;padding:3px 0;color:var(--muted)}
+.q-row b{color:var(--text);font-weight:500;font-variant-numeric:tabular-nums}
+.q-total{
+  border-top:1px solid var(--line-soft);
+  margin-top:12px;padding-top:12px;
+  display:flex;justify-content:space-between;align-items:baseline;
+}
+.q-total span{font-size:13px;color:var(--muted)}
+.q-total b{font-family:"Newsreader",serif;font-size:28px;font-weight:500;color:var(--brass);font-variant-numeric:tabular-nums}
+.q-sub{font-size:13px;color:var(--muted);margin-top:4px}
+
+/* ---------- main ---------- */
+main{padding:48px 0 0;max-width:680px}
+.intro h1{
+  font-family:"Newsreader",Georgia,serif;
+  font-weight:400;
+  font-size:clamp(34px,5vw,48px);
+  line-height:1.12;
+  margin:0 0 16px;
+  letter-spacing:-.01em;
+}
+.intro p{color:var(--muted);margin:0 0 10px;max-width:60ch}
+.intro .note{
+  font-size:14.5px;
+  border-left:2px solid var(--brass);
+  padding:2px 0 2px 14px;
+  color:var(--muted);
+  margin-top:22px;
+}
+
+section{
+  margin-top:52px;
+  border-top:1px solid var(--line-soft);
+  padding-top:30px;
+  scroll-margin-top:24px;
+}
+section > h2{
+  font-family:"Newsreader",serif;
+  font-weight:400;
+  font-size:24px;
+  margin:0 0 4px;
+}
+section > .hint{color:var(--muted);font-size:14.5px;margin:0 0 24px}
+
+.field{margin-bottom:20px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+label{display:block;font-size:14.5px;font-weight:500;margin-bottom:7px}
+label .opt{color:var(--muted);font-weight:400}
+.help{font-size:13px;color:var(--muted);margin:6px 0 0}
+
+input[type=text],input[type=email],input[type=tel],input[type=url],input[type=date],input[type=number],select,textarea{
+  width:100%;
+  background:var(--panel);
+  border:1px solid var(--line-soft);
+  border-radius:var(--r);
+  color:var(--text);
+  font:inherit;
+  padding:11px 13px;
+  transition:border-color .15s,background .15s;
+}
+textarea{min-height:96px;resize:vertical;line-height:1.5}
+input:hover,select:hover,textarea:hover{border-color:var(--line)}
+input:focus,select:focus,textarea:focus{
+  outline:none;
+  border-color:var(--brass);
+  background:var(--panel-2);
+}
+input::placeholder,textarea::placeholder{color:#5E6B78}
+select{appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);background-position:calc(100% - 19px) 19px,calc(100% - 14px) 19px;background-size:5px 5px,5px 5px;background-repeat:no-repeat}
+input[type=file]{
+  width:100%;font:inherit;font-size:14px;color:var(--muted);
+  background:var(--panel);border:1px dashed var(--line);border-radius:var(--r);padding:14px;
+}
+input[type=file]::file-selector-button{
+  font:inherit;font-size:14px;margin-right:12px;
+  background:var(--panel-2);color:var(--text);
+  border:1px solid var(--line);border-radius:7px;padding:7px 13px;cursor:pointer;
+}
+
+/* choice cards */
+.choices{display:grid;gap:10px}
+.choice{
+  display:flex;gap:13px;align-items:flex-start;
+  background:var(--panel);
+  border:1px solid var(--line-soft);
+  border-radius:var(--r);
+  padding:14px 15px;
+  cursor:pointer;
+  transition:border-color .15s,background .15s;
+}
+.choice:hover{border-color:var(--line)}
+.choice input{margin:3px 0 0;accent-color:var(--brass);width:16px;height:16px;flex:0 0 16px}
+.choice:has(input:checked){border-color:var(--brass);background:var(--brass-soft)}
+.choice:has(input:focus-visible){outline:2px solid var(--brass);outline-offset:2px}
+.choice .t{font-weight:500;font-size:15px}
+.choice .d{font-size:13.5px;color:var(--muted);margin-top:2px}
+.choice .p{margin-left:auto;padding-left:14px;font-variant-numeric:tabular-nums;color:var(--brass);font-size:14.5px;white-space:nowrap}
+
+.inline{display:flex;flex-wrap:wrap;gap:9px}
+.inline .choice{flex:1 1 150px}
+
+/* conditional blocks */
+.cond{
+  display:none;
+  margin-top:22px;
+  background:var(--panel);
+  border:1px solid var(--line-soft);
+  border-left:2px solid var(--brass);
+  border-radius:0 var(--r) var(--r) 0;
+  padding:20px 20px 4px;
+}
+.cond.on{display:block;animation:open .25s ease}
+@keyframes open{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:none}}
+.cond h3{font-size:15px;margin:0 0 16px;font-weight:600}
+
+.warn{
+  display:none;
+  font-size:13.5px;line-height:1.5;
+  color:var(--brass);
+  background:var(--brass-soft);
+  border-radius:8px;
+  padding:12px 14px;
+  margin:0 0 20px;
+}
+.warn.on{display:block}
+
+/* errors */
+.invalid{border-color:var(--err)!important}
+.err{color:var(--err);font-size:13px;margin-top:6px;display:none}
+.err.on{display:block}
+
+/* actions */
+.actions{margin-top:44px;display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+button{font:inherit;cursor:pointer;border-radius:var(--r)}
+.send{
+  background:var(--brass);color:#171003;border:none;
+  font-weight:600;font-size:15.5px;padding:14px 30px;
+  transition:filter .15s;
+}
+.send:hover{filter:brightness(1.08)}
+.ghost{
+  background:transparent;color:var(--muted);
+  border:1px solid var(--line);padding:13px 20px;font-size:14.5px;
+  transition:color .15s,border-color .15s;
+}
+.ghost:hover{color:var(--text);border-color:var(--muted)}
+button:focus-visible,a:focus-visible{outline:2px solid var(--brass);outline-offset:3px}
+.status{font-size:14px;color:var(--muted);margin-top:16px;min-height:20px}
+.status.ok{color:var(--ok)}
+.status.bad{color:var(--err)}
+
+/* mobile price bar */
+.bar{display:none}
+
+footer{
+  grid-column:1/-1;
+  border-top:1px solid var(--line-soft);
+  margin-top:70px;padding-top:22px;
+  font-size:13.5px;color:var(--muted);
+  display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;
+}
+footer a{color:var(--muted)}
+
+/* done screen */
+.done{display:none;text-align:center;padding:90px 0}
+.done h2{font-family:"Newsreader",serif;font-weight:400;font-size:34px;margin:0 0 12px}
+.done p{color:var(--muted);max-width:46ch;margin:0 auto}
+
+@media(max-width:900px){
+  .wrap{grid-template-columns:1fr;gap:0;padding:0 20px 130px}
+  .side{position:static;min-height:0;padding:34px 0 0}
+  .steps,.quote{display:none}
+  main{padding-top:18px}
+  .row{grid-template-columns:1fr}
+  .bar{
+    display:flex;position:fixed;left:0;right:0;bottom:0;z-index:9;
+    background:rgba(17,21,26,.94);backdrop-filter:blur(10px);
+    border-top:1px solid var(--line);
+    padding:12px 20px;justify-content:space-between;align-items:center;
+  }
+  .bar span{font-size:13px;color:var(--muted)}
+  .bar b{font-family:"Newsreader",serif;font-size:22px;color:var(--brass);font-weight:500}
+}
+@media(prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+  html{scroll-behavior:auto}
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <aside class="side">
+    <p class="brand">Web<span>lity</span></p>
+    <p class="tag">Projectbriefing</p>
+
+    <ol class="steps" id="steps">
+      <li data-s="s1"><a href="#s1">Bedrijfsgegevens</a></li>
+      <li data-s="s2"><a href="#s2">Pakket &amp; extra's</a></li>
+      <li data-s="s3"><a href="#s3">Content</a></li>
+      <li data-s="s4"><a href="#s4">Technisch</a></li>
+      <li data-s="s5"><a href="#s5">Afspraken</a></li>
+    </ol>
+
+    <div class="quote">
+      <h3>Jouw prijs</h3>
+      <div id="qLines"><div class="q-row" style="color:var(--muted)">Kies een pakket hiernaast.</div></div>
+      <div class="q-total"><span>Eenmalig</span><b id="qOnce">€0</b></div>
+      <p class="q-sub" id="qRec"></p>
+    </div>
+  </aside>
+
+  <main>
+    <div id="formView">
+      <div class="intro">
+        <h1>Vertel ons over je zaak</h1>
+        <p>Vul dit formulier één keer volledig in, dan kunnen wij meteen starten. Reken op ongeveer tien minuten. Heb je nog niet alles bij de hand? Vul in wat je weet en zet de rest in het opmerkingenveld onderaan.</p>
+        <p class="note">Als je klaar bent, opent WhatsApp met je volledige briefing erin. Je logo en foto's stuur je daar meteen achteraan — dat werkt vlotter dan via een formulier.</p>
+      </div>
+
+      <form id="brief" novalidate>
+
+        <!-- 1 -->
+        <section id="s1">
+          <h2>Bedrijfsgegevens</h2>
+          <p class="hint">Deze gegevens komen op de website en op de factuur.</p>
+
+          <div class="row">
+            <div class="field">
+              <label for="bedrijf">Bedrijfsnaam</label>
+              <input type="text" id="bedrijf" name="Bedrijfsnaam" required>
+              <p class="err">Vul je bedrijfsnaam in.</p>
+            </div>
+            <div class="field">
+              <label for="btw">BTW-nummer <span class="opt">— nodig voor online betalingen</span></label>
+              <input type="text" id="btw" name="BTW-nummer" placeholder="BE 0123.456.789">
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="field">
+              <label for="naam">Contactpersoon</label>
+              <input type="text" id="naam" name="Contactpersoon" required>
+              <p class="err">Vul de naam van het aanspreekpunt in.</p>
+            </div>
+            <div class="field">
+              <label for="tel">WhatsApp-nummer</label>
+              <input type="tel" id="tel" name="WhatsApp" placeholder="04xx xx xx xx" required>
+              <p class="err">Vul je WhatsApp-nummer in — daar contacteren we je.</p>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="field">
+              <label for="mail">E-mailadres <span class="opt">— optioneel</span></label>
+              <input type="email" id="mail" name="E-mail">
+            </div>
+            <div class="field">
+              <label for="adres">Adres van de zaak</label>
+              <input type="text" id="adres" name="Adres" placeholder="Straat 1, 2000 Antwerpen">
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="uren">Openingsuren</label>
+            <textarea id="uren" name="Openingsuren" placeholder="Ma–vr 9–18u&#10;Za 10–16u&#10;Zo gesloten"></textarea>
+          </div>
+
+          <div class="field">
+            <label for="social">Social media <span class="opt">— optioneel</span></label>
+            <textarea id="social" name="Social media" placeholder="Instagram, Facebook, TikTok…"></textarea>
+          </div>
+        </section>
+
+        <!-- 2 -->
+        <section id="s2">
+          <h2>Pakket &amp; extra's</h2>
+          <p class="hint">De prijs wordt meteen berekend. Niets is definitief tot je een offerte van ons hebt.</p>
+
+          <div class="field">
+            <label>Wat heb je nodig?</label>
+            <div class="choices" id="pakket">
+              <label class="choice">
+                <input type="radio" name="Pakket" value="Website (€200)" data-once="200" required>
+                <span>
+                  <span class="t">Website</span>
+                  <span class="d">Een verzorgde site die je zaak toont en klanten laat contacteren.</span>
+                </span>
+                <span class="p">€200</span>
+              </label>
+              <label class="choice">
+                <input type="radio" name="Pakket" value="Boekingssysteem (€250)" data-once="250">
+                <span>
+                  <span class="t">Boekingssysteem</span>
+                  <span class="d">Website plus online afspraken, met automatische bevestiging.</span>
+                </span>
+                <span class="p">€250</span>
+              </label>
+              <label class="choice">
+                <input type="radio" name="Pakket" value="Webshop (€300)" data-once="300">
+                <span>
+                  <span class="t">Webshop</span>
+                  <span class="d">Website plus producten, winkelmandje en online betalen.</span>
+                </span>
+                <span class="p">€300</span>
+              </label>
+            </div>
+            <p class="err">Kies wat je nodig hebt.</p>
+          </div>
+
+          <div class="field">
+            <label>Extra's <span class="opt">— optioneel</span></label>
+            <div class="choices">
+              <label class="choice">
+                <input type="checkbox" name="Extra: logo" value="Ja" data-once="15">
+                <span><span class="t">Logo laten maken</span><span class="d">Voor wie nog geen bruikbaar logo heeft.</span></span>
+                <span class="p">€15</span>
+              </label>
+              <label class="choice">
+                <input type="checkbox" name="Extra: bewerkpaneel" value="Ja" data-once="30">
+                <span><span class="t">Bewerkpaneel</span><span class="d">Een apart scherm waarmee je zelf teksten, prijzen en foto's aanpast. Zonder dit paneel doen wij de wijzigingen aan €10 per keer.</span></span>
+                <span class="p">€30</span>
+              </label>
+              <label class="choice">
+                <input type="checkbox" name="Extra: domein" value="Ja" data-rec-y="20">
+                <span><span class="t">Domeinnaam</span><span class="d">Wij regelen je adres (bv. jouwzaak.be) en zetten de site online.</span></span>
+                <span class="p">€20/jaar</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="field">
+              <label for="extrap">Extra pagina's <span class="opt">— €50 per stuk</span></label>
+              <input type="number" id="extrap" name="Extra pagina's" min="0" max="20" value="0" data-once-each="50">
+            </div>
+            <div class="field">
+              <label for="talen">Talen</label>
+              <select id="talen" name="Talen">
+                <option>Nederlands</option>
+                <option>Nederlands + Frans</option>
+                <option>Nederlands + Engels</option>
+                <option>Nederlands + Frans + Engels</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="paginas">Welke pagina's wil je?</label>
+            <textarea id="paginas" name="Gewenste pagina's" placeholder="Home, Over ons, Diensten, Contact…"></textarea>
+          </div>
+
+          <div class="field">
+            <label for="voorbeelden">Voorbeeldsites die je mooi vindt</label>
+            <textarea id="voorbeelden" name="Voorbeeldsites" placeholder="Twee of drie links, en kort waarom je ze goed vindt."></textarea>
+            <p class="help">Dit zegt ons meer over de gewenste stijl dan eender welke omschrijving.</p>
+          </div>
+        </section>
+
+        <!-- 3 -->
+        <section id="s3">
+          <h2>Content</h2>
+          <p class="hint">Beeld en tekst bepalen hoe de site eruitziet. Hoe completer dit is, hoe sneller je online staat.</p>
+
+          <div class="field">
+            <label for="files">Logo en foto's <span class="opt">— optioneel</span></label>
+            <input type="file" id="files" name="Bestanden" multiple accept="image/*,.pdf,.svg">
+            <p class="help">Kies ze hier alvast. Na het versturen krijg je een knop om ze in één keer naar hetzelfde WhatsApp-gesprek te sturen. Maximaal tien bestanden tegelijk.</p>
+          </div>
+
+          <div class="field">
+            <label for="kleuren">Kleuren en huisstijl</label>
+            <input type="text" id="kleuren" name="Kleuren" placeholder="Bv. donkergroen en beige, of: volg mijn logo">
+          </div>
+
+          <div class="field">
+            <label>Teksten voor de website</label>
+            <div class="inline">
+              <label class="choice"><input type="radio" name="Teksten" value="Klant levert aan" required><span class="t">Ik lever ze aan</span></label>
+              <label class="choice"><input type="radio" name="Teksten" value="Weblity schrijft"><span class="t">Schrijf ze voor mij</span></label>
+              <label class="choice"><input type="radio" name="Teksten" value="Deels"><span class="t">Deels allebei</span></label>
+            </div>
+            <p class="err">Duid aan wie de teksten schrijft.</p>
+          </div>
+
+          <div class="field">
+            <label for="diensten">Diensten of producten met prijzen</label>
+            <textarea id="diensten" name="Diensten en prijzen" placeholder="Bv. Knippen — €25 — 30 min&#10;Kleuren — €60 — 90 min"></textarea>
+          </div>
+
+          <div class="field">
+            <label for="reviews">Klantenreviews die je wil tonen <span class="opt">— optioneel</span></label>
+            <textarea id="reviews" name="Reviews"></textarea>
+          </div>
+        </section>
+
+        <!-- 4 -->
+        <section id="s4">
+          <h2>Technisch</h2>
+          <p class="hint">Heb je al een domeinnaam of een oude website, dan nemen we die correct mee.</p>
+
+          <div class="row">
+            <div class="field">
+              <label for="domein">Domeinnaam <span class="opt">— indien je die al hebt</span></label>
+              <input type="text" id="domein" name="Domeinnaam" placeholder="www.jouwzaak.be">
+            </div>
+            <div class="field">
+              <label for="registrar">Waar is die geregistreerd?</label>
+              <input type="text" id="registrar" name="Registrar" placeholder="Combell, One.com, GoDaddy…">
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="oud">Bestaande website <span class="opt">— optioneel</span></label>
+            <input type="url" id="oud" name="Bestaande website" placeholder="https://">
+          </div>
+
+          <div class="field">
+            <label for="formmail">Waar mogen berichten van je contactformulier naartoe?</label>
+            <input type="text" id="formmail" name="Formulier-ontvanger" placeholder="E-mailadres of WhatsApp-nummer">
+            <p class="help">Laat leeg om je WhatsApp-nummer van hierboven te gebruiken.</p>
+          </div>
+
+          <div class="field">
+            <label for="maps">Adres voor Google Maps op de site <span class="opt">— optioneel</span></label>
+            <input type="text" id="maps" name="Maps-locatie">
+          </div>
+
+          <!-- webshop -->
+          <div class="cond" id="condShop">
+            <h3>Extra vragen over je webshop</h3>
+            <div class="field" id="payBlock">
+              <label for="betalen">Betaalmethodes</label>
+              <input type="text" id="betalen" name="Betaalmethodes" placeholder="Bancontact, Visa, PayPal…">
+            </div>
+            <p class="warn" id="payWarn">Online betalingen kunnen we pas aanzetten zodra je een BTW-nummer hebt — de betaalprovider vraagt dat verplicht. Vul je BTW-nummer bovenaan in, of we bouwen de shop voorlopig met bestellen op aanvraag.</p>
+            <div class="row">
+              <div class="field">
+                <label for="verzend">Verzendkosten</label>
+                <input type="text" id="verzend" name="Verzendkosten" placeholder="€4,95 — gratis vanaf €50">
+              </div>
+              <div class="field">
+                <label for="levering">Levertermijn</label>
+                <input type="text" id="levering" name="Levertermijn" placeholder="2 tot 3 werkdagen">
+              </div>
+            </div>
+            <div class="field">
+              <label for="aantalprod">Hoeveel producten bij de start?</label>
+              <input type="number" id="aantalprod" name="Aantal producten" min="0">
+            </div>
+            <div class="field">
+              <label for="retour">Retourbeleid</label>
+              <textarea id="retour" name="Retourbeleid" placeholder="Bv. 14 dagen bedenktijd, retour op eigen kosten."></textarea>
+            </div>
+          </div>
+
+          <!-- boeking -->
+          <div class="cond" id="condBook">
+            <h3>Extra vragen over je boekingsplatform</h3>
+            <div class="field">
+              <label for="bdiensten">Welke diensten kunnen geboekt worden, en hoe lang duren ze?</label>
+              <textarea id="bdiensten" name="Boekbare diensten" placeholder="Bv. Knipbeurt — 30 min&#10;Kleuring — 90 min"></textarea>
+            </div>
+            <div class="row">
+              <div class="field">
+                <label for="buren">Wanneer kan er geboekt worden?</label>
+                <input type="text" id="buren" name="Boekingsuren" placeholder="Ma–vr 9–17u, za 10–14u">
+              </div>
+              <div class="field">
+                <label for="bcap">Hoeveel klanten tegelijk?</label>
+                <input type="number" id="bcap" name="Capaciteit" min="1" value="1">
+              </div>
+            </div>
+            <div class="field">
+              <label for="bbevestig">Bevestiging van een afspraak</label>
+              <select id="bbevestig" name="Bevestiging">
+                <option>Automatisch bevestigen</option>
+                <option>Ik bevestig zelf elke aanvraag</option>
+              </select>
+            </div>
+          </div>
+        </section>
+
+        <!-- 5 -->
+        <section id="s5">
+          <h2>Afspraken</h2>
+          <p class="hint">Laatste stap, dan kunnen we inplannen.</p>
+
+          <div class="row">
+            <div class="field">
+              <label for="deadline">Wanneer wil je online staan?</label>
+              <input type="date" id="deadline" name="Gewenste deadline">
+            </div>
+            <div class="field">
+              <label for="bereik">Hoe bereiken we je het snelst?</label>
+              <select id="bereik" name="Voorkeurskanaal">
+                <option>WhatsApp</option>
+                <option>Telefoon</option>
+                <option>E-mail</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="opmerking">Nog iets dat we moeten weten? <span class="opt">— optioneel</span></label>
+            <textarea id="opmerking" name="Opmerkingen"></textarea>
+          </div>
+
+          <div class="field">
+            <div class="choices">
+              <label class="choice">
+                <input type="checkbox" name="Akkoord prijs" value="Ja" required>
+                <span><span class="t">Ik ga akkoord met de getoonde prijs</span><span class="d">Inclusief twee revisierondes; extra rondes worden apart afgesproken.</span></span>
+              </label>
+              <label class="choice">
+                <input type="checkbox" name="Akkoord footer" value="Ja" required>
+                <span><span class="t">Ik ga akkoord met de vermelding “Made by Weblity” in de footer</span></span>
+              </label>
+            </div>
+            <p class="err">Beide vakjes zijn nodig om te versturen.</p>
+          </div>
+
+          <div class="actions">
+            <button type="submit" class="send">Versturen via WhatsApp</button>
+            <button type="button" class="ghost" id="copy">Kopieer als tekst</button>
+          </div>
+          <p class="status" id="status"></p>
+        </section>
+      </form>
+    </div>
+
+    <div class="done" id="doneView">
+      <h2>WhatsApp is geopend</h2>
+      <p>Verstuur het bericht dat klaarstaat in je gesprek. Daarna stuur je hieronder je foto's door.</p>
+
+      <div id="shareWrap" style="margin-top:32px">
+        <button type="button" class="send" id="shareBtn">Foto's delen via WhatsApp</button>
+        <p class="help" id="shareHelp" style="max-width:40ch;margin:14px auto 0">Kies WhatsApp in het menu dat opent, en daarna hetzelfde gesprek met Weblity.</p>
+      </div>
+
+      <p style="margin-top:26px"><a href="https://wa.me/32469226035" style="color:var(--brass)">Opent WhatsApp niet? Klik hier</a></p>
+    </div>
+  </main>
+
+  <footer>
+    <span>Weblity — websites voor lokale zaken, Antwerpen</span>
+    <a href="https://wa.me/32469226035">Vragen? Stuur ons een WhatsApp</a>
+  </footer>
+</div>
+
+<div class="bar">
+  <span id="barLabel">Nog geen pakket gekozen</span>
+  <b id="barTotal">€0</b>
+</div>
+
+<script>
+/* =========================================================
+   INSTELLEN: jouw WhatsApp-nummer, met landcode, zonder + of spaties
+   ========================================================= */
+const WA = "32469226035";
+
+const form  = document.getElementById("brief");
+const status= document.getElementById("status");
+
+/* ---------- prijs ---------- */
+function money(n){ return "€" + n.toLocaleString("nl-BE"); }
+
+function calc(){
+  let once = 0, year = 0;
+  const lines = [];
+
+  const pak = form.querySelector('input[name="Pakket"]:checked');
+  if(pak){
+    once += +pak.dataset.once;
+    lines.push([pak.value.replace(/ \(.*\)/,""), money(+pak.dataset.once)]);
+  }
+
+  const pages = +document.getElementById("extrap").value || 0;
+  if(pages > 0){
+    once += pages * 50;
+    lines.push([pages + (pages===1 ? " extra pagina" : " extra pagina's"), money(pages*50)]);
+  }
+
+  form.querySelectorAll('input[type=checkbox][data-once]:checked').forEach(c=>{
+    once += +c.dataset.once;
+    lines.push([c.closest(".choice").querySelector(".t").textContent, money(+c.dataset.once)]);
+  });
+  form.querySelectorAll('input[type=checkbox][data-rec-y]:checked').forEach(c=>{
+    year += +c.dataset.recY;
+    lines.push([c.closest(".choice").querySelector(".t").textContent, money(+c.dataset.recY)+"/jaar"]);
+  });
+
+  const box = document.getElementById("qLines");
+  box.innerHTML = lines.length
+    ? lines.map(l=>`<div class="q-row"><span>${l[0]}</span><b>${l[1]}</b></div>`).join("")
+    : '<div class="q-row" style="color:var(--muted)">Kies een pakket hiernaast.</div>';
+
+  document.getElementById("qOnce").textContent = money(once);
+
+  const rec = [];
+  if(year) rec.push("Daarnaast " + money(year) + " per jaar voor je domeinnaam.");
+  if(!form.querySelector('input[name="Extra: bewerkpaneel"]').checked && pak)
+    rec.push("Wijzigingen door ons: €10 per keer.");
+  document.getElementById("qRec").textContent = rec.join(" ");
+
+  document.getElementById("barTotal").textContent = money(once);
+  document.getElementById("barLabel").textContent = pak
+    ? pak.value.replace(/ \(.*\)/,"") + (lines.length>1 ? " + extra's" : "")
+    : "Nog geen pakket gekozen";
+}
+
+/* ---------- conditionele blokken ---------- */
+function conditions(){
+  const v = form.querySelector('input[name="Pakket"]:checked')?.value || "";
+  const shop = v.startsWith("Webshop");
+  document.getElementById("condShop").classList.toggle("on", shop);
+  document.getElementById("condBook").classList.toggle("on", v.startsWith("Boekings"));
+
+  const hasBtw = document.getElementById("btw").value.trim().length >= 8;
+  document.getElementById("payWarn").classList.toggle("on", shop && !hasBtw);
+  document.getElementById("payBlock").style.display = (shop && !hasBtw) ? "none" : "";
+}
+
+/* ---------- voortgang in de zijbalk ---------- */
+function progress(){
+  document.querySelectorAll("#steps li").forEach(li=>{
+    const sec = document.getElementById(li.dataset.s);
+    const req = [...sec.querySelectorAll("[required]")];
+    const groups = new Set(req.map(f=>f.name));
+    const ok = [...groups].every(n=>{
+      const set = sec.querySelectorAll(`[name="${n}"]`);
+      return [...set].some(f => (f.type==="radio"||f.type==="checkbox") ? f.checked : f.value.trim()!=="");
+    });
+    const touched = [...sec.querySelectorAll("input,select,textarea")]
+      .some(f => (f.type==="radio"||f.type==="checkbox") ? f.checked : f.value.trim()!=="");
+    li.classList.toggle("done", ok && touched);
+  });
+}
+
+form.addEventListener("input", ()=>{ calc(); conditions(); progress(); });
+form.addEventListener("change",()=>{ calc(); conditions(); progress(); });
+
+/* ---------- validatie ---------- */
+function showError(el, on){
+  const field = el.closest(".field") || el.closest("section");
+  const msg = field?.querySelector(".err");
+  if(msg) msg.classList.toggle("on", on);
+  if(el.tagName !== "DIV") el.classList.toggle("invalid", on);
+}
+
+function validate(){
+  let first = null;
+  const names = new Set([...form.querySelectorAll("[required]")].map(f=>f.name));
+  names.forEach(n=>{
+    const set = [...form.querySelectorAll(`[name="${n}"]`)];
+    const type = set[0].type;
+    let ok;
+    if(type==="radio") ok = set.some(f=>f.checked);
+    else if(type==="checkbox") ok = set.every(f=>f.checked);
+    else if(type==="email") ok = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(set[0].value.trim());
+    else ok = set[0].value.trim() !== "";
+    showError(set[0], !ok);
+    if(!ok && !first) first = set[0];
+  });
+  return first;
+}
+
+/* ---------- tekstversie ---------- */
+function asText(){
+  const out = [];
+  document.querySelectorAll("section").forEach(sec=>{
+    if(sec.closest(".cond") === null && sec.querySelector("h2")){
+      out.push("\n## " + sec.querySelector("h2").textContent.toUpperCase());
+    }
+    sec.querySelectorAll("input,select,textarea").forEach(f=>{
+      if(f.type==="file") return;
+      const c = f.closest(".cond");
+      if(c && !c.classList.contains("on")) return;
+      if(f.offsetParent === null && f.type !== "hidden") return;
+      if((f.type==="radio"||f.type==="checkbox") && !f.checked) return;
+      const v = (f.type==="checkbox"||f.type==="radio") ? f.value : f.value.trim();
+      if(v) out.push(f.name + ": " + v);
+    });
+  });
+  out.push("\nEenmalig totaal: " + document.getElementById("qOnce").textContent);
+  const rec = document.getElementById("qRec").textContent;
+  if(rec) out.push(rec);
+  return "BRIEFING — " + (document.getElementById("bedrijf").value || "naamloos") + "\n" + out.join("\n");
+}
+
+document.getElementById("copy").addEventListener("click", async ()=>{
+  try{
+    await navigator.clipboard.writeText(asText());
+    status.textContent = "Gekopieerd. Je kan het nu plakken in WhatsApp.";
+    status.className = "status ok";
+  }catch(e){
+    status.textContent = "Kopiëren lukte niet op dit toestel. Klik op versturen, dan opent WhatsApp met je briefing.";
+    status.className = "status bad";
+  }
+});
+
+/* ---------- versturen ---------- */
+form.addEventListener("submit", async e=>{
+  e.preventDefault();
+  const bad = validate();
+  if(bad){
+    status.textContent = "Er ontbreken nog een paar gegevens.";
+    status.className = "status bad";
+    bad.scrollIntoView({block:"center"});
+    bad.focus({preventScroll:true});
+    return;
+  }
+
+  const txt = asText();
+
+  /* Te lang voor een link? Dan kopiëren we het en opent WhatsApp leeg. */
+  if(txt.length > 1600){
+    try{ await navigator.clipboard.writeText(txt); }catch(e){}
+    window.open("https://wa.me/" + WA + "?text=" +
+      encodeURIComponent("Hallo Weblity, mijn briefing staat op mijn klembord — ik plak ze hier."), "_blank");
+  }else{
+    window.open("https://wa.me/" + WA + "?text=" + encodeURIComponent(txt), "_blank");
+  }
+
+  document.getElementById("formView").style.display = "none";
+  document.querySelector(".bar").style.display = "none";
+  document.getElementById("doneView").style.display = "block";
+  setupShare();
+  window.scrollTo(0,0);
+});
+
+/* ---------- foto's delen ---------- */
+function setupShare(){
+  const wrap  = document.getElementById("shareWrap");
+  const help  = document.getElementById("shareHelp");
+  const btn   = document.getElementById("shareBtn");
+  const files = [...(document.getElementById("files").files || [])].slice(0,10);
+
+  if(!files.length){
+    wrap.innerHTML = '<p class="help" style="max-width:42ch;margin:0 auto">Je hebt geen bestanden gekozen. Stuur je logo en foto\'s gerust rechtstreeks in het WhatsApp-gesprek.</p>';
+    return;
+  }
+
+  if(!(navigator.canShare && navigator.canShare({files}))){
+    wrap.innerHTML = '<p class="help" style="max-width:42ch;margin:0 auto">Dit toestel kan de foto\'s niet automatisch doorsturen. Stuur ze rechtstreeks in het WhatsApp-gesprek — dat duurt tien seconden.</p>';
+    return;
+  }
+
+  help.textContent = files.length + (files.length===1 ? " bestand klaar." : " bestanden klaar.") +
+    " Kies WhatsApp in het menu dat opent, en daarna hetzelfde gesprek met Weblity.";
+
+  btn.addEventListener("click", async ()=>{
+    try{
+      await navigator.share({ files, title:"Foto's voor Weblity" });
+      btn.textContent = "Verstuurd";
+      btn.disabled = true;
+      btn.style.opacity = ".6";
+    }catch(err){
+      if(err.name !== "AbortError")
+        help.textContent = "Delen lukte niet. Stuur de foto's rechtstreeks in het WhatsApp-gesprek.";
+    }
+  });
+}
+
+calc(); conditions(); progress();
+</script>
+</body>
+</html>
