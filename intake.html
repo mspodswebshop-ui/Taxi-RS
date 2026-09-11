@@ -4,11 +4,47 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Projectbriefing — Weblity</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap" rel="stylesheet">
+<meta name="description" content="Vul je projectbriefing in voor je nieuwe website, boekingssysteem of webshop. Je gegevens blijven op je eigen toestel.">
+<meta name="theme-color" content="#11151A">
+<meta name="robots" content="noindex">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2311151A'/%3E%3Ctext x='16' y='23' font-family='Georgia,serif' font-size='20' fill='%23D4A24C' text-anchor='middle'%3EW%3C/text%3E%3C/svg%3E">
 <style>
+/* ---------- fonts: lokaal gehost, geen verzoek naar Google ---------- */
+@font-face{
+  font-family:"Inter Tight";
+  font-style:normal;
+  font-weight:100 900;
+  font-display:swap;
+  src:url(fonts/inter-tight-latin.woff2) format("woff2");
+  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face{
+  font-family:"Inter Tight";
+  font-style:normal;
+  font-weight:100 900;
+  font-display:swap;
+  src:url(fonts/inter-tight-latin-ext.woff2) format("woff2");
+  unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
+}
+@font-face{
+  font-family:"Newsreader";
+  font-style:normal;
+  font-weight:200 800;
+  font-display:swap;
+  src:url(fonts/newsreader-latin.woff2) format("woff2");
+  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face{
+  font-family:"Newsreader";
+  font-style:normal;
+  font-weight:200 800;
+  font-display:swap;
+  src:url(fonts/newsreader-latin-ext.woff2) format("woff2");
+  unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
+}
+
 :root{
+  color-scheme:dark;
   --ink:#11151A;
   --panel:#181E25;
   --panel-2:#1F262F;
@@ -137,6 +173,25 @@ main{padding:48px 0 0;max-width:680px}
   margin-top:22px;
 }
 
+/* hersteld concept */
+.restored{
+  display:none;
+  align-items:center;
+  gap:12px;
+  flex-wrap:wrap;
+  background:var(--brass-soft);
+  border-radius:8px;
+  padding:12px 14px;
+  margin-top:26px;
+  font-size:13.5px;
+  color:var(--brass);
+}
+.restored.on{display:flex}
+.restored button{
+  background:transparent;border:1px solid var(--brass);color:var(--brass);
+  font-size:13px;padding:5px 12px;border-radius:7px;
+}
+
 section{
   margin-top:52px;
   border-top:1px solid var(--line-soft);
@@ -154,7 +209,9 @@ section > .hint{color:var(--muted);font-size:14.5px;margin:0 0 24px}
 .field{margin-bottom:20px}
 .row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 label{display:block;font-size:14.5px;font-weight:500;margin-bottom:7px}
-label .opt{color:var(--muted);font-weight:400}
+fieldset{border:0;margin:0;padding:0;min-width:0}
+legend{display:block;font-size:14.5px;font-weight:500;margin-bottom:7px;padding:0}
+label .opt,legend .opt{color:var(--muted);font-weight:400}
 .help{font-size:13px;color:var(--muted);margin:6px 0 0}
 
 input[type=text],input[type=email],input[type=tel],input[type=url],input[type=date],input[type=number],select,textarea{
@@ -174,7 +231,7 @@ input:focus,select:focus,textarea:focus{
   border-color:var(--brass);
   background:var(--panel-2);
 }
-input::placeholder,textarea::placeholder{color:#5E6B78}
+input::placeholder,textarea::placeholder{color:#6B7885}
 select{appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);background-position:calc(100% - 19px) 19px,calc(100% - 14px) 19px;background-size:5px 5px,5px 5px;background-repeat:no-repeat}
 input[type=file]{
   width:100%;font:inherit;font-size:14px;color:var(--muted);
@@ -247,13 +304,15 @@ button{font:inherit;cursor:pointer;border-radius:var(--r)}
   transition:filter .15s;
 }
 .send:hover{filter:brightness(1.08)}
+.send[disabled]{opacity:.55;cursor:default}
+a.send{display:inline-block;text-decoration:none;text-align:center}
 .ghost{
   background:transparent;color:var(--muted);
   border:1px solid var(--line);padding:13px 20px;font-size:14.5px;
   transition:color .15s,border-color .15s;
 }
 .ghost:hover{color:var(--text);border-color:var(--muted)}
-button:focus-visible,a:focus-visible{outline:2px solid var(--brass);outline-offset:3px}
+button:focus-visible,a:focus-visible,summary:focus-visible{outline:2px solid var(--brass);outline-offset:3px}
 .status{font-size:14px;color:var(--muted);margin-top:16px;min-height:20px}
 .status.ok{color:var(--ok)}
 .status.bad{color:var(--err)}
@@ -271,12 +330,31 @@ footer{
 footer a{color:var(--muted)}
 
 /* done screen */
-.done{display:none;text-align:center;padding:90px 0}
+.done{display:none;padding:70px 0 0;text-align:center}
+.done:focus{outline:none}
 .done h2{font-family:"Newsreader",serif;font-weight:400;font-size:34px;margin:0 0 12px}
-.done p{color:var(--muted);max-width:46ch;margin:0 auto}
+.done > p{color:var(--muted);max-width:46ch;margin:0 auto}
+
+.do-steps{display:grid;gap:16px;max-width:460px;margin:32px auto 0;text-align:left}
+.do-step{display:flex;gap:14px;background:var(--panel);border:1px solid var(--line-soft);border-radius:var(--r);padding:18px}
+.do-step .n{
+  flex:0 0 24px;height:24px;border-radius:50%;
+  background:var(--brass);color:var(--ink);
+  display:grid;place-items:center;font-size:13px;font-weight:600;
+  font-variant-numeric:tabular-nums;
+}
+.do-step h3{margin:0 0 6px;font-size:16px;font-weight:600}
+.do-step .help{margin:0 0 14px}
+.do-step .send,.do-step .ghost{width:100%}
+
+.fallback{max-width:460px;margin:26px auto 0;text-align:left}
+.fallback summary{cursor:pointer;color:var(--muted);font-size:14px;padding:4px 0}
+.fallback textarea{margin-top:12px;min-height:170px;font-size:13px;line-height:1.45}
+.fb-actions{display:flex;gap:10px;margin-top:10px;flex-wrap:wrap}
+.back{margin:22px 0 0}
 
 @media(max-width:900px){
-  .wrap{grid-template-columns:1fr;gap:0;padding:0 20px 130px}
+  .wrap{grid-template-columns:1fr;gap:0;padding:0 20px 150px}
   .side{position:static;min-height:0;padding:34px 0 0}
   .steps,.quote{display:none}
   main{padding-top:18px}
@@ -285,10 +363,12 @@ footer a{color:var(--muted)}
     display:flex;position:fixed;left:0;right:0;bottom:0;z-index:9;
     background:rgba(17,21,26,.94);backdrop-filter:blur(10px);
     border-top:1px solid var(--line);
-    padding:12px 20px;justify-content:space-between;align-items:center;
+    padding:11px 20px;justify-content:space-between;align-items:center;gap:14px;
   }
+  .bar .bl{display:flex;flex-direction:column;gap:1px;min-width:0}
   .bar span{font-size:13px;color:var(--muted)}
-  .bar b{font-family:"Newsreader",serif;font-size:22px;color:var(--brass);font-weight:500}
+  .bar #barRec{font-size:11.5px;line-height:1.35}
+  .bar b{font-family:"Newsreader",serif;font-size:22px;color:var(--brass);font-weight:500;white-space:nowrap}
 }
 @media(prefers-reduced-motion:reduce){
   *{animation:none!important;transition:none!important}
@@ -325,7 +405,12 @@ footer a{color:var(--muted)}
       <div class="intro">
         <h1>Vertel ons over je zaak</h1>
         <p>Vul dit formulier één keer volledig in, dan kunnen wij meteen starten. Reken op ongeveer tien minuten. Heb je nog niet alles bij de hand? Vul in wat je weet en zet de rest in het opmerkingenveld onderaan.</p>
-        <p class="note">Als je klaar bent, opent WhatsApp met je volledige briefing erin. Je logo en foto's stuur je daar meteen achteraan — dat werkt vlotter dan via een formulier.</p>
+        <p class="note">Als je klaar bent, opent WhatsApp met je volledige briefing erin. Je logo en foto's stuur je daar meteen achteraan — dat werkt vlotter dan via een formulier. Je antwoorden gaan niet naar een server: ze blijven op dit toestel tot jij ze zelf verstuurt.</p>
+
+        <div class="restored" id="restored">
+          <span>We hebben je eerdere antwoorden op dit toestel teruggezet.</span>
+          <button type="button" id="clearDraft">Opnieuw beginnen</button>
+        </div>
       </div>
 
       <form id="brief" novalidate>
@@ -338,8 +423,8 @@ footer a{color:var(--muted)}
           <div class="row">
             <div class="field">
               <label for="bedrijf">Bedrijfsnaam</label>
-              <input type="text" id="bedrijf" name="Bedrijfsnaam" required>
-              <p class="err">Vul je bedrijfsnaam in.</p>
+              <input type="text" id="bedrijf" name="Bedrijfsnaam" autocomplete="organization" aria-describedby="err-bedrijf" required>
+              <p class="err" id="err-bedrijf" role="alert">Vul je bedrijfsnaam in.</p>
             </div>
             <div class="field">
               <label for="btw">BTW-nummer <span class="opt">— nodig voor online betalingen</span></label>
@@ -350,24 +435,25 @@ footer a{color:var(--muted)}
           <div class="row">
             <div class="field">
               <label for="naam">Contactpersoon</label>
-              <input type="text" id="naam" name="Contactpersoon" required>
-              <p class="err">Vul de naam van het aanspreekpunt in.</p>
+              <input type="text" id="naam" name="Contactpersoon" autocomplete="name" aria-describedby="err-naam" required>
+              <p class="err" id="err-naam" role="alert">Vul de naam van het aanspreekpunt in.</p>
             </div>
             <div class="field">
               <label for="tel">WhatsApp-nummer</label>
-              <input type="tel" id="tel" name="WhatsApp" placeholder="04xx xx xx xx" required>
-              <p class="err">Vul je WhatsApp-nummer in — daar contacteren we je.</p>
+              <input type="tel" id="tel" name="WhatsApp" placeholder="04xx xx xx xx" autocomplete="tel" inputmode="tel" aria-describedby="err-tel" required>
+              <p class="err" id="err-tel" role="alert">Vul je WhatsApp-nummer in — daar contacteren we je.</p>
             </div>
           </div>
 
           <div class="row">
             <div class="field">
               <label for="mail">E-mailadres <span class="opt">— optioneel</span></label>
-              <input type="email" id="mail" name="E-mail">
+              <input type="email" id="mail" name="E-mail" autocomplete="email" inputmode="email" aria-describedby="err-mail">
+              <p class="err" id="err-mail" role="alert">Dit e-mailadres lijkt niet te kloppen.</p>
             </div>
             <div class="field">
               <label for="adres">Adres van de zaak</label>
-              <input type="text" id="adres" name="Adres" placeholder="Straat 1, 2000 Antwerpen">
+              <input type="text" id="adres" name="Adres" placeholder="Straat 1, 2000 Antwerpen" autocomplete="street-address">
             </div>
           </div>
 
@@ -388,61 +474,66 @@ footer a{color:var(--muted)}
           <p class="hint">De prijs wordt meteen berekend. Niets is definitief tot je een offerte van ons hebt.</p>
 
           <div class="field">
-            <label>Wat heb je nodig?</label>
-            <div class="choices" id="pakket">
-              <label class="choice">
-                <input type="radio" name="Pakket" value="Website (€200)" data-once="200" required>
-                <span>
-                  <span class="t">Website</span>
-                  <span class="d">Een verzorgde site die je zaak toont en klanten laat contacteren.</span>
-                </span>
-                <span class="p">€200</span>
-              </label>
-              <label class="choice">
-                <input type="radio" name="Pakket" value="Boekingssysteem (€250)" data-once="250">
-                <span>
-                  <span class="t">Boekingssysteem</span>
-                  <span class="d">Website plus online afspraken, met automatische bevestiging.</span>
-                </span>
-                <span class="p">€250</span>
-              </label>
-              <label class="choice">
-                <input type="radio" name="Pakket" value="Webshop (€300)" data-once="300">
-                <span>
-                  <span class="t">Webshop</span>
-                  <span class="d">Website plus producten, winkelmandje en online betalen.</span>
-                </span>
-                <span class="p">€300</span>
-              </label>
-            </div>
-            <p class="err">Kies wat je nodig hebt.</p>
+            <fieldset>
+              <legend>Wat heb je nodig?</legend>
+              <div class="choices" id="pakket">
+                <label class="choice">
+                  <input type="radio" name="Pakket" value="Website (€200)" data-once="200" aria-describedby="err-pakket" required>
+                  <span>
+                    <span class="t">Website</span>
+                    <span class="d">Een verzorgde site die je zaak toont en klanten laat contacteren.</span>
+                  </span>
+                  <span class="p">€200</span>
+                </label>
+                <label class="choice">
+                  <input type="radio" name="Pakket" value="Boekingssysteem (€250)" data-once="250" aria-describedby="err-pakket">
+                  <span>
+                    <span class="t">Boekingssysteem</span>
+                    <span class="d">Website plus online afspraken, met automatische bevestiging.</span>
+                  </span>
+                  <span class="p">€250</span>
+                </label>
+                <label class="choice">
+                  <input type="radio" name="Pakket" value="Webshop (€300)" data-once="300" aria-describedby="err-pakket">
+                  <span>
+                    <span class="t">Webshop</span>
+                    <span class="d">Website plus producten, winkelmandje en online betalen.</span>
+                  </span>
+                  <span class="p">€300</span>
+                </label>
+              </div>
+            </fieldset>
+            <p class="err" id="err-pakket" role="alert">Kies wat je nodig hebt.</p>
           </div>
 
           <div class="field">
-            <label>Extra's <span class="opt">— optioneel</span></label>
-            <div class="choices">
-              <label class="choice">
-                <input type="checkbox" name="Extra: logo" value="Ja" data-once="15">
-                <span><span class="t">Logo laten maken</span><span class="d">Voor wie nog geen bruikbaar logo heeft.</span></span>
-                <span class="p">€15</span>
-              </label>
-              <label class="choice">
-                <input type="checkbox" name="Extra: bewerkpaneel" value="Ja" data-once="30">
-                <span><span class="t">Bewerkpaneel</span><span class="d">Een apart scherm waarmee je zelf teksten, prijzen en foto's aanpast. Zonder dit paneel doen wij de wijzigingen aan €10 per keer.</span></span>
-                <span class="p">€30</span>
-              </label>
-              <label class="choice">
-                <input type="checkbox" name="Extra: domein" value="Ja" data-rec-y="20">
-                <span><span class="t">Domeinnaam</span><span class="d">Wij regelen je adres (bv. jouwzaak.be) en zetten de site online.</span></span>
-                <span class="p">€20/jaar</span>
-              </label>
-            </div>
+            <fieldset>
+              <legend>Extra's <span class="opt">— optioneel</span></legend>
+              <div class="choices">
+                <label class="choice">
+                  <input type="checkbox" name="Extra: logo" value="Ja" data-once="15">
+                  <span><span class="t">Logo laten maken</span><span class="d">Voor wie nog geen bruikbaar logo heeft.</span></span>
+                  <span class="p">€15</span>
+                </label>
+                <label class="choice">
+                  <input type="checkbox" name="Extra: bewerkpaneel" value="Ja" data-once="30">
+                  <span><span class="t">Bewerkpaneel</span><span class="d">Een apart scherm waarmee je zelf teksten, prijzen en foto's aanpast. Zonder dit paneel doen wij de wijzigingen aan €10 per keer.</span></span>
+                  <span class="p">€30</span>
+                </label>
+                <label class="choice">
+                  <input type="checkbox" name="Extra: domein" value="Ja" data-rec-y="20">
+                  <span><span class="t">Domeinnaam</span><span class="d">Wij regelen je adres (bv. jouwzaak.be) en zetten de site online.</span></span>
+                  <span class="p">€20/jaar</span>
+                </label>
+              </div>
+            </fieldset>
           </div>
 
           <div class="row">
             <div class="field">
               <label for="extrap">Extra pagina's <span class="opt">— €50 per stuk</span></label>
-              <input type="number" id="extrap" name="Extra pagina's" min="0" max="20" value="0" data-once-each="50">
+              <input type="number" id="extrap" name="Extra pagina's" min="0" max="20" step="1" inputmode="numeric" value="0">
+              <p class="help">Enkel pagina's bovenop wat in je pakket zit. Maximaal 20.</p>
             </div>
             <div class="field">
               <label for="talen">Talen</label>
@@ -452,6 +543,7 @@ footer a{color:var(--muted)}
                 <option>Nederlands + Engels</option>
                 <option>Nederlands + Frans + Engels</option>
               </select>
+              <p class="help">Extra talen spreken we apart af — het vertaalwerk zit niet in de prijs hiernaast.</p>
             </div>
           </div>
 
@@ -475,7 +567,7 @@ footer a{color:var(--muted)}
           <div class="field">
             <label for="files">Logo en foto's <span class="opt">— optioneel</span></label>
             <input type="file" id="files" name="Bestanden" multiple accept="image/*,.pdf,.svg">
-            <p class="help">Kies ze hier alvast. Na het versturen krijg je een knop om ze in één keer naar hetzelfde WhatsApp-gesprek te sturen. Maximaal tien bestanden tegelijk.</p>
+            <p class="help">Kies ze hier alvast. Na het versturen krijg je een knop om ze in één keer naar hetzelfde WhatsApp-gesprek te sturen. Maximaal tien bestanden tegelijk. Lukt dat niet op jouw toestel, stuur ze dan gewoon rechtstreeks in het gesprek.</p>
           </div>
 
           <div class="field">
@@ -484,13 +576,15 @@ footer a{color:var(--muted)}
           </div>
 
           <div class="field">
-            <label>Teksten voor de website</label>
-            <div class="inline">
-              <label class="choice"><input type="radio" name="Teksten" value="Klant levert aan" required><span class="t">Ik lever ze aan</span></label>
-              <label class="choice"><input type="radio" name="Teksten" value="Weblity schrijft"><span class="t">Schrijf ze voor mij</span></label>
-              <label class="choice"><input type="radio" name="Teksten" value="Deels"><span class="t">Deels allebei</span></label>
-            </div>
-            <p class="err">Duid aan wie de teksten schrijft.</p>
+            <fieldset>
+              <legend>Teksten voor de website</legend>
+              <div class="inline">
+                <label class="choice"><input type="radio" name="Teksten" value="Klant levert aan" aria-describedby="err-teksten" required><span class="t">Ik lever ze aan</span></label>
+                <label class="choice"><input type="radio" name="Teksten" value="Weblity schrijft" aria-describedby="err-teksten"><span class="t">Schrijf ze voor mij</span></label>
+                <label class="choice"><input type="radio" name="Teksten" value="Deels" aria-describedby="err-teksten"><span class="t">Deels allebei</span></label>
+              </div>
+            </fieldset>
+            <p class="err" id="err-teksten" role="alert">Duid aan wie de teksten schrijft.</p>
           </div>
 
           <div class="field">
@@ -522,7 +616,7 @@ footer a{color:var(--muted)}
 
           <div class="field">
             <label for="oud">Bestaande website <span class="opt">— optioneel</span></label>
-            <input type="url" id="oud" name="Bestaande website" placeholder="https://">
+            <input type="text" id="oud" name="Bestaande website" inputmode="url" placeholder="www.jouwzaak.be">
           </div>
 
           <div class="field">
@@ -556,7 +650,7 @@ footer a{color:var(--muted)}
             </div>
             <div class="field">
               <label for="aantalprod">Hoeveel producten bij de start?</label>
-              <input type="number" id="aantalprod" name="Aantal producten" min="0">
+              <input type="number" id="aantalprod" name="Aantal producten" min="0" step="1" inputmode="numeric">
             </div>
             <div class="field">
               <label for="retour">Retourbeleid</label>
@@ -578,7 +672,7 @@ footer a{color:var(--muted)}
               </div>
               <div class="field">
                 <label for="bcap">Hoeveel klanten tegelijk?</label>
-                <input type="number" id="bcap" name="Capaciteit" min="1" value="1">
+                <input type="number" id="bcap" name="Capaciteit" min="1" step="1" inputmode="numeric" value="1">
               </div>
             </div>
             <div class="field">
@@ -617,38 +711,64 @@ footer a{color:var(--muted)}
           </div>
 
           <div class="field">
-            <div class="choices">
+            <fieldset>
+              <legend>Ga je akkoord?</legend>
+              <div class="choices">
               <label class="choice">
-                <input type="checkbox" name="Akkoord prijs" value="Ja" required>
-                <span><span class="t">Ik ga akkoord met de getoonde prijs</span><span class="d">Inclusief twee revisierondes; extra rondes worden apart afgesproken.</span></span>
+                <input type="checkbox" name="Akkoord prijs" value="Ja" aria-describedby="err-akkoord" required>
+                <span><span class="t">Ik ga akkoord met de getoonde prijs</span><span class="d" id="agreeSum">Inclusief twee revisierondes; extra rondes worden apart afgesproken.</span></span>
               </label>
               <label class="choice">
-                <input type="checkbox" name="Akkoord footer" value="Ja" required>
+                <input type="checkbox" name="Akkoord footer" value="Ja" aria-describedby="err-akkoord" required>
                 <span><span class="t">Ik ga akkoord met de vermelding “Made by Weblity” in de footer</span></span>
               </label>
-            </div>
-            <p class="err">Beide vakjes zijn nodig om te versturen.</p>
+              </div>
+            </fieldset>
+            <p class="err" id="err-akkoord" role="alert">Beide vakjes zijn nodig om te versturen.</p>
           </div>
 
           <div class="actions">
-            <button type="submit" class="send">Versturen via WhatsApp</button>
+            <button type="submit" class="send" id="sendBtn">Versturen via WhatsApp</button>
             <button type="button" class="ghost" id="copy">Kopieer als tekst</button>
           </div>
-          <p class="status" id="status"></p>
+          <p class="status" id="status" role="status" aria-live="polite"></p>
         </section>
       </form>
     </div>
 
-    <div class="done" id="doneView">
-      <h2>WhatsApp is geopend</h2>
-      <p>Verstuur het bericht dat klaarstaat in je gesprek. Daarna stuur je hieronder je foto's door.</p>
+    <div class="done" id="doneView" tabindex="-1">
+      <h2 id="doneTitle">Nog twee klikken</h2>
+      <p id="doneLead">Je briefing staat klaar. Doorloop de stappen hieronder in volgorde.</p>
 
-      <div id="shareWrap" style="margin-top:32px">
-        <button type="button" class="send" id="shareBtn">Foto's delen via WhatsApp</button>
-        <p class="help" id="shareHelp" style="max-width:40ch;margin:14px auto 0">Kies WhatsApp in het menu dat opent, en daarna hetzelfde gesprek met Weblity.</p>
+      <div class="do-steps">
+        <div class="do-step" id="stepPhotos">
+          <span class="n" id="nPhotos">1</span>
+          <div>
+            <h3>Stuur eerst je foto's</h3>
+            <p class="help" id="shareHelp">Kies WhatsApp in het menu dat opent, en daarna het gesprek met Weblity.</p>
+            <button type="button" class="send" id="shareBtn">Foto's delen via WhatsApp</button>
+          </div>
+        </div>
+        <div class="do-step">
+          <span class="n" id="nSend">2</span>
+          <div>
+            <h3>Verstuur je briefing</h3>
+            <p class="help" id="sendHelp">WhatsApp opent met je volledige briefing erin. Druk daar op verzenden.</p>
+            <a class="send" id="waLink" target="_blank" rel="noopener">Open WhatsApp met je briefing</a>
+          </div>
+        </div>
       </div>
 
-      <p style="margin-top:26px"><a href="https://wa.me/32469226035" style="color:var(--brass)">Opent WhatsApp niet? Klik hier</a></p>
+      <details class="fallback" id="fallback">
+        <summary>Opent WhatsApp niet, of ging er iets mis? Je briefing staat hier</summary>
+        <textarea id="finalText" readonly aria-label="Je volledige briefing als tekst"></textarea>
+        <div class="fb-actions">
+          <button type="button" class="ghost" id="copy2">Kopieer briefing</button>
+        </div>
+        <p class="status" id="status2" role="status" aria-live="polite"></p>
+      </details>
+
+      <p class="back"><button type="button" class="ghost" id="backBtn">Terug naar het formulier</button></p>
     </div>
   </main>
 
@@ -659,7 +779,10 @@ footer a{color:var(--muted)}
 </div>
 
 <div class="bar">
-  <span id="barLabel">Nog geen pakket gekozen</span>
+  <div class="bl">
+    <span id="barLabel">Nog geen pakket gekozen</span>
+    <span id="barRec"></span>
+  </div>
   <b id="barTotal">€0</b>
 </div>
 
@@ -669,11 +792,24 @@ footer a{color:var(--muted)}
    ========================================================= */
 const WA = "32469226035";
 
-const form  = document.getElementById("brief");
-const status= document.getElementById("status");
+/* Boven deze lengte past de briefing niet betrouwbaar in een wa.me-link. */
+const MAX_URL_TEXT = 1600;
+
+const form   = document.getElementById("brief");
+const status = document.getElementById("status");
+const fileInput = document.getElementById("files");
 
 /* ---------- prijs ---------- */
 function money(n){ return "€" + n.toLocaleString("nl-BE"); }
+
+/* Aantal extra pagina's, altijd binnen de grenzen van het invoerveld. */
+function extraPages(){
+  const el = document.getElementById("extrap");
+  const min = +el.min || 0, max = +el.max || 20;
+  const n = Math.floor(Number(el.value));
+  if(!Number.isFinite(n)) return 0;
+  return Math.min(max, Math.max(min, n));
+}
 
 function calc(){
   let once = 0, year = 0;
@@ -685,7 +821,7 @@ function calc(){
     lines.push([pak.value.replace(/ \(.*\)/,""), money(+pak.dataset.once)]);
   }
 
-  const pages = +document.getElementById("extrap").value || 0;
+  const pages = extraPages();
   if(pages > 0){
     once += pages * 50;
     lines.push([pages + (pages===1 ? " extra pagina" : " extra pagina's"), money(pages*50)]);
@@ -711,12 +847,20 @@ function calc(){
   if(year) rec.push("Daarnaast " + money(year) + " per jaar voor je domeinnaam.");
   if(!form.querySelector('input[name="Extra: bewerkpaneel"]').checked && pak)
     rec.push("Wijzigingen door ons: €10 per keer.");
-  document.getElementById("qRec").textContent = rec.join(" ");
+  const recText = rec.join(" ");
+  document.getElementById("qRec").textContent = recText;
 
+  /* mobiele balk — toont ook de terugkerende kosten, die staan nergens anders op gsm */
   document.getElementById("barTotal").textContent = money(once);
   document.getElementById("barLabel").textContent = pak
     ? pak.value.replace(/ \(.*\)/,"") + (lines.length>1 ? " + extra's" : "")
     : "Nog geen pakket gekozen";
+  document.getElementById("barRec").textContent = recText;
+
+  /* het akkoordvakje benoemt waarmee je precies akkoord gaat */
+  document.getElementById("agreeSum").textContent =
+    (pak ? money(once) + " eenmalig" + (recText ? " — " + recText : "") + " " : "") +
+    "Inclusief twee revisierondes; extra rondes worden apart afgesproken.";
 }
 
 /* ---------- conditionele blokken ---------- */
@@ -747,31 +891,116 @@ function progress(){
   });
 }
 
-form.addEventListener("input", ()=>{ calc(); conditions(); progress(); });
-form.addEventListener("change",()=>{ calc(); conditions(); progress(); });
+/* ---------- concept bewaren op dit toestel ---------- */
+const DRAFT_KEY = "weblity-briefing-v1";
+let saveTimer = null;
+
+function draftFields(){
+  return [...form.querySelectorAll("input,select,textarea")].filter(f => f.name && f.type !== "file");
+}
+
+function saveDraft(){
+  const d = {};
+  draftFields().forEach(f=>{
+    if(f.type==="radio" || f.type==="checkbox"){
+      if(f.checked) d[f.name + "|" + f.value] = 1;
+    }else if(f.value !== ""){
+      d[f.name] = f.value;
+    }
+  });
+  try{ localStorage.setItem(DRAFT_KEY, JSON.stringify(d)); }catch(e){}
+}
+
+function loadDraft(){
+  let raw = null;
+  try{ raw = localStorage.getItem(DRAFT_KEY); }catch(e){ return false; }
+  if(!raw) return false;
+  let d;
+  try{ d = JSON.parse(raw); }catch(e){ return false; }
+  if(!d || typeof d !== "object") return false;
+
+  let any = false;
+  draftFields().forEach(f=>{
+    if(f.type==="radio" || f.type==="checkbox"){
+      if(d[f.name + "|" + f.value]){ f.checked = true; any = true; }
+    }else if(d[f.name] !== undefined && d[f.name] !== f.value){
+      f.value = d[f.name]; any = true;
+    }
+  });
+  return any;
+}
+
+function clearDraft(){
+  try{ localStorage.removeItem(DRAFT_KEY); }catch(e){}
+}
+
+document.getElementById("clearDraft").addEventListener("click", ()=>{
+  clearDraft();
+  form.reset();
+  document.getElementById("restored").classList.remove("on");
+  refresh();
+  window.scrollTo({top:0});
+});
+
+/* ---------- bijwerken ---------- */
+function refresh(){ calc(); conditions(); progress(); }
+
+form.addEventListener("input", ()=>{
+  refresh();
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(saveDraft, 400);
+});
+form.addEventListener("change",()=>{
+  refresh();
+  saveDraft();
+});
+
+/* buiten de grenzen getypte aantallen meteen terugzetten */
+document.getElementById("extrap").addEventListener("blur", e=>{
+  e.target.value = extraPages();
+  refresh();
+});
 
 /* ---------- validatie ---------- */
-function showError(el, on){
-  const field = el.closest(".field") || el.closest("section");
-  const msg = field?.querySelector(".err");
+function setInvalid(el, on){
+  const msg = el.getAttribute("aria-describedby")
+    ? document.getElementById(el.getAttribute("aria-describedby"))
+    : (el.closest(".field") || el.closest("section"))?.querySelector(".err");
   if(msg) msg.classList.toggle("on", on);
-  if(el.tagName !== "DIV") el.classList.toggle("invalid", on);
+
+  const group = [...form.querySelectorAll(`[name="${CSS.escape(el.name)}"]`)];
+  group.forEach(f=>{
+    f.setAttribute("aria-invalid", on ? "true" : "false");
+    if(f.type !== "radio" && f.type !== "checkbox") f.classList.toggle("invalid", on);
+  });
 }
+
+const MAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 function validate(){
   let first = null;
   const names = new Set([...form.querySelectorAll("[required]")].map(f=>f.name));
+
   names.forEach(n=>{
-    const set = [...form.querySelectorAll(`[name="${n}"]`)];
+    const set = [...form.querySelectorAll(`[name="${CSS.escape(n)}"]`)];
     const type = set[0].type;
     let ok;
-    if(type==="radio") ok = set.some(f=>f.checked);
+    if(type==="radio")         ok = set.some(f=>f.checked);
     else if(type==="checkbox") ok = set.every(f=>f.checked);
-    else if(type==="email") ok = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(set[0].value.trim());
-    else ok = set[0].value.trim() !== "";
-    showError(set[0], !ok);
+    else if(type==="email")    ok = MAIL_RE.test(set[0].value.trim());
+    else                       ok = set[0].value.trim() !== "";
+    setInvalid(set[0], !ok);
     if(!ok && !first) first = set[0];
   });
+
+  /* e-mail is optioneel, maar een ingevuld adres moet wel kloppen */
+  const mail = document.getElementById("mail");
+  if(!mail.required){
+    const bad = mail.value.trim() !== "" && !MAIL_RE.test(mail.value.trim());
+    setInvalid(mail, bad);
+    if(bad && !first) first = mail;
+  }
+
   return first;
 }
 
@@ -792,26 +1021,43 @@ function asText(){
       if(v) out.push(f.name + ": " + v);
     });
   });
+
+  const n = pickedFiles().length;
+  if(n) out.push("\nBestanden: " + n + (n===1 ? " bestand volgt" : " bestanden volgen") + " in dit gesprek.");
+
   out.push("\nEenmalig totaal: " + document.getElementById("qOnce").textContent);
   const rec = document.getElementById("qRec").textContent;
   if(rec) out.push(rec);
   return "BRIEFING — " + (document.getElementById("bedrijf").value || "naamloos") + "\n" + out.join("\n");
 }
 
-document.getElementById("copy").addEventListener("click", async ()=>{
+function waUrl(text){
+  return "https://wa.me/" + WA + "?text=" + encodeURIComponent(text);
+}
+
+/* ---------- kopieerknoppen ---------- */
+async function copyText(txt, el){
   try{
-    await navigator.clipboard.writeText(asText());
-    status.textContent = "Gekopieerd. Je kan het nu plakken in WhatsApp.";
-    status.className = "status ok";
+    if(!navigator.clipboard) throw new Error("geen klembord");
+    await navigator.clipboard.writeText(txt);
+    el.textContent = "Gekopieerd. Je kan het nu plakken in WhatsApp.";
+    el.className = "status ok";
+    return true;
   }catch(e){
-    status.textContent = "Kopiëren lukte niet op dit toestel. Klik op versturen, dan opent WhatsApp met je briefing.";
-    status.className = "status bad";
+    el.textContent = "Kopiëren lukte niet op dit toestel. Selecteer de tekst hieronder en kopieer ze zelf.";
+    el.className = "status bad";
+    return false;
   }
-});
+}
+
+document.getElementById("copy").addEventListener("click", ()=> copyText(asText(), status));
 
 /* ---------- versturen ---------- */
-form.addEventListener("submit", async e=>{
+const sendBtn = document.getElementById("sendBtn");
+
+form.addEventListener("submit", e=>{
   e.preventDefault();
+
   const bad = validate();
   if(bad){
     status.textContent = "Er ontbreken nog een paar gegevens.";
@@ -821,58 +1067,119 @@ form.addEventListener("submit", async e=>{
     return;
   }
 
-  const txt = asText();
+  sendBtn.disabled = true;
+  status.textContent = "";
+  status.className = "status";
 
-  /* Te lang voor een link? Dan kopiëren we het en opent WhatsApp leeg. */
-  if(txt.length > 1600){
-    try{ await navigator.clipboard.writeText(txt); }catch(e){}
-    window.open("https://wa.me/" + WA + "?text=" +
-      encodeURIComponent("Hallo Weblity, mijn briefing staat op mijn klembord — ik plak ze hier."), "_blank");
+  const txt = asText();
+  const tooLong = txt.length > MAX_URL_TEXT;
+  const link = waUrl(tooLong
+    ? "Hallo Weblity, mijn briefing volgt hieronder."
+    : txt);
+
+  /* Bij een lange briefing zetten we ze alvast op het klembord.
+     Bewust zonder await: een await hier breekt de klik-context,
+     waardoor Safari het openen van WhatsApp blokkeert. */
+  if(tooLong && navigator.clipboard){
+    navigator.clipboard.writeText(txt).catch(()=>{});
+  }
+
+  showDone(txt, link, tooLong);
+});
+
+/* ---------- eindscherm ---------- */
+function pickedFiles(){
+  return [...(fileInput.files || [])].slice(0,10);
+}
+
+function showDone(txt, link, tooLong){
+  const files = pickedFiles();
+  const canShare = !!(navigator.canShare && files.length && navigator.canShare({files}));
+
+  document.getElementById("finalText").value = txt;
+  document.getElementById("waLink").href = link;
+
+  const stepPhotos = document.getElementById("stepPhotos");
+  const lead = document.getElementById("doneLead");
+  const sendHelp = document.getElementById("sendHelp");
+
+  if(canShare){
+    /* Foto's eerst: zodra WhatsApp opent kan deze pagina herladen,
+       en dan is de bestandskeuze weg. */
+    stepPhotos.style.display = "";
+    document.getElementById("nPhotos").textContent = "1";
+    document.getElementById("nSend").textContent = "2";
+    document.getElementById("shareHelp").textContent =
+      files.length + (files.length===1 ? " bestand staat klaar." : " bestanden staan klaar.") +
+      " Kies WhatsApp in het menu dat opent, en daarna het gesprek met Weblity.";
+    document.title = "Nog twee stappen — Weblity";
+    setupShare(files);
   }else{
-    window.open("https://wa.me/" + WA + "?text=" + encodeURIComponent(txt), "_blank");
+    /* Zonder fotostap blijft er één handeling over — dan is een genummerde
+       lijst meer ruis dan hulp. */
+    stepPhotos.style.display = "none";
+    document.getElementById("nSend").style.display = "none";
+    document.getElementById("doneTitle").textContent = "Klaar om te versturen";
+    lead.textContent = files.length
+      ? "Dit toestel kan de foto's niet automatisch doorsturen — stuur ze zo meteen gewoon rechtstreeks in het gesprek."
+      : "Nog één klik: WhatsApp opent met je volledige briefing erin.";
+  }
+
+  if(tooLong){
+    sendHelp.textContent = "Je briefing is te lang voor een WhatsApp-link. Ze staat op je klembord: plak ze in het gesprek dat opent. Lukt dat niet, gebruik dan het tekstvak hieronder.";
+    document.getElementById("fallback").open = true;
   }
 
   document.getElementById("formView").style.display = "none";
   document.querySelector(".bar").style.display = "none";
   document.getElementById("doneView").style.display = "block";
-  setupShare();
   window.scrollTo(0,0);
-});
+  document.getElementById("doneView").focus();
+
+  /* de briefing is verstuurd — het concept mag weg */
+  clearDraft();
+}
 
 /* ---------- foto's delen ---------- */
-function setupShare(){
-  const wrap  = document.getElementById("shareWrap");
-  const help  = document.getElementById("shareHelp");
-  const btn   = document.getElementById("shareBtn");
-  const files = [...(document.getElementById("files").files || [])].slice(0,10);
+let shareBound = false;
 
-  if(!files.length){
-    wrap.innerHTML = '<p class="help" style="max-width:42ch;margin:0 auto">Je hebt geen bestanden gekozen. Stuur je logo en foto\'s gerust rechtstreeks in het WhatsApp-gesprek.</p>';
-    return;
-  }
+function setupShare(files){
+  if(shareBound) return;
+  shareBound = true;
 
-  if(!(navigator.canShare && navigator.canShare({files}))){
-    wrap.innerHTML = '<p class="help" style="max-width:42ch;margin:0 auto">Dit toestel kan de foto\'s niet automatisch doorsturen. Stuur ze rechtstreeks in het WhatsApp-gesprek — dat duurt tien seconden.</p>';
-    return;
-  }
-
-  help.textContent = files.length + (files.length===1 ? " bestand klaar." : " bestanden klaar.") +
-    " Kies WhatsApp in het menu dat opent, en daarna hetzelfde gesprek met Weblity.";
+  const btn  = document.getElementById("shareBtn");
+  const help = document.getElementById("shareHelp");
 
   btn.addEventListener("click", async ()=>{
     try{
       await navigator.share({ files, title:"Foto's voor Weblity" });
       btn.textContent = "Verstuurd";
       btn.disabled = true;
-      btn.style.opacity = ".6";
+      help.textContent = "Gelukt. Ga nu verder met stap 2.";
     }catch(err){
-      if(err.name !== "AbortError")
-        help.textContent = "Delen lukte niet. Stuur de foto's rechtstreeks in het WhatsApp-gesprek.";
+      if(err && err.name === "AbortError") return;
+      help.textContent = "Delen lukte niet. Stuur de foto's rechtstreeks in het WhatsApp-gesprek — dat duurt tien seconden.";
     }
   });
 }
 
-calc(); conditions(); progress();
+/* ---------- terug naar het formulier ---------- */
+document.getElementById("copy2").addEventListener("click", ()=>{
+  copyText(document.getElementById("finalText").value, document.getElementById("status2"));
+});
+
+document.getElementById("backBtn").addEventListener("click", ()=>{
+  document.getElementById("doneView").style.display = "none";
+  document.getElementById("formView").style.display = "";
+  document.querySelector(".bar").style.display = "";
+  sendBtn.disabled = false;
+  saveDraft();
+  window.scrollTo(0,0);
+});
+
+/* ---------- start ---------- */
+if(loadDraft()) document.getElementById("restored").classList.add("on");
+refresh();
 </script>
 </body>
 </html>
