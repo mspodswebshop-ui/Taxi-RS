@@ -1,0 +1,399 @@
+/* =====================================================================
+   Betaalterminal - gemaakt voor een telefoon in de auto.
+   Grote knoppen, hoog contrast, bedienbaar met één duim.
+   ===================================================================== */
+
+:root {
+  --bg: #111110;
+  --surface: #1c1b19;
+  --surface-2: #262421;
+  --line: #34322e;
+  --text: #f7f5f0;
+  --text-soft: #b3aea4;
+  --text-muted: #7d7870;
+
+  --geel: #f2b705;   /* taxigeel, het accent */
+  --geel-dark: #1a1712;
+  --groen: #34c759;
+  --rood: #ff453a;
+
+  --radius: 16px;
+  --radius-lg: 22px;
+
+  --sans: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+html, body {
+  height: 100%;
+  margin: 0;
+  overscroll-behavior: none;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+button { font: inherit; color: inherit; cursor: pointer; }
+[hidden] { display: none !important; }
+
+svg {
+  width: 24px;
+  height: 24px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+:focus-visible { outline: 3px solid var(--geel); outline-offset: 2px; }
+
+.app {
+  max-width: 460px;
+  margin: 0 auto;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+.screen {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: max(12px, env(safe-area-inset-top)) 16px
+    max(16px, env(safe-area-inset-bottom)) 16px;
+  gap: 14px;
+}
+
+.screen.center { justify-content: center; }
+
+/* ---------------------- Bovenbalk ---------------------- */
+
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 40px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.brand-mark {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  background: var(--geel);
+  color: var(--geel-dark);
+  font-weight: 800;
+}
+
+.link-btn {
+  background: none;
+  border: none;
+  padding: 8px 4px;
+  color: var(--text-soft);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.link-btn:active { color: var(--text); }
+.link-btn.wide { display: block; width: 100%; text-align: center; padding: 14px; }
+
+/* ---------------------- Bedrag ---------------------- */
+
+.display {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: 20px 18px;
+  text-align: center;
+}
+
+.display-label {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.amount {
+  display: block;
+  margin-top: 4px;
+  font-size: clamp(40px, 13vw, 54px);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+
+.tip-row {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--line);
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  color: var(--text-soft);
+}
+
+/* ---------------------- Fooi ---------------------- */
+
+.tips { display: flex; align-items: center; gap: 12px; }
+
+.tips-label {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.tips-btns { display: flex; gap: 7px; flex: 1; }
+
+.chip {
+  flex: 1;
+  padding: 9px 4px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-soft);
+}
+
+.chip.selected {
+  background: var(--geel);
+  border-color: var(--geel);
+  color: var(--geel-dark);
+}
+
+/* ---------------------- Toetsen ---------------------- */
+
+.keypad {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 9px;
+  min-height: 260px;
+}
+
+.keypad button {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  font-size: 27px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  display: grid;
+  place-items: center;
+  transition: background 0.06s;
+}
+
+.keypad button:active { background: var(--surface-2); }
+.keypad .key-alt { color: var(--text-soft); font-size: 22px; }
+
+/* ---------------------- Hoofdknop ---------------------- */
+
+.primary {
+  width: 100%;
+  padding: 18px;
+  background: var(--geel);
+  color: var(--geel-dark);
+  border: none;
+  border-radius: var(--radius);
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.primary:disabled { opacity: 0.3; }
+.primary:active:not(:disabled) { filter: brightness(0.92); }
+
+.note {
+  margin: 0;
+  text-align: center;
+  font-size: 12.5px;
+  color: var(--text-muted);
+  min-height: 18px;
+}
+
+.note.test { color: var(--geel); }
+
+/* ---------------------- Scanscherm ---------------------- */
+
+.pay-amount {
+  font-size: 19px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.scan {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  text-align: center;
+}
+
+.scan-title { margin: 0; font-size: 22px; font-weight: 700; }
+
+.scan-sub {
+  margin: 0 0 18px;
+  font-size: 14.5px;
+  color: var(--text-soft);
+  max-width: 300px;
+}
+
+.qr-frame {
+  padding: 14px;
+  background: #fff;
+  border-radius: var(--radius-lg);
+  line-height: 0;
+}
+
+.qr-frame img { width: 260px; height: 260px; max-width: 62vw; max-height: 62vw; }
+
+.status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 22px;
+  font-size: 15px;
+  color: var(--text-soft);
+  min-height: 24px;
+}
+
+.status.error { color: var(--rood); }
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--line);
+  border-top-color: var(--geel);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  flex: none;
+}
+
+.status.error .spinner { display: none; }
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ---------------------- Betaald ---------------------- */
+
+.done { text-align: center; padding: 20px; }
+
+.check {
+  width: 82px;
+  height: 82px;
+  margin: 0 auto 18px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--groen);
+  color: #06230f;
+  animation: pop 0.35s cubic-bezier(0.2, 1.4, 0.4, 1);
+}
+
+.check svg { width: 42px; height: 42px; stroke-width: 3; }
+
+@keyframes pop { from { transform: scale(0.5); opacity: 0; } }
+
+.done h1 { margin: 0; font-size: 26px; font-weight: 700; }
+
+.done-amount {
+  margin: 4px 0 0;
+  font-size: 40px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+.done-sub { margin: 6px 0 28px; color: var(--text-muted); font-size: 14px; }
+
+/* ---------------------- Dagoverzicht ---------------------- */
+
+.day-total {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  text-align: center;
+}
+
+.rides {
+  flex: 1;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ride {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 13px 15px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+
+.ride-when { font-size: 13px; color: var(--text-muted); }
+.ride-what { font-weight: 600; font-size: 15px; }
+.ride-amount { font-weight: 700; font-variant-numeric: tabular-nums; }
+
+.empty {
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 15px;
+}
+
+/* ---------------------- Melding ---------------------- */
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: max(24px, env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  z-index: 50;
+  max-width: 90vw;
+  padding: 13px 20px;
+  background: var(--text);
+  color: var(--bg);
+  border-radius: 99px;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="nl" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Taxi R.S. — Betalen</title>
+  <meta name="theme-color" content="#111110">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23f2b705'/%3E%3Ctext x='16' y='23' font-size='18' text-anchor='middle'%3E%E2%82%AC%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="app">
+  <!-- ============ Scherm 1: bedrag intoetsen ============ -->
+  <section class="screen" id="screenAmount">
+    <header class="top">
+      <div class="brand">
+        <span class="brand-mark">€</span>
+        <span>Taxi R.S.</span>
+      </div>
+      <button class="link-btn" id="openDayBtn">Vandaag</button>
+    </header>
+
+    <div class="display">
+      <div class="display-label">Ritbedrag</div>
+      <output class="amount" id="amount">€ 0,00</output>
+      <div class="tip-row" id="tipRow" hidden>
+        <span>waarvan fooi</span>
+        <strong id="tipAmount">€ 0,00</strong>
+      </div>
+    </div>
+
+    <div class="tips">
+      <span class="tips-label">Fooi</span>
+      <div class="tips-btns">
+        <button class="chip" data-tip="0">geen</button>
+        <button class="chip" data-tip="5">5%</button>
+        <button class="chip" data-tip="10">10%</button>
+        <button class="chip" data-tip="15">15%</button>
+      </div>
+    </div>
+
+    <div class="keypad" id="keypad">
+      <button data-key="1">1</button>
+      <button data-key="2">2</button>
+      <button data-key="3">3</button>
+      <button data-key="4">4</button>
+      <button data-key="5">5</button>
+      <button data-key="6">6</button>
+      <button data-key="7">7</button>
+      <button data-key="8">8</button>
+      <button data-key="9">9</button>
+      <button data-key="clear" class="key-alt">C</button>
+      <button data-key="0">0</button>
+      <button data-key="back" class="key-alt" aria-label="Wissen">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 5H8l-5 7 5 7h13z"/><path d="m18 9-6 6M12 9l6 6"/></svg>
+      </button>
+    </div>
+
+    <button class="primary" id="chargeBtn" disabled>Aanrekenen</button>
+    <p class="note" id="modeNote"></p>
+  </section>
+
+  <!-- ============ Scherm 2: klant laat scannen ============ -->
+  <section class="screen" id="screenPay" hidden>
+    <header class="top">
+      <button class="link-btn" id="cancelBtn">← Annuleren</button>
+      <span class="pay-amount" id="payAmount"></span>
+    </header>
+
+    <div class="scan">
+      <h1 class="scan-title">Laat de klant scannen</h1>
+      <p class="scan-sub">Camera openen en de code richten. Betalen met Bancontact of kaart.</p>
+
+      <div class="qr-frame">
+        <img id="qrImage" alt="QR-code om te betalen" width="260" height="260">
+      </div>
+
+      <div class="status" id="status">
+        <span class="spinner"></span>
+        <span id="statusText">Wachten op betaling…</span>
+      </div>
+
+      <a class="link-btn wide" id="openLink" target="_blank" rel="noopener noreferrer">
+        Of open de betaalpagina op dit toestel
+      </a>
+    </div>
+  </section>
+
+  <!-- ============ Scherm 3: betaald ============ -->
+  <section class="screen center" id="screenDone" hidden>
+    <div class="done">
+      <div class="check">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 12 6 6L20 6"/></svg>
+      </div>
+      <h1>Betaald</h1>
+      <p class="done-amount" id="doneAmount"></p>
+      <p class="done-sub" id="doneSub"></p>
+      <button class="primary" id="newRideBtn">Volgende rit</button>
+    </div>
+  </section>
+
+  <!-- ============ Scherm 4: dagoverzicht ============ -->
+  <section class="screen" id="screenDay" hidden>
+    <header class="top">
+      <button class="link-btn" id="closeDayBtn">← Terug</button>
+      <span>Vandaag</span>
+    </header>
+
+    <div class="day-total">
+      <div class="display-label">Ontvangen vandaag</div>
+      <output class="amount" id="dayTotal">€ 0,00</output>
+      <div class="display-label" id="dayCount"></div>
+    </div>
+
+    <ul class="rides" id="rides"></ul>
+  </section>
+</div>
+
+<div class="toast" id="toast" hidden></div>
+
+<script src="app.js"></script>
+</body>
+</html>

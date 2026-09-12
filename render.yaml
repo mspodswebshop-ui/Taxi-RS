@@ -25,3 +25,24 @@ services:
         sync: false
       - key: NODE_VERSION
         value: "22"
+
+  - type: web
+    name: taxi-betaalterminal
+    runtime: node
+    plan: free
+    rootDir: betaal-app
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/config
+    envVars:
+      # sync: false betekent dat Render deze waarde aan jou vraagt en hem niet
+      # in dit bestand opslaat. Zet je sleutel dus nooit hieronder.
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      # Het adres dat Render je geeft; de klant komt hier terug na het betalen.
+      - key: BASE_URL
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
+      - key: NODE_VERSION
+        value: "22"
