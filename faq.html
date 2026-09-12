@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Veelgestelde vragen — Weblity</title>
+
+<meta name="description" content="Antwoorden op de vragen die ondernemers ons het vaakst stellen over prijzen, levertijd en onderhoud.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Weblity">
+<meta property="og:title" content="Veelgestelde vragen — Weblity">
+<meta property="og:description" content="Antwoorden op de vragen die ondernemers ons het vaakst stellen over prijzen, levertijd en onderhoud.">
+<meta property="og:image" content="og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Veelgestelde vragen — Weblity">
+<meta name="twitter:description" content="Antwoorden op de vragen die ondernemers ons het vaakst stellen over prijzen, levertijd en onderhoud.">
+<meta name="twitter:image" content="og-image.png">
+<meta name="theme-color" content="#06070c">
+
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="icon" href="favicon.png" sizes="180x180">
+<link rel="apple-touch-icon" href="favicon.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap"></noscript>
+<script>(function(){var d=document.documentElement;d.className+=' js';try{if(sessionStorage.getItem('wbl'))d.className+=' seen';sessionStorage.setItem('wbl','1');}catch(e){}})();</script>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="loader" id="loader">
+  <div class="loader-inner">
+    <div class="loader-logo">Weblity</div>
+    <div class="loader-bar"><i></i></div>
+    <div class="loader-pct" id="loader-pct">0%</div>
+  </div>
+</div>
+
+<div class="progress"></div>
+<canvas id="particles" aria-hidden="true"></canvas>
+<div class="aurora"><span class="a1"></span><span class="a2"></span><span class="a3"></span></div>
+<div class="spotlight"></div>
+<div class="grain"></div>
+
+<nav id="nav">
+  <a class="logo" href="index.html">
+    <span class="logo-mark">W</span>
+    <span class="logo-text">Weblity</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="diensten.html">Diensten</a></li>
+    <li><a href="werk.html">Werk</a></li>
+    <li><a href="prijzen.html">Prijzen</a></li>
+    <li><a href="reviews.html">Reviews</a></li>
+    <li><a href="faq.html" class="active">FAQ</a></li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+  <a class="nav-cta" href="boeken.html">Boek een gesprek</a>
+  <button class="nav-toggle" id="nav-toggle" type="button" aria-label="Menu openen" aria-expanded="false" aria-controls="mobile-menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<div class="menu" id="mobile-menu">
+  <ul>
+    <li style="--i:0"><a href="index.html"><span class="menu-num">01</span>Home</a></li>
+    <li style="--i:1"><a href="diensten.html"><span class="menu-num">02</span>Diensten</a></li>
+    <li style="--i:2"><a href="werk.html"><span class="menu-num">03</span>Werk</a></li>
+    <li style="--i:3"><a href="prijzen.html"><span class="menu-num">04</span>Prijzen</a></li>
+    <li style="--i:4"><a href="reviews.html"><span class="menu-num">05</span>Reviews</a></li>
+    <li style="--i:5"><a href="faq.html" class="active"><span class="menu-num">06</span>FAQ</a></li>
+    <li style="--i:6"><a href="contact.html"><span class="menu-num">07</span>Contact</a></li>
+    <li style="--i:7"><a href="boeken.html"><span class="menu-num">08</span>Boeken</a></li>
+  </ul>
+  <div class="menu-foot">
+    <a class="btn btn-primary" href="boeken.html">Boek een gesprek</a>
+    <a class="btn btn-ghost" href="tel:+32469226035">0469 22 60 35</a>
+  </div>
+</div>
+
+<header class="page-hero">
+  <span class="eyebrow"><i class="dot"></i> <span data-scramble>Veelgesteld</span></span>
+  <h1>
+    <span class="word" style="--d:.3"><span>Alles</span></span>
+    <span class="word" style="--d:.36"><span>wat</span></span>
+    <span class="word" style="--d:.42"><span>je</span></span>
+    <span class="word" style="--d:.48"><span class="gradient-text">wil</span></span>
+    <span class="word" style="--d:.54"><span class="gradient-text">weten</span></span>
+  </h1>
+  <p class="lead">De vragen die ondernemers ons het vaakst stellen, met een eerlijk antwoord.</p>
+</header>
+
+<main>
+
+<section class="section section-tight">
+  <div class="faq">
+    <div class="faq-item reveal" style="--i:0">
+      <button class="faq-q" type="button" aria-expanded="false">
+        <span>Wat kost een website bij Weblity?</span>
+        <span class="faq-icon" aria-hidden="true"></span>
+      </button>
+      <div class="faq-a"><div><p>Een website kost €200 eenmalig. Een webshop met boekingssysteem is €300, en een los boekingssysteem €200. Daar komt alleen de jaarlijkse kost voor domeinnaam en hosting bij, vanaf €20 per jaar.</p></div></div>
+    </div>
+    <div class="faq-item reveal" style="--i:1">
+      <button class="faq-q" type="button" aria-expanded="false">
+        <span>Zijn er maandelijkse kosten?</span>
+        <span class="faq-icon" aria-hidden="true"></span>
+      </button>
+      <div class="faq-a"><div><p>Nee. Je betaalt het pakket eenmalig. De enige terugkerende kost is domeinnaam en hosting, en die betaal je per jaar.</p></div></div>
+    </div>
+    <div class="faq-item reveal" style="--i:2">
+      <button class="faq-q" type="button" aria-expanded="false">
+        <span>Hoe snel staat mijn site online?</span>
+        <span class="faq-icon" aria-hidden="true"></span>
+      </button>
+      <div class="faq-a"><div><p>Meestal binnen enkele dagen na ons eerste gesprek. Hoe sneller we je teksten, foto's en logo hebben, hoe sneller je live staat.</p></div></div>
+    </div>
+    <div class="faq-item reveal" style="--i:3">
+      <button class="faq-q" type="button" aria-expanded="false">
+        <span>Moet ik zelf teksten schrijven?</span>
+        <span class="faq-icon" aria-hidden="true"></span>
+      </button>
+      <div class="faq-a"><div><p>Dat mag, maar het hoeft niet. Lever aan wat je hebt, en we helpen je met de rest zodat het vlot leest.</p></div></div>
+    </div>
+    <div class="faq-item reveal" style="--i:4">
+      <button class="faq-q" type="button" aria-expanded="false">
+        <span>Kan ik later nog dingen laten aanpassen?</span>
+        <span class="faq-icon" aria-hidden="true"></span>
+      </button>
+      <div class="faq-a"><div><p>Zeker. Kleine aanpassingen doen we snel, en je kan altijd later een webshop of boekingssysteem laten toevoegen aan je bestaande website.</p></div></div>
+    </div>
+    <div class="faq-item reveal" style="--i:5">
+      <button class="faq-q" type="button" aria-expanded="false">
+        <span>Wat is een domeinnaam precies?</span>
+        <span class="faq-icon" aria-hidden="true"></span>
+      </button>
+      <div class="faq-a"><div><p>Dat is je adres op het internet, bijvoorbeeld jouwbedrijf.be. Wij regelen dit graag mee, zodat je er zelf niets aan hoeft te doen.</p></div></div>
+    </div>
+    <div class="faq-item reveal" style="--i:5">
+      <button class="faq-q" type="button" aria-expanded="false">
+        <span>Werkt mijn site ook goed op een telefoon?</span>
+        <span class="faq-icon" aria-hidden="true"></span>
+      </button>
+      <div class="faq-a"><div><p>Ja. Elke site die we bouwen wordt gemaakt en getest voor telefoon, tablet en computer.</p></div></div>
+    </div>
+    <div class="faq-item reveal" style="--i:5">
+      <button class="faq-q" type="button" aria-expanded="false">
+        <span>Hoe werkt het boekingssysteem?</span>
+        <span class="faq-icon" aria-hidden="true"></span>
+      </button>
+      <div class="faq-a"><div><p>Je klanten vullen op je site hun gegevens en gewenste moment in. Die aanvraag komt vervolgens netjes bij jou binnen, zodat je enkel nog hoeft te bevestigen.</p></div></div>
+    </div>
+    <div class="faq-item reveal" style="--i:5">
+      <button class="faq-q" type="button" aria-expanded="false">
+        <span>Hoe kan ik jullie bereiken?</span>
+        <span class="faq-icon" aria-hidden="true"></span>
+      </button>
+      <div class="faq-a"><div><p>Bel of app naar 0469 22 60 35. We reageren meestal binnen enkele uren, ook in het weekend.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="cta reveal-scale">
+    <div>
+      <h2>Staat jouw vraag er niet bij?</h2>
+      <p>Bel of app ons gerust. Je krijgt gewoon een eerlijk antwoord, ook als we je niet verder kunnen helpen.</p>
+    </div>
+    <div class="cta-actions">
+      <a class="btn btn-primary" href="tel:+32469226035">Bel 0469 22 60 35</a>
+      <a class="btn btn-ghost" href="https://wa.me/32469226035">WhatsApp ons</a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <a class="logo" href="index.html"><span class="logo-mark">W</span><span class="logo-text">Weblity</span></a>
+      <p>Moderne websites, webshops en boekingssystemen voor ondernemers — snel geleverd en eerlijk geprijsd.</p>
+    </div>
+    <div class="footer-col">
+      <h5>Pagina's</h5>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="diensten.html">Diensten</a></li>
+        <li><a href="werk.html">Werk</a></li>
+        <li><a href="prijzen.html">Prijzen</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h5>Meer</h5>
+      <ul>
+        <li><a href="reviews.html">Reviews</a></li>
+        <li><a href="faq.html">FAQ</a></li>
+        <li><a href="contact.html">Contact</a></li>
+        <li><a href="boeken.html">Boeken</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h5>Contact</h5>
+      <ul>
+        <li><a href="tel:+32469226035">0469 22 60 35</a></li>
+        <li><a href="https://wa.me/32469226035">WhatsApp ons</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>&copy; 2026 Weblity — Alle rechten voorbehouden</span>
+    <span>Domein &amp; hosting vanaf €20 per jaar</span>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Boeken — Weblity</title>
+
+<meta name="description" content="Vul het formulier in en boek gratis een kennismakingsgesprek met Weblity via WhatsApp of telefoon.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Weblity">
+<meta property="og:title" content="Boeken — Weblity">
+<meta property="og:description" content="Vul het formulier in en boek gratis een kennismakingsgesprek met Weblity via WhatsApp of telefoon.">
+<meta property="og:image" content="og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Boeken — Weblity">
+<meta name="twitter:description" content="Vul het formulier in en boek gratis een kennismakingsgesprek met Weblity via WhatsApp of telefoon.">
+<meta name="twitter:image" content="og-image.png">
+<meta name="theme-color" content="#06070c">
+
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="icon" href="favicon.png" sizes="180x180">
+<link rel="apple-touch-icon" href="favicon.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap"></noscript>
+<script>(function(){var d=document.documentElement;d.className+=' js';try{if(sessionStorage.getItem('wbl'))d.className+=' seen';sessionStorage.setItem('wbl','1');}catch(e){}})();</script>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="loader" id="loader">
+  <div class="loader-inner">
+    <div class="loader-logo">Weblity</div>
+    <div class="loader-bar"><i></i></div>
+    <div class="loader-pct" id="loader-pct">0%</div>
+  </div>
+</div>
+
+<div class="progress"></div>
+<canvas id="particles" aria-hidden="true"></canvas>
+<div class="aurora"><span class="a1"></span><span class="a2"></span><span class="a3"></span></div>
+<div class="spotlight"></div>
+<div class="grain"></div>
+
+<nav id="nav">
+  <a class="logo" href="index.html">
+    <span class="logo-mark">W</span>
+    <span class="logo-text">Weblity</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="diensten.html">Diensten</a></li>
+    <li><a href="werk.html">Werk</a></li>
+    <li><a href="prijzen.html">Prijzen</a></li>
+    <li><a href="reviews.html">Reviews</a></li>
+    <li><a href="faq.html">FAQ</a></li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+  <a class="nav-cta" href="boeken.html">Boek een gesprek</a>
+  <button class="nav-toggle" id="nav-toggle" type="button" aria-label="Menu openen" aria-expanded="false" aria-controls="mobile-menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<div class="menu" id="mobile-menu">
+  <ul>
+    <li style="--i:0"><a href="index.html"><span class="menu-num">01</span>Home</a></li>
+    <li style="--i:1"><a href="diensten.html"><span class="menu-num">02</span>Diensten</a></li>
+    <li style="--i:2"><a href="werk.html"><span class="menu-num">03</span>Werk</a></li>
+    <li style="--i:3"><a href="prijzen.html"><span class="menu-num">04</span>Prijzen</a></li>
+    <li style="--i:4"><a href="reviews.html"><span class="menu-num">05</span>Reviews</a></li>
+    <li style="--i:5"><a href="faq.html"><span class="menu-num">06</span>FAQ</a></li>
+    <li style="--i:6"><a href="contact.html"><span class="menu-num">07</span>Contact</a></li>
+    <li style="--i:7"><a href="boeken.html" class="active"><span class="menu-num">08</span>Boeken</a></li>
+  </ul>
+  <div class="menu-foot">
+    <a class="btn btn-primary" href="boeken.html">Boek een gesprek</a>
+    <a class="btn btn-ghost" href="tel:+32469226035">0469 22 60 35</a>
+  </div>
+</div>
+
+<header class="page-hero">
+  <span class="eyebrow"><i class="dot"></i> Boekingssysteem</span>
+  <h1>
+    <span class="word" style="--d:.3"><span>Boek</span></span>
+    <span class="word" style="--d:.36"><span>een</span></span>
+    <span class="word" style="--d:.42"><span class="gradient-text">gratis</span></span>
+    <span class="word" style="--d:.48"><span class="gradient-text">kennismaking</span></span>
+  </h1>
+  <p class="lead">Vul het formulier hieronder volledig in. Bij verzenden opent WhatsApp met je aanvraag al ingevuld.</p>
+</header>
+
+<main>
+
+<section class="section section-tight">
+  <div class="booking-grid">
+
+    <div class="panel reveal">
+      <form class="form" id="booking-form" novalidate>
+        <div class="field">
+          <label for="naam">Naam</label>
+          <input type="text" id="naam" name="naam" placeholder="Je naam" required>
+        </div>
+        <div class="field">
+          <label for="telefoon">Telefoonnummer</label>
+          <input type="tel" id="telefoon" name="telefoon" placeholder="04XX XX XX XX" required>
+        </div>
+        <div class="field">
+          <label for="dienst">Gewenste dienst</label>
+          <select id="dienst" name="dienst">
+            <option value="website">Website — €200</option>
+            <option value="webshop">Webshop + boekingssysteem — €300</option>
+            <option value="boeking">Boekingssysteem — €200</option>
+            <option value="anders">Iets anders / weet ik nog niet</option>
+          </select>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label for="datum">Gewenste datum</label>
+            <input type="date" id="datum" name="datum">
+          </div>
+          <div class="field">
+            <label for="tijd">Gewenste tijd</label>
+            <input type="time" id="tijd" name="tijd">
+          </div>
+        </div>
+        <div class="field">
+          <label for="bericht">Bericht (optioneel)</label>
+          <textarea id="bericht" name="bericht" placeholder="Vertel kort iets over je bedrijf of wat je zoekt..."></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary btn-lg">Boek via WhatsApp</button>
+        <div class="form-confirm" id="booking-confirm">
+          <span>✅</span>
+          <span>Bedankt! WhatsApp opent met je aanvraag — stuur het bericht door en we bevestigen je afspraak zo snel mogelijk.</span>
+        </div>
+      </form>
+    </div>
+
+    <div class="panel reveal" style="--i:1">
+      <h3 style="margin:0 0 8px;font-size:1.2rem;">Liever direct contact?</h3>
+      <p style="color:var(--muted);margin:0 0 18px;font-size:.95rem;">Bel of app ons rechtstreeks, we helpen je graag verder.</p>
+
+      <a class="contact-line" href="tel:+32469226035">
+        <span class="ico">📞</span>
+        <span><span class="who">Bellen</span><strong>0469 22 60 35</strong></span>
+      </a>
+      <a class="contact-line" href="https://wa.me/32469226035">
+        <span class="ico">💬</span>
+        <span><span class="who">WhatsApp</span><strong>Stuur een bericht</strong></span>
+      </a>
+
+      <p style="color:var(--muted);margin:20px 0 0;font-size:.9rem;">We reageren meestal binnen enkele uren, ook in het weekend.</p>
+    </div>
+
+  </div>
+</section>
+
+<section class="section section-tight">
+  <div class="section-head reveal">
+    <span class="eyebrow"><i class="dot"></i> Zo werkt het</span>
+    <h2>Van formulier tot afspraak</h2>
+  </div>
+  <div class="grid grid-3">
+    <div class="step reveal" style="--i:0">
+      <div class="num">01</div>
+      <h4>Invullen</h4>
+      <p>Je vult je gegevens en gewenste moment in op deze pagina.</p>
+    </div>
+    <div class="step reveal" style="--i:1">
+      <div class="num">02</div>
+      <h4>Versturen</h4>
+      <p>WhatsApp opent met alles al ingevuld — jij drukt op verzenden.</p>
+    </div>
+    <div class="step reveal" style="--i:2">
+      <div class="num">03</div>
+      <h4>Bevestiging</h4>
+      <p>We bevestigen je afspraak, meestal binnen enkele uren.</p>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <a class="logo" href="index.html"><span class="logo-mark">W</span><span class="logo-text">Weblity</span></a>
+      <p>Moderne websites, webshops en boekingssystemen voor ondernemers — snel geleverd en eerlijk geprijsd.</p>
+    </div>
+    <div class="footer-col">
+      <h5>Pagina's</h5>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="diensten.html">Diensten</a></li>
+        <li><a href="werk.html">Werk</a></li>
+        <li><a href="prijzen.html">Prijzen</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h5>Meer</h5>
+      <ul>
+        <li><a href="reviews.html">Reviews</a></li>
+        <li><a href="faq.html">FAQ</a></li>
+        <li><a href="contact.html">Contact</a></li>
+        <li><a href="boeken.html">Boeken</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h5>Contact</h5>
+      <ul>
+        <li><a href="tel:+32469226035">0469 22 60 35</a></li>
+        <li><a href="https://wa.me/32469226035">WhatsApp ons</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>&copy; 2026 Weblity — Alle rechten voorbehouden</span>
+    <span>Domein &amp; hosting vanaf €20 per jaar</span>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
