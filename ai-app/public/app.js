@@ -733,6 +733,62 @@ ui.chatTitle.addEventListener("keydown", (e) => {
 
 /* ---------------------- Versturen en streamen ---------------------- */
 
+// === NETWERKLAAG: begin ===
+/**
+ * Vraagt een antwoord op bij de server en roept `onEvent` aan voor elke
+ * gebeurtenis die binnenkomt.
+ *
+ * Dit is het enige deel van de frontend dat verschilt tussen de serverversie
+ * en het losse HTML-bestand; build-standalone.mjs vervangt precies dit blok.
+ */
+async function requestAnswer(payload, onEvent) {
+  const { signal, ...body } = payload;
+
+  const res = await fetch("/api/chat", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    signal,
+    body: JSON.stringify(body),
+  });
+
+  if (!res.ok) {
+    // Fouten voor de stream komen terug als gewone JSON.
+    const info = await res.json().catch(() => ({}));
+    throw new Error(info.error || `Serverfout (${res.status}).`);
+  }
+
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+
+  // Server-Sent Events uitlezen: blokken gescheiden door een lege regel.
+  while (true) {
+    const { value, done } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+
+    const parts = buffer.split("\n\n");
+    buffer = parts.pop() ?? "";
+
+    for (const part of parts) {
+      const line = part.split("\n").find((l) => l.startsWith("data: "));
+      if (!line) continue;
+
+      let event;
+      try {
+        event = JSON.parse(line.slice(6));
+      } catch {
+        continue;
+      }
+
+      onEvent(event);
+      if (event.type === "done" || event.type === "error") return;
+    }
+  }
+}
+// === NETWERKLAAG: einde ===
+
+
 function setBusy(busy) {
   ui.sendBtn.hidden = busy;
   ui.stopBtn.hidden = !busy;
@@ -822,48 +878,15 @@ async function streamAnswer(chat, { restoreOnFailure = null, wasFirstMessage = f
   setBusy(true);
 
   try {
-    const res = await fetch("/api/chat", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      signal: controller.signal,
-      body: JSON.stringify({
+    await requestAnswer(
+      {
         messages: buildHistory(chat, model),
         system: prefs.system ?? undefined,
         model,
         effort: currentEffort(),
-      }),
-    });
-
-    if (!res.ok) {
-      // Fouten voor de stream komen terug als gewone JSON.
-      const body = await res.json().catch(() => ({}));
-      throw new Error(body.error || `Serverfout (${res.status}).`);
-    }
-
-    const reader = res.body.getReader();
-    const decoder = new TextDecoder();
-    let buffer = "";
-
-    // Server-Sent Events uitlezen: blokken gescheiden door een lege regel.
-    readLoop: while (true) {
-      const { value, done } = await reader.read();
-      if (done) break;
-      buffer += decoder.decode(value, { stream: true });
-
-      const parts = buffer.split("\n\n");
-      buffer = parts.pop() ?? "";
-
-      for (const part of parts) {
-        const line = part.split("\n").find((l) => l.startsWith("data: "));
-        if (!line) continue;
-
-        let event;
-        try {
-          event = JSON.parse(line.slice(6));
-        } catch {
-          continue;
-        }
-
+        signal: controller.signal,
+      },
+      (event) => {
         if (event.type === "text") {
           answer += event.text;
           pending.remove();
@@ -889,13 +912,11 @@ async function streamAnswer(chat, { restoreOnFailure = null, wasFirstMessage = f
           if (event.stopReason === "max_tokens") {
             toast("Het antwoord is afgekapt omdat het maximum bereikt was.");
           }
-          break readLoop;
         } else if (event.type === "error") {
           failed = event.message;
-          break readLoop;
         }
-      }
-    }
+      },
+    );
   } catch (err) {
     if (err.name !== "AbortError") {
       failed = err.message || "Er ging iets mis bij het versturen.";
