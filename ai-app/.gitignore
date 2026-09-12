@@ -1,0 +1,11 @@
+node_modules/
+.env
+.env.local
+npm-debug.log*
+.DS_Store
+
+# Wordt gebouwd met: npm run build
+mijn-ai.html
+
+# Bevat je abonnees
+abonnees.json

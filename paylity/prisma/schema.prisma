@@ -1,0 +1,301 @@
+// Paylity - databaseschema
+//
+// Uitgangspunt: hier staan NOOIT kaartnummers, CVC/CVV, pincodes, IBAN's of
+// bankwachtwoorden in. Van een betaling bewaren we alleen het bedrag, de
+// gekozen methode, de status en de referentie van de betaalprovider. De
+// gevoelige gegevens horen bij de provider thuis, niet bij ons.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/* ---------------------------------------------------------------- */
+/* Gebruikers en bedrijven                                          */
+/* ---------------------------------------------------------------- */
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String
+  // Alleen de hash van het wachtwoord, nooit het wachtwoord zelf.
+  passwordHash String   @map("password_hash")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  businesses Business[]
+  sessions   Session[]
+
+  @@index([email])
+  @@map("users")
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  // De sessiesleutel staat gehasht in de database. Lekt de database, dan
+  // kan niemand er een geldige sessie mee overnemen.
+  tokenHash String   @unique @map("token_hash")
+  userId    String   @map("user_id")
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("sessions")
+}
+
+model Business {
+  id          String   @id @default(cuid())
+  name        String
+  email       String
+  country     String   @default("BE")
+  currency    String   @default("EUR")
+  // Paylity draait voorlopig alleen in testmodus.
+  mode        String   @default("test")
+  ownerId     String   @map("owner_id")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  owner        User          @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  customers    Customer[]
+  orders       Order[]
+  payments     Payment[]
+  paymentLinks PaymentLink[]
+  invoices     Invoice[]
+  apiKeys      ApiKey[]
+  webhookEvents WebhookEvent[]
+
+  @@index([ownerId])
+  @@map("businesses")
+}
+
+/* ---------------------------------------------------------------- */
+/* Klanten en bestellingen                                          */
+/* ---------------------------------------------------------------- */
+
+model Customer {
+  id         String   @id @default(cuid())
+  businessId String   @map("business_id")
+  name       String
+  email      String
+  phone      String?
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  business Business  @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  orders   Order[]
+  payments Payment[]
+  invoices Invoice[]
+
+  @@unique([businessId, email])
+  @@index([businessId])
+  @@map("customers")
+}
+
+model Order {
+  id          String   @id @default(cuid())
+  businessId  String   @map("business_id")
+  customerId  String?  @map("customer_id")
+  reference   String
+  description String?
+  // Bedragen staan in centen als geheel getal. Rekenen met kommagetallen
+  // levert afrondingsfouten op, en dat wil je niet in een bedrag.
+  amount      Int
+  currency    String   @default("EUR")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  business Business  @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  customer Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  payments Payment[]
+
+  @@unique([businessId, reference])
+  @@index([businessId])
+  @@index([customerId])
+  @@map("orders")
+}
+
+/* ---------------------------------------------------------------- */
+/* Betalingen                                                        */
+/* ---------------------------------------------------------------- */
+
+enum PaymentStatus {
+  pending
+  paid
+  failed
+  refunded
+  cancelled
+}
+
+enum PaymentMethod {
+  bancontact
+  card
+}
+
+model Payment {
+  id            String        @id @default(cuid())
+  businessId    String        @map("business_id")
+  orderId       String?       @map("order_id")
+  customerId    String?       @map("customer_id")
+  paymentLinkId String?       @map("payment_link_id")
+
+  amount        Int
+  currency      String        @default("EUR")
+  method        PaymentMethod?
+  status        PaymentStatus @default(pending)
+  description   String?
+
+  // Welke betaalprovider dit afhandelde, en diens eigen referentie. Nu is dat
+  // de gesimuleerde provider; later kan hier een erkende provider staan.
+  provider          String  @default("simulated")
+  providerPaymentId String? @map("provider_payment_id")
+  failureReason     String? @map("failure_reason")
+
+  refundedAmount Int       @default(0) @map("refunded_amount")
+  paidAt         DateTime? @map("paid_at")
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+
+  business    Business     @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  order       Order?       @relation(fields: [orderId], references: [id], onDelete: SetNull)
+  customer    Customer?    @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  paymentLink PaymentLink? @relation(fields: [paymentLinkId], references: [id], onDelete: SetNull)
+  refunds     Refund[]
+
+  @@index([businessId])
+  @@index([businessId, status])
+  @@index([businessId, createdAt])
+  @@index([orderId])
+  @@index([customerId])
+  @@index([paymentLinkId])
+  @@index([providerPaymentId])
+  @@map("payments")
+}
+
+model Refund {
+  id        String   @id @default(cuid())
+  paymentId String   @map("payment_id")
+  amount    Int
+  reason    String?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  payment Payment @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+
+  @@index([paymentId])
+  @@map("refunds")
+}
+
+/* ---------------------------------------------------------------- */
+/* Betaallinks                                                       */
+/* ---------------------------------------------------------------- */
+
+model PaymentLink {
+  id          String   @id @default(cuid())
+  businessId  String   @map("business_id")
+  // De publieke sleutel uit de URL, bijvoorbeeld pl_a1b2c3.
+  slug        String   @unique
+  title       String
+  description String?
+  amount      Int
+  currency    String   @default("EUR")
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  business Business  @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  payments Payment[]
+
+  @@index([businessId])
+  @@index([slug])
+  @@map("payment_links")
+}
+
+/* ---------------------------------------------------------------- */
+/* Facturen                                                          */
+/* ---------------------------------------------------------------- */
+
+enum InvoiceStatus {
+  draft
+  open
+  paid
+  void
+}
+
+model Invoice {
+  id          String        @id @default(cuid())
+  businessId  String        @map("business_id")
+  customerId  String        @map("customer_id")
+  number      String
+  amount      Int
+  currency    String        @default("EUR")
+  status      InvoiceStatus @default(draft)
+  description String?
+  dueAt       DateTime?     @map("due_at")
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@unique([businessId, number])
+  @@index([businessId])
+  @@index([customerId])
+  @@map("invoices")
+}
+
+/* ---------------------------------------------------------------- */
+/* API-sleutels                                                      */
+/* ---------------------------------------------------------------- */
+
+model ApiKey {
+  id         String    @id @default(cuid())
+  businessId String    @map("business_id")
+  name       String
+  // Alleen de hash van de geheime sleutel wordt bewaard. De sleutel zelf is
+  // eenmalig zichtbaar bij het aanmaken en daarna niet meer op te vragen.
+  keyHash    String    @unique @map("key_hash")
+  // De eerste tekens, om hem in de lijst te kunnen herkennen (sk_test_abcd...).
+  keyPrefix  String    @map("key_prefix")
+  mode       String    @default("test")
+  lastUsedAt DateTime? @map("last_used_at")
+  revokedAt  DateTime? @map("revoked_at")
+  createdAt  DateTime  @default(now()) @map("created_at")
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@index([businessId])
+  @@index([keyPrefix])
+  @@map("api_keys")
+}
+
+/* ---------------------------------------------------------------- */
+/* Webhooks                                                          */
+/* ---------------------------------------------------------------- */
+
+model WebhookEvent {
+  id           String    @id @default(cuid())
+  businessId   String    @map("business_id")
+  type         String
+  payload      Json
+  // Handtekening waarmee de ontvanger kan controleren dat het bericht
+  // werkelijk van Paylity komt.
+  signature    String
+  delivered    Boolean   @default(false)
+  attempts     Int       @default(0)
+  lastError    String?   @map("last_error")
+  deliveredAt  DateTime? @map("delivered_at")
+  createdAt    DateTime  @default(now()) @map("created_at")
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@index([businessId])
+  @@index([businessId, type])
+  @@index([delivered])
+  @@map("webhook_events")
+}

@@ -1,0 +1,58 @@
+# Configuratie voor Render (https://render.com).
+#
+# Render draait server.js als een gewone, doorlopende Node-server. Daardoor
+# geldt er geen tijdslimiet van een paar seconden per verzoek, zoals bij
+# serverless functies. Dat is de reden om hiervoor te kiezen als je Fable 5.1
+# op hoge denkkracht wilt gebruiken: die antwoorden duren vaak langer dan een
+# serverless functie mag draaien.
+#
+# Gebruik: maak een account op render.com, kies "New > Blueprint" en wijs deze
+# repository aan. Vul daarna ANTHROPIC_API_KEY in bij de omgevingsvariabelen.
+
+services:
+  - type: web
+    name: mijn-ai
+    runtime: node
+    plan: free
+    rootDir: ai-app
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/config
+    envVars:
+      # sync: false betekent dat Render deze waarde aan jou vraagt en hem niet
+      # in dit bestand opslaat. Zet je sleutel dus nooit hieronder.
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      # Alleen nodig als je abonnementen wilt. Laat leeg voor vrije toegang.
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_PRICE_ID
+        sync: false
+      # Het adres dat Render je geeft; Stripe stuurt de klant hierheen terug.
+      - key: BASE_URL
+        sync: false
+      - key: NODE_ENV
+        value: production
+      - key: NODE_VERSION
+        value: "22"
+
+  - type: web
+    name: taxi-betaalterminal
+    runtime: node
+    plan: free
+    rootDir: betaal-app
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/config
+    envVars:
+      # sync: false betekent dat Render deze waarde aan jou vraagt en hem niet
+      # in dit bestand opslaat. Zet je sleutel dus nooit hieronder.
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      # Het adres dat Render je geeft; de klant komt hier terug na het betalen.
+      - key: BASE_URL
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
+      - key: NODE_VERSION
+        value: "22"
