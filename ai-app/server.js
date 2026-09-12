@@ -383,6 +383,17 @@ app.post("/api/chat", rateLimit, async (req, res) => {
   }
 });
 
+// Onbekend API-pad: een nette JSON-fout in plaats van een HTML-pagina.
+app.use("/api", (_req, res) => {
+  res.status(404).json({ error: "Onbekend API-pad." });
+});
+
+// Elk ander onbekend pad toont gewoon de app. Zo krijg je geen kale
+// "Page not found" meer als je bijvoorbeeld /index.html of /chat intikt.
+app.use((_req, res) => {
+  res.sendFile(path.join(here, "public", "index.html"));
+});
+
 app.listen(PORT, () => {
   console.log(`AI-app draait op http://localhost:${PORT}`);
   console.log(`Standaardmodel: ${DEFAULT_MODEL} (denkkracht: ${DEFAULT_EFFORT})`);
