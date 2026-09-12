@@ -166,6 +166,69 @@ variabelen, gescheiden voor het lichte en het donkere thema.
 
 ---
 
+## Abonnementen (optioneel)
+
+Wil je dat anderen voor de app betalen, dan kun je er abonnementen op zetten.
+Staat Stripe niet ingesteld, dan is de app gewoon vrij toegankelijk — je hoeft
+dus geen abonnement op je eigen app te nemen.
+
+**Dit werkt alleen in de serverversie.** Het losse HTML-bestand kan niet
+controleren of iemand betaald heeft: die controle staat op de server, want in
+de browser zou een bezoeker hem gewoon kunnen uitzetten.
+
+### Instellen
+
+1. Maak een account op [stripe.com](https://stripe.com).
+2. Maak onder **Producten** een product met een terugkerende prijs,
+   bijvoorbeeld € 9 per maand. Kopieer het prijs-id (begint met `price_`).
+3. Haal je geheime sleutel op bij
+   [dashboard.stripe.com/apikeys](https://dashboard.stripe.com/apikeys).
+4. Zet beide in `.env`:
+
+```
+STRIPE_SECRET_KEY=sk_test_...
+STRIPE_PRICE_ID=price_...
+STRIPE_PROEFDAGEN=0
+BASE_URL=http://localhost:3000
+```
+
+Begin met de **testsleutel** (`sk_test_`). Alles werkt dan hetzelfde, maar er
+wordt geen echt geld overgemaakt. Testen doe je met kaart
+`4242 4242 4242 4242`, een datum in de toekomst en willekeurige cijfers.
+
+### Hoe het werkt
+
+- Wie niet betaald heeft, krijgt een betaalscherm en kan niet chatten. Het
+  invoerveld staat uit en de server weigert het verzoek ook los daarvan.
+- Na het afrekenen krijgt de bezoeker een cookie met een niet te raden code.
+  Bij elk verzoek zoekt de server die op en vraagt hij (hooguit eens per
+  minuut) aan Stripe of het abonnement nog loopt.
+- **Toegang wordt nooit in de browser bepaald.** De controle gebeurt op de
+  server, bij elk verzoek aan de assistent.
+- Dezelfde code staat bij Instellingen als **toegangscode**, zodat iemand op
+  een tweede apparaat naar binnen kan zonder dat jij e-mail hoeft te versturen.
+  Behandel hem als een wachtwoord.
+- Opzeggen, facturen en betaalgegevens wijzigen doet Stripe zelf, via de knop
+  **Abonnement beheren**.
+- Zegt iemand op, dan houdt hij toegang tot het einde van de betaalde periode.
+  Dat is wat hij betaald heeft. Een stopgezet abonnement vervalt binnen een
+  minuut (aan te passen met `ABO_CACHE_MS`).
+
+### Voordat je echt geld ontvangt
+
+Stripe vraagt om je ondernemingsnummer (KBO), bankrekening en een
+identiteitsbewijs. Dat is wettelijk verplicht. Daarna zet je de live sleutel
+(`sk_live_...`) in de omgevingsvariabelen van je hoster, en `BASE_URL` op het
+echte adres van de app — anders komt de klant na het betalen op een
+foutpagina terecht.
+
+Abonnees staan in `abonnees.json` naast de app. Draait dit bij een hoster, dan
+kan zo'n bestand bij een herstart verdwijnen; je abonnees raken dan hun
+toegangscode kwijt (hun abonnement bij Stripe blijft gewoon lopen). Wil je dat
+uitsluiten, dan is een database de volgende stap.
+
+---
+
 ## Online zetten
 
 Wil je een echte link in plaats van `localhost`, dan zijn er twee routes. Het

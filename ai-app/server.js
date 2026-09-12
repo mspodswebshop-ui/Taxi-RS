@@ -15,6 +15,19 @@ import {
   publicConfig,
   toSSE,
 } from "./lib/chat-core.js";
+import {
+  beheerLink,
+  codeBestaat,
+  heeftStripe,
+  prijsInfo,
+  standVanAbonnement,
+  startAfrekenen,
+  tokenUitVerzoek,
+  vergeetCache,
+  verwerkTerugkeer,
+  wisCookie,
+  zetCookie,
+} from "./lib/abonnement.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const PORT = Number(process.env.PORT || 3000);
@@ -59,7 +72,7 @@ app.get("/api/config", (_req, res) => {
   res.json(publicConfig());
 });
 
-app.post("/api/chat", rateLimit, async (req, res) => {
+app.post("/api/chat", rateLimit, vereistAbonnement, async (req, res) => {
   if (!hasCredentials()) {
     return res.status(401).json({
       error:
@@ -91,6 +104,100 @@ app.post("/api/chat", rateLimit, async (req, res) => {
     res.write(toSSE(event));
   }
   if (!controller.signal.aborted) res.end();
+});
+
+/* ---------------------- Abonnementen ---------------------- */
+
+// Het adres waarop deze app bereikbaar is. Stripe stuurt de klant hierheen
+// terug, dus dit moet kloppen zodra de app online staat.
+const BASE_URL = process.env.BASE_URL || `http://localhost:${PORT}`;
+
+/**
+ * Laat een verzoek alleen door als er een lopend abonnement bij hoort.
+ *
+ * Staan er geen Stripe-gegevens ingesteld, dan is de app gewoon vrij
+ * toegankelijk. Zo blijft hij bruikbaar voor jezelf, zonder dat je eerst
+ * een abonnement op je eigen app moet nemen.
+ */
+async function vereistAbonnement(req, res, next) {
+  if (!heeftStripe()) return next();
+
+  const stand = await standVanAbonnement(tokenUitVerzoek(req));
+  if (stand.actief) return next();
+
+  res.status(402).json({
+    error: "Hiervoor heb je een abonnement nodig.",
+    abonnementNodig: true,
+  });
+}
+
+app.get("/api/abonnement", async (req, res) => {
+  if (!heeftStripe()) {
+    return res.json({ vereist: false, actief: true, prijs: null });
+  }
+
+  const stand = await standVanAbonnement(tokenUitVerzoek(req));
+  res.json({ vereist: true, ...stand, prijs: await prijsInfo() });
+});
+
+app.post("/api/abonnement/start", async (_req, res) => {
+  try {
+    res.json({ url: await startAfrekenen(BASE_URL) });
+  } catch (err) {
+    console.error("Afrekenen starten mislukt:", err);
+    res.status(502).json({ error: err.message });
+  }
+});
+
+// Hier komt de klant terug van de betaalpagina van Stripe.
+app.get("/abonnement/terug", async (req, res) => {
+  try {
+    const token = await verwerkTerugkeer(String(req.query.sessie || ""));
+    zetCookie(res, token);
+    vergeetCache(token);
+    res.redirect("/?welkom=1");
+  } catch (err) {
+    console.error("Terugkeer mislukt:", err);
+    res.redirect("/?fout=" + encodeURIComponent(err.message));
+  }
+});
+
+// Inloggen op een tweede apparaat met de toegangscode.
+app.post("/api/abonnement/code", (req, res) => {
+  const code = String(req.body?.code || "").trim();
+  if (!codeBestaat(code)) {
+    return res.status(404).json({ error: "Deze toegangscode kennen we niet." });
+  }
+  zetCookie(res, code);
+  vergeetCache(code);
+  res.json({ ok: true });
+});
+
+// De eigen toegangscode opvragen, om op een ander apparaat te gebruiken.
+app.get("/api/abonnement/code", async (req, res) => {
+  const token = tokenUitVerzoek(req);
+  const stand = await standVanAbonnement(token);
+  if (!stand.actief) return res.status(403).json({ error: "Geen lopend abonnement." });
+  res.json({ code: token });
+});
+
+// Opzeggen, facturen en betaalgegevens: dat regelt Stripe zelf.
+app.post("/api/abonnement/beheer", async (req, res) => {
+  try {
+    const token = tokenUitVerzoek(req);
+    const stand = await standVanAbonnement(token);
+    if (!stand.actief) return res.status(403).json({ error: "Geen lopend abonnement." });
+    res.json({ url: await beheerLink(token, BASE_URL) });
+  } catch (err) {
+    console.error("Beheerlink mislukt:", err);
+    res.status(502).json({ error: err.message });
+  }
+});
+
+app.post("/api/abonnement/afmelden", (req, res) => {
+  vergeetCache(tokenUitVerzoek(req));
+  wisCookie(res);
+  res.json({ ok: true });
 });
 
 // Onbekend API-pad: een nette JSON-fout in plaats van een HTML-pagina.

@@ -6,3 +6,6 @@ npm-debug.log*
 
 # Wordt gebouwd met: npm run build
 mijn-ai.html
+
+# Bevat je abonnees
+abonnees.json

@@ -1148,3 +1148,104 @@ button { font: inherit; }
     scroll-behavior: auto !important;
   }
 }
+
+/* ---------------------- Abonnement ---------------------- */
+
+.plan {
+  text-align: center;
+  padding: 6px 0 4px;
+}
+
+.plan-price {
+  font-family: var(--serif);
+  font-size: 40px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.plan-period {
+  margin-top: 2px;
+  font-size: 13.5px;
+  color: var(--text-muted);
+}
+
+.plan-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.plan-list li {
+  position: relative;
+  padding-left: 26px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.plan-list li::before {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: 7px;
+  width: 9px;
+  height: 5px;
+  border-left: 2px solid var(--accent);
+  border-bottom: 2px solid var(--accent);
+  transform: rotate(-45deg);
+}
+
+.primary-btn.wide { width: 100%; padding: 13px; font-size: 15px; }
+
+.plan-note {
+  margin: -8px 0 0;
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.plan-code {
+  border-top: 1px solid var(--border-soft);
+  padding-top: 14px;
+}
+
+.plan-code > summary {
+  font-size: 13.5px;
+  color: var(--text-soft);
+  cursor: pointer;
+}
+
+.plan-code .field-hint { display: block; margin: 9px 0; }
+
+.code-row { display: flex; gap: 8px; }
+
+.code-row input {
+  flex: 1;
+  min-width: 0;
+  padding: 9px 11px;
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  font: inherit;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  outline: none;
+}
+
+.code-row input:focus { border-color: var(--border-strong); }
+.code-row .ghost-btn { width: auto; white-space: nowrap; }
+
+.code-box {
+  padding: 11px 13px;
+  background: var(--bg-sunken);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  font-family: var(--mono);
+  font-size: 12px;
+  word-break: break-all;
+  line-height: 1.5;
+}

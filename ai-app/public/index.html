@@ -162,6 +162,15 @@
         </span>
       </label>
 
+      <div class="field" id="codeField" hidden>
+        <span class="field-label">Je toegangscode</span>
+        <div class="code-box" id="myCode">…</div>
+        <span class="field-hint">
+          Hiermee log je in op een ander apparaat. Behandel hem als een
+          wachtwoord: wie hem heeft, kan op jouw abonnement chatten.
+        </span>
+      </div>
+
       <label class="check">
         <input type="checkbox" id="showCost">
         <span>
@@ -173,10 +182,54 @@
 
     <div class="modal-foot">
       <button class="ghost-btn danger" id="clearAllBtn">Alle gesprekken wissen</button>
+      <button class="ghost-btn" id="manageSubBtn" hidden>Abonnement beheren</button>
       <div class="modal-foot-right">
         <button class="ghost-btn" id="resetPromptBtn">Standaard herstellen</button>
         <button class="primary-btn" id="settingsSaveBtn">Opslaan</button>
       </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============ Abonnement ============ -->
+<div class="modal-backdrop" id="payModal" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="payTitle">
+    <div class="modal-head">
+      <h2 id="payTitle">Abonnement</h2>
+      <button class="icon-btn" id="payCloseBtn" aria-label="Sluiten" hidden>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <div class="plan">
+        <div class="plan-price" id="planPrice">—</div>
+        <div class="plan-period" id="planPeriod"></div>
+      </div>
+
+      <ul class="plan-list">
+        <li>Onbeperkt chatten met Fable 5.1, het krachtigste model</li>
+        <li>Ook Opus 5, Sonnet 5 en Haiku 4.5</li>
+        <li>Denkproces zichtbaar en instelbare denkkracht</li>
+        <li>Maandelijks opzegbaar, zonder opzegtermijn</li>
+      </ul>
+
+      <button class="primary-btn wide" id="subscribeBtn">Abonneren</button>
+      <p class="plan-note">Betalen gaat veilig via Stripe. Wij zien je kaartgegevens niet.</p>
+
+      <details class="plan-code">
+        <summary>Al geabonneerd? Toegangscode invullen</summary>
+        <p class="field-hint">
+          Bij je abonnement hoort een toegangscode. Daarmee kom je op een ander
+          apparaat binnen. Je vindt hem bij Instellingen op het apparaat waar je
+          al ingelogd bent.
+        </p>
+        <div class="code-row">
+          <input type="text" id="codeInput" placeholder="Toegangscode" spellcheck="false" autocomplete="off">
+          <button class="ghost-btn" id="codeBtn">Inloggen</button>
+        </div>
+      </details>
     </div>
   </div>
 </div>

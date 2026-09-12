@@ -36,6 +36,10 @@ const ui = {
   showCost: el("showCost"),
   themeLabel: el("themeLabel"),
   toast: el("toast"),
+  payModal: el("payModal"),
+  planPrice: el("planPrice"),
+  planPeriod: el("planPeriod"),
+  codeInput: el("codeInput"),
 };
 
 const EFFORTS = [
@@ -754,6 +758,10 @@ async function requestAnswer(payload, onEvent) {
   if (!res.ok) {
     // Fouten voor de stream komen terug als gewone JSON.
     const info = await res.json().catch(() => ({}));
+    if (info.abonnementNodig) {
+      await haalAbonnement();
+      throw new Error("Je abonnement is niet (meer) actief.");
+    }
     throw new Error(info.error || `Serverfout (${res.status}).`);
   }
 
@@ -1194,7 +1202,24 @@ el("exportBtn").addEventListener("click", () => {
 
 /* ---------------------- Instellingen ---------------------- */
 
+async function toonToegangscode() {
+  const vak = el("codeField");
+  if (!(abonnement.vereist && abonnement.actief)) {
+    vak.hidden = true;
+    return;
+  }
+  vak.hidden = false;
+  try {
+    const res = await fetch("/api/abonnement/code");
+    const data = await res.json();
+    el("myCode").textContent = res.ok ? data.code : "—";
+  } catch {
+    el("myCode").textContent = "—";
+  }
+}
+
 function openSettings() {
+  toonToegangscode();
   ui.systemPrompt.value = prefs.system ?? config.defaultSystemPrompt;
   ui.showThinking.checked = prefs.showThinking;
   ui.showCost.checked = prefs.showCost;
@@ -1245,6 +1270,111 @@ el("settingsSaveBtn").addEventListener("click", () => {
   updateHeader();
   closeSettings();
   toast("Instellingen opgeslagen.");
+});
+
+/* ---------------------- Abonnement ---------------------- */
+
+let abonnement = { vereist: false, actief: true };
+
+function toonBedrag(centen, valuta) {
+  const teken = valuta === "eur" ? "€" : valuta.toUpperCase() + " ";
+  return `${teken} ${(centen / 100).toFixed(2).replace(".", ",")}`;
+}
+
+const PERIODEN = { day: "per dag", week: "per week", month: "per maand", year: "per jaar" };
+
+/** Haalt op of er een abonnement nodig is, en of de bezoeker er een heeft. */
+async function haalAbonnement() {
+  try {
+    const res = await fetch("/api/abonnement");
+    if (!res.ok) throw new Error(String(res.status));
+    abonnement = await res.json();
+  } catch {
+    // Geen server die dit kent (bijvoorbeeld het losse HTML-bestand):
+    // dan is er ook niets af te schermen.
+    abonnement = { vereist: false, actief: true };
+  }
+
+  el("manageSubBtn").hidden = !(abonnement.vereist && abonnement.actief);
+
+  if (abonnement.vereist && !abonnement.actief) toonPaywall();
+  return abonnement;
+}
+
+function toonPaywall() {
+  const prijs = abonnement.prijs;
+  if (prijs) {
+    ui.planPrice.textContent = toonBedrag(prijs.bedrag, prijs.valuta);
+    ui.planPeriod.textContent =
+      (PERIODEN[prijs.periode] ?? "per maand") +
+      (prijs.proefdagen > 0 ? ` · eerste ${prijs.proefdagen} dagen gratis` : "");
+  } else {
+    ui.planPrice.textContent = "Abonnement";
+    ui.planPeriod.textContent = "";
+  }
+
+  ui.input.disabled = true;
+  ui.sendBtn.disabled = true;
+  ui.input.placeholder = "Neem een abonnement om te chatten";
+  ui.payModal.hidden = false;
+}
+
+function verbergPaywall() {
+  ui.payModal.hidden = true;
+  ui.input.disabled = false;
+  ui.input.placeholder = "Stel je vraag…";
+  ui.sendBtn.disabled = ui.input.value.trim() === "";
+}
+
+el("subscribeBtn").addEventListener("click", async (e) => {
+  const knop = e.currentTarget;
+  knop.disabled = true;
+  knop.textContent = "Bezig…";
+  try {
+    const res = await fetch("/api/abonnement/start", { method: "POST" });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Kon het afrekenen niet starten.");
+    // Naar de betaalpagina van Stripe.
+    window.location.href = data.url;
+  } catch (err) {
+    toast(err.message);
+    knop.disabled = false;
+    knop.textContent = "Abonneren";
+  }
+});
+
+el("codeBtn").addEventListener("click", async () => {
+  const code = ui.codeInput.value.trim();
+  if (code === "") return toast("Vul je toegangscode in.");
+
+  try {
+    const res = await fetch("/api/abonnement/code", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Inloggen mislukt.");
+
+    await haalAbonnement();
+    if (abonnement.actief) {
+      verbergPaywall();
+      toast("Welkom terug.");
+    }
+  } catch (err) {
+    toast(err.message);
+  }
+});
+
+el("manageSubBtn").addEventListener("click", async () => {
+  try {
+    const res = await fetch("/api/abonnement/beheer", { method: "POST" });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Kon de beheerpagina niet openen.");
+    window.location.href = data.url;
+  } catch (err) {
+    toast(err.message);
+  }
 });
 
 /* ---------------------- Opstarten ---------------------- */
@@ -1321,6 +1451,15 @@ async function init() {
 
   ui.sendBtn.disabled = true;
   if (window.innerWidth <= 860) ui.sidebar.classList.add("collapsed");
+
+  await haalAbonnement();
+
+  // Boodschappen die Stripe of de server in de adresbalk heeft achtergelaten.
+  const params = new URLSearchParams(location.search);
+  if (params.has("welkom")) toast("Je abonnement is actief. Welkom!");
+  if (params.has("afgebroken")) toast("Het afrekenen is afgebroken.");
+  if (params.has("fout")) showNotice(params.get("fout"), "error");
+  if (location.search) history.replaceState(null, "", location.pathname);
 
   if (!config.hasCredentials) {
     showNotice(
