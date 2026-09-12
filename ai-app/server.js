@@ -1,3 +1,6 @@
+// Moet de eerste import blijven: controleert de Node-versie voordat er
+// iets anders geladen wordt.
+import "./check-node.js";
 import "dotenv/config";
 import path from "node:path";
 import { fileURLToPath } from "node:url";

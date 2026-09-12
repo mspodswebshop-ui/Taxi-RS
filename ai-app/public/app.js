@@ -1228,15 +1228,62 @@ el("settingsSaveBtn").addEventListener("click", () => {
 
 /* ---------------------- Opstarten ---------------------- */
 
+/** Blokkeert de app met een uitleg in plaats van stilletjes te falen. */
+function blockWith(title, steps) {
+  ui.welcome.hidden = true;
+  ui.messages.innerHTML = "";
+
+  const box = document.createElement("div");
+  box.className = "notice error";
+
+  const head = document.createElement("strong");
+  head.textContent = title;
+  box.append(head);
+
+  const list = document.createElement("ol");
+  list.style.margin = "8px 0 0";
+  list.style.paddingLeft = "20px";
+  for (const step of steps) {
+    const item = document.createElement("li");
+    item.textContent = step;
+    list.append(item);
+  }
+  box.append(list);
+
+  ui.messages.append(box);
+  ui.input.disabled = true;
+  ui.sendBtn.disabled = true;
+  ui.input.placeholder = "Niet beschikbaar";
+}
+
 async function init() {
   loadStorage();
   applyTheme();
 
+  // Rechtstreeks geopend bestand (file://): er is dan geen server die de
+  // Claude API kan aanroepen, dus chatten kan sowieso niet werken.
+  if (location.protocol === "file:") {
+    blockWith("Je hebt index.html rechtstreeks geopend. Zo kan de app niet werken.", [
+      "Open een terminal in de map ai-app.",
+      "Voer 'npm install' uit (eenmalig).",
+      "Maak een bestand .env met daarin ANTHROPIC_API_KEY=sk-ant-...",
+      "Voer 'npm start' uit.",
+      "Ga in je browser naar http://localhost:3000",
+    ]);
+    return;
+  }
+
   try {
     const res = await fetch("/api/config");
-    if (res.ok) config = { ...config, ...(await res.json()) };
+    if (!res.ok) throw new Error(String(res.status));
+    config = { ...config, ...(await res.json()) };
   } catch {
-    toast("Kon de serverinstellingen niet ophalen.");
+    blockWith("Geen verbinding met de server van de app.", [
+      "Kijk of 'npm start' nog draait in je terminal.",
+      "Staat er een foutmelding in die terminal? Die vertelt wat er mis is.",
+      "Controleer of je het adres gebruikt dat de server noemt, meestal http://localhost:3000",
+    ]);
+    return;
   }
 
   // Een opgeslagen keuze die de server niet meer kent, laten vallen.
