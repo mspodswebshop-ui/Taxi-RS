@@ -4,70 +4,113 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mijn AI</title>
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23d97757'/%3E%3Ctext x='16' y='23' font-size='20' text-anchor='middle' fill='%23fff'%3E%E2%9C%A6%3C/text%3E%3C/svg%3E">
+  <meta name="description" content="Een eigen AI-assistent op basis van de Claude API.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23d97757'/%3E%3Ctext x='16' y='23' font-size='19' text-anchor='middle' fill='%23fff'%3E%E2%9C%A6%3C/text%3E%3C/svg%3E">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-<div class="app">
-  <!-- Zijbalk met gesprekken -->
+<div class="app" id="app">
+  <!-- ============ Zijbalk ============ -->
   <aside class="sidebar" id="sidebar">
-    <div class="sidebar-top">
-      <button class="new-chat" id="newChatBtn">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
-        Nieuw gesprek
-      </button>
+    <div class="brand">
+      <span class="brand-mark">✦</span>
+      <span class="brand-name">Mijn AI</span>
       <button class="icon-btn sidebar-close" id="sidebarCloseBtn" aria-label="Zijbalk sluiten">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
       </button>
     </div>
 
+    <div class="sidebar-actions">
+      <button class="new-chat" id="newChatBtn">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+        Nieuw gesprek
+      </button>
+
+      <div class="search">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input type="search" id="searchInput" placeholder="Zoek in gesprekken" aria-label="Zoek in gesprekken">
+      </div>
+    </div>
+
     <nav class="chat-list" id="chatList" aria-label="Gesprekken"></nav>
 
-    <div class="sidebar-bottom">
+    <div class="sidebar-foot">
       <button class="ghost-btn" id="settingsBtn">
         <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg>
         Instellingen
       </button>
       <button class="ghost-btn" id="themeBtn">
-        <svg viewBox="0 0 24 24" aria-hidden="true" id="themeIcon"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
         <span id="themeLabel">Licht thema</span>
       </button>
     </div>
   </aside>
 
-  <!-- Hoofdvenster -->
+  <!-- ============ Hoofdvenster ============ -->
   <main class="main">
     <header class="topbar">
       <button class="icon-btn" id="sidebarOpenBtn" aria-label="Zijbalk openen">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
       </button>
-      <h1 class="chat-title" id="chatTitle">Nieuw gesprek</h1>
-      <span class="model-badge" id="modelBadge"></span>
+
+      <h1 class="chat-title" id="chatTitle" title="Klik om de naam aan te passen" tabindex="0">Nieuw gesprek</h1>
+
+      <div class="topbar-right">
+        <button class="pill" id="modelBtn" aria-haspopup="true" aria-expanded="false">
+          <span class="pill-dot"></span>
+          <span id="modelBtnLabel">Fable 5.1</span>
+          <svg class="pill-caret" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <button class="icon-btn" id="exportBtn" aria-label="Gesprek downloaden" title="Downloaden als markdown">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7 11l5 5 5-5M4 21h16"/></svg>
+        </button>
+      </div>
     </header>
 
+    <!-- Modelkiezer -->
+    <div class="popover" id="modelPopover" hidden>
+      <div class="popover-head">Model</div>
+      <div id="modelOptions"></div>
+      <div class="popover-head popover-head-sep">Denkkracht</div>
+      <div class="effort-row" id="effortOptions"></div>
+      <p class="popover-note" id="effortNote"></p>
+    </div>
+
     <div class="messages" id="messages">
-      <!-- Welkomstscherm bij een leeg gesprek -->
       <div class="welcome" id="welcome">
-        <div class="welcome-logo">✦</div>
-        <h2>Waarmee kan ik je helpen?</h2>
-        <p class="welcome-sub">Je eigen AI-assistent, aangedreven door de Claude API.</p>
+        <div class="welcome-mark">✦</div>
+        <h2 class="welcome-title" id="welcomeTitle">Goedendag</h2>
+        <p class="welcome-sub">Waar zullen we mee beginnen?</p>
+
         <div class="suggestions">
-          <button class="suggestion" data-prompt="Leg uit hoe een REST API werkt, met een voorbeeld in JavaScript.">
-            <strong>Leg iets technisch uit</strong>
-            <span>Hoe werkt een REST API?</span>
+          <button class="suggestion" data-prompt="Leg uit hoe een REST API werkt, met een concreet voorbeeld in JavaScript.">
+            <span class="suggestion-icon">◆</span>
+            <span class="suggestion-text">
+              <strong>Leg iets uit</strong>
+              <span>Hoe werkt een REST API?</span>
+            </span>
           </button>
-          <button class="suggestion" data-prompt="Schrijf een korte, wervende tekst voor de homepage van een taxibedrijf in Antwerpen.">
-            <strong>Schrijf een tekst</strong>
-            <span>Wervende homepage-tekst</span>
+          <button class="suggestion" data-prompt="Schrijf een wervende, warme tekst voor de homepage van een taxibedrijf in Antwerpen. Houd het kort en concreet.">
+            <span class="suggestion-icon">✎</span>
+            <span class="suggestion-text">
+              <strong>Schrijf mee</strong>
+              <span>Tekst voor een homepage</span>
+            </span>
           </button>
-          <button class="suggestion" data-prompt="Help me een bug te vinden. Ik plak hierna mijn code.">
-            <strong>Debug mijn code</strong>
-            <span>Samen een bug zoeken</span>
+          <button class="suggestion" data-prompt="Help me een bug te vinden in mijn code. Ik plak hem hierna, stel gerust vragen als iets onduidelijk is.">
+            <span class="suggestion-icon">⌘</span>
+            <span class="suggestion-text">
+              <strong>Debug code</strong>
+              <span>Samen een bug zoeken</span>
+            </span>
           </button>
-          <button class="suggestion" data-prompt="Maak een weekplanning voor iemand die 3x per week wil sporten en een fulltime baan heeft.">
-            <strong>Maak een plan</strong>
-            <span>Weekplanning opstellen</span>
+          <button class="suggestion" data-prompt="Maak een realistische weekplanning voor iemand met een fulltime baan die 3x per week wil sporten en 's avonds tijd wil houden voor gezin.">
+            <span class="suggestion-icon">◷</span>
+            <span class="suggestion-text">
+              <strong>Maak een plan</strong>
+              <span>Realistische weekplanning</span>
+            </span>
           </button>
         </div>
       </div>
@@ -75,25 +118,26 @@
 
     <div class="composer-wrap">
       <form class="composer" id="composer">
-        <textarea
-          id="input"
-          rows="1"
-          placeholder="Stel een vraag…  (Enter = versturen, Shift+Enter = nieuwe regel)"
-          autocomplete="off"
-        ></textarea>
-        <button type="submit" class="send-btn" id="sendBtn" aria-label="Versturen">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
-        </button>
-        <button type="button" class="stop-btn" id="stopBtn" aria-label="Stoppen" hidden>
-          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="7" width="10" height="10" rx="2"/></svg>
-        </button>
+        <textarea id="input" rows="1" placeholder="Stel je vraag…" autocomplete="off"></textarea>
+        <div class="composer-side">
+          <button type="submit" class="send-btn" id="sendBtn" aria-label="Versturen">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+          </button>
+          <button type="button" class="stop-btn" id="stopBtn" aria-label="Stoppen" hidden>
+            <span class="stop-square"></span>
+          </button>
+        </div>
       </form>
-      <p class="disclaimer">AI kan fouten maken. Controleer belangrijke informatie.</p>
+
+      <div class="composer-meta">
+        <span id="composerHint">Enter om te versturen · Shift+Enter voor een nieuwe regel</span>
+        <span id="chatCost" class="cost-total"></span>
+      </div>
     </div>
   </main>
 </div>
 
-<!-- Instellingen -->
+<!-- ============ Instellingen ============ -->
 <div class="modal-backdrop" id="settingsModal" hidden>
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
     <div class="modal-head">
@@ -104,39 +148,35 @@
     </div>
 
     <div class="modal-body">
-      <label class="field">
-        <span class="field-label">Model</span>
-        <select id="modelSelect"></select>
-        <span class="field-hint">Opus is het slimst, Haiku het snelst en goedkoopst.</span>
-      </label>
-
-      <label class="field">
-        <span class="field-label">Denkkracht</span>
-        <select id="effortSelect">
-          <option value="low">Laag — snel en goedkoop</option>
-          <option value="medium">Gemiddeld</option>
-          <option value="high" selected>Hoog (standaard)</option>
-          <option value="xhigh">Extra hoog</option>
-          <option value="max">Maximaal — voor moeilijke vragen</option>
-        </select>
-        <span class="field-hint">Hoger = beter nadenken, maar langzamer en duurder.</span>
-      </label>
-
-      <label class="field">
+      <div class="field">
         <span class="field-label">Systeemprompt</span>
-        <textarea id="systemPrompt" rows="7" placeholder="Beschrijf hoe de assistent zich moet gedragen…"></textarea>
-        <span class="field-hint">Bepaalt de persoonlijkheid en regels van jouw assistent.</span>
-      </label>
+        <textarea id="systemPrompt" rows="8" placeholder="Beschrijf hoe je assistent zich moet gedragen…"></textarea>
+        <span class="field-hint">Dit bepaalt de persoonlijkheid, toon en regels van je assistent.</span>
+      </div>
 
       <label class="check">
         <input type="checkbox" id="showThinking">
-        <span>Toon het denkproces van het model</span>
+        <span>
+          <strong>Toon het denkproces</strong>
+          <span class="check-hint">Een samenvatting van hoe het model tot zijn antwoord komt.</span>
+        </span>
+      </label>
+
+      <label class="check">
+        <input type="checkbox" id="showCost">
+        <span>
+          <strong>Toon geschatte kosten</strong>
+          <span class="check-hint">Een ruwe schatting per antwoord, op basis van het tokengebruik.</span>
+        </span>
       </label>
     </div>
 
     <div class="modal-foot">
-      <button class="ghost-btn" id="resetPromptBtn">Standaardprompt herstellen</button>
-      <button class="primary-btn" id="settingsSaveBtn">Opslaan</button>
+      <button class="ghost-btn danger" id="clearAllBtn">Alle gesprekken wissen</button>
+      <div class="modal-foot-right">
+        <button class="ghost-btn" id="resetPromptBtn">Standaard herstellen</button>
+        <button class="primary-btn" id="settingsSaveBtn">Opslaan</button>
+      </div>
     </div>
   </div>
 </div>

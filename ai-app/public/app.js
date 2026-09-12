@@ -5,46 +5,65 @@
    Gesprekken staan in localStorage; de API-sleutel blijft op de server.
    ======================================================================= */
 
-const STORE_KEY = "mijn-ai.chats.v1";
-const PREFS_KEY = "mijn-ai.prefs.v1";
+const STORE_KEY = "mijn-ai.chats.v2";
+const PREFS_KEY = "mijn-ai.prefs.v2";
 
 const el = (id) => document.getElementById(id);
 
 const ui = {
+  app: el("app"),
   sidebar: el("sidebar"),
   chatList: el("chatList"),
+  searchInput: el("searchInput"),
   messages: el("messages"),
   welcome: el("welcome"),
+  welcomeTitle: el("welcomeTitle"),
   chatTitle: el("chatTitle"),
-  modelBadge: el("modelBadge"),
+  modelBtn: el("modelBtn"),
+  modelBtnLabel: el("modelBtnLabel"),
+  modelPopover: el("modelPopover"),
+  modelOptions: el("modelOptions"),
+  effortOptions: el("effortOptions"),
+  effortNote: el("effortNote"),
   composer: el("composer"),
   input: el("input"),
   sendBtn: el("sendBtn"),
   stopBtn: el("stopBtn"),
+  chatCost: el("chatCost"),
   settingsModal: el("settingsModal"),
-  modelSelect: el("modelSelect"),
-  effortSelect: el("effortSelect"),
   systemPrompt: el("systemPrompt"),
   showThinking: el("showThinking"),
+  showCost: el("showCost"),
   themeLabel: el("themeLabel"),
   toast: el("toast"),
 };
 
+const EFFORTS = [
+  { id: "low", label: "Laag", note: "Snelste en goedkoopste antwoorden. Prima voor korte vragen." },
+  { id: "medium", label: "Middel", note: "Een goede balans tussen snelheid en diepgang." },
+  { id: "high", label: "Hoog", note: "De standaard: degelijk doordacht, redelijk snel." },
+  { id: "xhigh", label: "Extra", note: "Denkt duidelijk langer door. Sterk voor code en analyse." },
+  { id: "max", label: "Max", note: "Denkt zo diep mogelijk. Het traagst en het duurst, maar het best voor echt moeilijke vragen." },
+];
+
 let config = {
-  models: [{ id: "claude-opus-5", label: "Opus 5" }],
-  defaultModel: "claude-opus-5",
+  models: [{ id: "claude-fable-5-1", label: "Fable 5.1", tagline: "", note: "", price: null }],
+  defaultModel: "claude-fable-5-1",
+  defaultEffort: "max",
   defaultSystemPrompt: "",
   hasCredentials: true,
 };
 
 let chats = [];
 let activeId = null;
+let searchTerm = "";
 let prefs = {
   theme: "dark",
   model: null,
-  effort: "high",
+  effort: null,
   system: null,
   showThinking: false,
+  showCost: true,
 };
 let controller = null; // AbortController van het lopende verzoek
 
@@ -71,7 +90,7 @@ function saveChats() {
   try {
     localStorage.setItem(STORE_KEY, JSON.stringify(chats));
   } catch {
-    toast("Kon het gesprek niet opslaan - de opslag is vol.");
+    toast("Kon niet opslaan - de opslag van je browser is vol.");
   }
 }
 
@@ -101,16 +120,76 @@ function toast(text) {
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => {
     ui.toast.hidden = true;
-  }, 2600);
+  }, 2800);
 }
 
 function activeChat() {
   return chats.find((c) => c.id === activeId) ?? null;
 }
 
+function currentModel() {
+  const id = prefs.model ?? config.defaultModel;
+  return config.models.some((m) => m.id === id) ? id : config.defaultModel;
+}
+
+function currentEffort() {
+  return prefs.effort ?? config.defaultEffort;
+}
+
+function modelInfo(id) {
+  return config.models.find((m) => m.id === id) ?? null;
+}
+
+/** Haiku 4.5 ondersteunt geen instelbare denkkracht. */
+function supportsEffort(modelId) {
+  return modelId !== "claude-haiku-4-5";
+}
+
 function titleFrom(text) {
   const clean = text.replace(/\s+/g, " ").trim();
-  return clean.length > 42 ? `${clean.slice(0, 42)}...` : clean || "Nieuw gesprek";
+  return clean.length > 46 ? `${clean.slice(0, 46)}...` : clean || "Nieuw gesprek";
+}
+
+/** Geschatte kosten in dollar, op basis van het tokengebruik. */
+function costOf(usage, modelId) {
+  const price = modelInfo(modelId)?.price;
+  if (!price || !usage) return null;
+  return (
+    (usage.input * price.input +
+      usage.output * price.output +
+      (usage.cacheRead ?? 0) * price.cacheRead +
+      // Wegschrijven naar de cache kost ongeveer 1,25x de invoerprijs.
+      (usage.cacheWrite ?? 0) * price.input * 1.25) /
+    1_000_000
+  );
+}
+
+function formatCost(amount) {
+  if (amount == null) return "";
+  if (amount < 0.001) return "< $0,001";
+  const decimals = amount < 1 ? 3 : 2;
+  return `$${amount.toFixed(decimals).replace(".", ",")}`;
+}
+
+function chatCost(chat) {
+  let total = 0;
+  let known = false;
+  for (const msg of chat?.messages ?? []) {
+    const cost = costOf(msg.usage, msg.model);
+    if (cost != null) {
+      total += cost;
+      known = true;
+    }
+  }
+  return known ? total : null;
+}
+
+function greeting() {
+  const hour = new Date().getHours();
+  if (hour < 6) return "Goedenacht";
+  if (hour < 12) return "Goedemorgen";
+  if (hour < 18) return "Goedemiddag";
+  return "Goedenavond";
 }
 
 /* ---------------------- Markdown ----------------------
@@ -289,11 +368,11 @@ function groupTables(lines) {
         .map((cell) => `<${tag}>${inlineFormat(cell.trim())}</${tag}>`)
         .join("");
 
-    let table = "<table>";
+    let table = '<div class="table-wrap"><table>';
     if (header) table += `<thead><tr>${cells(header, "th")}</tr></thead>`;
     table += "<tbody>";
     for (const row of body) table += `<tr>${cells(row, "td")}</tr>`;
-    table += "</tbody></table>";
+    table += "</tbody></table></div>";
 
     out.push(table);
     rows = [];
@@ -320,18 +399,54 @@ function codeBlockHtml({ lang, code }) {
   );
 }
 
-/* ---------------------- Weergave ---------------------- */
+/* ---------------------- Gesprekkenlijst ---------------------- */
+
+function groupLabel(timestamp) {
+  const now = new Date();
+  const then = new Date(timestamp);
+  const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const days = Math.floor((startOfToday - then) / 86_400_000);
+
+  if (then >= startOfToday) return "Vandaag";
+  if (days < 1) return "Gisteren";
+  if (days < 7) return "Deze week";
+  if (days < 30) return "Deze maand";
+  return "Ouder";
+}
+
+function matchesSearch(chat, term) {
+  if (!term) return true;
+  if (chat.title.toLowerCase().includes(term)) return true;
+  return chat.messages.some(
+    (m) => typeof m.content === "string" && m.content.toLowerCase().includes(term),
+  );
+}
 
 function renderChatList() {
   ui.chatList.innerHTML = "";
-  if (chats.length === 0) return;
 
-  const label = document.createElement("div");
-  label.className = "chat-list-label";
-  label.textContent = "Gesprekken";
-  ui.chatList.append(label);
+  const term = searchTerm.trim().toLowerCase();
+  const visible = chats.filter((chat) => matchesSearch(chat, term));
 
-  for (const chat of chats) {
+  if (visible.length === 0) {
+    const empty = document.createElement("p");
+    empty.className = "empty-list";
+    empty.textContent = term ? "Niets gevonden." : "Nog geen gesprekken.";
+    ui.chatList.append(empty);
+    return;
+  }
+
+  let lastGroup = null;
+  for (const chat of visible) {
+    const label = groupLabel(chat.updatedAt ?? chat.createdAt);
+    if (label !== lastGroup) {
+      const head = document.createElement("div");
+      head.className = "chat-group";
+      head.textContent = label;
+      ui.chatList.append(head);
+      lastGroup = label;
+    }
+
     const item = document.createElement("div");
     item.className = "chat-item" + (chat.id === activeId ? " active" : "");
     item.tabIndex = 0;
@@ -367,30 +482,30 @@ function renderChatList() {
   }
 }
 
+/* ---------------------- Berichten tonen ---------------------- */
+
 function renderMessages() {
   const chat = activeChat();
   ui.messages.innerHTML = "";
 
   if (!chat || chat.messages.length === 0) {
+    ui.welcomeTitle.textContent = greeting();
     ui.messages.append(ui.welcome);
     ui.welcome.hidden = false;
+    updateCost();
     return;
   }
 
-  for (const msg of chat.messages) {
-    ui.messages.append(buildMessageEl(msg));
-  }
+  chat.messages.forEach((msg, i) => {
+    ui.messages.append(buildMessageEl(msg, i === chat.messages.length - 1));
+  });
+  updateCost();
   scrollToBottom();
 }
 
-function buildMessageEl(msg) {
+function buildMessageEl(msg, isLast = false) {
   const wrap = document.createElement("div");
   wrap.className = `msg ${msg.role}`;
-
-  const role = document.createElement("div");
-  role.className = "msg-role";
-  role.textContent = msg.role === "user" ? "Jij" : "Assistent";
-  wrap.append(role);
 
   if (msg.role === "user") {
     const bubble = document.createElement("div");
@@ -399,6 +514,25 @@ function buildMessageEl(msg) {
     wrap.append(bubble);
     return wrap;
   }
+
+  // Kop: avatar, naam en het model dat antwoordde
+  const head = document.createElement("div");
+  head.className = "msg-head";
+  const avatar = document.createElement("span");
+  avatar.className = "msg-avatar";
+  avatar.textContent = "✦";
+  const name = document.createElement("span");
+  name.className = "msg-name";
+  name.textContent = "Assistent";
+  head.append(avatar, name);
+
+  if (msg.model) {
+    const model = document.createElement("span");
+    model.className = "msg-model";
+    model.textContent = modelInfo(msg.model)?.label ?? msg.model;
+    head.append(model);
+  }
+  wrap.append(head);
 
   if (msg.thinking && prefs.showThinking) {
     wrap.append(buildThinkingEl(msg.thinking));
@@ -409,6 +543,11 @@ function buildMessageEl(msg) {
   prose.innerHTML = renderMarkdown(msg.content);
   wrap.append(prose);
 
+  wrap.append(buildFooter(msg, isLast));
+  return wrap;
+}
+
+function buildFooter(msg, isLast) {
   const footer = document.createElement("div");
   footer.className = "msg-footer";
 
@@ -419,16 +558,37 @@ function buildMessageEl(msg) {
   copy.addEventListener("click", () => copyText(msg.content, copy));
   footer.append(copy);
 
-  if (msg.usage) {
-    const usage = document.createElement("span");
-    usage.className = "usage";
-    const cached = msg.usage.cacheRead ? `, ${msg.usage.cacheRead} uit cache` : "";
-    usage.textContent = `${msg.usage.input} in / ${msg.usage.output} uit${cached}`;
-    footer.append(usage);
+  if (isLast) {
+    const again = document.createElement("button");
+    again.className = "copy-btn";
+    again.type = "button";
+    again.textContent = "Opnieuw";
+    again.title = "Genereer een nieuw antwoord op dezelfde vraag";
+    again.addEventListener("click", regenerate);
+    footer.append(again);
   }
 
-  wrap.append(footer);
-  return wrap;
+  if (msg.usage) {
+    const tokens = document.createElement("span");
+    tokens.className = "meta";
+    const cached = msg.usage.cacheRead ? ` (${msg.usage.cacheRead} uit cache)` : "";
+    tokens.textContent = `${msg.usage.input} in${cached} · ${msg.usage.output} uit`;
+    footer.append(tokens);
+
+    const cost = costOf(msg.usage, msg.model);
+    if (cost != null && prefs.showCost) {
+      const sep = document.createElement("span");
+      sep.className = "meta meta-sep";
+      sep.textContent = "·";
+      const price = document.createElement("span");
+      price.className = "meta";
+      price.textContent = `ca. ${formatCost(cost)}`;
+      price.title = "Ruwe schatting op basis van het tokengebruik";
+      footer.append(sep, price);
+    }
+  }
+
+  return footer;
 }
 
 function buildThinkingEl(text) {
@@ -447,11 +607,16 @@ function scrollToBottom() {
   ui.messages.scrollTop = ui.messages.scrollHeight;
 }
 
+function updateCost() {
+  const total = prefs.showCost ? chatCost(activeChat()) : null;
+  ui.chatCost.textContent = total ? `Dit gesprek: ca. ${formatCost(total)}` : "";
+}
+
 async function copyText(text, btn) {
   try {
     await navigator.clipboard.writeText(text);
     const old = btn.textContent;
-    btn.textContent = "Gekopieerd!";
+    btn.textContent = "Gekopieerd";
     setTimeout(() => {
       btn.textContent = old;
     }, 1400);
@@ -471,11 +636,13 @@ ui.messages.addEventListener("click", (e) => {
 /* ---------------------- Gesprekken beheren ---------------------- */
 
 function newChat() {
+  const now = Date.now();
   const chat = {
     id: crypto.randomUUID(),
     title: "Nieuw gesprek",
     messages: [],
-    createdAt: Date.now(),
+    createdAt: now,
+    updatedAt: now,
   };
   chats.unshift(chat);
   activeId = chat.id;
@@ -487,12 +654,12 @@ function newChat() {
 }
 
 function selectChat(id) {
-  if (controller) return toast("Wacht tot het antwoord klaar is of klik op stop.");
+  if (controller) return toast("Wacht tot het antwoord klaar is, of klik op stop.");
   activeId = id;
   renderChatList();
   renderMessages();
   updateHeader();
-  if (window.innerWidth <= 820) ui.sidebar.classList.add("collapsed");
+  if (window.innerWidth <= 860) ui.sidebar.classList.add("collapsed");
 }
 
 function deleteChat(id) {
@@ -514,16 +681,55 @@ function deleteChat(id) {
   }
 }
 
+function touchChat(chat) {
+  chat.updatedAt = Date.now();
+  // Het meest recente gesprek hoort bovenaan te staan.
+  chats = [chat, ...chats.filter((c) => c.id !== chat.id)];
+}
+
 function updateHeader() {
   const chat = activeChat();
   ui.chatTitle.textContent = chat?.title ?? "Nieuw gesprek";
-  const model = config.models.find((m) => m.id === currentModel());
-  ui.modelBadge.textContent = model?.label ?? currentModel();
+  ui.modelBtnLabel.textContent = modelInfo(currentModel())?.label ?? currentModel();
+  updateCost();
 }
 
-function currentModel() {
-  return prefs.model ?? config.defaultModel;
+/* ---------------------- Naam aanpassen ---------------------- */
+
+function startRename() {
+  const chat = activeChat();
+  if (!chat) return;
+  ui.chatTitle.contentEditable = "true";
+  ui.chatTitle.focus();
+  const range = document.createRange();
+  range.selectNodeContents(ui.chatTitle);
+  const sel = window.getSelection();
+  sel.removeAllRanges();
+  sel.addRange(range);
 }
+
+function finishRename() {
+  const chat = activeChat();
+  ui.chatTitle.contentEditable = "false";
+  if (!chat) return;
+  const name = ui.chatTitle.textContent.trim();
+  chat.title = name === "" ? "Nieuw gesprek" : name.slice(0, 80);
+  ui.chatTitle.textContent = chat.title;
+  saveChats();
+  renderChatList();
+}
+
+ui.chatTitle.addEventListener("click", startRename);
+ui.chatTitle.addEventListener("blur", finishRename);
+ui.chatTitle.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    ui.chatTitle.blur();
+  } else if (e.key === "Escape") {
+    ui.chatTitle.textContent = activeChat()?.title ?? "Nieuw gesprek";
+    ui.chatTitle.blur();
+  }
+});
 
 /* ---------------------- Versturen en streamen ---------------------- */
 
@@ -533,15 +739,32 @@ function setBusy(busy) {
   ui.input.disabled = busy;
 }
 
+/**
+ * Bouwt de berichtenlijst voor de API.
+ *
+ * Voor een antwoord dat door hetzelfde model is gegeven sturen we de ruwe
+ * content-blokken onveranderd terug: daar zitten de thinking-blokken in, en
+ * die mogen niet worden aangepast of weggelaten. Komt het antwoord van een
+ * ander model, dan sturen we alleen de tekst - thinking-blokken van het ene
+ * model zijn niet altijd leesbaar voor het andere.
+ */
+function buildHistory(chat, model) {
+  return chat.messages.map((msg) => {
+    if (msg.role === "assistant" && Array.isArray(msg.blocks) && msg.model === model) {
+      return { role: "assistant", content: msg.blocks };
+    }
+    return { role: msg.role, content: msg.content };
+  });
+}
+
 async function sendMessage(text) {
   const chat = activeChat();
   if (!chat || controller) return;
 
   const wasFirstMessage = chat.messages.length === 0;
-
-  // 1. Gebruikersbericht toevoegen en tonen.
   chat.messages.push({ role: "user", content: text });
   if (wasFirstMessage) chat.title = titleFrom(text);
+  touchChat(chat);
   saveChats();
   renderChatList();
   updateHeader();
@@ -550,15 +773,39 @@ async function sendMessage(text) {
   ui.messages.append(buildMessageEl(chat.messages.at(-1)));
   scrollToBottom();
 
-  // 2. Leeg antwoord-element klaarzetten waar we in streamen.
+  await streamAnswer(chat, { restoreOnFailure: text, wasFirstMessage });
+}
+
+/** Vraagt een antwoord op bij de server en streamt het de pagina in. */
+async function streamAnswer(chat, { restoreOnFailure = null, wasFirstMessage = false }) {
+  const model = currentModel();
+
+  // Skelet voor het antwoord: kop, denkproces (optioneel) en de tekst.
   const wrap = document.createElement("div");
   wrap.className = "msg assistant";
-  const role = document.createElement("div");
-  role.className = "msg-role";
-  role.textContent = "Assistent";
+
+  const head = document.createElement("div");
+  head.className = "msg-head";
+  const avatar = document.createElement("span");
+  avatar.className = "msg-avatar";
+  avatar.textContent = "✦";
+  const name = document.createElement("span");
+  name.className = "msg-name";
+  name.textContent = "Assistent";
+  const modelTag = document.createElement("span");
+  modelTag.className = "msg-model";
+  modelTag.textContent = modelInfo(model)?.label ?? model;
+  head.append(avatar, name, modelTag);
+
   const prose = document.createElement("div");
-  prose.className = "prose cursor";
-  wrap.append(role, prose);
+  prose.className = "prose";
+
+  // Drie stipjes tot de eerste tekst binnenkomt.
+  const pending = document.createElement("div");
+  pending.className = "pending";
+  pending.innerHTML = "<span></span><span></span><span></span>";
+
+  wrap.append(head, pending, prose);
   ui.messages.append(wrap);
   scrollToBottom();
 
@@ -566,6 +813,9 @@ async function sendMessage(text) {
   let thinking = "";
   let thinkingEl = null;
   let usage = null;
+  let blocks = null;
+  let answeredBy = model;
+  let switched = null;
   let failed = null;
 
   controller = new AbortController();
@@ -577,10 +827,10 @@ async function sendMessage(text) {
       headers: { "Content-Type": "application/json" },
       signal: controller.signal,
       body: JSON.stringify({
-        messages: chat.messages.map(({ role: r, content }) => ({ role: r, content })),
+        messages: buildHistory(chat, model),
         system: prefs.system ?? undefined,
-        model: currentModel(),
-        effort: prefs.effort,
+        model,
+        effort: currentEffort(),
       }),
     });
 
@@ -616,6 +866,7 @@ async function sendMessage(text) {
 
         if (event.type === "text") {
           answer += event.text;
+          pending.remove();
           prose.innerHTML = renderMarkdown(answer);
           prose.classList.add("cursor");
           scrollToBottom();
@@ -625,15 +876,18 @@ async function sendMessage(text) {
             if (!thinkingEl) {
               thinkingEl = buildThinkingEl("");
               thinkingEl.open = true;
-              wrap.insertBefore(thinkingEl, prose);
+              wrap.insertBefore(thinkingEl, pending);
             }
             thinkingEl.querySelector(".thinking-body").textContent = thinking;
             scrollToBottom();
           }
         } else if (event.type === "done") {
           usage = event.usage;
+          blocks = event.content ?? null;
+          answeredBy = event.model ?? model;
+          switched = event.switchedModel ?? null;
           if (event.stopReason === "max_tokens") {
-            toast("Het antwoord is afgekapt omdat het maximum is bereikt.");
+            toast("Het antwoord is afgekapt omdat het maximum bereikt was.");
           }
           break readLoop;
         } else if (event.type === "error") {
@@ -649,44 +903,74 @@ async function sendMessage(text) {
   } finally {
     controller = null;
     setBusy(false);
+    pending.remove();
     prose.classList.remove("cursor");
   }
 
-  // 3. Resultaat opslaan en definitief renderen.
   if (answer.trim() !== "") {
     chat.messages.push({
       role: "assistant",
       content: answer,
+      // Alleen bewaren als het antwoord compleet is: halve blokken mogen
+      // niet terug naar de API.
+      blocks: blocks ?? undefined,
       thinking: thinking || undefined,
       usage: usage || undefined,
+      model: answeredBy,
     });
+    touchChat(chat);
     saveChats();
-    wrap.replaceWith(buildMessageEl(chat.messages.at(-1)));
+    wrap.replaceWith(buildMessageEl(chat.messages.at(-1), true));
+    updateCost();
+
+    if (switched) {
+      showNotice(
+        `Het gekozen model weigerde dit verzoek; ${
+          modelInfo(switched)?.label ?? switched
+        } heeft het beantwoord.`,
+        "info",
+      );
+    }
   } else {
     // Geen antwoord gekregen: het gebruikersbericht weer uit de geschiedenis
     // halen en terugzetten in het invoerveld, zodat opnieuw proberen werkt
     // zonder twee gebruikersberichten achter elkaar.
     wrap.remove();
-    chat.messages.pop();
-    ui.messages.lastElementChild?.remove();
-    if (wasFirstMessage) chat.title = "Nieuw gesprek";
-    saveChats();
-    renderChatList();
-    updateHeader();
-    if (chat.messages.length === 0) renderMessages();
-    ui.input.value = text;
-    autoGrow();
-    ui.sendBtn.disabled = false;
+    if (restoreOnFailure != null) {
+      chat.messages.pop();
+      ui.messages.lastElementChild?.remove();
+      if (wasFirstMessage) chat.title = "Nieuw gesprek";
+      saveChats();
+      renderChatList();
+      updateHeader();
+      if (chat.messages.length === 0) renderMessages();
+      ui.input.value = restoreOnFailure;
+      autoGrow();
+      ui.sendBtn.disabled = false;
+    }
   }
 
-  if (failed) showError(failed);
+  if (failed) showNotice(failed, "error");
   scrollToBottom();
-  ui.input.focus();
+  if (!ui.input.disabled) ui.input.focus();
 }
 
-function showError(message) {
+/** Gooit het laatste antwoord weg en vraagt een nieuw antwoord op. */
+async function regenerate() {
+  const chat = activeChat();
+  if (!chat || controller) return;
+  if (chat.messages.at(-1)?.role !== "assistant") return;
+
+  chat.messages.pop();
+  saveChats();
+  renderMessages();
+  await streamAnswer(chat, {});
+  saveChats();
+}
+
+function showNotice(message, kind = "error") {
   const box = document.createElement("div");
-  box.className = "error-box";
+  box.className = `notice ${kind}`;
   box.textContent = message;
   ui.messages.append(box);
 }
@@ -701,7 +985,7 @@ function stopStreaming() {
 
 function autoGrow() {
   ui.input.style.height = "auto";
-  ui.input.style.height = `${Math.min(ui.input.scrollHeight, 220)}px`;
+  ui.input.style.height = `${Math.min(ui.input.scrollHeight, 240)}px`;
 }
 
 ui.input.addEventListener("input", () => {
@@ -736,10 +1020,106 @@ for (const btn of document.querySelectorAll(".suggestion")) {
   });
 }
 
-/* ---------------------- Zijbalk en thema ---------------------- */
+/* ---------------------- Modelkiezer ---------------------- */
+
+function renderModelPopover() {
+  const selectedModel = currentModel();
+  const effortEnabled = supportsEffort(selectedModel);
+
+  ui.modelOptions.innerHTML = "";
+  for (const model of config.models) {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "model-option" + (model.id === selectedModel ? " selected" : "");
+
+    const check = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    check.setAttribute("viewBox", "0 0 24 24");
+    check.setAttribute("class", "model-check");
+    check.innerHTML = '<path d="m5 13 4 4L19 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>';
+
+    const body = document.createElement("div");
+    body.className = "model-body";
+
+    const nameRow = document.createElement("div");
+    nameRow.className = "model-name";
+    nameRow.append(document.createTextNode(model.label));
+    if (model.tagline) {
+      const tag = document.createElement("span");
+      tag.className = "model-tagline";
+      tag.textContent = model.tagline;
+      nameRow.append(tag);
+    }
+    body.append(nameRow);
+
+    if (model.note) {
+      const note = document.createElement("div");
+      note.className = "model-note";
+      note.textContent = model.note;
+      body.append(note);
+    }
+    if (model.price) {
+      const price = document.createElement("div");
+      price.className = "model-price";
+      price.textContent = `$${model.price.input} in / $${model.price.output} uit per miljoen tokens`;
+      body.append(price);
+    }
+
+    btn.append(check, body);
+    btn.addEventListener("click", () => {
+      prefs.model = model.id;
+      if (!supportsEffort(model.id)) prefs.effort = prefs.effort ?? config.defaultEffort;
+      savePrefs();
+      updateHeader();
+      renderModelPopover();
+    });
+    ui.modelOptions.append(btn);
+  }
+
+  ui.effortOptions.innerHTML = "";
+  for (const effort of EFFORTS) {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className =
+      "effort-btn" + (effortEnabled && effort.id === currentEffort() ? " selected" : "");
+    btn.textContent = effort.label;
+    btn.disabled = !effortEnabled;
+    if (!effortEnabled) btn.style.opacity = "0.4";
+    btn.addEventListener("click", () => {
+      prefs.effort = effort.id;
+      savePrefs();
+      renderModelPopover();
+    });
+    ui.effortOptions.append(btn);
+  }
+
+  ui.effortNote.textContent = effortEnabled
+    ? EFFORTS.find((e) => e.id === currentEffort())?.note ?? ""
+    : `${modelInfo(selectedModel)?.label ?? "Dit model"} heeft geen instelbare denkkracht.`;
+}
+
+function toggleModelPopover(open) {
+  const show = open ?? ui.modelPopover.hidden;
+  ui.modelPopover.hidden = !show;
+  ui.modelBtn.setAttribute("aria-expanded", String(show));
+  if (show) renderModelPopover();
+}
+
+ui.modelBtn.addEventListener("click", (e) => {
+  e.stopPropagation();
+  toggleModelPopover();
+});
+
+document.addEventListener("click", (e) => {
+  if (ui.modelPopover.hidden) return;
+  if (!ui.modelPopover.contains(e.target) && e.target !== ui.modelBtn) {
+    toggleModelPopover(false);
+  }
+});
+
+/* ---------------------- Zijbalk, zoeken en thema ---------------------- */
 
 el("newChatBtn").addEventListener("click", () => {
-  if (controller) return toast("Wacht tot het antwoord klaar is of klik op stop.");
+  if (controller) return toast("Wacht tot het antwoord klaar is, of klik op stop.");
   // Een ongebruikt leeg gesprek hergebruiken in plaats van stapelen.
   const current = activeChat();
   if (current && current.messages.length === 0) return ui.input.focus();
@@ -753,6 +1133,11 @@ el("sidebarCloseBtn").addEventListener("click", () =>
   ui.sidebar.classList.add("collapsed"),
 );
 
+ui.searchInput.addEventListener("input", () => {
+  searchTerm = ui.searchInput.value;
+  renderChatList();
+});
+
 function applyTheme() {
   document.documentElement.dataset.theme = prefs.theme;
   ui.themeLabel.textContent = prefs.theme === "dark" ? "Licht thema" : "Donker thema";
@@ -764,13 +1149,34 @@ el("themeBtn").addEventListener("click", () => {
   savePrefs();
 });
 
+/* ---------------------- Downloaden ---------------------- */
+
+el("exportBtn").addEventListener("click", () => {
+  const chat = activeChat();
+  if (!chat || chat.messages.length === 0) return toast("Dit gesprek is nog leeg.");
+
+  const lines = [`# ${chat.title}`, "", `*${new Date(chat.createdAt).toLocaleString("nl-NL")}*`, ""];
+  for (const msg of chat.messages) {
+    const who = msg.role === "user" ? "Jij" : modelInfo(msg.model)?.label ?? "Assistent";
+    lines.push(`## ${who}`, "", msg.content, "");
+  }
+
+  const blob = new Blob([lines.join("\n")], { type: "text/markdown;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `${chat.title.replace(/[^\w\s-]/g, "").trim().slice(0, 50) || "gesprek"}.md`;
+  link.click();
+  URL.revokeObjectURL(url);
+  toast("Gesprek gedownload.");
+});
+
 /* ---------------------- Instellingen ---------------------- */
 
 function openSettings() {
-  ui.modelSelect.value = currentModel();
-  ui.effortSelect.value = prefs.effort;
   ui.systemPrompt.value = prefs.system ?? config.defaultSystemPrompt;
   ui.showThinking.checked = prefs.showThinking;
+  ui.showCost.checked = prefs.showCost;
   ui.settingsModal.hidden = false;
 }
 
@@ -786,24 +1192,36 @@ ui.settingsModal.addEventListener("click", (e) => {
 });
 
 document.addEventListener("keydown", (e) => {
-  if (e.key === "Escape" && !ui.settingsModal.hidden) closeSettings();
+  if (e.key !== "Escape") return;
+  if (!ui.settingsModal.hidden) closeSettings();
+  else if (!ui.modelPopover.hidden) toggleModelPopover(false);
 });
 
 el("resetPromptBtn").addEventListener("click", () => {
   ui.systemPrompt.value = config.defaultSystemPrompt;
 });
 
+el("clearAllBtn").addEventListener("click", () => {
+  if (!confirm("Alle gesprekken verwijderen? Dit kan niet ongedaan worden gemaakt.")) return;
+  if (controller) stopStreaming();
+  chats = [];
+  activeId = null;
+  saveChats();
+  newChat();
+  closeSettings();
+  toast("Alle gesprekken gewist.");
+});
+
 el("settingsSaveBtn").addEventListener("click", () => {
-  prefs.model = ui.modelSelect.value;
-  prefs.effort = ui.effortSelect.value;
   prefs.showThinking = ui.showThinking.checked;
+  prefs.showCost = ui.showCost.checked;
 
   const text = ui.systemPrompt.value.trim();
   prefs.system = text === "" || text === config.defaultSystemPrompt ? null : text;
 
   savePrefs();
-  updateHeader();
   renderMessages();
+  updateHeader();
   closeSettings();
   toast("Instellingen opgeslagen.");
 });
@@ -821,13 +1239,7 @@ async function init() {
     toast("Kon de serverinstellingen niet ophalen.");
   }
 
-  ui.modelSelect.innerHTML = "";
-  for (const model of config.models) {
-    const option = document.createElement("option");
-    option.value = model.id;
-    option.textContent = model.label;
-    ui.modelSelect.append(option);
-  }
+  // Een opgeslagen keuze die de server niet meer kent, laten vallen.
   if (!config.models.some((m) => m.id === prefs.model)) prefs.model = null;
 
   if (chats.length === 0) {
@@ -840,12 +1252,13 @@ async function init() {
   updateHeader();
 
   ui.sendBtn.disabled = true;
-  if (window.innerWidth <= 820) ui.sidebar.classList.add("collapsed");
+  if (window.innerWidth <= 860) ui.sidebar.classList.add("collapsed");
 
   if (!config.hasCredentials) {
-    showError(
+    showNotice(
       "Er is nog geen API-sleutel ingesteld op de server. Kopieer .env.example naar .env, " +
         "vul ANTHROPIC_API_KEY in en start de server opnieuw.",
+      "error",
     );
   }
 
