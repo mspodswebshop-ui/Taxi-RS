@@ -1,0 +1,30 @@
+# Configuratie voor Netlify.
+#
+# Dit bestand hoort in de hoofdmap van de repository te staan. Het vertelt
+# Netlify drie dingen:
+#
+#   base      - in welke map het project staat (de rest is hieraan relatief)
+#   publish   - welke map de website is die bezoekers te zien krijgen
+#   functions - waar de serverless functies staan die de Claude API aanroepen
+#
+# Zonder `publish` zoekt Netlify index.html in de hoofdmap van de repository,
+# vindt die daar niet, en toont "Page not found".
+
+[build]
+  base = "ai-app"
+  publish = "public"
+  functions = "netlify/functions"
+
+  # Netlify draait npm install automatisch omdat er een package.json staat.
+  # Er valt verder niets te bouwen: de frontend is gewone HTML, CSS en JS.
+  command = "echo 'Geen buildstap nodig.'"
+
+[functions]
+  node_bundler = "esbuild"
+
+# Elk onbekend pad toont gewoon de app, in plaats van een 404-pagina.
+# De functies zelf claimen /api/chat en /api/config en gaan hieraan voor.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

@@ -5,12 +5,16 @@ gesprekken, markdown-weergave, een modelkiezer, licht/donker thema en een
 instelbare persoonlijkheid. Draait standaard op **Claude Fable 5.1**, het
 krachtigste model, met denkkracht op **max**.
 
-De app bestaat uit twee delen:
+De app bestaat uit deze delen:
 
-- **Backend** (`server.js`) — een kleine Express-server die met de Claude API
-  praat. Hier staat je API-sleutel. Die komt nooit in de browser terecht.
-- **Frontend** (`public/`) — de chatinterface. Gewoon HTML, CSS en JavaScript,
-  zonder buildstap of framework.
+- **`lib/chat-core.js`** — de kern: welke modellen er zijn, controle van wat
+  binnenkomt, en de aanroep naar de Claude API. Hier stel je dingen in.
+- **`server.js`** — een kleine Express-server voor lokaal gebruik. Hier staat
+  je API-sleutel. Die komt nooit in de browser terecht.
+- **`netlify/functions/`** — dezelfde backend, maar als serverless functie,
+  zodat de app ook op Netlify kan draaien. Gebruikt dezelfde kern.
+- **`public/`** — de chatinterface. Gewoon HTML, CSS en JavaScript, zonder
+  buildstap of framework.
 
 ---
 
@@ -63,7 +67,7 @@ zetten. Je kunt de schatting uitzetten bij Instellingen.
 | Sonnet 5 | $2 in / $10 uit | Dagelijks werk |
 | Haiku 4.5 | $1 in / $5 uit | Korte vragen, maximale snelheid |
 
-De prijzen staan in `MODELS` in `server.js`. Controleer de actuele tarieven op
+De prijzen staan in `MODELS` in `lib/chat-core.js`. Controleer de actuele tarieven op
 [anthropic.com/pricing](https://www.anthropic.com/pricing) voordat je er iets
 op baseert.
 
@@ -127,7 +131,7 @@ server controleert dat altijd vóórdat hij de inhoud uitleest.
 Daarom staat **server-side fallback** aan (`fallbacks: "default"`): weigert
 Fable 5.1 een verzoek, dan beantwoordt de API het in dezelfde aanroep alsnog
 met een ander model, en de app meldt dat in het gesprek. Wil je dat niet, haal
-dan `FALLBACK_MODELS` leeg in `server.js`.
+dan `FALLBACK_MODELS` leeg in `lib/chat-core.js`.
 
 ### Overige keuzes
 
@@ -147,14 +151,14 @@ dan `FALLBACK_MODELS` leeg in `server.js`.
 
 ## Zelf aanpassen
 
-**Ander standaardgedrag?** Pas `DEFAULT_SYSTEM_PROMPT` bovenin `server.js` aan
+**Ander standaardgedrag?** Pas `DEFAULT_SYSTEM_PROMPT` in `lib/chat-core.js` aan
 (of, alleen voor jezelf, via Instellingen in de app).
 
 **Ander standaardmodel of andere denkkracht?** `MODELS` (het eerste item is de
-standaard) en `DEFAULT_EFFORT`, allebei bovenin `server.js`. De frontend haalt
+standaard) en `DEFAULT_EFFORT`, allebei in `lib/chat-core.js`. De frontend haalt
 die lijst op via `/api/config`, dus je hoeft verder niets te wijzigen.
 
-**Langere antwoorden?** Verhoog `MAX_TOKENS` in `server.js`. Fable 5.1 kan tot
+**Langere antwoorden?** Verhoog `MAX_TOKENS` in `lib/chat-core.js`. Fable 5.1 kan tot
 128.000 tokens uitvoer aan.
 
 **Andere kleuren?** Bovenin `public/styles.css` staan alle kleuren als
@@ -164,16 +168,46 @@ variabelen, gescheiden voor het lichte en het donkere thema.
 
 ## Online zetten
 
-De app is een gewone Node-server en draait op elke hoster die Node
-ondersteunt, bijvoorbeeld Render, Railway of Fly.io. Let op drie dingen:
+Wil je een echte link in plaats van `localhost`, dan zijn er twee routes. Het
+verschil zit hem in hoe lang een antwoord mag duren.
 
-1. Zet `ANTHROPIC_API_KEY` als **environment variable** bij de hoster — commit
-   je `.env` nooit (die staat daarom in `.gitignore`).
-2. De hoster geeft zelf een poort door via `PORT`; dat regelt de server al.
-3. **Iedereen die de URL kent, gebruikt jouw API-tegoed.** Met Fable 5.1 op
-   `max` kan dat hard gaan. Zet er een wachtwoord of login voor als de app
-   publiek bereikbaar is. De ingebouwde rate limit (20 verzoeken per minuut per
-   IP) is een rem, geen slot.
+> **Belangrijk:** je kunt de map niet zomaar naar een statische hoster slepen.
+> `server.js` moet ergens draaien, anders laadt de pagina wel maar komt er geen
+> antwoord. En iedereen die de link kent, gebruikt jouw API-tegoed — zet er dus
+> een wachtwoord voor als de site publiek staat.
+
+### Render — aanbevolen bij Fable 5.1
+
+Render draait `server.js` als een doorlopende server, dus een antwoord mag zo
+lang duren als het nodig heeft. Dat is precies wat je wilt bij Fable 5.1 op
+hoge denkkracht.
+
+1. Zet deze repository op GitHub (dat is al gebeurd).
+2. Maak een account op [render.com](https://render.com).
+3. Kies **New → Blueprint** en wijs deze repository aan. Render leest
+   `render.yaml` en weet dan zelf wat het moet doen.
+4. Vul `ANTHROPIC_API_KEY` in als environment variable.
+
+### Netlify — werkt, met één beperking
+
+Netlify serveert statische bestanden en draait de backend als *serverless
+functie* (`ai-app/netlify/functions/`). Dat werkt, maar Netlify kapt zo'n
+functie na ongeveer 10 seconden af (op betaalde plannen wat langer). **Fable
+5.1 op `max` denkt vaak langer dan dat**, dus die antwoorden kunnen afbreken.
+Kies in de app dan Sonnet 5 of Haiku 4.5, of zet de denkkracht op `laag`.
+
+1. Maak een account op [netlify.com](https://netlify.com).
+2. Kies **Add new site → Import an existing project** en koppel deze
+   GitHub-repository. Doe dit niet met slepen-en-neerzetten: bij het koppelen
+   installeert Netlify de benodigde pakketten, bij slepen niet.
+3. De instellingen komen uit `netlify.toml` en staan al goed.
+4. Zet `ANTHROPIC_API_KEY` bij **Site configuration → Environment variables**
+   en publiceer de site opnieuw.
+
+**Krijg je "Page not found"?** Dan wijst Netlify naar de verkeerde map. Het
+bestand `netlify.toml` regelt dat (`publish = "public"` binnen
+`base = "ai-app"`). Controleer of dat bestand in de hoofdmap van de repository
+staat en of de site aan de repository gekoppeld is, niet handmatig geüpload.
 
 ---
 
