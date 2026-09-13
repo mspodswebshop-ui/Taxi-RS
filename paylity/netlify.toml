@@ -1,0 +1,43 @@
+# Configuratie voor Netlify.
+#
+# LET OP: je kunt Paylity niet als zip naar Netlify slepen. Dat sleepvak neemt
+# kant-en-klare bestanden aan en serveert die; Paylity heeft een dráaiende
+# server nodig voor inloggen, betalingen en de API. Koppel daarom je
+# Git-repository aan Netlify, dan bouwt Netlify de app zelf.
+#
+# Dit bestand staat in de map paylity/, niet in de hoofdmap van de repository.
+# Zet daarom in Netlify onder Site configuration > Build & deploy >
+# Base directory de waarde: paylity
+#
+# Verder heb je nodig (Site configuration > Environment variables):
+#
+#   DATABASE_URL            een GEHOSTE PostgreSQL, bijvoorbeeld van Neon of
+#                           Supabase. "localhost" werkt hier niet: de computer
+#                           van Netlify is niet jouw computer.
+#   NEXT_PUBLIC_APP_URL     het adres van je site, met https://
+#   WEBHOOK_SIGNING_SECRET  een eigen geheim
+#
+# Controleer na het uitrollen https://jouwadres/api/health. Daar staat in
+# gewone taal of de database werkt.
+
+[build]
+  publish = ".next"
+
+  # De migraties draaien vóór de build, zodat de tabellen bestaan zodra de
+  # site live gaat. Lukt dat niet, dan gaat de build tóch door: een site die
+  # opstart en zegt wat er mis is, is bruikbaarder dan een mislukte build met
+  # een foutmelding die niemand leest. Wat er mis ging lees je op /api/health.
+  command = """
+    npx prisma migrate deploy \
+      || echo '!! Migraties niet uitgevoerd. Controleer DATABASE_URL. Zie /api/health na het uitrollen.'
+    npm run build
+  """
+
+# Deze plug-in laat Next.js écht draaien op Netlify: server-side rendering,
+# API-routes en alles wat Paylity nodig heeft. Zonder deze plug-in krijg je
+# alleen statische bestanden en werkt inloggen niet.
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+[build.environment]
+  NODE_VERSION = "20"

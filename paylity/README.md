@@ -125,29 +125,55 @@ geen eisen: geen hoofdletters, cijfers of tekens verplicht.
 
 ### Online zetten
 
-Paylity is een volledige Next.js-server met een database. Twee dingen gaan
-daarbij het vaakst mis:
+**De zip naar Netlify slepen werkt niet.** Dat sleepvak neemt kant-en-klare
+bestanden aan en zet ze online. Paylity is geen map met bestanden maar een
+draaiende server: inloggen, betalingen en de API gebeuren op het moment zelf.
+Sleep je de zip erin, dan laden de pagina's misschien wel, maar faalt alles
+wat de server nodig heeft.
 
-1. **Een host die alleen bestanden serveert.** Netlify en GitHub Pages doen
-   standaard geen server-side Next.js; je pagina's laden dan wel, maar elk
-   API-adres geeft een fout. Gebruik een host die Next.js draait, zoals Vercel,
-   Render of Railway.
-2. **Geen database naast de app.** Je computer thuis is van buitenaf niet
-   bereikbaar, dus `localhost` in `DATABASE_URL` werkt daar niet. Neem een
-   gehoste PostgreSQL (Supabase, Neon en Railway hebben een gratis laag) en zet
-   de verbindingsreeks als omgevingsvariabele bij je host.
+Je hebt twee dingen nodig:
 
-Zet bij je host minstens deze variabelen:
+1. **Een host die Next.js écht draait.** Netlify kan dat met de Next.js-plug-in
+   (staat al ingesteld in `netlify.toml`), maar dan moet je je **repository**
+   koppelen in plaats van bestanden te uploaden. Vercel, Render en Railway
+   kunnen het ook.
+2. **Een database die van buitenaf bereikbaar is.** Je eigen computer is dat
+   niet, dus `localhost` in `DATABASE_URL` werkt online nooit.
+   [Neon](https://neon.com) en [Supabase](https://supabase.com) hebben een
+   gratis laag.
 
-| Variabele | Waarde |
-|---|---|
-| `DATABASE_URL` | de verbindingsreeks van je gehoste database |
-| `NEXT_PUBLIC_APP_URL` | het adres waarop de app staat, met `https://` |
-| `WEBHOOK_SIGNING_SECRET` | een eigen geheim |
+#### Stap voor stap op Netlify
 
-Voer daarna eenmalig `npm run db:deploy` uit tegen die database, en
-`npm run account -- --email ... --wachtwoord ... --demo` voor je account.
-Controleer het resultaat op `https://jouwadres/api/health`.
+1. **Database.** Maak een gratis project bij Neon of Supabase en kopieer de
+   *connection string* (begint met `postgresql://`).
+2. **Site koppelen.** In Netlify: *Add new site → Import an existing project*,
+   kies je Git-repository. Dus niet het sleepvak.
+3. **Base directory.** Zet die op `paylity`. Netlify leest dan de
+   `netlify.toml` uit die map, en die regelt de rest: de Next.js-plug-in, de
+   migraties en het bouwen.
+4. **Omgevingsvariabelen.** Onder *Site configuration → Environment variables*:
+
+   | Variabele | Waarde |
+   |---|---|
+   | `DATABASE_URL` | de connection string uit stap 1 |
+   | `NEXT_PUBLIC_APP_URL` | het adres van je site, met `https://` |
+   | `WEBHOOK_SIGNING_SECRET` | een eigen geheim (zie `.env.example`) |
+
+5. **Uitrollen.** De build voert de migraties uit en bouwt de app. Lukken de
+   migraties niet, dan gaat de build door en staat de reden in het bouwlogboek.
+6. **Controleren.** Open `https://jouwadres/api/health`. Staat daar
+   `"ok": true`, dan werkt alles.
+7. **Account.** Maak het aan via `/signup` op je nieuwe adres, of vanaf je
+   eigen computer tegen dezelfde database:
+
+   ```bash
+   DATABASE_URL="postgresql://…" npm run account -- \
+     --email jij@voorbeeld.be --wachtwoord "minstens10tekens" --demo
+   ```
+
+Staat er nog een oudere `netlify.toml` in de hoofdmap van je repository voor
+een ander project? Die blijft gewoon staan; door de base directory op `paylity`
+te zetten leest Netlify de juiste.
 
 ### Database
 
@@ -402,6 +428,7 @@ Twee dingen om dan goed te doen:
 ```
 paylity/
 ├── start.command              alles opzetten en starten, in één klik
+├── netlify.toml               instellingen om online te zetten
 ├── prisma/
 │   ├── schema.prisma          9 modellen + refunds, met relaties en indexes
 │   ├── seed.ts                testgegevens
