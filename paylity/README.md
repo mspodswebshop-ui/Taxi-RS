@@ -50,6 +50,49 @@ De seed toont aan het eind een inlognaam, wachtwoord en API-sleutel. **Noteer de
 API-sleutel**: die staat alleen gehasht in de database en is daarna niet meer op
 te vragen.
 
+### Je eigen account
+
+Je kunt een account aanmaken via `/signup`, maar het kan ook vanaf de
+opdrachtregel. Dat is handig als je je wachtwoord kwijt bent of als het
+formulier je om wat voor reden dan ook niet verder helpt:
+
+```bash
+npm run account -- --email jij@voorbeeld.be --wachtwoord "minstens10tekens" --demo
+```
+
+| Optie | Wat het doet |
+|---|---|
+| `--email` | verplicht |
+| `--wachtwoord` | verplicht, minstens 10 tekens |
+| `--naam` | je eigen naam (standaard: het deel voor de `@`) |
+| `--bedrijf` | je bedrijfsnaam |
+| `--demo` | vult het dashboard met 90 dagen testgegevens |
+| `--leegmaken` | wist eerst de bestaande testgegevens van dit bedrijf |
+
+Bestaat het account al, dan wordt het **wachtwoord bijgewerkt** en blijft de
+rest staan — zo kom je er altijd weer in. Bestaande sessies worden dan
+ongeldig. Het wachtwoord gaat gehasht (bcrypt) de database in en wordt nergens
+getoond of gelogd. Wil je het niet in je shell-geschiedenis, zet het dan in
+`PAYLITY_WACHTWOORD` en laat `--wachtwoord` weg.
+
+### Kom je er niet in?
+
+**Je registreert of logt in, en belandt meteen weer op de inlogpagina.** Dan
+heeft je browser de sessiecookie weggegooid. Dat gebeurde in eerdere versies
+omdat de cookie `Secure` kreeg zodra `NODE_ENV=production` stond, ook als de
+app gewoon over `http://` draaide; Safari gooit zo'n cookie dan weg. Paylity
+kijkt nu per verzoek of de verbinding écht https is (`x-forwarded-proto`, of
+anders `NEXT_PUBLIC_APP_URL`). Draai je een oudere versie, werk dan bij.
+
+**"Er bestaat al een account met dit e-mailadres."** Het account staat er al.
+Log in, of zet met `npm run account` een nieuw wachtwoord.
+
+**"Te veel pogingen. Wacht even."** Je hebt het meer dan 20 keer in een minuut
+geprobeerd. Een minuut wachten is genoeg.
+
+**"Gebruik minstens 10 tekens."** Het wachtwoord is te kort. Er zijn verder
+geen eisen: geen hoofdletters, cijfers of tekens verplicht.
+
 ### Database
 
 **Lokaal met PostgreSQL:**
@@ -70,6 +113,7 @@ Nuttige commando's:
 | `npm run db:deploy` | Bestaande migraties uitvoeren, zonder nieuwe te maken |
 | `npm run db:push` | Schema doorduwen zonder migratiebestand (snel, voor experimenteren) |
 | `npm run db:seed` | Testgegevens aanmaken |
+| `npm run account` | Account aanmaken of wachtwoord opnieuw instellen |
 | `npm run db:studio` | Database bekijken in de browser |
 
 ---
@@ -191,7 +235,7 @@ Wat er gedaan is, en waarom:
 |---|---|
 | Wachtwoorden gehasht met bcrypt (12 ronden) | Het wachtwoord zelf staat nergens |
 | Sessies als willekeurige sleutel, **gehasht** opgeslagen | Lekt de database, dan is er geen sessie over te nemen |
-| Cookie `httpOnly`, `sameSite=lax`, `secure` in productie | Niet leesbaar voor scripts, beperkt misbruik vanaf andere sites |
+| Cookie `httpOnly`, `sameSite=lax`, `secure` zodra de verbinding https is | Niet leesbaar voor scripts, beperkt misbruik vanaf andere sites — en over http zou een `Secure`-cookie stilzwijgend weggegooid worden |
 | API-sleutels gehasht opgeslagen, eenmalig zichtbaar | Zelfde reden; de sleutel is onze kant op onleesbaar |
 | Elke query gefilterd op `businessId` | Een sleutel kan nooit bij gegevens van een ander bedrijf |
 | Alle invoer door Zod | Wat niet door de validatie komt, komt het systeem niet in |
@@ -303,7 +347,8 @@ Twee dingen om dan goed te doen:
 paylity/
 ├── prisma/
 │   ├── schema.prisma          9 modellen + refunds, met relaties en indexes
-│   └── seed.ts                testgegevens
+│   ├── seed.ts                testgegevens
+│   └── account.ts             account aanmaken of wachtwoord opnieuw instellen
 ├── src/
 │   ├── app/
 │   │   ├── (public)/          landing, tarieven, inloggen, registreren, docs

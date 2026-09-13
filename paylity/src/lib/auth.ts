@@ -8,13 +8,17 @@
  *   In de database staat alleen de SHA-256 van die sleutel: lekt de database,
  *   dan kan niemand er een geldige sessie mee overnemen.
  * - De cookie is httpOnly (niet leesbaar voor scripts), sameSite lax (beperkt
- *   misbruik vanaf andere sites) en secure zodra de app via https draait.
+ *   misbruik vanaf andere sites) en secure zodra de app ECHT via https draait.
+ *   Dat laatste wordt per verzoek bepaald en niet uit NODE_ENV afgeleid: een
+ *   gebouwde app die je over http:// draait zou anders een Secure-cookie
+ *   sturen, en die gooit de browser weg. Je logt dan in, komt terug op de
+ *   inlogpagina, en niets legt uit waarom.
  */
 
 import "server-only";
 
 import { createHash, randomBytes, timingSafeEqual } from "node:crypto";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import bcrypt from "bcryptjs";
 
 import { db } from "@/lib/db";
@@ -46,6 +50,19 @@ export function safeEquals(a: string, b: string): boolean {
   return timingSafeEqual(bufA, bufB);
 }
 
+/**
+ * Draait dit verzoek over https?
+ *
+ * Achter een reverse proxy (Vercel, Render, Netlify, nginx) komt het verzoek
+ * intern over http binnen; `x-forwarded-proto` zegt wat de bezoeker zag. Staat
+ * die kop er niet, dan kijken we naar het adres uit .env.
+ */
+async function overHttps(): Promise<boolean> {
+  const kop = (await headers()).get("x-forwarded-proto");
+  if (kop) return kop.split(",")[0].trim() === "https";
+  return (process.env.NEXT_PUBLIC_APP_URL ?? "").startsWith("https://");
+}
+
 /** Maakt een sessie aan en zet de cookie. */
 export async function createSession(userId: string): Promise<void> {
   const token = randomBytes(32).toString("base64url");
@@ -59,7 +76,7 @@ export async function createSession(userId: string): Promise<void> {
   jar.set(COOKIE_NAME, token, {
     httpOnly: true,
     sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
+    secure: await overHttps(),
     path: "/",
     expires: expiresAt,
   });
