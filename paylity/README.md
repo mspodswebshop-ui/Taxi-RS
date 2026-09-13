@@ -131,49 +131,51 @@ draaiende server: inloggen, betalingen en de API gebeuren op het moment zelf.
 Sleep je de zip erin, dan laden de pagina's misschien wel, maar faalt alles
 wat de server nodig heeft.
 
-Je hebt twee dingen nodig:
+Wat je nodig hebt is **een host die Next.js écht draait** en je code uit een
+**Git-repository** haalt in plaats van uit een bestandsupload. Netlify kan dat
+met de Next.js-plug-in; die staat al ingesteld in `netlify.toml`. Vercel,
+Render en Railway kunnen het ook.
 
-1. **Een host die Next.js écht draait.** Netlify kan dat met de Next.js-plug-in
-   (staat al ingesteld in `netlify.toml`), maar dan moet je je **repository**
-   koppelen in plaats van bestanden te uploaden. Vercel, Render en Railway
-   kunnen het ook.
-2. **Een database die van buitenaf bereikbaar is.** Je eigen computer is dat
-   niet, dus `localhost` in `DATABASE_URL` werkt online nooit.
-   [Neon](https://neon.com) en [Supabase](https://supabase.com) hebben een
-   gratis laag.
+Een database hoef je niet zelf te regelen: omdat `@netlify/database` in
+`package.json` staat, zet Netlify er bij het uitrollen zelf een klaar.
 
 #### Stap voor stap op Netlify
 
-1. **Database.** Maak een gratis project bij Neon of Supabase en kopieer de
-   *connection string* (begint met `postgresql://`).
-2. **Site koppelen.** In Netlify: *Add new site → Import an existing project*,
-   kies je Git-repository. Dus niet het sleepvak.
-3. **Base directory.** Zet die op `paylity`. Netlify leest dan de
-   `netlify.toml` uit die map, en die regelt de rest: de Next.js-plug-in, de
-   migraties en het bouwen.
-4. **Omgevingsvariabelen.** Onder *Site configuration → Environment variables*:
-
-   | Variabele | Waarde |
-   |---|---|
-   | `DATABASE_URL` | de connection string uit stap 1 |
-   | `NEXT_PUBLIC_APP_URL` | het adres van je site, met `https://` |
-   | `WEBHOOK_SIGNING_SECRET` | een eigen geheim (zie `.env.example`) |
-
-5. **Uitrollen.** De build voert de migraties uit en bouwt de app. Lukken de
-   migraties niet, dan gaat de build door en staat de reden in het bouwlogboek.
-6. **Controleren.** Open `https://jouwadres/api/health`. Staat daar
+1. **Site koppelen.** *Add new site → Import an existing project*, kies je
+   Git-repository. Dus niet het sleepvak.
+2. **Base directory:** `paylity`. Netlify leest dan de `netlify.toml` uit die
+   map, en die regelt de rest.
+3. **Uitrollen.** Netlify zet een PostgreSQL klaar, voert
+   `netlify/database/migrations/` uit en bouwt de app.
+4. **Controleren.** Open `https://jouwadres/api/health`. Staat daar
    `"ok": true`, dan werkt alles.
-7. **Account.** Maak het aan via `/signup` op je nieuwe adres, of vanaf je
-   eigen computer tegen dezelfde database:
+5. **Account.** Maak het aan op `https://jouwadres/signup`.
 
-   ```bash
-   DATABASE_URL="postgresql://…" npm run account -- \
-     --email jij@voorbeeld.be --wachtwoord "minstens10tekens" --demo
-   ```
+Twee variabelen zijn het instellen waard onder *Site configuration →
+Environment variables*, al werkt het ook zonder:
+
+| Variabele | Waarde |
+|---|---|
+| `NEXT_PUBLIC_APP_URL` | het adres van je site, met `https://` |
+| `WEBHOOK_SIGNING_SECRET` | een eigen geheim (zie `.env.example`) |
+
+**Liever je eigen database?** Zet `DATABASE_URL` bij de omgevingsvariabelen —
+die gaat vóór op die van Netlify. [Neon](https://neon.com) en
+[Supabase](https://supabase.com) hebben een gratis laag. Je kunt er dan ook
+vanaf je eigen computer bij:
+
+```bash
+DATABASE_URL="postgresql://…" npm run account -- \
+  --email jij@voorbeeld.be --wachtwoord "minstens10tekens" --demo
+```
 
 Staat er nog een oudere `netlify.toml` in de hoofdmap van je repository voor
 een ander project? Die blijft gewoon staan; door de base directory op `paylity`
 te zetten leest Netlify de juiste.
+
+Waar de verbindingsreeks vandaan komt, in volgorde: `DATABASE_URL`, dan
+`NETLIFY_DB_URL` (zet Netlify zelf), dan `NETLIFY_DATABASE_URL`. Vindt hij
+niets, dan start de app tóch op en zegt `/api/health` wat eraan ontbreekt.
 
 ### Database
 
@@ -429,6 +431,7 @@ Twee dingen om dan goed te doen:
 paylity/
 ├── start.command              alles opzetten en starten, in één klik
 ├── netlify.toml               instellingen om online te zetten
+├── netlify/database/          migraties die Netlify zelf uitvoert
 ├── prisma/
 │   ├── schema.prisma          9 modellen + refunds, met relaties en indexes
 │   ├── seed.ts                testgegevens

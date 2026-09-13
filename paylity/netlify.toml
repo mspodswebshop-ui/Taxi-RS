@@ -9,11 +9,16 @@
 # Zet daarom in Netlify onder Site configuration > Build & deploy >
 # Base directory de waarde: paylity
 #
-# Verder heb je nodig (Site configuration > Environment variables):
+# Je hoeft GEEN database te regelen. Omdat @netlify/database in package.json
+# staat, zet Netlify bij het uitrollen zelf een PostgreSQL klaar en vult hij
+# NETLIFY_DB_URL in. De tabellen komen uit netlify/database/migrations/, die
+# Netlify vlak voor het publiceren uitvoert.
 #
-#   DATABASE_URL            een GEHOSTE PostgreSQL, bijvoorbeeld van Neon of
-#                           Supabase. "localhost" werkt hier niet: de computer
-#                           van Netlify is niet jouw computer.
+# Wil je liever je eigen database (Neon, Supabase, of een andere), zet dan
+# DATABASE_URL bij Site configuration > Environment variables. Die gaat voor.
+#
+# Twee variabelen zijn wel het instellen waard:
+#
 #   NEXT_PUBLIC_APP_URL     het adres van je site, met https://
 #   WEBHOOK_SIGNING_SECRET  een eigen geheim
 #
@@ -23,13 +28,18 @@
 [build]
   publish = ".next"
 
-  # De migraties draaien vóór de build, zodat de tabellen bestaan zodra de
-  # site live gaat. Lukt dat niet, dan gaat de build tóch door: een site die
-  # opstart en zegt wat er mis is, is bruikbaarder dan een mislukte build met
-  # een foutmelding die niemand leest. Wat er mis ging lees je op /api/health.
+  # Gebruik je een eigen DATABASE_URL, dan draaien de migraties hier. Gebruik je
+  # de database van Netlify, dan is die tijdens de build nog niet bereikbaar en
+  # slaat deze regel over — Netlify voert netlify/database/migrations/ dan zelf
+  # uit vlak voor het publiceren. In beide gevallen gaat de build door: een site
+  # die opstart en op /api/health zegt wat er mis is, helpt meer dan een
+  # mislukte build met een melding in een logboek.
   command = """
-    npx prisma migrate deploy \
-      || echo '!! Migraties niet uitgevoerd. Controleer DATABASE_URL. Zie /api/health na het uitrollen.'
+    if [ -n "$DATABASE_URL" ]; then
+      npx prisma migrate deploy || echo '!! Migraties mislukt. Zie /api/health na het uitrollen.'
+    else
+      echo 'Geen eigen DATABASE_URL — Netlify voert de migraties zelf uit.'
+    fi
     npm run build
   """
 

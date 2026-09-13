@@ -11,7 +11,7 @@
 
 import "server-only";
 
-import { db } from "@/lib/db";
+import { databaseUrl, db } from "@/lib/db";
 
 export type Status = {
   ok: boolean;
@@ -24,13 +24,13 @@ export type Status = {
 };
 
 export async function databaseStatus(): Promise<Status> {
-  if (!process.env.DATABASE_URL) {
+  if (!databaseUrl) {
     return {
       ok: false,
       melding: "De app weet niet waar de database staat.",
       oplossing:
-        "Kopieer .env.example naar .env en vul DATABASE_URL in. Start daarna de app opnieuw.",
-      detail: "DATABASE_URL ontbreekt in de omgeving",
+        "Lokaal: kopieer .env.example naar .env en vul DATABASE_URL in. Online: zet DATABASE_URL bij je host, of laat Netlify een database leveren (zie README).",
+      detail: "geen DATABASE_URL, NETLIFY_DB_URL of NETLIFY_DATABASE_URL gevonden",
     };
   }
 
