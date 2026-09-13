@@ -3,6 +3,8 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+import { verstuurJson } from "@/lib/verstuur";
+
 import { parseMoney } from "@/lib/money";
 
 /**
@@ -32,31 +34,29 @@ export function PaymentLinkForm() {
     }
 
     setBezig(true);
-    try {
-      // Vanuit het dashboard gaat dit via de sessie, niet via een API-sleutel:
-      // een geheime sleutel hoort niet in code die in de browser draait.
-      const res = await fetch("/api/dashboard/payment-links", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          title: formulier.get("title"),
-          description: formulier.get("description") || undefined,
-          amount: centen,
-          currency: "EUR",
-          active: true,
-        }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data?.error?.message ?? "Aanmaken is niet gelukt.");
 
-      setGelukt(`/pay/${data.slug}`);
-      (e.target as HTMLFormElement).reset();
-      router.refresh();
-    } catch (err) {
-      setFout(err instanceof Error ? err.message : "Aanmaken is niet gelukt.");
-    } finally {
-      setBezig(false);
+    // Vanuit het dashboard gaat dit via de sessie, niet via een API-sleutel:
+    // een geheime sleutel hoort niet in code die in de browser draait.
+    const formElement = e.currentTarget;
+    const res = await verstuurJson<{ slug: string }>("/api/dashboard/payment-links", {
+      body: {
+        title: formulier.get("title"),
+        description: formulier.get("description") || undefined,
+        amount: centen,
+        currency: "EUR",
+        active: true,
+      },
+    });
+    setBezig(false);
+
+    if (!res.ok) {
+      setFout(res.melding);
+      return;
     }
+
+    setGelukt(`/pay/${res.data.slug}`);
+    formElement.reset();
+    router.refresh();
   }
 
   const veld =

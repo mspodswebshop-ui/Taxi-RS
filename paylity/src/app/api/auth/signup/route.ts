@@ -1,13 +1,13 @@
 import { NextResponse, type NextRequest } from "next/server";
 
-import { jsonError } from "@/lib/api";
+import { jsonError, route } from "@/lib/api";
 import { createSession, hashPassword } from "@/lib/auth";
 import { generateApiKey } from "@/lib/api-auth";
 import { db } from "@/lib/db";
 import { checkoutLimiter, clientIp } from "@/lib/rate-limit";
 import { signupSchema } from "@/lib/validation";
 
-export async function POST(req: NextRequest) {
+export const POST = route(async (req: NextRequest) => {
   const limit = checkoutLimiter.check(`signup:${clientIp(req.headers)}`);
   if (!limit.allowed) {
     return jsonError(429, "rate_limited", "Te veel pogingen. Wacht even.");
@@ -58,4 +58,4 @@ export async function POST(req: NextRequest) {
   // De volledige sleutel is hierna niet meer op te vragen; alleen de hash
   // staat in de database.
   return NextResponse.json({ ok: true, apiKey: key }, { status: 201 });
-}
+});

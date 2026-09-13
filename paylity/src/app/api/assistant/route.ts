@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
 
-import { jsonError } from "@/lib/api";
+import { jsonError, route } from "@/lib/api";
 import { getBrain } from "@/lib/assistant";
 import { currentUser } from "@/lib/auth";
 import { checkoutLimiter } from "@/lib/rate-limit";
 
 /** POST /api/assistant - een vraag aan de assistent stellen. */
-export async function POST(req: Request) {
+export const POST = route(async (req: Request) => {
   const user = await currentUser();
   if (!user) return jsonError(401, "unauthorized", "Je bent niet ingelogd.");
 
@@ -25,4 +25,4 @@ export async function POST(req: Request) {
   // cijfers van een ander bedrijf komen.
   const antwoord = await getBrain().answer(vraag, user.businessId);
   return NextResponse.json(antwoord);
-}
+});

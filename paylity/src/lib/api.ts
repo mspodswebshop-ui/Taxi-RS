@@ -85,6 +85,58 @@ export function handle<T = undefined>(handler: Handler<T>, options: Options<T> =
   };
 }
 
+/**
+ * Verpakt een route die géén API-sleutel gebruikt: inloggen, registreren, de
+ * checkout, het dashboard.
+ *
+ * Die routes gingen langs `handle` heen en hadden dus geen vangnet. Ging er
+ * iets onverwachts mis — de database eruit, een migratie niet gedraaid — dan
+ * stuurde Next een LEEG antwoord met status 500. De browser probeert daar JSON
+ * van te maken, dat lukt niet, en de bezoeker krijgt een onbegrijpelijke
+ * melding van zijn browser te zien in plaats van wat er aan de hand is.
+ */
+export function route<T extends unknown[]>(
+  handler: (...args: T) => Promise<NextResponse>,
+) {
+  return async (...args: T): Promise<NextResponse> => {
+    try {
+      return await handler(...args);
+    } catch (err) {
+      return toErrorResponse(err);
+    }
+  };
+}
+
+/**
+ * Herkent problemen met de database en zet ze om in gewone taal.
+ *
+ * Zonder dit krijgt de bezoeker een kaal "Er ging iets mis" terug — of erger,
+ * een lege 500 waar de browser op stukloopt. De meeste oorzaken zijn banaal
+ * (database staat uit, migratie niet gedraaid, .env niet ingevuld) en dan hoor
+ * je dat gewoon te zeggen.
+ *
+ * Er wordt op naam en foutcode gekeken in plaats van op een geïmporteerde
+ * klasse: die verhuist tussen Prisma-versies, deze namen niet.
+ */
+function databaseProbleem(err: unknown): string | null {
+  if (!err || typeof err !== "object") return null;
+
+  const naam = "name" in err ? String(err.name) : "";
+  const code = "code" in err ? String(err.code) : "";
+  const tekst = "message" in err ? String(err.message) : "";
+
+  if (tekst.includes("Environment variable not found: DATABASE_URL")) {
+    return "DATABASE_URL is niet ingesteld. Kopieer .env.example naar .env en vul de databaseverbinding in.";
+  }
+  if (naam === "PrismaClientInitializationError" || ["P1000", "P1001", "P1002", "P1017"].includes(code)) {
+    return "De database is niet bereikbaar. Controleer DATABASE_URL en of de database draait.";
+  }
+  if (["P2021", "P2022"].includes(code) || tekst.includes("does not exist in the current database")) {
+    return "De tabellen bestaan nog niet in de database. Voer eerst `npm run db:deploy` uit.";
+  }
+  return null;
+}
+
 export function toErrorResponse(err: unknown): NextResponse {
   if (err instanceof ApiError) {
     return jsonError(err.status, err.code, err.message);
@@ -100,6 +152,12 @@ export function toErrorResponse(err: unknown): NextResponse {
         melding: issue.message,
       })),
     );
+  }
+
+  const database = databaseProbleem(err);
+  if (database) {
+    console.error("Databaseprobleem:", err);
+    return jsonError(503, "database_unavailable", database);
   }
 
   console.error("Onverwachte fout in de API:", err);

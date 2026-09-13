@@ -1,12 +1,12 @@
 import { NextResponse, type NextRequest } from "next/server";
 
-import { jsonError } from "@/lib/api";
+import { jsonError, route } from "@/lib/api";
 import { createSession, verifyPassword } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { checkoutLimiter, clientIp } from "@/lib/rate-limit";
 import { loginSchema } from "@/lib/validation";
 
-export async function POST(req: NextRequest) {
+export const POST = route(async (req: NextRequest) => {
   const limit = checkoutLimiter.check(`login:${clientIp(req.headers)}`);
   if (!limit.allowed) {
     return jsonError(429, "rate_limited", "Te veel inlogpogingen. Wacht even.");
@@ -33,4 +33,4 @@ export async function POST(req: NextRequest) {
 
   await createSession(user.id);
   return NextResponse.json({ ok: true });
-}
+});

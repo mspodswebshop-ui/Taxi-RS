@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 
+import { verstuurJson } from "@/lib/verstuur";
+
 /**
  * De testcheckout.
  *
@@ -43,26 +45,19 @@ export function CheckoutForm({
     setFout(null);
     setBezig(true);
 
-    try {
-      const res = await fetch("/api/checkout/start", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          slug,
-          method: methode,
-          simulate: uitkomst,
-          customerName: naam || undefined,
-          customerEmail: email || undefined,
-        }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data?.error?.message ?? "De betaling is niet gelukt.");
-      setKlaar(data);
-    } catch (err) {
-      setFout(err instanceof Error ? err.message : "De betaling is niet gelukt.");
-    } finally {
-      setBezig(false);
-    }
+    const res = await verstuurJson<Resultaat>("/api/checkout/start", {
+      body: {
+        slug,
+        method: methode,
+        simulate: uitkomst,
+        customerName: naam || undefined,
+        customerEmail: email || undefined,
+      },
+    });
+    setBezig(false);
+
+    if (res.ok) setKlaar(res.data);
+    else setFout(res.melding);
   }
 
   /* ---------- Afgerond ---------- */

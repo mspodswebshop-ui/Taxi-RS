@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 
+import { verstuurJson } from "@/lib/verstuur";
+
 type Bericht = { van: "jij" | "assistent"; tekst: string; tool?: string };
 
 const voorbeelden = [
@@ -37,32 +39,18 @@ export function Assistant() {
     setVraag("");
     setBezig(true);
 
-    try {
-      const res = await fetch("/api/assistant", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question: schoon }),
-      });
-      const data = await res.json();
+    const res = await verstuurJson<{ answer: string; usedTool?: string }>(
+      "/api/assistant",
+      { body: { question: schoon } },
+    );
+    setBezig(false);
 
-      setGesprek((g) => [
-        ...g,
-        {
-          van: "assistent",
-          tekst: res.ok
-            ? data.answer
-            : (data?.error?.message ?? "Dat lukte niet."),
-          tool: res.ok ? data.usedTool : undefined,
-        },
-      ]);
-    } catch {
-      setGesprek((g) => [
-        ...g,
-        { van: "assistent", tekst: "Ik kon de server niet bereiken." },
-      ]);
-    } finally {
-      setBezig(false);
-    }
+    setGesprek((g) => [
+      ...g,
+      res.ok
+        ? { van: "assistent", tekst: res.data.answer, tool: res.data.usedTool }
+        : { van: "assistent", tekst: res.melding },
+    ]);
   }
 
   if (!open) {

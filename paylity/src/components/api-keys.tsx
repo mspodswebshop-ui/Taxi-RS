@@ -3,6 +3,8 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+import { verstuurJson } from "@/lib/verstuur";
+
 type Sleutel = {
   id: string;
   name: string;
@@ -17,32 +19,47 @@ export function ApiKeys({ keys }: { keys: Sleutel[] }) {
   const [nieuw, setNieuw] = useState<string | null>(null);
   const [bezig, setBezig] = useState(false);
 
+  const [fout, setFout] = useState<string | null>(null);
+
   async function maak() {
+    setFout(null);
     setBezig(true);
-    try {
-      const res = await fetch("/api/dashboard/api-keys", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: "Testsleutel" }),
-      });
-      const data = await res.json();
-      if (res.ok) {
-        setNieuw(data.key);
-        router.refresh();
-      }
-    } finally {
-      setBezig(false);
+
+    const res = await verstuurJson<{ key: string }>("/api/dashboard/api-keys", {
+      body: { name: "Testsleutel" },
+    });
+    setBezig(false);
+
+    if (res.ok) {
+      setNieuw(res.data.key);
+      router.refresh();
+    } else {
+      setFout(res.melding);
     }
   }
 
   async function trekIn(id: string) {
     if (!confirm("Deze sleutel intrekken? Aanroepen ermee werken daarna niet meer.")) return;
-    await fetch(`/api/dashboard/api-keys?id=${encodeURIComponent(id)}`, { method: "DELETE" });
+
+    const res = await verstuurJson(
+      `/api/dashboard/api-keys?id=${encodeURIComponent(id)}`,
+      { method: "DELETE" },
+    );
+    if (!res.ok) setFout(res.melding);
     router.refresh();
   }
 
   return (
     <div className="mt-4">
+      {fout ? (
+        <p
+          role="alert"
+          className="mb-4 rounded-lg border border-rose-500/40 bg-rose-500/10 px-3 py-2 text-sm text-rose-700 dark:text-rose-300"
+        >
+          {fout}
+        </p>
+      ) : null}
+
       {nieuw ? (
         <div className="mb-4 rounded-lg border border-emerald-500/40 bg-emerald-500/10 p-3.5">
           <p className="text-sm font-semibold text-emerald-800 dark:text-emerald-200">

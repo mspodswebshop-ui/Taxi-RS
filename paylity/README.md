@@ -77,6 +77,21 @@ getoond of gelogd. Wil je het niet in je shell-geschiedenis, zet het dan in
 
 ### Kom je er niet in?
 
+Open eerst **`/api/health`** in je browser. Die pagina zegt in gewone taal of
+de database werkt en wat je eraan doet. Staat daar `"ok": true`, dan ligt het
+niet aan de opzet.
+
+Op de inlog- en registratiepagina verschijnt bovendien vanzelf een gele
+waarschuwing zodra de database niet bereikbaar is — dan hoef je het formulier
+niet eens in te vullen.
+
+**"De tekenreeks kwam niet overeen met het verwachte patroon."** Die melding
+komt van Safari en betekent: de server stuurde iets terug wat geen JSON is.
+Bijna altijd is dat een lege foutpagina omdat de **database niet bereikbaar**
+is — vaak omdat de app online staat zonder dat `DATABASE_URL` daar is
+ingesteld. Paylity vangt dat nu zelf af en zegt wat er mis is; zie
+`/api/health`.
+
 **Je registreert of logt in, en belandt meteen weer op de inlogpagina.** Dan
 heeft je browser de sessiecookie weggegooid. Dat gebeurde in eerdere versies
 omdat de cookie `Secure` kreeg zodra `NODE_ENV=production` stond, ook als de
@@ -92,6 +107,32 @@ geprobeerd. Een minuut wachten is genoeg.
 
 **"Gebruik minstens 10 tekens."** Het wachtwoord is te kort. Er zijn verder
 geen eisen: geen hoofdletters, cijfers of tekens verplicht.
+
+### Online zetten
+
+Paylity is een volledige Next.js-server met een database. Twee dingen gaan
+daarbij het vaakst mis:
+
+1. **Een host die alleen bestanden serveert.** Netlify en GitHub Pages doen
+   standaard geen server-side Next.js; je pagina's laden dan wel, maar elk
+   API-adres geeft een fout. Gebruik een host die Next.js draait, zoals Vercel,
+   Render of Railway.
+2. **Geen database naast de app.** Je computer thuis is van buitenaf niet
+   bereikbaar, dus `localhost` in `DATABASE_URL` werkt daar niet. Neem een
+   gehoste PostgreSQL (Supabase, Neon en Railway hebben een gratis laag) en zet
+   de verbindingsreeks als omgevingsvariabele bij je host.
+
+Zet bij je host minstens deze variabelen:
+
+| Variabele | Waarde |
+|---|---|
+| `DATABASE_URL` | de verbindingsreeks van je gehoste database |
+| `NEXT_PUBLIC_APP_URL` | het adres waarop de app staat, met `https://` |
+| `WEBHOOK_SIGNING_SECRET` | een eigen geheim |
+
+Voer daarna eenmalig `npm run db:deploy` uit tegen die database, en
+`npm run account -- --email ... --wachtwoord ... --demo` voor je account.
+Controleer het resultaat op `https://jouwadres/api/health`.
 
 ### Database
 
@@ -364,7 +405,9 @@ paylity/
 │       ├── api-auth.ts        API-sleutels
 │       ├── validation.ts      alle Zod-schema's
 │       ├── rate-limit.ts      rate limiting
-│       └── webhooks.ts        handtekeningen
+│       ├── webhooks.ts        handtekeningen
+│       ├── status.ts          controle op database en migratie
+│       └── verstuur.ts        verzoeken vanuit de browser, zonder stuk te lopen
 └── .env.example
 ```
 

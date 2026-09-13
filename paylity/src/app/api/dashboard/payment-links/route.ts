@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { jsonError, toErrorResponse } from "@/lib/api";
+import { jsonError, route, toErrorResponse } from "@/lib/api";
 import { currentUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { newLinkSlug } from "@/lib/payments";
@@ -13,7 +13,7 @@ import { createPaymentLinkSchema } from "@/lib/validation";
  * plaats van een API-sleutel. Zo hoeft het dashboard geen geheime sleutel in
  * de browser te hebben.
  */
-export async function POST(req: Request) {
+export const POST = route(async (req: Request) => {
   const user = await currentUser();
   if (!user) return jsonError(401, "unauthorized", "Je bent niet ingelogd.");
 
@@ -26,4 +26,4 @@ export async function POST(req: Request) {
   } catch (err) {
     return toErrorResponse(err);
   }
-}
+});

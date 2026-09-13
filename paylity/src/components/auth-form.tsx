@@ -3,6 +3,8 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+import { verstuurJson } from "@/lib/verstuur";
+
 /**
  * Formulier voor inloggen en registreren.
  *
@@ -23,29 +25,24 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
     const formulier = new FormData(e.currentTarget);
     const payload = Object.fromEntries(formulier.entries());
 
-    try {
-      const res = await fetch(`/api/auth/${mode}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      const data = await res.json();
+    const res = await verstuurJson<{ apiKey?: string }>(`/api/auth/${mode}`, {
+      body: payload,
+    });
+    setBezig(false);
 
-      if (!res.ok) throw new Error(data?.error?.message ?? "Er ging iets mis.");
-
-      if (mode === "signup" && data.apiKey) {
-        // De sleutel is hierna niet meer op te vragen, dus we tonen hem nu.
-        setApiKey(data.apiKey);
-        return;
-      }
-
-      router.push("/dashboard");
-      router.refresh();
-    } catch (err) {
-      setFout(err instanceof Error ? err.message : "Er ging iets mis.");
-    } finally {
-      setBezig(false);
+    if (!res.ok) {
+      setFout(res.melding);
+      return;
     }
+
+    if (mode === "signup" && res.data.apiKey) {
+      // De sleutel is hierna niet meer op te vragen, dus we tonen hem nu.
+      setApiKey(res.data.apiKey);
+      return;
+    }
+
+    router.push("/dashboard");
+    router.refresh();
   }
 
   if (apiKey) {

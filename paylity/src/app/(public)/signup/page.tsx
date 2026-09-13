@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { AuthForm } from "@/components/auth-form";
+import { StatusBanner } from "@/components/status-banner";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = { title: "Account aanmaken" };
 
@@ -12,6 +15,8 @@ export default function SignupPage() {
       <p className="mt-1.5 text-sm text-ink-500">
         Gratis, en er wordt geen echt geld verwerkt.
       </p>
+
+      <StatusBanner />
 
       <AuthForm mode="signup" />
 
