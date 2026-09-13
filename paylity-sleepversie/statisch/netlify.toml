@@ -1,0 +1,23 @@
+# Instellingen voor de sleepversie van Paylity.
+#
+# Netlify bouwt hier niets: de function is al gebouwd en staat kant-en-klaar in
+# netlify/functions/. Dat is precies wat het sleepvak aankan.
+#
+# Wat je nog wél zelf moet doen, één keer:
+#   Site configuration > Environment variables > Add a variable
+#     DATABASE_URL = de verbindingsreeks van je database
+#   Daarna deze map opnieuw in het sleepvak zetten.
+
+[build]
+  publish = "."
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "none"
+
+# Alles onder /api gaat naar de function.
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/api/:splat"
+  status = 200
+  force = true

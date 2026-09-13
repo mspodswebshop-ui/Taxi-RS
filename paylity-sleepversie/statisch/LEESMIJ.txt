@@ -1,0 +1,53 @@
+PAYLITY — versie voor het sleepvak van Netlify
+==============================================
+
+ZO ZET JE HEM ONLINE (twee minuten)
+
+1. Pak deze zip uit. Je krijgt een map met index.html, netlify.toml
+   en een map netlify/.
+
+2. Ga naar https://app.netlify.com/drop en sleep de UITGEPAKTE MAP
+   erin (niet de zip zelf).
+
+3. Je site is nu online, maar weet nog niet waar je database staat.
+   Ga in Netlify naar:
+       Site configuration > Environment variables > Add a variable
+   Voeg toe:
+       Key:   DATABASE_URL
+       Value: de verbindingsreeks van je Neon-database
+              (begint met postgresql://)
+
+4. Sleep de map nog één keer in het sleepvak. Dat is nodig omdat een
+   nieuwe variabele pas geldt bij een volgende uitrol.
+
+5. Open je site. Inloggen met je e-mailadres en wachtwoord.
+
+
+CONTROLEREN OF HET GOED STAAT
+
+Open https://jouwadres/api/health
+  {"ok":true, ...}   alles werkt
+  {"ok":false, ...}  daar staat in gewone taal wat er ontbreekt
+
+
+WAT DEZE VERSIE WEL EN NIET DOET
+
+Wel:  inloggen, je overzicht met omzetgrafiek, betalingen, klanten,
+      betaallinks en facturen bekijken.
+Niet: betaallinks aanmaken, afrekenen, terugbetalen, de API met
+      sleutels, de AI-assistent. Die zitten in de volledige Paylity
+      (de andere zip), want daar is een echte server voor nodig.
+
+Deze versie leest alleen; hij schrijft niets naar je database.
+
+
+VEILIGHEID
+
+De verbindingsreeks staat als omgevingsvariabele bij Netlify en komt
+nooit in de browser: alleen de function op de server gebruikt hem.
+Je sessie is een ondertekende cookie, httpOnly, en over https ook
+Secure. Er wordt nergens om een kaartnummer, CVC, pincode of IBAN
+gevraagd — die velden bestaan niet in het schema.
+
+Zet er eventueel ook SESSION_SECRET bij (een eigen lange tekst), dan
+worden de sessiecookies daarmee ondertekend.

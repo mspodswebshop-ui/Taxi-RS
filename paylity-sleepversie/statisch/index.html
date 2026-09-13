@@ -1,0 +1,508 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Paylity</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%234a7dff'/%3E%3Ctext x='16' y='23' font-family='system-ui,sans-serif' font-size='19' font-weight='800' fill='white' text-anchor='middle'%3EP%3C/text%3E%3C/svg%3E">
+<style>
+  :root {
+    --merk: #4a7dff; --merk-donker: #3563e0;
+    --grond: #fcfcfb; --kaart: #ffffff; --rand: #e6e6e3;
+    --inkt: #16181d; --inkt-zacht: #6b7280; --inkt-licht: #9ca3af;
+    --groen: #059669; --rood: #e11d48; --oranje: #b45309;
+    --groen-vlak: #ecfdf5; --rood-vlak: #fff1f2; --oranje-vlak: #fffbeb;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-thema="licht"]) {
+      --grond: #141822; --kaart: #1b202b; --rand: #2c323f;
+      --inkt: #f3f4f6; --inkt-zacht: #9aa3b2; --inkt-licht: #6b7280;
+      --groen: #34d399; --rood: #fb7185; --oranje: #fbbf24;
+      --groen-vlak: #06281f; --rood-vlak: #2b1119; --oranje-vlak: #2a1f07;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--grond); color: var(--inkt);
+    font: 15px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .tabelgetal { font-variant-numeric: tabular-nums; }
+  [hidden] { display: none !important; }
+
+  /* ---------- Inloggen ---------- */
+  #inlog { min-height: 100vh; display: grid; place-items: center; padding: 24px 16px; }
+  .kaart {
+    background: var(--kaart); border: 1px solid var(--rand);
+    border-radius: 16px; padding: 28px;
+  }
+  #inlog .kaart { width: 100%; max-width: 400px; }
+  .merk { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 18px; }
+  .merk i {
+    display: grid; place-items: center; width: 30px; height: 30px; border-radius: 9px;
+    background: var(--merk); color: #fff; font-style: normal; font-weight: 800;
+  }
+  .badge {
+    display: inline-flex; align-items: center; gap: 6px; padding: 3px 9px;
+    border-radius: 999px; background: var(--oranje-vlak); color: var(--oranje);
+    font-size: 11px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase;
+    border: 1px solid color-mix(in srgb, var(--oranje) 30%, transparent);
+  }
+  label { display: block; font-weight: 650; font-size: 13.5px; margin: 16px 0 6px; }
+  input {
+    width: 100%; padding: 11px 12px; border-radius: 10px;
+    border: 1px solid var(--rand); background: var(--grond); color: var(--inkt);
+    font: inherit; outline: none;
+  }
+  input:focus { border-color: var(--merk); }
+  button {
+    font: inherit; font-weight: 700; cursor: pointer; border: 0;
+    border-radius: 10px; padding: 11px 16px; background: var(--merk); color: #fff;
+  }
+  button:hover { background: var(--merk-donker); }
+  button:disabled { opacity: .55; cursor: default; }
+  .breed { width: 100%; margin-top: 20px; }
+  .stil {
+    background: transparent; color: var(--inkt-zacht);
+    border: 1px solid var(--rand); font-weight: 650;
+  }
+  .stil:hover { background: var(--grond); color: var(--inkt); }
+  .melding {
+    margin-top: 16px; padding: 11px 13px; border-radius: 10px; font-size: 13.5px;
+    background: var(--rood-vlak); color: var(--rood);
+    border: 1px solid color-mix(in srgb, var(--rood) 30%, transparent);
+  }
+  .melding.let-op {
+    background: var(--oranje-vlak); color: var(--oranje);
+    border-color: color-mix(in srgb, var(--oranje) 30%, transparent);
+  }
+  .hint { color: var(--inkt-zacht); font-size: 13px; margin-top: 6px; }
+
+  /* ---------- Dashboard ---------- */
+  /* min-width:0 op de kinderen: zonder dat mag een grid-kind breder worden dan
+     zijn kolom zodra de inhoud niet verder krimpt, en loopt de pagina over. */
+  #app { display: grid; grid-template-columns: 232px 1fr; min-height: 100vh; }
+  #app > * { min-width: 0; }
+  aside {
+    border-right: 1px solid var(--rand); background: var(--kaart);
+    padding: 20px 16px; display: flex; flex-direction: column; gap: 4px;
+  }
+  nav button {
+    background: transparent; color: var(--inkt-zacht); text-align: left;
+    padding: 9px 11px; border-radius: 9px; font-weight: 600; width: 100%;
+  }
+  nav button:hover { background: var(--grond); color: var(--inkt); }
+  nav button[aria-current="page"] { background: var(--grond); color: var(--inkt); font-weight: 750; }
+  .onderaan { margin-top: auto; border-top: 1px solid var(--rand); padding-top: 16px; }
+  main { padding: 28px; min-width: 0; }
+  .kop { display: flex; align-items: flex-start; gap: 16px; flex-wrap: wrap; margin-bottom: 22px; }
+  h1 { font-size: 22px; margin: 0 0 3px; letter-spacing: -.02em; }
+  h2 { font-size: 15px; margin: 0 0 3px; letter-spacing: -.01em; }
+  .zacht { color: var(--inkt-zacht); font-size: 13.5px; }
+  .cijfers { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px; }
+  .cijfer { background: var(--kaart); border: 1px solid var(--rand); border-radius: 14px; padding: 16px 18px; }
+  .cijfer .naam {
+    font-size: 11px; font-weight: 750; letter-spacing: .06em;
+    text-transform: uppercase; color: var(--inkt-zacht);
+  }
+  .cijfer .waarde { font-size: 25px; font-weight: 800; letter-spacing: -.02em; margin-top: 5px; }
+  .blok { background: var(--kaart); border: 1px solid var(--rand); border-radius: 14px; padding: 18px; margin-top: 18px; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th {
+    text-align: left; font-size: 11px; letter-spacing: .06em; text-transform: uppercase;
+    color: var(--inkt-zacht); border-bottom: 1px solid var(--rand); padding: 8px 10px 9px;
+  }
+  td { padding: 10px; border-bottom: 1px solid color-mix(in srgb, var(--rand) 60%, transparent); }
+  tr:last-child td { border-bottom: 0; }
+  .rechts { text-align: right; }
+  .stip {
+    display: inline-block; padding: 2px 9px; border-radius: 999px;
+    font-size: 12px; font-weight: 700;
+  }
+  .s-paid     { background: var(--groen-vlak);  color: var(--groen); }
+  .s-refunded { background: color-mix(in srgb, var(--merk) 14%, transparent); color: var(--merk); }
+  .s-failed   { background: var(--rood-vlak);   color: var(--rood); }
+  .s-pending  { background: var(--oranje-vlak); color: var(--oranje); }
+  .rol { overflow-x: auto; }
+  footer { padding: 20px 28px; color: var(--inkt-licht); font-size: 12.5px; }
+
+  @media (max-width: 760px) {
+    #app { grid-template-columns: 1fr; }
+    aside { border-right: 0; border-bottom: 1px solid var(--rand); padding: 14px 16px; }
+    nav { display: flex; flex-wrap: wrap; gap: 6px; width: 100%; }
+    nav button { width: auto; padding: 7px 11px; }
+    .onderaan {
+      margin-top: 14px; border-top: 1px solid var(--rand); padding-top: 12px;
+      display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+    }
+    .onderaan #bedrijfsmail { margin-bottom: 0; }
+    .onderaan button { margin-left: auto; }
+    main { padding: 18px 16px; }
+    .cijfer { padding: 14px 15px; }
+    .cijfer .waarde { font-size: 22px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ================= Inloggen ================= -->
+<section id="inlog">
+  <div class="kaart">
+    <div class="merk"><i>P</i> Paylity <span class="badge">Test</span></div>
+    <p class="zacht" style="margin:14px 0 0">Log in om je dashboard te zien.</p>
+
+    <div id="statusmelding" hidden></div>
+
+    <form id="inlogformulier">
+      <label for="email">E-mailadres</label>
+      <input id="email" name="email" type="email" autocomplete="email" required>
+
+      <label for="wachtwoord">Wachtwoord</label>
+      <input id="wachtwoord" name="wachtwoord" type="password" autocomplete="current-password" required>
+
+      <div id="inlogfout" class="melding" hidden></div>
+
+      <button class="breed" type="submit" id="inlogknop">Inloggen</button>
+    </form>
+
+    <p class="hint">
+      Testomgeving. Er wordt geen echt geld verwerkt en er worden nooit
+      kaartnummers, CVC of IBAN gevraagd.
+    </p>
+  </div>
+</section>
+
+<!-- ================= Dashboard ================= -->
+<div id="app" hidden>
+  <aside>
+    <div class="merk" style="margin-bottom:16px"><i>P</i> Paylity <span class="badge">Test</span></div>
+    <nav>
+      <button data-scherm="overzicht" aria-current="page">Overzicht</button>
+      <button data-scherm="betalingen">Betalingen</button>
+      <button data-scherm="klanten">Klanten</button>
+      <button data-scherm="betaallinks">Betaallinks</button>
+      <button data-scherm="facturen">Facturen</button>
+    </nav>
+    <div class="onderaan">
+      <div style="font-weight:700" id="bedrijfsnaam"></div>
+      <div class="zacht" id="bedrijfsmail" style="margin-bottom:12px"></div>
+      <button class="stil" id="uitlogknop">Uitloggen</button>
+    </div>
+  </aside>
+
+  <div>
+    <main id="inhoud"></main>
+    <footer>Paylity — testomgeving. Geen echte betalingen, geen kaartgegevens.</footer>
+  </div>
+</div>
+
+<script>
+const euro = (c) =>
+  "€ " + (c / 100).toLocaleString("nl-BE", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+const datum = (s) =>
+  new Date(s).toLocaleDateString("nl-BE", { day: "numeric", month: "short" });
+
+const datumTijd = (s) =>
+  new Date(s).toLocaleString("nl-BE", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+
+const namen = { paid: "Betaald", failed: "Mislukt", pending: "In afwachting", refunded: "Terugbetaald", cancelled: "Geannuleerd" };
+const veilig = (t) => String(t ?? "").replace(/[&<>"']/g, (c) =>
+  ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+/**
+ * Verzoeken versturen zonder erop stuk te lopen.
+ *
+ * Het antwoord wordt eerst als tekst gelezen en pas daarna ontleed. Is het
+ * geen JSON, dan maken we zelf een melding — anders zie je een onbegrijpelijke
+ * fout van je browser in plaats van wat er werkelijk aan de hand is.
+ */
+async function api(pad, opties = {}) {
+  let res;
+  try {
+    res = await fetch("/api" + pad, {
+      method: opties.body ? "POST" : "GET",
+      headers: opties.body ? { "Content-Type": "application/json" } : undefined,
+      body: opties.body ? JSON.stringify(opties.body) : undefined,
+    });
+  } catch {
+    return { ok: false, melding: "Geen verbinding met de server." };
+  }
+
+  const tekst = await res.text().catch(() => "");
+  let data = null;
+  if (tekst.trim()) { try { data = JSON.parse(tekst); } catch { data = null; } }
+
+  if (res.ok && data) return { ok: true, data };
+
+  if (data && data.error && data.error.message) {
+    return { ok: false, melding: data.error.message, status: res.status };
+  }
+  if (data && data.database && data.database.melding) {
+    return { ok: false, melding: data.database.melding, status: res.status };
+  }
+  if (res.status === 404) {
+    return {
+      ok: false, status: 404,
+      melding: "De API reageert niet. Is de map met de function wel meegesleept naar Netlify?",
+    };
+  }
+  return { ok: false, status: res.status, melding: "De server gaf fout " + res.status + " zonder uitleg." };
+}
+
+/* ---------------- Inloggen ---------------- */
+
+const inlogSectie = document.getElementById("inlog");
+const app = document.getElementById("app");
+const foutvak = document.getElementById("inlogfout");
+const statusvak = document.getElementById("statusmelding");
+
+function toonFout(el, tekst, soort) {
+  el.textContent = tekst;
+  el.className = "melding" + (soort === "let-op" ? " let-op" : "");
+  el.hidden = false;
+}
+
+// Bij het openen meteen kijken of de database er is, zodat je niet eerst een
+// formulier invult om daarna te horen dat het toch niet kon.
+(async () => {
+  const res = await api("/health");
+  if (!res.ok) {
+    toonFout(statusvak, "Inloggen werkt nu niet — " + res.melding, "let-op");
+  }
+})();
+
+document.getElementById("inlogformulier").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  foutvak.hidden = true;
+  const knop = document.getElementById("inlogknop");
+  knop.disabled = true;
+  knop.textContent = "Bezig…";
+
+  const res = await api("/login", {
+    body: {
+      email: document.getElementById("email").value,
+      password: document.getElementById("wachtwoord").value,
+    },
+  });
+
+  knop.disabled = false;
+  knop.textContent = "Inloggen";
+
+  if (!res.ok) { toonFout(foutvak, res.melding); return; }
+
+  inlogSectie.hidden = true;
+  app.hidden = false;
+  laad("overzicht");
+});
+
+document.getElementById("uitlogknop").addEventListener("click", async () => {
+  await api("/logout", { body: {} });
+  app.hidden = true;
+  inlogSectie.hidden = false;
+  document.getElementById("wachtwoord").value = "";
+});
+
+/* ---------------- Schermen ---------------- */
+
+document.querySelectorAll("nav button").forEach((knop) => {
+  knop.addEventListener("click", () => {
+    document.querySelectorAll("nav button").forEach((k) => k.removeAttribute("aria-current"));
+    knop.setAttribute("aria-current", "page");
+    laad(knop.dataset.scherm);
+  });
+});
+
+const inhoud = document.getElementById("inhoud");
+
+function bezig(titel) {
+  inhoud.innerHTML = `<div class="kop"><div><h1>${titel}</h1><p class="zacht">Laden…</p></div></div>`;
+}
+
+function mislukt(melding) {
+  inhoud.innerHTML = `<div class="melding">${veilig(melding)}</div>`;
+}
+
+async function laad(scherm) {
+  if (scherm === "overzicht") return laadOverzicht();
+  return laadLijst(scherm);
+}
+
+/** Vlakdiagram van de omzet per dag. Eén reeks, dus geen legenda nodig. */
+function grafiek(punten) {
+  const B = 760, H = 190, m = { t: 14, r: 10, b: 26, l: 58 };
+  const vb = B - m.l - m.r, vh = H - m.t - m.b;
+  const hoogste = Math.max(...punten.map((p) => p.cent), 0);
+  const max = hoogste > 0 ? hoogste * 1.15 : 100;
+  const x = (i) => m.l + (punten.length <= 1 ? vb / 2 : (i / (punten.length - 1)) * vb);
+  const y = (c) => m.t + vh - (c / max) * vh;
+
+  const lijn = punten.map((p, i) => `${i ? "L" : "M"}${x(i).toFixed(1)},${y(p.cent).toFixed(1)}`).join(" ");
+  const vlak = punten.length
+    ? `${lijn} L${x(punten.length - 1).toFixed(1)},${m.t + vh} L${x(0).toFixed(1)},${m.t + vh} Z`
+    : "";
+
+  const raster = [0, 0.5, 1].map((deel) => {
+    const yy = m.t + vh - deel * vh;
+    return `<line x1="${m.l}" y1="${yy}" x2="${B - m.r}" y2="${yy}" stroke="var(--rand)" stroke-width="1"/>
+            <text x="${m.l - 8}" y="${yy + 3.5}" text-anchor="end" fill="var(--inkt-zacht)"
+                  font-size="10" class="tabelgetal">${euro(Math.round(max * deel)).replace(",00", "")}</text>`;
+  }).join("");
+
+  const merken = [0, Math.floor(punten.length / 2), punten.length - 1].map((i) =>
+    punten[i]
+      ? `<text x="${x(i).toFixed(1)}" y="${H - 6}" fill="var(--inkt-zacht)" font-size="10"
+               text-anchor="${i === 0 ? "start" : i === punten.length - 1 ? "end" : "middle"}">${datum(punten[i].dag)}</text>`
+      : "").join("");
+
+  const totaal = punten.reduce((s, p) => s + p.cent, 0);
+
+  return `<svg viewBox="0 0 ${B} ${H}" width="100%" role="img"
+               aria-label="Omzet per dag over ${punten.length} dagen. Totaal ${euro(totaal)}.">
+      <defs><linearGradient id="vl" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#4a7dff" stop-opacity=".28"/>
+        <stop offset="100%" stop-color="#4a7dff" stop-opacity=".02"/>
+      </linearGradient></defs>
+      ${raster}
+      <path d="${vlak}" fill="url(#vl)"/>
+      <path d="${lijn}" fill="none" stroke="#4a7dff" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+      ${merken}
+    </svg>`;
+}
+
+async function laadOverzicht() {
+  bezig("Overzicht");
+  const res = await api("/overzicht");
+  if (!res.ok) return mislukt(res.melding);
+
+  const { cijfers, perDag, recent, aantallen, bedrijf } = res.data;
+  document.getElementById("bedrijfsnaam").textContent = bedrijf ? bedrijf.name : "";
+  document.getElementById("bedrijfsmail").textContent = bedrijf ? bedrijf.email : "";
+
+  const totaal = cijfers.geslaagd + cijfers.mislukt;
+  const slaagkans = totaal ? Math.round((cijfers.geslaagd / totaal) * 100) : 0;
+
+  inhoud.innerHTML = `
+    <div class="kop">
+      <div><h1>Dag, ${veilig(bedrijf ? bedrijf.name : "")}</h1>
+           <p class="zacht">Zo staat het ervoor bij je bedrijf.</p></div>
+      <span class="badge" style="margin-left:auto">Test mode</span>
+    </div>
+
+    <div class="cijfers">
+      <div class="cijfer"><div class="naam">Netto omzet</div>
+        <div class="waarde tabelgetal">${euro(cijfers.omzet)}</div>
+        <div class="zacht">na aftrek van terugbetalingen</div></div>
+      <div class="cijfer"><div class="naam">Geslaagd</div>
+        <div class="waarde tabelgetal" style="color:var(--groen)">${cijfers.geslaagd}</div>
+        <div class="zacht">${slaagkans}% van ${totaal}</div></div>
+      <div class="cijfer"><div class="naam">Mislukt</div>
+        <div class="waarde tabelgetal" style="color:var(--rood)">${cijfers.mislukt}</div>
+        <div class="zacht">${cijfers.openstaand} nog open</div></div>
+      <div class="cijfer"><div class="naam">Terugbetaald</div>
+        <div class="waarde tabelgetal">${euro(cijfers.terugbetaald)}</div>
+        <div class="zacht">${cijfers.retouren} betalingen</div></div>
+    </div>
+
+    <div class="blok">
+      <h2>Omzet per dag</h2>
+      <p class="zacht">Laatste 30 dagen, na aftrek van terugbetalingen.</p>
+      <div style="margin-top:12px">${grafiek(perDag)}</div>
+    </div>
+
+    <div class="blok">
+      <h2>Recente betalingen</h2>
+      <div class="rol" style="margin-top:10px">
+        <table><thead><tr>
+          <th>Klant</th><th class="rechts">Bedrag</th><th>Status</th><th class="rechts">Wanneer</th>
+        </tr></thead><tbody>
+        ${recent.map((p) => `<tr>
+            <td>${veilig(p.klant || "—")}<div class="zacht">${veilig(p.description || "")}</div></td>
+            <td class="rechts tabelgetal">${euro(p.amount)}</td>
+            <td><span class="stip s-${p.status}">${namen[p.status] || p.status}</span></td>
+            <td class="rechts zacht">${datumTijd(p.created_at)}</td>
+          </tr>`).join("")}
+        </tbody></table>
+      </div>
+    </div>
+
+    <div class="blok">
+      <h2>In je account</h2>
+      <p class="zacht">${aantallen.klanten} klanten · ${aantallen.links} betaallinks · ${aantallen.facturen} facturen</p>
+    </div>`;
+}
+
+const schermen = {
+  betalingen: {
+    titel: "Betalingen", onder: "Alles wat er binnenkwam en misging.",
+    koppen: ["Klant", "Omschrijving", "Bedrag", "Status", "Wanneer"],
+    rij: (p) => [
+      veilig(p.klant || "—"),
+      veilig(p.description || "—"),
+      { rechts: true, html: `<span class="tabelgetal">${euro(p.amount)}</span>` },
+      { html: `<span class="stip s-${p.status}">${namen[p.status] || p.status}</span>` },
+      { rechts: true, html: `<span class="zacht">${datumTijd(p.created_at)}</span>` },
+    ],
+  },
+  klanten: {
+    titel: "Klanten", onder: "Wie er bij je koopt.",
+    koppen: ["Naam", "E-mailadres", "Betalingen", "Besteed"],
+    rij: (k) => [
+      veilig(k.name),
+      veilig(k.email),
+      { rechts: true, html: `<span class="tabelgetal">${k.betalingen}</span>` },
+      { rechts: true, html: `<span class="tabelgetal">${euro(k.besteed)}</span>` },
+    ],
+  },
+  betaallinks: {
+    titel: "Betaallinks", onder: "Links die je klanten kunnen openen.",
+    koppen: ["Titel", "Bedrag", "Actief", "Betalingen"],
+    rij: (l) => [
+      veilig(l.title) + `<div class="zacht">${veilig(l.slug)}</div>`,
+      { rechts: true, html: `<span class="tabelgetal">${euro(l.amount)}</span>` },
+      { html: `<span class="stip ${l.active ? "s-paid" : "s-failed"}">${l.active ? "Ja" : "Nee"}</span>` },
+      { rechts: true, html: `<span class="tabelgetal">${l.betalingen}</span>` },
+    ],
+  },
+  facturen: {
+    titel: "Facturen", onder: "Openstaand en betaald.",
+    koppen: ["Nummer", "Klant", "Bedrag", "Status", "Vervalt"],
+    rij: (f) => [
+      veilig(f.number),
+      veilig(f.klant || "—"),
+      { rechts: true, html: `<span class="tabelgetal">${euro(f.amount)}</span>` },
+      { html: `<span class="stip ${f.status === "paid" ? "s-paid" : "s-pending"}">${f.status === "paid" ? "Betaald" : "Open"}</span>` },
+      { rechts: true, html: `<span class="zacht">${f.due_at ? datum(f.due_at) : "—"}</span>` },
+    ],
+  },
+};
+
+async function laadLijst(naam) {
+  const opzet = schermen[naam];
+  bezig(opzet.titel);
+
+  const res = await api("/lijst/" + naam);
+  if (!res.ok) return mislukt(res.melding);
+
+  const rijen = res.data.data;
+  const cel = (c) =>
+    typeof c === "object"
+      ? `<td class="${c.rechts ? "rechts" : ""}">${c.html}</td>`
+      : `<td>${c}</td>`;
+
+  inhoud.innerHTML = `
+    <div class="kop"><div><h1>${opzet.titel}</h1><p class="zacht">${opzet.onder}</p></div>
+      <span class="badge" style="margin-left:auto">Test mode</span></div>
+    <div class="blok">
+      <p class="zacht" style="margin:0 0 10px">${rijen.length} ${rijen.length === 1 ? "regel" : "regels"}</p>
+      <div class="rol">
+        <table><thead><tr>${opzet.koppen
+          .map((k, i) => `<th class="${i >= 2 ? "rechts" : ""}">${k}</th>`).join("")}</tr></thead>
+          <tbody>${rijen.map((r) => `<tr>${opzet.rij(r).map(cel).join("")}</tr>`).join("")}</tbody>
+        </table>
+      </div>
+    </div>`;
+}
+</script>
+</body>
+</html>

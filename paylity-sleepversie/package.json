@@ -1,0 +1,16 @@
+{
+  "name": "paylity-sleepversie",
+  "private": true,
+  "description": "Paylity voor het sleepvak van Netlify: statische pagina + een kant-en-klaar gebouwde function.",
+  "scripts": {
+    "bouw": "esbuild src/api.js --bundle --platform=node --target=node20 --format=cjs --outfile=statisch/netlify/functions/api.js",
+    "zip": "npm run bouw && cd statisch && zip -r ../paylity-netlify.zip . -x '.DS_Store'"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "pg": "^8.23.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2"
+  }
+}
