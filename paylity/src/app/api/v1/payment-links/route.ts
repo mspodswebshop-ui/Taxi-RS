@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-import { handle, listResponse } from "@/lib/api";
+import { handle, listResponse, methodNotAllowed } from "@/lib/api";
 import { db } from "@/lib/db";
 import { newLinkSlug } from "@/lib/payments";
 import { createPaymentLinkSchema, listQuerySchema } from "@/lib/validation";
@@ -47,3 +47,8 @@ export const POST = handle(
   },
   { schema: createPaymentLinkSchema as unknown as z.ZodType<z.infer<typeof createPaymentLinkSchema>> },
 );
+
+/* Andere methoden op dit pad: JSON met status 405, geen leeg antwoord. */
+export const PUT = methodNotAllowed(["GET", "POST"]);
+export const PATCH = methodNotAllowed(["GET", "POST"]);
+export const DELETE = methodNotAllowed(["GET", "POST"]);

@@ -16,7 +16,7 @@
 
 import { NextResponse, type NextRequest } from "next/server";
 
-import { jsonError } from "@/lib/api";
+import { jsonError, methodNotAllowed, toErrorResponse } from "@/lib/api";
 import { db } from "@/lib/db";
 import { checkoutLimiter, clientIp } from "@/lib/rate-limit";
 import { settlePayment } from "@/lib/payments";
@@ -56,26 +56,38 @@ export async function POST(req: NextRequest) {
     return jsonError(404, "not_found", "Deze betaling bestaat niet.");
   }
 
-  switch (parsed.type) {
-    case "payment.succeeded":
-      await settlePayment(paymentId, "success");
-      break;
-    case "payment.failed":
-      await settlePayment(paymentId, "failure");
-      break;
-    case "payment.cancelled":
-      if (payment.status === "pending") {
-        await db.payment.update({
-          where: { id: paymentId },
-          data: { status: "cancelled" },
-        });
-      }
-      break;
-    default:
-      // Onbekende soorten netjes bevestigen, zodat de provider niet eindeloos
-      // opnieuw probeert voor iets wat wij toch niet gebruiken.
-      return NextResponse.json({ received: true, handled: false });
+  try {
+    switch (parsed.type) {
+      case "payment.succeeded":
+        await settlePayment(paymentId, "success");
+        break;
+      case "payment.failed":
+        await settlePayment(paymentId, "failure");
+        break;
+      case "payment.cancelled":
+        if (payment.status === "pending") {
+          await db.payment.update({
+            where: { id: paymentId },
+            data: { status: "cancelled" },
+          });
+        }
+        break;
+      default:
+        // Onbekende soorten netjes bevestigen, zodat de provider niet eindeloos
+        // opnieuw probeert voor iets wat wij toch niet gebruiken.
+        return NextResponse.json({ received: true, handled: false });
+    }
+  } catch (err) {
+    // Ook hier JSON terug, nooit een HTML-foutpagina: een provider die dit
+    // adres aanroept leest alleen JSON.
+    return toErrorResponse(err);
   }
 
   return NextResponse.json({ received: true, handled: true });
 }
+
+/* Andere methoden op dit pad: JSON met status 405, geen leeg antwoord. */
+export const GET = methodNotAllowed(["POST"]);
+export const PUT = methodNotAllowed(["POST"]);
+export const PATCH = methodNotAllowed(["POST"]);
+export const DELETE = methodNotAllowed(["POST"]);

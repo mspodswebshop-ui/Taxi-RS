@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { handle, jsonError, listResponse } from "@/lib/api";
+import { handle, jsonError, listResponse, methodNotAllowed } from "@/lib/api";
 import { db } from "@/lib/db";
 import { createCustomerSchema, listQuerySchema } from "@/lib/validation";
 
@@ -53,3 +53,8 @@ export const POST = handle(
   },
   { schema: createCustomerSchema },
 );
+
+/* Andere methoden op dit pad: JSON met status 405, geen leeg antwoord. */
+export const PUT = methodNotAllowed(["GET", "POST"]);
+export const PATCH = methodNotAllowed(["GET", "POST"]);
+export const DELETE = methodNotAllowed(["GET", "POST"]);

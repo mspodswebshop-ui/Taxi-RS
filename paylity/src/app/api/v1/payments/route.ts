@@ -1,4 +1,4 @@
-import { handle, listResponse } from "@/lib/api";
+import { handle, listResponse, methodNotAllowed } from "@/lib/api";
 import { db } from "@/lib/db";
 import { listQuerySchema } from "@/lib/validation";
 
@@ -36,3 +36,9 @@ export const GET = handle(async ({ req, ctx }) => {
 
   return listResponse(payments, total, q.limit, q.offset);
 });
+
+/* Andere methoden op dit pad: JSON met status 405, geen leeg antwoord. */
+export const POST = methodNotAllowed(["GET"]);
+export const PUT = methodNotAllowed(["GET"]);
+export const PATCH = methodNotAllowed(["GET"]);
+export const DELETE = methodNotAllowed(["GET"]);

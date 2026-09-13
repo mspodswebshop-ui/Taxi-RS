@@ -19,6 +19,7 @@ import "server-only";
 
 import { randomBytes } from "node:crypto";
 
+import { ApiError } from "@/lib/api-auth";
 import { db } from "@/lib/db";
 import { getProvider } from "@/lib/providers";
 import type { PaymentMethodId } from "@/lib/providers/types";
@@ -41,8 +42,12 @@ export async function startPaymentForLink(args: {
     include: { business: true },
   });
 
-  if (!link) throw new Error("Deze betaallink bestaat niet.");
-  if (!link.active) throw new Error("Deze betaallink is niet meer actief.");
+  // Statuscodes horen bij de fout, zodat de client weet wat er mis is: 404 is
+  // "bestaat niet" en 409 is "bestaat wel, maar mag niet meer".
+  if (!link) throw new ApiError(404, "not_found", "Deze betaallink bestaat niet.");
+  if (!link.active) {
+    throw new ApiError(409, "link_inactive", "Deze betaallink is niet meer actief.");
+  }
 
   // Een klant aanmaken of hergebruiken, alleen als er een e-mailadres is.
   let customerId: string | null = null;
@@ -124,7 +129,7 @@ export async function settlePayment(
   uitkomst: "success" | "failure",
 ) {
   const payment = await db.payment.findUnique({ where: { id: paymentId } });
-  if (!payment) throw new Error("Deze betaling bestaat niet.");
+  if (!payment) throw new ApiError(404, "not_found", "Deze betaling bestaat niet.");
 
   if (payment.status !== "pending") {
     // Al afgerond: niets meer wijzigen. Zo kan iemand die de pagina herlaadt
@@ -167,16 +172,22 @@ export async function refundPayment(args: {
     where: { id: args.paymentId, businessId: args.businessId },
   });
 
-  if (!payment) throw new Error("Deze betaling bestaat niet.");
+  if (!payment) throw new ApiError(404, "not_found", "Deze betaling bestaat niet.");
   if (payment.status !== "paid" && payment.status !== "refunded") {
-    throw new Error("Alleen een geslaagde betaling kan worden terugbetaald.");
+    throw new ApiError(
+      422,
+      "not_refundable",
+      "Alleen een geslaagde betaling kan worden terugbetaald.",
+    );
   }
 
   const resterend = payment.amount - payment.refundedAmount;
   const bedrag = args.amount ?? resterend;
 
   if (bedrag <= 0 || bedrag > resterend) {
-    throw new Error(
+    throw new ApiError(
+      422,
+      "amount_too_high",
       `Er kan hoogstens ${(resterend / 100).toFixed(2)} worden terugbetaald.`,
     );
   }

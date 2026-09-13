@@ -10,6 +10,10 @@
  * Uitvoeren: npm run db:seed
  */
 
+// Eerst .env inlezen. Dit script wordt met tsx rechtstreeks uitgevoerd, en dan
+// laadt niemand anders .env — zonder deze regel kent Prisma DATABASE_URL niet.
+import "dotenv/config";
+
 import { createHash, randomBytes } from "node:crypto";
 
 import { PrismaClient, type PaymentMethod, type PaymentStatus } from "@prisma/client";

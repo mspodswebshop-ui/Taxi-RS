@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { handle, jsonError } from "@/lib/api";
+import { handle, jsonError, methodNotAllowed } from "@/lib/api";
 import { db } from "@/lib/db";
 
 /** GET /api/v1/payments/[id] - een betaling met klant, order en terugbetalingen. */
@@ -13,3 +13,9 @@ export const GET = handle(async ({ ctx, params }) => {
   if (!payment) return jsonError(404, "not_found", "Deze betaling bestaat niet.");
   return NextResponse.json(payment);
 });
+
+/* Andere methoden op dit pad: JSON met status 405, geen leeg antwoord. */
+export const POST = methodNotAllowed(["GET"]);
+export const PUT = methodNotAllowed(["GET"]);
+export const PATCH = methodNotAllowed(["GET"]);
+export const DELETE = methodNotAllowed(["GET"]);

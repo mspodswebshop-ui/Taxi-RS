@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { handle, jsonError } from "@/lib/api";
+import { handle, jsonError, methodNotAllowed } from "@/lib/api";
 import { db } from "@/lib/db";
 import { updatePaymentLinkSchema } from "@/lib/validation";
 
@@ -33,3 +33,8 @@ export const PATCH = handle(
   },
   { schema: updatePaymentLinkSchema },
 );
+
+/* Andere methoden op dit pad: JSON met status 405, geen leeg antwoord. */
+export const POST = methodNotAllowed(["GET", "PATCH"]);
+export const PUT = methodNotAllowed(["GET", "PATCH"]);
+export const DELETE = methodNotAllowed(["GET", "PATCH"]);

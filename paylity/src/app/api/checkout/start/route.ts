@@ -13,7 +13,7 @@
 
 import { NextResponse, type NextRequest } from "next/server";
 
-import { jsonError } from "@/lib/api";
+import { jsonError, toErrorResponse } from "@/lib/api";
 import { settlePayment, startPaymentForLink } from "@/lib/payments";
 import { checkoutLimiter, clientIp } from "@/lib/rate-limit";
 import { checkoutSchema } from "@/lib/validation";
@@ -62,10 +62,9 @@ export async function POST(req: NextRequest) {
       failureReason: afgerond.failureReason,
     });
   } catch (err) {
-    return jsonError(
-      400,
-      "checkout_failed",
-      err instanceof Error ? err.message : "De betaling kon niet worden gestart.",
-    );
+    // De betaallogica gooit fouten met hun eigen statuscode (404 voor een link
+    // die niet bestaat, 409 voor een link die uit staat). Die geven we door,
+    // zodat de checkoutpagina de juiste melding kan tonen.
+    return toErrorResponse(err);
   }
 }

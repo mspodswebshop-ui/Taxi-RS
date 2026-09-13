@@ -66,7 +66,8 @@ Nuttige commando's:
 
 | Commando | Wat het doet |
 |---|---|
-| `npm run db:migrate` | Migratie aanmaken en uitvoeren |
+| `npm run db:migrate` | Migratie aanmaken en uitvoeren (tijdens ontwikkelen) |
+| `npm run db:deploy` | Bestaande migraties uitvoeren, zonder nieuwe te maken |
 | `npm run db:push` | Schema doorduwen zonder migratiebestand (snel, voor experimenteren) |
 | `npm run db:seed` | Testgegevens aanmaken |
 | `npm run db:studio` | Database bekijken in de browser |
@@ -172,8 +173,13 @@ curl -X POST http://localhost:3000/api/v1/refunds \
 }
 ```
 
-`401` ontbrekende of ongeldige sleutel · `404` onbekend of niet van jou ·
-`409` bestaat al · `422` validatie mislukt · `429` te veel verzoeken.
+`400` verzoek klopt niet · `401` ontbrekende of ongeldige sleutel ·
+`404` onbekend of niet van jou · `405` methode werkt niet op dit pad ·
+`409` bestaat al, of link staat uit · `422` validatie mislukt, of niets terug te
+betalen · `429` te veel verzoeken · `500` fout aan onze kant.
+
+Elk pad onder `/api` antwoordt altijd met JSON, ook bij een onbekend pad of een
+verkeerde methode.
 
 ---
 

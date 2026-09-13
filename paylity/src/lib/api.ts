@@ -106,6 +106,26 @@ export function toErrorResponse(err: unknown): NextResponse {
   return jsonError(500, "internal_error", "Er ging iets mis aan onze kant.");
 }
 
+/**
+ * Antwoord voor een methode die dit pad niet ondersteunt.
+ *
+ * Zonder dit stuurt Next een leeg antwoord met status 405. Een client die JSON
+ * verwacht ziet dan alleen een code en niet wat er wel mag. De Allow-header
+ * hoort volgens de HTTP-specificatie bij een 405, dus die zit erbij.
+ */
+export function methodNotAllowed(toegestaan: string[]) {
+  return async () =>
+    NextResponse.json(
+      {
+        error: {
+          code: "method_not_allowed",
+          message: `Deze methode werkt niet op dit pad. Toegestaan: ${toegestaan.join(", ")}.`,
+        },
+      },
+      { status: 405, headers: { Allow: toegestaan.join(", ") } },
+    );
+}
+
 /** Bouwt een lijstantwoord met dezelfde vorm voor alle bronnen. */
 export function listResponse<T>(data: T[], total: number, limit: number, offset: number) {
   return NextResponse.json({
