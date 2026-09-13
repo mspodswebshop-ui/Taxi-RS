@@ -29,8 +29,23 @@ koppelen](#een-echte-provider-koppelen).
 
 ## Snel starten
 
-Je hebt nodig: **Node.js 20+** en een **PostgreSQL**-database (lokaal of via
-Supabase).
+### De makkelijke manier
+
+Dubbelklik **`start.command`** in deze map (op een Mac; elders: `bash
+start.command`).
+
+Dat script doet alles: het controleert Node.js, maakt `.env` aan, zoekt of
+start een database, installeert de pakketten, maakt de tabellen aan, vraagt om
+je e-mailadres en wachtwoord, vult het dashboard met testgegevens en opent de
+app in je browser. Ontbreekt er iets, dan stopt het met een uitleg van wat je
+moet installeren — geen foutmelding waar je niets mee kunt.
+
+Je hebt nodig: **Node.js 20+** ([nodejs.org](https://nodejs.org)) en een
+**PostgreSQL**-database. Op een Mac is [Postgres.app](https://postgresapp.com)
+het eenvoudigst: downloaden, naar Programma's slepen, openen, "Initialize"
+klikken. Het script vindt hem daarna vanzelf.
+
+### Met de hand
 
 ```bash
 cd paylity
@@ -386,6 +401,7 @@ Twee dingen om dan goed te doen:
 
 ```
 paylity/
+├── start.command              alles opzetten en starten, in één klik
 ├── prisma/
 │   ├── schema.prisma          9 modellen + refunds, met relaties en indexes
 │   ├── seed.ts                testgegevens
