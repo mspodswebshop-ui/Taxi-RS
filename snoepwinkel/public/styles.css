@@ -5,6 +5,8 @@
    ===================================================================== */
 
 :root {
+  color-scheme: light;
+
   --paars: #4c1d95;
   --paars-fel: #a855f7;
   --paars-licht: #ede4fb;
@@ -66,7 +68,7 @@ svg {
 
 .top {
   position: sticky;
-  top: 0;
+  top: env(safe-area-inset-top, 0px);
   z-index: 40;
   display: flex;
   align-items: center;
