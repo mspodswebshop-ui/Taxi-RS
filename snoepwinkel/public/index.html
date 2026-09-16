@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Sahli Candy — Zoet genot in elke hap</title>
+  <meta name="description" content="Takis, Toxic Waste, alle smaken Red Bull en het zuurste snoep dat er bestaat. Kom langs of bestel via WhatsApp.">
+  <meta name="theme-color" content="#4c1d95">
+  <link rel="icon" href="logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&display=swap">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- ======================= Bovenbalk ======================= -->
+<header class="top">
+  <a class="brand" href="#top">
+    <img src="logo.png" alt="" width="44" height="44">
+    <span class="brand-naam" data-winkel="naam">Sahli Candy</span>
+  </a>
+
+  <nav class="nav">
+    <a href="#assortiment">Assortiment</a>
+    <a href="#bestellen">Bestellen</a>
+    <a href="#contact">Contact</a>
+  </nav>
+
+  <button class="mand-knop" id="mandKnop" aria-label="Bestellijst openen">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 7h12l-1.2 12.1a2 2 0 0 1-2 1.9H9.2a2 2 0 0 1-2-1.9L6 7Z"/><path d="M9 7V5.5a3 3 0 0 1 6 0V7"/></svg>
+    <span class="mand-teller" id="mandTeller" hidden>0</span>
+  </button>
+</header>
+
+<main id="top">
+
+  <!-- ========================= Hero ========================= -->
+  <section class="hero">
+    <div class="hero-tekst">
+      <p class="hero-slogan" data-winkel="slogan">Zoet genot in elke hap</p>
+      <h1 data-winkel="introTitel">Takis, Toxic Waste, Red Bull en alles wat zuur is</h1>
+      <p class="hero-uitleg" data-winkel="introTekst"></p>
+
+      <div class="hero-knoppen">
+        <a class="knop knop-vol" href="#assortiment">Bekijk het assortiment</a>
+        <a class="knop knop-leeg" href="#bestellen">Hoe bestellen?</a>
+      </div>
+
+      <ul class="hero-punten">
+        <li><strong id="aantalProducten">—</strong> producten op voorraad</li>
+        <li><strong>Vandaag</strong> af te halen</li>
+        <li><strong>Zuur</strong> tot niveau 5</li>
+      </ul>
+    </div>
+
+    <div class="hero-beeld">
+      <img src="logo.png" alt="Logo van Sahli Candy" width="420" height="420">
+    </div>
+  </section>
+
+  <!-- Lopende balk met de categorieën -->
+  <div class="loper" aria-hidden="true">
+    <div class="loper-spoor" id="loperSpoor"></div>
+  </div>
+
+  <!-- ====================== Assortiment ====================== -->
+  <section class="sectie" id="assortiment">
+    <div class="sectie-kop">
+      <h2>Het assortiment</h2>
+      <p>Zoek op naam of kies een categorie. Wat je aanduidt komt op je bestellijst te staan.</p>
+    </div>
+
+    <div class="filters">
+      <div class="zoek">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input type="search" id="zoekVeld" placeholder="Zoek op naam, bv. Fuego of Slime Licker" aria-label="Zoek een product">
+      </div>
+      <div class="categorieen" id="categorieen" role="group" aria-label="Categorieën"></div>
+    </div>
+
+    <p class="resultaat-telling" id="resultaatTelling" role="status"></p>
+    <div class="rooster" id="rooster"></div>
+    <p class="leeg" id="geenResultaat" hidden>Niets gevonden. Probeer een ander woord of kies <button class="link-knop" data-reset>alle producten</button>.</p>
+  </section>
+
+  <!-- ======================= Bestellen ======================= -->
+  <section class="sectie sectie-vlak" id="bestellen">
+    <div class="sectie-kop">
+      <h2>Zo bestel je</h2>
+      <p>Geen ingewikkelde webshop. Je stelt je lijst samen, wij leggen alles klaar.</p>
+    </div>
+
+    <ol class="stappen">
+      <li>
+        <span class="stap-nr">1</span>
+        <h3>Vul je lijst</h3>
+        <p>Klik bij elk product op <em>Toevoegen</em>. Rechtsboven zie je hoeveel er op je lijst staat.</p>
+      </li>
+      <li>
+        <span class="stap-nr">2</span>
+        <h3>Stuur ze door</h3>
+        <p>Open je lijst en verstuur ze met één klik via WhatsApp of e-mail. Je hoeft niets vooraf te betalen.</p>
+      </li>
+      <li>
+        <span class="stap-nr">3</span>
+        <h3>Kom afhalen</h3>
+        <p>Wij bevestigen en leggen alles klaar. Betalen doe je in de winkel, cash of met de kaart.</p>
+      </li>
+    </ol>
+  </section>
+
+  <!-- ======================== Contact ======================== -->
+  <section class="sectie" id="contact">
+    <div class="sectie-kop">
+      <h2>Kom langs</h2>
+      <p>Iets niet gevonden? Vraag het gerust — we bestellen ook op aanvraag.</p>
+    </div>
+
+    <div class="contact">
+      <div class="kaartje">
+        <h3>Openingsuren</h3>
+        <table class="uren" id="uren"></table>
+      </div>
+
+      <div class="kaartje">
+        <h3>Waar we zitten</h3>
+        <p class="adres">
+          <span data-winkel="adres"></span><br>
+          <span data-winkel="gemeente"></span>
+        </p>
+        <h3>Bereikbaar via</h3>
+        <ul class="contactlijst" id="contactlijst"></ul>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="voet">
+  <img src="logo.png" alt="" width="52" height="52">
+  <p><strong data-winkel="naam"></strong> — <span data-winkel="slogan"></span></p>
+  <p class="klein">Prijzen onder voorbehoud. Energiedranken worden niet verkocht aan kinderen onder de 16 jaar.</p>
+</footer>
+
+<!-- ==================== Bestellijst (zijpaneel) ==================== -->
+<div class="scherm" id="scherm" hidden></div>
+
+<aside class="mand" id="mand" aria-label="Bestellijst" aria-hidden="true">
+  <header class="mand-kop">
+    <h2>Jouw lijst</h2>
+    <button class="sluit" id="sluitKnop" aria-label="Sluiten">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+    </button>
+  </header>
+
+  <div class="mand-inhoud" id="mandInhoud"></div>
+
+  <footer class="mand-voet">
+    <div class="totaal">
+      <span>Totaal</span>
+      <strong id="totaal">€ 0,00</strong>
+    </div>
+    <p class="mand-nota">Richtprijs. Je betaalt pas bij het afhalen.</p>
+    <button class="knop knop-vol breed" id="bestelKnop" disabled>Versturen via WhatsApp</button>
+    <button class="knop knop-leeg breed" id="mailKnop" disabled>Versturen via e-mail</button>
+    <button class="link-knop midden" id="leegKnop" hidden>Lijst leegmaken</button>
+  </footer>
+</aside>
+
+<div class="melding" id="melding" role="status" aria-live="polite"></div>
+
+<script src="producten.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
