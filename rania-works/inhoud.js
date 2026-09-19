@@ -42,10 +42,12 @@ var STANDAARD_INHOUD = {
     /* Diensten */
     dienstenLabel: '02 — Diensten',
     dienstenTitel: 'Voor je bedrijf, of gewoon voor jezelf',
+    dienstenLead: 'Van één reel tot een vaste reeks. Vertel wat je nodig hebt, dan zoeken we samen wat past.',
 
     /* Werkwijze */
     werkwijzeLabel: '03 — Werkwijze',
     werkwijzeTitel: 'Van appje tot afgewerkte video',
+    werkwijzeLead: 'Vier stappen, geen gedoe. Je weet vooraf wat het kost en wanneer het klaar is.',
 
     /* Tarieven */
     tarievenLabel: '04 — Tarieven',
@@ -61,6 +63,7 @@ var STANDAARD_INHOUD = {
     /* Vragen */
     faqLabel: '06 — FAQ',
     faqTitel: 'Veelgestelde vragen',
+    faqLead: 'Staat je vraag er niet bij? Stuur gerust een berichtje.',
 
     /* Onderaan */
     slotTitel: 'Heb je beelden liggen? *Dan maken we er iets van.*',
@@ -230,11 +233,13 @@ var TEKSTVELDEN = [
   ]},
   { groep: 'Diensten', velden: [
     ['dienstenLabel', 'Labeltje', 'kort'],
-    ['dienstenTitel', 'Titel', 'kort']
+    ['dienstenTitel', 'Titel', 'kort'],
+    ['dienstenLead', 'Tekst eronder', 'lang']
   ]},
   { groep: 'Werkwijze', velden: [
     ['werkwijzeLabel', 'Labeltje', 'kort'],
-    ['werkwijzeTitel', 'Titel', 'kort']
+    ['werkwijzeTitel', 'Titel', 'kort'],
+    ['werkwijzeLead', 'Tekst eronder', 'lang']
   ]},
   { groep: 'Tarieven', velden: [
     ['tarievenLabel', 'Labeltje', 'kort'],
@@ -249,7 +254,8 @@ var TEKSTVELDEN = [
   ]},
   { groep: 'Vragen', velden: [
     ['faqLabel', 'Labeltje', 'kort'],
-    ['faqTitel', 'Titel', 'kort']
+    ['faqTitel', 'Titel', 'kort'],
+    ['faqLead', 'Tekst eronder', 'lang']
   ]},
   { groep: 'Onderaan', velden: [
     ['slotTitel', 'Slottitel', 'lang'],

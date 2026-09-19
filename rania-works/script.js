@@ -28,6 +28,41 @@ document.addEventListener('DOMContentLoaded', function () {
   var $$ = function (sel) { return Array.prototype.slice.call(document.querySelectorAll(sel)); };
 
   /* ======================================================================
+     Navigatie
+     --------------------------------------------------------------------
+     De site bestaat uit losse pagina's. In de versie waar alles op één
+     pagina staat (rania-works-compleet.html) worden dezelfde links
+     sprongen binnen die ene pagina.
+     ====================================================================== */
+  var eenPagina = document.body.getAttribute('data-modus') === 'een-pagina';
+  var HUIDIGE = document.body.getAttribute('data-pagina') || 'home';
+
+  var PAGINAS = {
+    home:      { bestand: 'index.html',     anker: '#top' },
+    werk:      { bestand: 'werk.html',      anker: '#werk' },
+    diensten:  { bestand: 'diensten.html',  anker: '#diensten' },
+    werkwijze: { bestand: 'werkwijze.html', anker: '#werkwijze' },
+    tarieven:  { bestand: 'tarieven.html',  anker: '#tarieven' },
+    aanvraag:  { bestand: 'aanvraag.html',  anker: '#aanvraag' },
+    vragen:    { bestand: 'vragen.html',    anker: '#faq' }
+  };
+
+  function naar(sleutel) {
+    var p = PAGINAS[sleutel];
+    if (!p) return '#';
+    if (eenPagina) return p.anker;
+    return (sleutel === HUIDIGE) ? p.anker : p.bestand;
+  }
+
+  /* Elke link met data-naar krijgt het juiste adres, en het menu laat zien
+     op welke pagina je zit. */
+  $$('[data-naar]').forEach(function (el) {
+    var sleutel = el.getAttribute('data-naar');
+    el.setAttribute('href', naar(sleutel));
+    if (!eenPagina && sleutel === HUIDIGE) el.classList.add('hier');
+  });
+
+  /* ======================================================================
      De inhoud op de pagina zetten
      ====================================================================== */
 
@@ -52,6 +87,7 @@ document.addEventListener('DOMContentLoaded', function () {
     };
     zet('formNummer', INHOUD.nummerGetoond);
     zet('footerNummer', INHOUD.nummerGetoond);
+    zet('menuNummer', INHOUD.nummerGetoond);
 
     /* De lopende band: de woorden twee keer, zodat ze naadloos doorlopen. */
     var band = document.getElementById('marqueeTrack');
@@ -63,6 +99,29 @@ document.addEventListener('DOMContentLoaded', function () {
       }).join('');
       band.innerHTML = stuk + stuk;
     }
+  }
+
+  /* ---------- De snelkoppelingen op de startpagina ---------- */
+  function snelkoppelingenPlaatsen() {
+    var grid = document.getElementById('snelGrid');
+    if (!grid) return;
+
+    var t = INHOUD.teksten;
+    var kaarten = [
+      { naar: 'werk',     naam: 'Werk',     onder: t.werkTitel,     lead: t.werkLead },
+      { naar: 'diensten', naam: 'Diensten', onder: t.dienstenTitel, lead: t.dienstenLead },
+      { naar: 'tarieven', naam: 'Tarieven', onder: t.tarievenTitel, lead: t.tarievenLead },
+      { naar: 'aanvraag', naam: 'Aanvraag', onder: t.aanvraagTitel, lead: t.aanvraagLead }
+    ];
+
+    grid.innerHTML = kaarten.map(function (k) {
+      return '<a class="snel-kaart reveal" href="' + veilig(naar(k.naar)) + '">' +
+        '<h3>' + veilig(k.naam) + '</h3>' +
+        '<p class="snel-onder">' + veilig(k.onder || '') + '</p>' +
+        '<p>' + veilig(k.lead || '') + '</p>' +
+        '<span class="snel-pijl" aria-hidden="true">→</span>' +
+      '</a>';
+    }).join('');
   }
 
   /* ---------- De werkwijze ---------- */
@@ -183,6 +242,7 @@ document.addEventListener('DOMContentLoaded', function () {
   werkPlaatsen();
   dienstenPlaatsen();
   werkwijzePlaatsen();
+  snelkoppelingenPlaatsen();
   faqPlaatsen();
   tarievenPlaatsen();
 
@@ -206,19 +266,40 @@ document.addEventListener('DOMContentLoaded', function () {
   window.addEventListener('scroll', bijScrollen, { passive: true });
   bijScrollen();
 
-  /* ---------- Menu op gsm ---------- */
+  /* ---------- Het menu achter de hamburger ---------- */
   var menuBtn = $('#menuBtn');
-  var nav = $('#nav');
-  if (menuBtn && nav) {
+  var menu = $('#menu');
+
+  function menuTonen(open) {
+    if (!menu || !menuBtn) return;
+    menu.hidden = !open;
+    /* Even wachten zodat de overgang kan starten. */
+    if (open) requestAnimationFrame(function () { menu.classList.add('open'); });
+    else menu.classList.remove('open');
+    menuBtn.setAttribute('aria-expanded', String(open));
+    menuBtn.setAttribute('aria-label', open ? 'Menu sluiten' : 'Menu openen');
+    menuBtn.classList.toggle('kruis', open);
+    document.body.style.overflow = open ? 'hidden' : '';
+    if (open) {
+      var eerste = menu.querySelector('a');
+      if (eerste) eerste.focus();
+    }
+  }
+
+  if (menuBtn && menu) {
     menuBtn.addEventListener('click', function () {
-      var open = nav.classList.toggle('open');
-      menuBtn.setAttribute('aria-expanded', String(open));
-      menuBtn.setAttribute('aria-label', open ? 'Menu sluiten' : 'Menu openen');
+      menuTonen(menu.hidden);
     });
-    nav.addEventListener('click', function (e) {
-      if (e.target.tagName === 'A') {
-        nav.classList.remove('open');
-        menuBtn.setAttribute('aria-expanded', 'false');
+
+    /* Een keuze maken sluit het menu. */
+    menu.addEventListener('click', function (e) {
+      if (e.target.closest('a')) menuTonen(false);
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && !menu.hidden) {
+        menuTonen(false);
+        menuBtn.focus();
       }
     });
   }
@@ -237,23 +318,6 @@ document.addEventListener('DOMContentLoaded', function () {
     teTonen.forEach(function (el) { kijker.observe(el); });
   } else {
     teTonen.forEach(function (el) { el.classList.add('in'); });
-  }
-
-  /* ---------- Welk menu-item is in beeld ---------- */
-  var secties = ['werk', 'diensten', 'werkwijze', 'tarieven', 'faq']
-    .map(function (id) { return document.getElementById(id); })
-    .filter(Boolean);
-
-  if ('IntersectionObserver' in window && secties.length) {
-    var menuKijker = new IntersectionObserver(function (items) {
-      items.forEach(function (item) {
-        if (!item.isIntersecting) return;
-        $$('.nav a').forEach(function (a) {
-          a.classList.toggle('active', a.getAttribute('href') === '#' + item.target.id);
-        });
-      });
-    }, { rootMargin: '-45% 0px -50% 0px' });
-    secties.forEach(function (s) { menuKijker.observe(s); });
   }
 
   /* ---------- Korte melding onderaan ---------- */
@@ -418,17 +482,37 @@ document.addEventListener('DOMContentLoaded', function () {
       if (!gevonden) select.value = '';
     }
 
+    var aanvraagHier = document.getElementById('aanvraag');
+    if (!aanvraagHier) {
+      /* Staat het formulier op een andere pagina, dan geven we de keuze mee. */
+      window.location.href = naar('aanvraag') + '?lengte=' + encodeURIComponent(keuze);
+      return;
+    }
+
     voorbeeldBijwerken();
-    document.getElementById('aanvraag').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    aanvraagHier.scrollIntoView({ behavior: 'smooth', block: 'start' });
     setTimeout(function () {
       var naam = document.getElementById('naam');
       if (naam && !naam.value) naam.focus({ preventScroll: true });
     }, 700);
   });
 
+  /* Kwam je van de tarievenpagina, dan staat je keuze al ingevuld. */
+  (function () {
+    var select = document.getElementById('lengte');
+    if (!select || !window.location.search) return;
+    var gevraagd = decodeURIComponent((window.location.search.match(/[?&]lengte=([^&]*)/) || [])[1] || '');
+    if (!gevraagd) return;
+    Array.prototype.some.call(select.options, function (opt) {
+      if (opt.text === gevraagd) { select.value = opt.value; return true; }
+      return false;
+    });
+    voorbeeldBijwerken();
+  })();
+
   /* ---------- Directe WhatsApp-links (voet en zwevende knop) ---------- */
   var kortBericht = 'Hallo Rania, ik zag je website en zou graag een edit laten maken.';
-  ['#footerWa', '#fabWa'].forEach(function (sel) {
+  ['#footerWa', '#fabWa', '#menuWa'].forEach(function (sel) {
     var el = $(sel);
     if (!el) return;
     el.href = waLink(kortBericht);

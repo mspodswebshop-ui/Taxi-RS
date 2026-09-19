@@ -4,19 +4,34 @@ Een website waar bezoekers een video-edit kunnen aanvragen, en een beheerpagina
 waar Rania de site bijhoudt. Donker en strak: zwart en wit, met paars als accent.
 Aanvragen komen als kant-en-klaar bericht binnen op WhatsApp — **0473 29 27 39**.
 
-Gewone HTML, CSS en JavaScript. Geen buildstap, geen framework, geen server.
+Gewone HTML, CSS en JavaScript. Geen buildstap voor de browser, geen framework,
+geen server. De site telt zeven pagina's, met een hamburgermenu.
+
+### Wat je zelf aanpast
 
 | Bestand | Wat het is |
 |---|---|
-| `index.html` | de website |
-| `styles.css` | de vormgeving van de website |
-| `script.js` | het gedrag van de website |
 | `inhoud.js` | **alle inhoud**: teksten, werk, diensten, werkwijze, vragen, tarieven |
-| `sitebestanden.js` | door `bouw.py` gemaakt: de sitebestanden als tekst, zodat het beheer er een zip van kan maken |
-| `beheer.html` | de beheerpagina (stijl en script zitten erin) |
-| `bouw.py` | maakt de twee "compleet"-bestanden hieronder |
-| `rania-works-compleet.html` | de hele website in één bestand |
+| `sjabloon.html` | het geraamte van elke pagina: kop, menu, voet |
+| `delen/*.html` | de stukken waaruit de pagina's zijn opgebouwd |
+| `styles.css` | de vormgeving |
+| `script.js` | het gedrag |
+| `beheer.html` | de beheerpagina |
+
+### Wat `bouw.py` daaruit maakt
+
+| Bestand | Wat het is |
+|---|---|
+| `index.html` | startpagina — hero en snelkoppelingen |
+| `werk.html` · `diensten.html` · `werkwijze.html` | je werk, je diensten, je aanpak |
+| `tarieven.html` · `aanvraag.html` · `vragen.html` | prijzen, formulier, FAQ |
+| `rania-works-compleet.html` | alles op één pagina, in één bestand |
 | `beheer-compleet.html` | het hele beheer in één bestand |
+| `sitebestanden.js` | de sitebestanden als tekst, zodat het beheer er een zip van maakt |
+
+> De zeven pagina's worden **overschreven** door `bouw.py`. Pas ze dus niet met
+> de hand aan — wijzig `sjabloon.html` of een bestand in `delen/`, en draai
+> daarna `python3 bouw.py`.
 
 ---
 
@@ -32,6 +47,15 @@ python3 -m http.server 8080
 
 Dan staat de site op <http://localhost:8080> en het beheer op
 <http://localhost:8080/beheer.html>.
+
+Pas je iets aan in `sjabloon.html`, `delen/`, `styles.css`, `script.js`,
+`inhoud.js` of `beheer.html`? Draai dan:
+
+```bash
+python3 bouw.py
+```
+
+Dat maakt de zeven pagina's en de drie losse bestanden opnieuw.
 
 ---
 
@@ -69,6 +93,8 @@ Online zetten doe je zo:
    `inhoud.js` in — je volledige site, met jouw wijzigingen erin.
 3. Zet die bestanden op je webhosting, of sleep de map naar
    [Netlify Drop](https://app.netlify.com/drop).
+
+In de zip zitten alle zeven pagina's, de stijl, het script en `inhoud.js`.
 
 Staat je site al online en verander je later iets? Dan volstaat het om enkel
 **`inhoud.js`** te vervangen; daar zit alle inhoud in. Daarvoor is er de knop
@@ -156,18 +182,6 @@ In het beheer, bij **Werk**. Je vult in:
   map `werk/` naast `index.html`). Laat je dit leeg, dan toont de site een paars
   vlak met een afspeelknop.
 - **adres van de video** — vul je dit in, dan wordt de kaart klikbaar
-
----
-
-## De losse bestanden opnieuw samenvoegen
-
-Pas je iets aan in `index.html`, `styles.css`, `script.js`, `inhoud.js` of
-`beheer.html`, maak de twee "compleet"-bestanden dan opnieuw:
-
-```bash
-cd rania-works
-python3 bouw.py
-```
 
 ---
 

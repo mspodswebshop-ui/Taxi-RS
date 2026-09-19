@@ -7,13 +7,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Rania Works — video-edits met karakter</title>
-<meta name="description" content="Video-edits voor bedrijven, merken en particulieren. Boek je edit direct via WhatsApp.">
+<title>Werk — Rania Works</title>
+<meta name="description" content="Een greep uit de edits die ik maakte.">
 <meta name="theme-color" content="#08070c">
 
 <meta property="og:type" content="website">
-<meta property="og:title" content="Rania Works — video-edits met karakter">
-<meta property="og:description" content="Video-edits voor bedrijven, merken en particulieren. Boek je edit direct via WhatsApp.">
+<meta property="og:title" content="Werk — Rania Works">
+<meta property="og:description" content="Een greep uit de edits die ik maakte.">
 <meta property="og:locale" content="nl_BE">
 
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%230a0910'/%3E%3Cpath d='M11 23V9h5.6a4.2 4.2 0 0 1 1.2 8.2L21 23h-3.3l-2.8-5.3H14V23z' fill='%23fff'/%3E%3Ccircle cx='24' cy='9' r='2.5' fill='%23a855f7'/%3E%3C/svg%3E">
@@ -24,7 +24,7 @@
 <link rel="stylesheet" href="styles.css">
 </head>
 
-<body data-pagina="home">
+<body data-pagina="werk">
 
 <!-- Sfeer: paarse gloed en fijne ruis over de hele pagina -->
 <div class="glow glow-1" aria-hidden="true"></div>
@@ -88,40 +88,18 @@
 </div>
 
 <main id="main">
-  <!-- ============ Hero ============ -->
-  <section class="hero" id="top">
-    <div class="wrap hero-inner">
-      <p class="eyebrow reveal" data-tekst="heroLabel"></p>
-
-      <h1 class="hero-title reveal" data-tekst="titel"></h1>
-
-      <p class="hero-lead reveal" data-tekst="lead"></p>
-
-      <div class="hero-cta reveal">
-        <a class="btn btn-primary" href="#aanvraag" data-tekst="knopA"></a>
-        <a class="btn btn-ghost" href="#werk" data-tekst="knopB"></a>
-      </div>
-
-      <dl class="hero-stats reveal">
-        <div><dt>Levering</dt><dd data-tekst="levering"></dd></div>
-        <div><dt>Revisies</dt><dd data-tekst="revisies"></dd></div>
-        <div><dt>Boeken via</dt><dd data-tekst="boekenVia"></dd></div>
-      </dl>
-    </div>
-
-    <!-- Lopende band met steekwoorden -->
-    <div class="marquee" aria-hidden="true">
-      <div class="marquee-track" id="marqueeTrack"></div>
-    </div>
-  </section>
-  <!-- ============ Verder kijken ============ -->
-  <section class="section" id="verder">
+  <!-- ============ Werk ============ -->
+  <section class="section" id="werk">
     <div class="wrap">
       <header class="section-head reveal">
-        <p class="eyebrow">Verder kijken</p>
-        <h2>Waar wil je naartoe?</h2>
+        <p class="eyebrow" data-tekst="werkLabel"></p>
+        <h2 data-tekst="werkTitel"></h2>
+        <p class="section-lead" data-tekst="werkLead"></p>
       </header>
-      <div class="snel" id="snelGrid"></div>
+
+      <div class="work-grid" id="werkGrid"></div>
+
+      <p class="note reveal" data-tekst="werkNoot"></p>
     </div>
   </section>
   <!-- ============ Slot-oproep ============ -->

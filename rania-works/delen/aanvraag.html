@@ -1,0 +1,103 @@
+  <!-- ============ Aanvraag ============ -->
+  <section class="section" id="aanvraag">
+    <div class="wrap booking">
+      <header class="section-head reveal">
+        <p class="eyebrow" data-tekst="aanvraagLabel"></p>
+        <h2 data-tekst="aanvraagTitel"></h2>
+        <p class="section-lead" data-tekst="aanvraagLead"></p>
+      </header>
+
+      <div class="booking-grid">
+        <form class="form reveal" id="bookingForm" novalidate>
+          <div class="field">
+            <label for="naam">Je naam <span class="req">*</span></label>
+            <input id="naam" name="naam" type="text" autocomplete="name" placeholder="Rania Peeters" required>
+            <p class="err" data-err="naam">Vul je naam in.</p>
+          </div>
+
+          <div class="field">
+            <label for="bedrijf">Bedrijf <span class="opt">optioneel</span></label>
+            <input id="bedrijf" name="bedrijf" type="text" autocomplete="organization" placeholder="Laat leeg als het voor jezelf is">
+          </div>
+
+          <div class="row">
+            <div class="field">
+              <label for="type">Wat mag ik maken? <span class="req">*</span></label>
+              <select id="type" name="type" required>
+                <option value="">Kies een soort edit</option>
+                <option>Social media edit (Reel / TikTok / Short)</option>
+                <option>Bedrijfs- of promovideo</option>
+                <option>Persoonlijke edit (aftermovie, reis, feest)</option>
+                <option>Gaming- of sporthighlights</option>
+                <option>Alleen afwerking (kleur, geluid, ondertiteling)</option>
+                <option>Iets anders — ik leg het uit</option>
+              </select>
+              <p class="err" data-err="type">Kies wat je nodig hebt.</p>
+            </div>
+
+            <div class="field">
+              <label for="platform">Waar komt het op?</label>
+              <select id="platform" name="platform">
+                <option value="">Maakt niet uit</option>
+                <option>Instagram</option>
+                <option>TikTok</option>
+                <option>YouTube</option>
+                <option>LinkedIn</option>
+                <option>Website of webshop</option>
+                <option>Privé / familie</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="field">
+              <label for="deadline">Wanneer heb je het nodig?</label>
+              <input id="deadline" name="deadline" type="date">
+            </div>
+
+            <div class="field">
+              <label for="lengte">Hoe lang wordt de video?</label>
+              <select id="lengte" name="lengte"></select>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="bericht">Vertel kort wat je in gedachten hebt <span class="req">*</span></label>
+            <textarea id="bericht" name="bericht" rows="5" required
+              placeholder="Bijvoorbeeld: 12 clips van een fotoshoot, ongeveer 30 seconden, strak op de beat, met onze huiskleuren."></textarea>
+            <p class="err" data-err="bericht">Schrijf kort wat je zoekt.</p>
+          </div>
+
+          <div class="form-actions">
+            <button class="btn btn-primary btn-wa" type="submit">
+              <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 3.5A11 11 0 0 0 3.2 16.9L2 22l5.2-1.2A11 11 0 1 0 20.5 3.5Z"/><path d="M8.4 7.8c.2-.5.4-.5.6-.5h.6c.2 0 .5 0 .7.5l.8 1.9c.1.3 0 .5-.1.7l-.5.6c-.2.2-.3.4-.1.7a7.4 7.4 0 0 0 3.4 3c.3.2.5.1.7-.1l.6-.7c.2-.2.4-.2.6-.1l1.9.9c.3.1.5.3.5.6v.6c0 .9-.9 1.7-1.8 1.7-3.9 0-7.9-4-7.9-7.9 0-.6.1-1.2.3-1.9Z"/></svg>
+              Versturen via WhatsApp
+            </button>
+            <button class="btn btn-ghost" type="button" id="copyBtn">Kopieer bericht</button>
+          </div>
+
+          <p class="form-foot">
+            Je aanvraag gaat rechtstreeks naar <strong id="formNummer"></strong>.
+            Er wordt niets opgeslagen op deze website.
+          </p>
+        </form>
+
+        <!-- Live voorbeeld van het WhatsApp-bericht -->
+        <aside class="preview reveal" aria-live="polite">
+          <div class="phone">
+            <div class="phone-top">
+              <span class="avatar" aria-hidden="true">R</span>
+              <div>
+                <strong>Rania Works</strong>
+                <small>online</small>
+              </div>
+            </div>
+            <div class="phone-body">
+              <div class="bubble" id="previewBubble">Vul het formulier in — je bericht verschijnt hier.</div>
+            </div>
+          </div>
+          <p class="preview-note">Zo komt je bericht binnen.</p>
+        </aside>
+      </div>
+    </div>
+  </section>

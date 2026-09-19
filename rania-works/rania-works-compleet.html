@@ -8,18 +8,21 @@
   Wijzig je iets? Doe dat in de losse bestanden en draai daarna
   "python3 bouw.py" om dit bestand opnieuw te maken.
 -->
+<!--
+  Deze pagina wordt gemaakt door bouw.py, uit sjabloon.html en de stukken in
+  delen/. Aanpassingen hier gaan verloren zodra je bouw.py opnieuw draait.
+-->
 <html lang="nl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Rania Works — video-edits met karakter</title>
-<meta name="description" content="Rania Works maakt video-edits voor bedrijven, merken en particulieren. Reels, promo's, aftermovies. Boek je edit direct via WhatsApp.">
+<meta name="description" content="Video-edits voor bedrijven, merken en particulieren.">
 <meta name="theme-color" content="#08070c">
 
-<!-- Sociale preview -->
 <meta property="og:type" content="website">
 <meta property="og:title" content="Rania Works — video-edits met karakter">
-<meta property="og:description" content="Edits voor bedrijven, merken en particulieren. Boek direct via WhatsApp.">
+<meta property="og:description" content="Video-edits voor bedrijven, merken en particulieren.">
 <meta property="og:locale" content="nl_BE">
 
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%230a0910'/%3E%3Cpath d='M11 23V9h5.6a4.2 4.2 0 0 1 1.2 8.2L21 23h-3.3l-2.8-5.3H14V23z' fill='%23fff'/%3E%3Ccircle cx='24' cy='9' r='2.5' fill='%23a855f7'/%3E%3C/svg%3E">
@@ -163,34 +166,74 @@ main, .site-header, .site-footer { position: relative; z-index: 2; }
 .brand-name { font-size: 18px; font-weight: 600; letter-spacing: -.01em; white-space: nowrap; }
 .brand-name em { font-family: var(--serif); font-style: italic; font-weight: 400; color: var(--purple); }
 
-.nav { display: flex; gap: 30px; }
-.nav a {
-  font-size: 15px; color: var(--muted); position: relative; padding: 4px 0;
-  transition: color .2s ease;
-}
-.nav a::after {
-  content: ''; position: absolute; left: 0; bottom: 0; height: 1px; width: 0;
-  background: var(--purple); transition: width .25s ease;
-}
-.nav a:hover { color: var(--text); }
-.nav a:hover::after, .nav a.active::after { width: 100%; }
-.nav a.active { color: var(--text); }
-
 .header-actions { display: flex; align-items: center; gap: 12px; }
 
 .menu-btn {
-  display: none; width: 42px; height: 42px; border-radius: 10px;
-  background: var(--surface); border: 1px solid var(--line);
-  cursor: pointer; padding: 0; place-items: center; gap: 5px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+  width: 44px; height: 44px; border-radius: 12px; padding: 0;
+  background: rgba(255, 255, 255, .04); border: 1px solid var(--line-2);
+  cursor: pointer; transition: background .2s ease, border-color .2s ease;
 }
+.menu-btn:hover { background: rgba(255, 255, 255, .08); border-color: rgba(168, 85, 247, .5); }
 .menu-btn span {
-  display: block; width: 17px; height: 1.5px; background: var(--text);
-  transition: transform .25s ease, opacity .25s ease;
+  display: block; width: 18px; height: 1.5px; background: var(--text);
+  transition: transform .3s ease, opacity .2s ease;
 }
-.menu-btn[aria-expanded="true"] span:first-child { transform: translateY(3px) rotate(45deg); }
-.menu-btn[aria-expanded="true"] span:last-child { transform: translateY(-3px) rotate(-45deg); }
+.menu-btn.kruis span:nth-child(1) { transform: translateY(5.5px) rotate(45deg); }
+.menu-btn.kruis span:nth-child(2) { opacity: 0; }
+.menu-btn.kruis span:nth-child(3) { transform: translateY(-5.5px) rotate(-45deg); }
 
-/* ---------- Knoppen ---------- */
+/* ---------- Het menu ---------- */
+.menu {
+  position: fixed; inset: 0; z-index: 80;
+  align-content: center;
+  background: rgba(6, 5, 10, .94);
+  backdrop-filter: blur(18px);
+  opacity: 0; transition: opacity .3s ease;
+  overflow-y: auto;
+  display: grid; align-items: center;
+}
+.menu.open { opacity: 1; }
+.menu[hidden] { display: none; }
+
+.menu-inner { padding-top: 96px; padding-bottom: 40px; }
+
+.menu-label {
+  font-size: 12.5px; letter-spacing: .2em; text-transform: uppercase;
+  color: var(--faint); margin-bottom: 18px;
+}
+
+.menu-lijst { list-style: none; margin: 0; padding: 0; }
+.menu-lijst li { border-top: 1px solid var(--line); }
+.menu-lijst li:last-child { border-bottom: 1px solid var(--line); }
+
+.menu-lijst a {
+  display: flex; align-items: baseline; gap: 18px;
+  padding: 12px 0; font-size: clamp(22px, 4.2vw, 32px); line-height: 1.15;
+  letter-spacing: -.03em; font-weight: 500;
+  color: var(--muted); transition: color .2s ease, padding-left .3s ease;
+}
+.menu-lijst a:hover, .menu-lijst a:focus-visible { color: var(--text); padding-left: 14px; }
+.menu-lijst a.hier { color: var(--text); }
+.menu-lijst a.hier::after {
+  content: ''; width: 8px; height: 8px; border-radius: 50%;
+  background: var(--purple); align-self: center;
+}
+.menu-nr {
+  font-size: 13px; letter-spacing: .1em; color: var(--purple);
+  font-weight: 400; flex: none; width: 26px;
+}
+
+.menu-voet {
+  margin-top: 28px; display: flex; align-items: center; gap: 20px; flex-wrap: wrap;
+  justify-content: space-between;
+}
+.menu-klein { color: var(--faint); font-size: 13.5px; }
+
+/* Als het menu open is, mag de kop erboven blijven staan. */
+.site-header { z-index: 90; }
+
+/* ---------- Knoppen ---------- *//* ---------- Knoppen ---------- */
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 9px;
   padding: 13px 24px; border-radius: 999px; border: 1px solid transparent;
@@ -353,6 +396,29 @@ a.work-card { display: block; color: inherit; }
   .work-grid.solo .work-card { grid-template-columns: 1fr; }
   .work-grid.solo .work-info { padding: 14px 6px 4px; }
 }
+
+/* ---------- Snelkoppelingen op de startpagina ---------- */
+.snel { display: grid; gap: 18px; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
+.snel-kaart {
+  position: relative; display: block; padding: 28px 26px 26px;
+  border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface);
+  transition: transform .3s ease, border-color .3s ease, background .3s ease;
+}
+.snel-kaart:hover {
+  transform: translateY(-4px); background: var(--surface-2);
+  border-color: rgba(168, 85, 247, .38);
+}
+.snel-kaart h3 { font-size: 20px; padding-right: 30px; }
+.snel-onder { color: var(--purple) !important; font-size: 13.5px !important; margin-top: 4px !important; -webkit-line-clamp: 2 !important; }
+.snel-kaart p {
+  color: var(--muted); font-size: 14.5px; margin-top: 10px;
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+}
+.snel-pijl {
+  position: absolute; top: 26px; right: 24px; color: var(--purple);
+  font-size: 20px; transition: transform .3s ease;
+}
+.snel-kaart:hover .snel-pijl { transform: translateX(4px); }
 
 /* ---------- Kaarten (diensten) ---------- */
 .cards {
@@ -580,6 +646,7 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(.7); curs
 .footer-nav { display: grid; gap: 10px; }
 .footer-nav a { color: var(--muted); font-size: 15px; width: fit-content; }
 .footer-nav a:hover { color: var(--purple); }
+.footer-nav a.hier { color: var(--text); }
 .footer-contact { display: grid; gap: 8px; justify-items: start; }
 .wa-link {
   display: inline-flex; align-items: center; gap: 10px;
@@ -625,18 +692,6 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(.7); curs
 /* ---------- Kleine schermen ---------- */
 @media (max-width: 860px) {
   body { font-size: 16px; }
-  .menu-btn { display: grid; }
-  .nav {
-    position: absolute; top: 76px; left: 0; right: 0;
-    flex-direction: column; gap: 0;
-    background: rgba(10, 9, 15, .97); backdrop-filter: blur(16px);
-    border-bottom: 1px solid var(--line);
-    padding: 8px 24px 20px;
-    display: none;
-  }
-  .nav.open { display: flex; }
-  .nav a { padding: 14px 0; border-bottom: 1px solid var(--line); font-size: 16px; }
-  .nav a:last-child { border-bottom: 0; }
   .hero { padding-top: 64px; }
   /* De kop moet op één regel passen naast de knop en het menu. */
   .wrap { padding: 0 20px; }
@@ -645,7 +700,7 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(.7); curs
   .header-actions { gap: 8px; }
   .header-actions .btn-sm { padding: 9px 14px; font-size: 13.5px; gap: 7px; }
   .header-actions .btn-sm .ico { width: 16px; height: 16px; }
-  .menu-btn { width: 38px; height: 38px; }
+  .menu-btn { width: 44px; height: 44px; }
   .hero-stats { flex-direction: column; }
   .hero-stats > div + div { border-left: 0; border-top: 1px solid var(--line); }
   .section { padding: 78px 0; }
@@ -669,7 +724,7 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(.7); curs
 </style>
 </head>
 
-<body>
+<body data-pagina="home" data-modus="een-pagina">
 
 <!-- Sfeer: paarse gloed en fijne ruis over de hele pagina -->
 <div class="glow glow-1" aria-hidden="true"></div>
@@ -687,33 +742,52 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(.7); curs
 <!-- ============ Kop ============ -->
 <header class="site-header" id="siteHeader">
   <div class="wrap header-inner">
-    <a class="brand" href="#top" aria-label="Rania Works, naar boven">
+    <a class="brand" data-naar="home" aria-label="Rania Works, naar de startpagina">
       <span class="brand-mark" aria-hidden="true">R</span>
       <span class="brand-name">Rania <em>Works</em></span>
     </a>
 
-    <nav class="nav" id="nav" aria-label="Hoofdmenu">
-      <a href="#werk">Werk</a>
-      <a href="#diensten">Diensten</a>
-      <a href="#werkwijze">Werkwijze</a>
-      <a href="#tarieven">Tarieven</a>
-      <a href="#faq">FAQ</a>
-    </nav>
-
     <div class="header-actions">
-      <a class="btn btn-primary btn-sm" href="#aanvraag">
+      <a class="btn btn-primary btn-sm" data-naar="aanvraag">
         <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 3.5A11 11 0 0 0 3.2 16.9L2 22l5.2-1.2A11 11 0 1 0 20.5 3.5Z"/><path d="M8.4 7.8c.2-.5.4-.5.6-.5h.6c.2 0 .5 0 .7.5l.8 1.9c.1.3 0 .5-.1.7l-.5.6c-.2.2-.3.4-.1.7a7.4 7.4 0 0 0 3.4 3c.3.2.5.1.7-.1l.6-.7c.2-.2.4-.2.6-.1l1.9.9c.3.1.5.3.5.6v.6c0 .9-.9 1.7-1.8 1.7-3.9 0-7.9-4-7.9-7.9 0-.6.1-1.2.3-1.9Z"/></svg>
         Boek je edit
       </a>
-      <button class="menu-btn" id="menuBtn" aria-label="Menu openen" aria-expanded="false" aria-controls="nav">
-        <span></span><span></span>
+
+      <button class="menu-btn" id="menuBtn" aria-label="Menu openen" aria-expanded="false" aria-controls="menu">
+        <span></span><span></span><span></span>
       </button>
     </div>
   </div>
 </header>
 
-<main id="main">
+<!-- ============ Menu ============ -->
+<div class="menu" id="menu" hidden>
+  <div class="wrap menu-inner">
+    <p class="menu-label">Menu</p>
 
+    <nav aria-label="Hoofdmenu">
+      <ul class="menu-lijst">
+        <li><a data-naar="home"><span class="menu-nr">01</span>Home</a></li>
+        <li><a data-naar="werk"><span class="menu-nr">02</span>Werk</a></li>
+        <li><a data-naar="diensten"><span class="menu-nr">03</span>Diensten</a></li>
+        <li><a data-naar="werkwijze"><span class="menu-nr">04</span>Werkwijze</a></li>
+        <li><a data-naar="tarieven"><span class="menu-nr">05</span>Tarieven</a></li>
+        <li><a data-naar="aanvraag"><span class="menu-nr">06</span>Aanvraag</a></li>
+        <li><a data-naar="vragen"><span class="menu-nr">07</span>Vragen</a></li>
+      </ul>
+    </nav>
+
+    <div class="menu-voet">
+      <a class="wa-link" id="menuWa" href="#">
+        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 3.5A11 11 0 0 0 3.2 16.9L2 22l5.2-1.2A11 11 0 1 0 20.5 3.5Z"/><path d="M8.4 7.8c.2-.5.4-.5.6-.5h.6c.2 0 .5 0 .7.5l.8 1.9c.1.3 0 .5-.1.7l-.5.6c-.2.2-.3.4-.1.7a7.4 7.4 0 0 0 3.4 3c.3.2.5.1.7-.1l.6-.7c.2-.2.4-.2.6-.1l1.9.9c.3.1.5.3.5.6v.6c0 .9-.9 1.7-1.8 1.7-3.9 0-7.9-4-7.9-7.9 0-.6.1-1.2.3-1.9Z"/></svg>
+        <span id="menuNummer"></span>
+      </a>
+      <p class="menu-klein" data-tekst="voetKlein"></p>
+    </div>
+  </div>
+</div>
+
+<main id="main">
   <!-- ============ Hero ============ -->
   <section class="hero" id="top">
     <div class="wrap hero-inner">
@@ -740,7 +814,6 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(.7); curs
       <div class="marquee-track" id="marqueeTrack"></div>
     </div>
   </section>
-
   <!-- ============ Werk ============ -->
   <section class="section" id="werk">
     <div class="wrap">
@@ -755,31 +828,30 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(.7); curs
       <p class="note reveal" data-tekst="werkNoot"></p>
     </div>
   </section>
-
   <!-- ============ Diensten ============ -->
   <section class="section section-alt" id="diensten">
     <div class="wrap">
       <header class="section-head reveal">
         <p class="eyebrow" data-tekst="dienstenLabel"></p>
         <h2 data-tekst="dienstenTitel"></h2>
+        <p class="section-lead" data-tekst="dienstenLead"></p>
       </header>
 
       <div class="cards" id="dienstenGrid"></div>
     </div>
   </section>
-
   <!-- ============ Werkwijze ============ -->
   <section class="section" id="werkwijze">
     <div class="wrap">
       <header class="section-head reveal">
         <p class="eyebrow" data-tekst="werkwijzeLabel"></p>
         <h2 data-tekst="werkwijzeTitel"></h2>
+        <p class="section-lead" data-tekst="werkwijzeLead"></p>
       </header>
 
       <ol class="steps" id="werkwijzeLijst"></ol>
     </div>
   </section>
-
   <!-- ============ Tarieven ============ -->
   <section class="section section-alt" id="tarieven">
     <div class="wrap">
@@ -794,7 +866,6 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(.7); curs
       <p class="note reveal" data-tekst="tarievenNoot"></p>
     </div>
   </section>
-
   <!-- ============ Aanvraag ============ -->
   <section class="section" id="aanvraag">
     <div class="wrap booking">
@@ -898,19 +969,18 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(.7); curs
       </div>
     </div>
   </section>
-
   <!-- ============ FAQ ============ -->
   <section class="section section-alt" id="faq">
     <div class="wrap wrap-narrow">
       <header class="section-head reveal">
         <p class="eyebrow" data-tekst="faqLabel"></p>
         <h2 data-tekst="faqTitel"></h2>
+        <p class="section-lead" data-tekst="faqLead"></p>
       </header>
 
       <div class="faq" id="faqLijst"></div>
     </div>
   </section>
-
   <!-- ============ Slot-oproep ============ -->
   <section class="cta-band">
     <div class="wrap cta-inner reveal">
@@ -918,14 +988,13 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(.7); curs
       <a class="btn btn-primary btn-lg" href="#aanvraag" data-tekst="slotKnop"></a>
     </div>
   </section>
-
 </main>
 
 <!-- ============ Voet ============ -->
 <footer class="site-footer">
   <div class="wrap footer-inner">
     <div>
-      <a class="brand" href="#top">
+      <a class="brand" data-naar="home">
         <span class="brand-mark" aria-hidden="true">R</span>
         <span class="brand-name">Rania <em>Works</em></span>
       </a>
@@ -933,10 +1002,10 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(.7); curs
     </div>
 
     <nav class="footer-nav" aria-label="Voetmenu">
-      <a href="#werk">Werk</a>
-      <a href="#diensten">Diensten</a>
-      <a href="#tarieven">Tarieven</a>
-      <a href="#aanvraag">Aanvraag</a>
+      <a data-naar="werk">Werk</a>
+      <a data-naar="diensten">Diensten</a>
+      <a data-naar="tarieven">Tarieven</a>
+      <a data-naar="aanvraag">Aanvraag</a>
     </nav>
 
     <div class="footer-contact">
@@ -1005,10 +1074,12 @@ var STANDAARD_INHOUD = {
     /* Diensten */
     dienstenLabel: '02 — Diensten',
     dienstenTitel: 'Voor je bedrijf, of gewoon voor jezelf',
+    dienstenLead: 'Van één reel tot een vaste reeks. Vertel wat je nodig hebt, dan zoeken we samen wat past.',
 
     /* Werkwijze */
     werkwijzeLabel: '03 — Werkwijze',
     werkwijzeTitel: 'Van appje tot afgewerkte video',
+    werkwijzeLead: 'Vier stappen, geen gedoe. Je weet vooraf wat het kost en wanneer het klaar is.',
 
     /* Tarieven */
     tarievenLabel: '04 — Tarieven',
@@ -1024,6 +1095,7 @@ var STANDAARD_INHOUD = {
     /* Vragen */
     faqLabel: '06 — FAQ',
     faqTitel: 'Veelgestelde vragen',
+    faqLead: 'Staat je vraag er niet bij? Stuur gerust een berichtje.',
 
     /* Onderaan */
     slotTitel: 'Heb je beelden liggen? *Dan maken we er iets van.*',
@@ -1193,11 +1265,13 @@ var TEKSTVELDEN = [
   ]},
   { groep: 'Diensten', velden: [
     ['dienstenLabel', 'Labeltje', 'kort'],
-    ['dienstenTitel', 'Titel', 'kort']
+    ['dienstenTitel', 'Titel', 'kort'],
+    ['dienstenLead', 'Tekst eronder', 'lang']
   ]},
   { groep: 'Werkwijze', velden: [
     ['werkwijzeLabel', 'Labeltje', 'kort'],
-    ['werkwijzeTitel', 'Titel', 'kort']
+    ['werkwijzeTitel', 'Titel', 'kort'],
+    ['werkwijzeLead', 'Tekst eronder', 'lang']
   ]},
   { groep: 'Tarieven', velden: [
     ['tarievenLabel', 'Labeltje', 'kort'],
@@ -1212,7 +1286,8 @@ var TEKSTVELDEN = [
   ]},
   { groep: 'Vragen', velden: [
     ['faqLabel', 'Labeltje', 'kort'],
-    ['faqTitel', 'Titel', 'kort']
+    ['faqTitel', 'Titel', 'kort'],
+    ['faqLead', 'Tekst eronder', 'lang']
   ]},
   { groep: 'Onderaan', velden: [
     ['slotTitel', 'Slottitel', 'lang'],
@@ -1253,6 +1328,41 @@ document.addEventListener('DOMContentLoaded', function () {
   var $$ = function (sel) { return Array.prototype.slice.call(document.querySelectorAll(sel)); };
 
   /* ======================================================================
+     Navigatie
+     --------------------------------------------------------------------
+     De site bestaat uit losse pagina's. In de versie waar alles op één
+     pagina staat (rania-works-compleet.html) worden dezelfde links
+     sprongen binnen die ene pagina.
+     ====================================================================== */
+  var eenPagina = document.body.getAttribute('data-modus') === 'een-pagina';
+  var HUIDIGE = document.body.getAttribute('data-pagina') || 'home';
+
+  var PAGINAS = {
+    home:      { bestand: 'index.html',     anker: '#top' },
+    werk:      { bestand: 'werk.html',      anker: '#werk' },
+    diensten:  { bestand: 'diensten.html',  anker: '#diensten' },
+    werkwijze: { bestand: 'werkwijze.html', anker: '#werkwijze' },
+    tarieven:  { bestand: 'tarieven.html',  anker: '#tarieven' },
+    aanvraag:  { bestand: 'aanvraag.html',  anker: '#aanvraag' },
+    vragen:    { bestand: 'vragen.html',    anker: '#faq' }
+  };
+
+  function naar(sleutel) {
+    var p = PAGINAS[sleutel];
+    if (!p) return '#';
+    if (eenPagina) return p.anker;
+    return (sleutel === HUIDIGE) ? p.anker : p.bestand;
+  }
+
+  /* Elke link met data-naar krijgt het juiste adres, en het menu laat zien
+     op welke pagina je zit. */
+  $$('[data-naar]').forEach(function (el) {
+    var sleutel = el.getAttribute('data-naar');
+    el.setAttribute('href', naar(sleutel));
+    if (!eenPagina && sleutel === HUIDIGE) el.classList.add('hier');
+  });
+
+  /* ======================================================================
      De inhoud op de pagina zetten
      ====================================================================== */
 
@@ -1277,6 +1387,7 @@ document.addEventListener('DOMContentLoaded', function () {
     };
     zet('formNummer', INHOUD.nummerGetoond);
     zet('footerNummer', INHOUD.nummerGetoond);
+    zet('menuNummer', INHOUD.nummerGetoond);
 
     /* De lopende band: de woorden twee keer, zodat ze naadloos doorlopen. */
     var band = document.getElementById('marqueeTrack');
@@ -1288,6 +1399,29 @@ document.addEventListener('DOMContentLoaded', function () {
       }).join('');
       band.innerHTML = stuk + stuk;
     }
+  }
+
+  /* ---------- De snelkoppelingen op de startpagina ---------- */
+  function snelkoppelingenPlaatsen() {
+    var grid = document.getElementById('snelGrid');
+    if (!grid) return;
+
+    var t = INHOUD.teksten;
+    var kaarten = [
+      { naar: 'werk',     naam: 'Werk',     onder: t.werkTitel,     lead: t.werkLead },
+      { naar: 'diensten', naam: 'Diensten', onder: t.dienstenTitel, lead: t.dienstenLead },
+      { naar: 'tarieven', naam: 'Tarieven', onder: t.tarievenTitel, lead: t.tarievenLead },
+      { naar: 'aanvraag', naam: 'Aanvraag', onder: t.aanvraagTitel, lead: t.aanvraagLead }
+    ];
+
+    grid.innerHTML = kaarten.map(function (k) {
+      return '<a class="snel-kaart reveal" href="' + veilig(naar(k.naar)) + '">' +
+        '<h3>' + veilig(k.naam) + '</h3>' +
+        '<p class="snel-onder">' + veilig(k.onder || '') + '</p>' +
+        '<p>' + veilig(k.lead || '') + '</p>' +
+        '<span class="snel-pijl" aria-hidden="true">→</span>' +
+      '</a>';
+    }).join('');
   }
 
   /* ---------- De werkwijze ---------- */
@@ -1408,6 +1542,7 @@ document.addEventListener('DOMContentLoaded', function () {
   werkPlaatsen();
   dienstenPlaatsen();
   werkwijzePlaatsen();
+  snelkoppelingenPlaatsen();
   faqPlaatsen();
   tarievenPlaatsen();
 
@@ -1431,19 +1566,40 @@ document.addEventListener('DOMContentLoaded', function () {
   window.addEventListener('scroll', bijScrollen, { passive: true });
   bijScrollen();
 
-  /* ---------- Menu op gsm ---------- */
+  /* ---------- Het menu achter de hamburger ---------- */
   var menuBtn = $('#menuBtn');
-  var nav = $('#nav');
-  if (menuBtn && nav) {
+  var menu = $('#menu');
+
+  function menuTonen(open) {
+    if (!menu || !menuBtn) return;
+    menu.hidden = !open;
+    /* Even wachten zodat de overgang kan starten. */
+    if (open) requestAnimationFrame(function () { menu.classList.add('open'); });
+    else menu.classList.remove('open');
+    menuBtn.setAttribute('aria-expanded', String(open));
+    menuBtn.setAttribute('aria-label', open ? 'Menu sluiten' : 'Menu openen');
+    menuBtn.classList.toggle('kruis', open);
+    document.body.style.overflow = open ? 'hidden' : '';
+    if (open) {
+      var eerste = menu.querySelector('a');
+      if (eerste) eerste.focus();
+    }
+  }
+
+  if (menuBtn && menu) {
     menuBtn.addEventListener('click', function () {
-      var open = nav.classList.toggle('open');
-      menuBtn.setAttribute('aria-expanded', String(open));
-      menuBtn.setAttribute('aria-label', open ? 'Menu sluiten' : 'Menu openen');
+      menuTonen(menu.hidden);
     });
-    nav.addEventListener('click', function (e) {
-      if (e.target.tagName === 'A') {
-        nav.classList.remove('open');
-        menuBtn.setAttribute('aria-expanded', 'false');
+
+    /* Een keuze maken sluit het menu. */
+    menu.addEventListener('click', function (e) {
+      if (e.target.closest('a')) menuTonen(false);
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && !menu.hidden) {
+        menuTonen(false);
+        menuBtn.focus();
       }
     });
   }
@@ -1462,23 +1618,6 @@ document.addEventListener('DOMContentLoaded', function () {
     teTonen.forEach(function (el) { kijker.observe(el); });
   } else {
     teTonen.forEach(function (el) { el.classList.add('in'); });
-  }
-
-  /* ---------- Welk menu-item is in beeld ---------- */
-  var secties = ['werk', 'diensten', 'werkwijze', 'tarieven', 'faq']
-    .map(function (id) { return document.getElementById(id); })
-    .filter(Boolean);
-
-  if ('IntersectionObserver' in window && secties.length) {
-    var menuKijker = new IntersectionObserver(function (items) {
-      items.forEach(function (item) {
-        if (!item.isIntersecting) return;
-        $$('.nav a').forEach(function (a) {
-          a.classList.toggle('active', a.getAttribute('href') === '#' + item.target.id);
-        });
-      });
-    }, { rootMargin: '-45% 0px -50% 0px' });
-    secties.forEach(function (s) { menuKijker.observe(s); });
   }
 
   /* ---------- Korte melding onderaan ---------- */
@@ -1643,17 +1782,37 @@ document.addEventListener('DOMContentLoaded', function () {
       if (!gevonden) select.value = '';
     }
 
+    var aanvraagHier = document.getElementById('aanvraag');
+    if (!aanvraagHier) {
+      /* Staat het formulier op een andere pagina, dan geven we de keuze mee. */
+      window.location.href = naar('aanvraag') + '?lengte=' + encodeURIComponent(keuze);
+      return;
+    }
+
     voorbeeldBijwerken();
-    document.getElementById('aanvraag').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    aanvraagHier.scrollIntoView({ behavior: 'smooth', block: 'start' });
     setTimeout(function () {
       var naam = document.getElementById('naam');
       if (naam && !naam.value) naam.focus({ preventScroll: true });
     }, 700);
   });
 
+  /* Kwam je van de tarievenpagina, dan staat je keuze al ingevuld. */
+  (function () {
+    var select = document.getElementById('lengte');
+    if (!select || !window.location.search) return;
+    var gevraagd = decodeURIComponent((window.location.search.match(/[?&]lengte=([^&]*)/) || [])[1] || '');
+    if (!gevraagd) return;
+    Array.prototype.some.call(select.options, function (opt) {
+      if (opt.text === gevraagd) { select.value = opt.value; return true; }
+      return false;
+    });
+    voorbeeldBijwerken();
+  })();
+
   /* ---------- Directe WhatsApp-links (voet en zwevende knop) ---------- */
   var kortBericht = 'Hallo Rania, ik zag je website en zou graag een edit laten maken.';
-  ['#footerWa', '#fabWa'].forEach(function (sel) {
+  ['#footerWa', '#fabWa', '#menuWa'].forEach(function (sel) {
     var el = $(sel);
     if (!el) return;
     el.href = waLink(kortBericht);

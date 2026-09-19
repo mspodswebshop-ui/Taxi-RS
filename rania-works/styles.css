@@ -133,34 +133,74 @@ main, .site-header, .site-footer { position: relative; z-index: 2; }
 .brand-name { font-size: 18px; font-weight: 600; letter-spacing: -.01em; white-space: nowrap; }
 .brand-name em { font-family: var(--serif); font-style: italic; font-weight: 400; color: var(--purple); }
 
-.nav { display: flex; gap: 30px; }
-.nav a {
-  font-size: 15px; color: var(--muted); position: relative; padding: 4px 0;
-  transition: color .2s ease;
-}
-.nav a::after {
-  content: ''; position: absolute; left: 0; bottom: 0; height: 1px; width: 0;
-  background: var(--purple); transition: width .25s ease;
-}
-.nav a:hover { color: var(--text); }
-.nav a:hover::after, .nav a.active::after { width: 100%; }
-.nav a.active { color: var(--text); }
-
 .header-actions { display: flex; align-items: center; gap: 12px; }
 
 .menu-btn {
-  display: none; width: 42px; height: 42px; border-radius: 10px;
-  background: var(--surface); border: 1px solid var(--line);
-  cursor: pointer; padding: 0; place-items: center; gap: 5px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+  width: 44px; height: 44px; border-radius: 12px; padding: 0;
+  background: rgba(255, 255, 255, .04); border: 1px solid var(--line-2);
+  cursor: pointer; transition: background .2s ease, border-color .2s ease;
 }
+.menu-btn:hover { background: rgba(255, 255, 255, .08); border-color: rgba(168, 85, 247, .5); }
 .menu-btn span {
-  display: block; width: 17px; height: 1.5px; background: var(--text);
-  transition: transform .25s ease, opacity .25s ease;
+  display: block; width: 18px; height: 1.5px; background: var(--text);
+  transition: transform .3s ease, opacity .2s ease;
 }
-.menu-btn[aria-expanded="true"] span:first-child { transform: translateY(3px) rotate(45deg); }
-.menu-btn[aria-expanded="true"] span:last-child { transform: translateY(-3px) rotate(-45deg); }
+.menu-btn.kruis span:nth-child(1) { transform: translateY(5.5px) rotate(45deg); }
+.menu-btn.kruis span:nth-child(2) { opacity: 0; }
+.menu-btn.kruis span:nth-child(3) { transform: translateY(-5.5px) rotate(-45deg); }
 
-/* ---------- Knoppen ---------- */
+/* ---------- Het menu ---------- */
+.menu {
+  position: fixed; inset: 0; z-index: 80;
+  align-content: center;
+  background: rgba(6, 5, 10, .94);
+  backdrop-filter: blur(18px);
+  opacity: 0; transition: opacity .3s ease;
+  overflow-y: auto;
+  display: grid; align-items: center;
+}
+.menu.open { opacity: 1; }
+.menu[hidden] { display: none; }
+
+.menu-inner { padding-top: 96px; padding-bottom: 40px; }
+
+.menu-label {
+  font-size: 12.5px; letter-spacing: .2em; text-transform: uppercase;
+  color: var(--faint); margin-bottom: 18px;
+}
+
+.menu-lijst { list-style: none; margin: 0; padding: 0; }
+.menu-lijst li { border-top: 1px solid var(--line); }
+.menu-lijst li:last-child { border-bottom: 1px solid var(--line); }
+
+.menu-lijst a {
+  display: flex; align-items: baseline; gap: 18px;
+  padding: 12px 0; font-size: clamp(22px, 4.2vw, 32px); line-height: 1.15;
+  letter-spacing: -.03em; font-weight: 500;
+  color: var(--muted); transition: color .2s ease, padding-left .3s ease;
+}
+.menu-lijst a:hover, .menu-lijst a:focus-visible { color: var(--text); padding-left: 14px; }
+.menu-lijst a.hier { color: var(--text); }
+.menu-lijst a.hier::after {
+  content: ''; width: 8px; height: 8px; border-radius: 50%;
+  background: var(--purple); align-self: center;
+}
+.menu-nr {
+  font-size: 13px; letter-spacing: .1em; color: var(--purple);
+  font-weight: 400; flex: none; width: 26px;
+}
+
+.menu-voet {
+  margin-top: 28px; display: flex; align-items: center; gap: 20px; flex-wrap: wrap;
+  justify-content: space-between;
+}
+.menu-klein { color: var(--faint); font-size: 13.5px; }
+
+/* Als het menu open is, mag de kop erboven blijven staan. */
+.site-header { z-index: 90; }
+
+/* ---------- Knoppen ---------- *//* ---------- Knoppen ---------- */
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 9px;
   padding: 13px 24px; border-radius: 999px; border: 1px solid transparent;
@@ -323,6 +363,29 @@ a.work-card { display: block; color: inherit; }
   .work-grid.solo .work-card { grid-template-columns: 1fr; }
   .work-grid.solo .work-info { padding: 14px 6px 4px; }
 }
+
+/* ---------- Snelkoppelingen op de startpagina ---------- */
+.snel { display: grid; gap: 18px; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
+.snel-kaart {
+  position: relative; display: block; padding: 28px 26px 26px;
+  border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface);
+  transition: transform .3s ease, border-color .3s ease, background .3s ease;
+}
+.snel-kaart:hover {
+  transform: translateY(-4px); background: var(--surface-2);
+  border-color: rgba(168, 85, 247, .38);
+}
+.snel-kaart h3 { font-size: 20px; padding-right: 30px; }
+.snel-onder { color: var(--purple) !important; font-size: 13.5px !important; margin-top: 4px !important; -webkit-line-clamp: 2 !important; }
+.snel-kaart p {
+  color: var(--muted); font-size: 14.5px; margin-top: 10px;
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+}
+.snel-pijl {
+  position: absolute; top: 26px; right: 24px; color: var(--purple);
+  font-size: 20px; transition: transform .3s ease;
+}
+.snel-kaart:hover .snel-pijl { transform: translateX(4px); }
 
 /* ---------- Kaarten (diensten) ---------- */
 .cards {
@@ -550,6 +613,7 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(.7); curs
 .footer-nav { display: grid; gap: 10px; }
 .footer-nav a { color: var(--muted); font-size: 15px; width: fit-content; }
 .footer-nav a:hover { color: var(--purple); }
+.footer-nav a.hier { color: var(--text); }
 .footer-contact { display: grid; gap: 8px; justify-items: start; }
 .wa-link {
   display: inline-flex; align-items: center; gap: 10px;
@@ -595,18 +659,6 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(.7); curs
 /* ---------- Kleine schermen ---------- */
 @media (max-width: 860px) {
   body { font-size: 16px; }
-  .menu-btn { display: grid; }
-  .nav {
-    position: absolute; top: 76px; left: 0; right: 0;
-    flex-direction: column; gap: 0;
-    background: rgba(10, 9, 15, .97); backdrop-filter: blur(16px);
-    border-bottom: 1px solid var(--line);
-    padding: 8px 24px 20px;
-    display: none;
-  }
-  .nav.open { display: flex; }
-  .nav a { padding: 14px 0; border-bottom: 1px solid var(--line); font-size: 16px; }
-  .nav a:last-child { border-bottom: 0; }
   .hero { padding-top: 64px; }
   /* De kop moet op één regel passen naast de knop en het menu. */
   .wrap { padding: 0 20px; }
@@ -615,7 +667,7 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(.7); curs
   .header-actions { gap: 8px; }
   .header-actions .btn-sm { padding: 9px 14px; font-size: 13.5px; gap: 7px; }
   .header-actions .btn-sm .ico { width: 16px; height: 16px; }
-  .menu-btn { width: 38px; height: 38px; }
+  .menu-btn { width: 44px; height: 44px; }
   .hero-stats { flex-direction: column; }
   .hero-stats > div + div { border-left: 0; border-top: 1px solid var(--line); }
   .section { padding: 78px 0; }

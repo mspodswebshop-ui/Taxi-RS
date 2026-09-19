@@ -1375,21 +1375,30 @@ window.addEventListener('error', function (e) {
       'Deze map is je volledige website, met alles wat je in het beheer hebt\r\n' +
       'aangepast. Zet de vier bestanden samen op je webhosting, of sleep de map\r\n' +
       'naar netlify.com/drop.\r\n\r\n' +
-      '  index.html   de pagina\r\n' +
-      '  styles.css   de vormgeving\r\n' +
-      '  script.js    het gedrag\r\n' +
-      '  inhoud.js    jouw teksten, werk, diensten, vragen en tarieven\r\n\r\n' +
+      '  index.html      de startpagina\r\n' +
+      '  werk.html       je werk\r\n' +
+      '  diensten.html   je diensten\r\n' +
+      '  werkwijze.html  hoe je werkt\r\n' +
+      '  tarieven.html   je prijzen\r\n' +
+      '  aanvraag.html   het aanvraagformulier\r\n' +
+      '  vragen.html     de veelgestelde vragen\r\n' +
+      '  styles.css      de vormgeving\r\n' +
+      '  script.js       het gedrag\r\n' +
+      '  inhoud.js       jouw teksten, werk, diensten, vragen en tarieven\r\n\r\n' +
       'Verander je later iets in het beheer? Download dan opnieuw, of vervang\r\n' +
       'enkel inhoud.js - de rest blijft gelijk.\r\n\r\n' +
       'Het beheer zelf zit hier bewust niet in: zet dat niet online.\r\n';
 
-    var zip = zipMaken([
-      { naam: 'index.html', tekst: SITEBESTANDEN['index.html'] },
-      { naam: 'styles.css', tekst: SITEBESTANDEN['styles.css'] },
-      { naam: 'script.js', tekst: SITEBESTANDEN['script.js'] },
-      { naam: 'inhoud.js', tekst: inhoudBestandMaken() },
-      { naam: 'LEESMIJ.txt', tekst: leesmij }
-    ]);
+    /* Alle pagina's en bestanden die het beheer bij zich draagt, plus
+       jouw inhoud en een leesmij. */
+    var mee = Object.keys(SITEBESTANDEN)
+      .filter(function (naam) { return naam !== 'inhoud-staart.js'; })
+      .map(function (naam) { return { naam: naam, tekst: SITEBESTANDEN[naam] }; });
+
+    mee.push({ naam: 'inhoud.js', tekst: inhoudBestandMaken() });
+    mee.push({ naam: 'LEESMIJ.txt', tekst: leesmij });
+
+    var zip = zipMaken(mee);
 
     bestandBewaren('rania-works-site-' + vandaagISO() + '.zip', zip);
     melding('Je site is gedownload.');
