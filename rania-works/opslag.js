@@ -18,10 +18,16 @@
 var BESTANDEN_KAST = 'raniaworks-bestanden';
 var BESTANDEN_VAK = 'bestanden';
 
+/* Sommige browsers laten niet eens toe dát je het vraagt: dan geeft het
+   uitlezen van window.indexedDB zelf al een fout. Vandaar deze omweg. */
+function opslagKan() {
+  try { return !!window.indexedDB; } catch (e) { return false; }
+}
+
 /* De kast openen (en de eerste keer aanmaken). */
 function kastOpenen() {
   return new Promise(function (klaar, mis) {
-    if (!window.indexedDB) { mis(new Error('Deze browser bewaart geen bestanden.')); return; }
+    if (!opslagKan()) { mis(new Error('Deze browser bewaart geen bestanden.')); return; }
     var poging = window.indexedDB.open(BESTANDEN_KAST, 1);
     poging.onupgradeneeded = function () {
       if (!poging.result.objectStoreNames.contains(BESTANDEN_VAK)) {
@@ -45,33 +51,67 @@ function metVak(soort, doe) {
   });
 }
 
-/* Een bestand bewaren onder een pad, bijvoorbeeld "werk/reel.mp4". */
+/* Lukt de kast niet (privémodus, opslag uit, of een venster dat niets mag
+   bewaren), dan houden we het bestand zolang in het geheugen. Je kan dan nog
+   altijd je zip downloaden; sluit je het venster, dan is het weg. */
+var SESSIEBESTANDEN = {};
+
+/* Een bestand bewaren onder een pad, bijvoorbeeld "werk/reel.mp4".
+   Levert { blijvend: true } als het de kast in ging. */
 function bestandOpslaan(pad, blob) {
-  return metVak('readwrite', function (vak) { return vak.put(blob, pad); });
+  return metVak('readwrite', function (vak) { return vak.put(blob, pad); })
+    .then(function () {
+      delete SESSIEBESTANDEN[pad];
+      return { blijvend: true };
+    })
+    .catch(function () {
+      SESSIEBESTANDEN[pad] = blob;
+      return { blijvend: false };
+    });
 }
 
 /* Een bestand terughalen. Levert null als het er niet is. */
 function bestandOphalen(pad) {
+  if (SESSIEBESTANDEN[pad]) return Promise.resolve(SESSIEBESTANDEN[pad]);
   return metVak('readonly', function (vak) { return vak.get(pad); })
     .then(function (r) { return r || null; })
     .catch(function () { return null; });
 }
 
 function bestandWissen(pad) {
-  return metVak('readwrite', function (vak) { return vak['delete'](pad); });
+  delete SESSIEBESTANDEN[pad];
+  return metVak('readwrite', function (vak) { return vak['delete'](pad); })
+    .catch(function () { return null; });
 }
 
-/* Alle paden, met hun grootte en soort. */
+/* Alle paden, met hun grootte en soort — uit de kast én uit het geheugen. */
 function bestandenLijst() {
+  var uitGeheugen = Object.keys(SESSIEBESTANDEN).map(function (pad) {
+    return { pad: pad, grootte: SESSIEBESTANDEN[pad].size,
+             soort: SESSIEBESTANDEN[pad].type, blijvend: false };
+  });
+
   return metVak('readonly', function (vak) { return vak.getAllKeys(); })
     .then(function (paden) {
       return Promise.all((paden || []).map(function (pad) {
         return bestandOphalen(pad).then(function (blob) {
-          return { pad: pad, grootte: blob ? blob.size : 0, soort: blob ? blob.type : '' };
+          return { pad: pad, grootte: blob ? blob.size : 0,
+                   soort: blob ? blob.type : '', blijvend: true };
         });
       }));
     })
-    .catch(function () { return []; });
+    .then(function (uitKast) {
+      var alles = uitKast.concat(uitGeheugen.filter(function (b) {
+        return !uitKast.some(function (k) { return k.pad === b.pad; });
+      }));
+      return alles;
+    })
+    .catch(function () { return uitGeheugen; });
+}
+
+/* Is een bestand een video of een afbeelding? */
+function isVideo(soort, pad) {
+  return /^video\//.test(soort || '') || /\.(mp4|webm|ogv|mov|m4v)$/i.test(pad || '');
 }
 
 /* Is dit een pad in onze eigen kast, of een adres op het internet? */

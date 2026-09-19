@@ -139,6 +139,22 @@ tr.klikbaar:hover td { background: rgba(255, 255, 255, .03); }
 .klikbaar:focus-visible { outline: 2px solid var(--purple); outline-offset: 2px; }
 
 .leeg { text-align: center; color: var(--muted); padding: 44px 20px; }
+
+/* De bestanden die je toevoegde, met een voorvertoning. */
+.bestanden { display: grid; gap: 10px; }
+.bestand {
+  display: flex; align-items: center; gap: 14px;
+  padding: 10px; border: 1px solid var(--line); border-radius: 12px; background: var(--veld);
+}
+.bestand-beeld {
+  width: 64px; height: 64px; flex: none; border-radius: 9px; overflow: hidden;
+  background: linear-gradient(160deg, #1b1826, #0a0910); border: 1px solid var(--line);
+  display: grid; place-items: center;
+}
+.bestand-beeld video, .bestand-beeld img { width: 100%; height: 100%; object-fit: cover; }
+.bestand-info { flex: 1; min-width: 0; }
+.bestand-info strong { display: block; font-size: 14.5px; font-weight: 500; overflow-wrap: anywhere; }
+.bestand-info span { color: var(--faint); font-size: 13px; }
 .leeg strong { display: block; color: var(--text); font-size: 16px; margin-bottom: 6px; }
 
 /* ---------- Filters ---------- */
@@ -1155,10 +1171,12 @@ window.addEventListener('error', function (e) {
     var doel = document.getElementById(kiezer.getAttribute('data-doel'));
     var pad = veiligePadnaam(bestand.name);
 
-    melding('Bezig met bewaren…');
-    bestandOpslaan(pad, bestand).then(function () {
+    melding('Bezig met toevoegen…');
+    bestandOpslaan(pad, bestand).then(function (uitslag) {
       if (doel) doel.value = pad;
-      melding(bestand.name + ' bewaard (' + grootteInTekst(bestand.size) + ').');
+      melding(uitslag && uitslag.blijvend
+        ? bestand.name + ' toegevoegd (' + grootteInTekst(bestand.size) + ').'
+        : bestand.name + ' toegevoegd, maar enkel voor nu — download je site voor je sluit.');
       bestandenTekenen();
     }, function (fout) {
       melding('Bewaren lukte niet: ' + ((fout && fout.message) || 'onbekende fout'));
@@ -1178,35 +1196,53 @@ window.addEventListener('error', function (e) {
     var vak = $('#bestandLijst');
     if (!vak || typeof bestandenLijst !== 'function') return;
 
-    if (!window.indexedDB) {
-      vak.innerHTML = '<div class="waarschuwing">Deze browser kan geen bestanden bewaren ' +
-        '(privémodus, of opslag staat uit). Uploaden lukt hier niet — plak zolang een ' +
-        'YouTube- of Vimeo-link, of open het beheer in een gewoon browservenster.</div>';
-      return;
-    }
 
     bestandenLijst().then(function (lijst) {
       if (!lijst.length) {
-        vak.innerHTML = '<div class="paneel"><h3>Bestanden op dit toestel</h3>' +
-          '<p class="uitleg">Nog niets geüpload. Kies bij een voorbeeld een video of foto ' +
-          'van je toestel; die komt hier te staan.</p></div>';
+        vak.innerHTML = '<div class="paneel"><h3>Jouw bestanden</h3>' +
+          '<p class="uitleg">Nog niets toegevoegd. Tik hierboven op een voorbeeld en kies ' +
+          'bij <strong>De video</strong> een bestand van je toestel — het verschijnt hier ' +
+          'met een voorvertoning.</p>' +
+          (opslagKan() ? '' : '<div class="waarschuwing">Deze browser bewaart niets ' +
+            '(privémodus of opslag uit). Toevoegen lukt wel, maar enkel tot je het venster ' +
+            'sluit — download dan meteen je site bij Instellingen.</div>') +
+          '</div>';
         return;
       }
 
       var totaal = lijst.reduce(function (n, b) { return n + b.grootte; }, 0);
-      vak.innerHTML = '<div class="paneel"><h3>Bestanden op dit toestel</h3>' +
-        '<p class="uitleg">Samen ' + esc(grootteInTekst(totaal)) + '. Ze staan in de browser van ' +
-        'dit toestel en gaan mee in de zip die je bij Instellingen downloadt.</p>' +
-        '<div class="tabel-wrap"><table><thead><tr><th>Bestand</th><th>Grootte</th><th></th></tr></thead><tbody>' +
+      var tijdelijk = lijst.some(function (b) { return !b.blijvend; });
+
+      vak.innerHTML = '<div class="paneel"><h3>Jouw bestanden</h3>' +
+        '<p class="uitleg">Samen ' + esc(grootteInTekst(totaal)) + '. Ze gaan mee in de zip ' +
+        'die je bij Instellingen downloadt, in een map werk/.</p>' +
+        (tijdelijk ? '<div class="waarschuwing">Sommige bestanden kon je browser niet blijvend ' +
+          'bewaren. Ze werken nu wel, maar zijn weg zodra je dit venster sluit — download eerst ' +
+          'je site bij Instellingen.</div>' : '') +
+        '<div class="bestanden">' +
         lijst.map(function (b) {
-          return '<tr>' +
-            '<td data-label="Bestand"><div class="cel">' + esc(b.pad) + '</div></td>' +
-            '<td class="num" data-label="Grootte"><div class="cel">' + esc(grootteInTekst(b.grootte)) + '</div></td>' +
-            '<td class="acties"><div class="rij-acties">' +
-              '<button class="btn btn-weg btn-klein" data-bestandweg="' + esc(b.pad) + '">Wis</button>' +
-            '</div></td></tr>';
+          return '<div class="bestand">' +
+            '<div class="bestand-beeld" data-toon="' + esc(b.pad) + '"></div>' +
+            '<div class="bestand-info">' +
+              '<strong>' + esc(b.pad.replace(/^werk\//, '')) + '</strong>' +
+              '<span>' + esc(grootteInTekst(b.grootte)) + (b.blijvend ? '' : ' · alleen nu') + '</span>' +
+            '</div>' +
+            '<button class="btn btn-weg btn-klein" data-bestandweg="' + esc(b.pad) + '">Wis</button>' +
+          '</div>';
         }).join('') +
-        '</tbody></table></div></div>';
+        '</div></div>';
+
+      /* De voorvertoningen erbij zetten. */
+      $$('#bestandLijst [data-toon]').forEach(function (plek) {
+        var pad = plek.getAttribute('data-toon');
+        bestandOphalen(pad).then(function (blob) {
+          if (!blob) return;
+          var adres = URL.createObjectURL(blob);
+          plek.innerHTML = isVideo(blob.type, pad)
+            ? '<video src="' + esc(adres) + '" muted playsinline preload="metadata"></video>'
+            : '<img src="' + esc(adres) + '" alt="">';
+        });
+      });
     });
   }
 
