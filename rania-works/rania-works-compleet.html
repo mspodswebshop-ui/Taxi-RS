@@ -1,0 +1,1404 @@
+<!DOCTYPE html>
+<!--
+  Rania Works - de volledige website in EEN bestand.
+  HTML, CSS en JavaScript zitten hier allemaal in. Dubbelklik het bestand
+  om het te openen; er is verder niets nodig.
+
+  Het WhatsApp-nummer staat onderaan in het script, bij: var WHATSAPP
+  De prijzen staan in de sectie <section id="tarieven"> en in de keuzelijst
+  id="lengte" van het formulier.
+-->
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rania Works — video-edits met karakter</title>
+<meta name="description" content="Rania Works maakt video-edits voor bedrijven, merken en particulieren. Reels, promo's, aftermovies. Boek je edit direct via WhatsApp.">
+<meta name="theme-color" content="#08070c">
+
+<!-- Sociale preview -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="Rania Works — video-edits met karakter">
+<meta property="og:description" content="Edits voor bedrijven, merken en particulieren. Boek direct via WhatsApp.">
+<meta property="og:locale" content="nl_BE">
+
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%230a0910'/%3E%3Cpath d='M11 23V9h5.6a4.2 4.2 0 0 1 1.2 8.2L21 23h-3.3l-2.8-5.3H14V23z' fill='%23fff'/%3E%3Ccircle cx='24' cy='9' r='2.5' fill='%23a855f7'/%3E%3C/svg%3E">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ==========================================================================
+   Rania Works — stijl
+   Donker, strak, zwart-wit met subtiele paarse accenten.
+   ========================================================================== */
+
+:root {
+  /* Kleuren */
+  --bg:        #08070c;
+  --bg-2:      #0c0b12;
+  --surface:   #111018;
+  --surface-2: #16141f;
+  --line:      rgba(255, 255, 255, .09);
+  --line-2:    rgba(255, 255, 255, .16);
+
+  --text:      #f4f3f7;
+  --muted:     #a6a3b4;
+  --faint:     #6e6b7d;
+
+  --purple:    #a855f7;
+  --purple-2:  #7c3aed;
+  --purple-dim: rgba(168, 85, 247, .16);
+
+  /* Maatvoering */
+  --wrap: 1140px;
+  --radius: 16px;
+  --radius-sm: 10px;
+
+  /* Lettertypes */
+  --sans: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --serif: 'Instrument Serif', Georgia, 'Times New Roman', serif;
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; scroll-padding-top: 88px; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 17px;
+  line-height: 1.65;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+img { max-width: 100%; display: block; }
+
+h1, h2, h3 { line-height: 1.12; letter-spacing: -.02em; margin: 0; font-weight: 600; }
+p { margin: 0; }
+
+a { color: inherit; text-decoration: none; }
+
+::selection { background: var(--purple); color: #fff; }
+
+:focus-visible {
+  outline: 2px solid var(--purple);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+.wrap { width: 100%; max-width: var(--wrap); margin: 0 auto; padding: 0 24px; }
+.wrap-narrow { max-width: 780px; }
+
+.skip-link {
+  position: absolute; left: -9999px; top: 12px; z-index: 200;
+  background: var(--purple); color: #fff; padding: 10px 16px; border-radius: 8px;
+}
+.skip-link:focus { left: 16px; }
+
+/* ---------- Sfeer: gloed en ruis ---------- */
+.glow {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(120px);
+  pointer-events: none;
+  z-index: 0;
+}
+.glow-1 {
+  top: -240px; left: 50%; transform: translateX(-50%);
+  width: 780px; height: 560px;
+  background: radial-gradient(circle, rgba(124, 58, 237, .30), transparent 68%);
+}
+.glow-2 {
+  bottom: -220px; right: -160px;
+  width: 620px; height: 520px;
+  background: radial-gradient(circle, rgba(168, 85, 247, .16), transparent 70%);
+}
+.grain {
+  position: fixed; inset: 0; z-index: 1; pointer-events: none; opacity: .35;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.35'/%3E%3C/svg%3E");
+  mix-blend-mode: overlay;
+}
+
+main, .site-header, .site-footer { position: relative; z-index: 2; }
+
+/* ---------- Kop ---------- */
+.site-header {
+  position: sticky; top: 0; z-index: 60;
+  border-bottom: 1px solid transparent;
+  transition: background .3s ease, border-color .3s ease, backdrop-filter .3s ease;
+}
+.site-header.scrolled {
+  background: rgba(8, 7, 12, .78);
+  backdrop-filter: blur(14px);
+  border-bottom-color: var(--line);
+}
+.header-inner {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 24px; height: 76px;
+}
+
+.brand { display: inline-flex; align-items: center; gap: 11px; }
+.brand-mark {
+  width: 34px; height: 34px; flex: none;
+  display: grid; place-items: center;
+  border-radius: 10px;
+  background: linear-gradient(145deg, #1a1726, #0b0a10);
+  border: 1px solid var(--line-2);
+  box-shadow: inset 0 0 0 1px rgba(168, 85, 247, .18), 0 0 22px rgba(124, 58, 237, .22);
+  font-family: var(--serif); font-size: 19px; line-height: 1;
+}
+.brand-name { font-size: 18px; font-weight: 600; letter-spacing: -.01em; white-space: nowrap; }
+.brand-name em { font-family: var(--serif); font-style: italic; font-weight: 400; color: var(--purple); }
+
+.nav { display: flex; gap: 30px; }
+.nav a {
+  font-size: 15px; color: var(--muted); position: relative; padding: 4px 0;
+  transition: color .2s ease;
+}
+.nav a::after {
+  content: ''; position: absolute; left: 0; bottom: 0; height: 1px; width: 0;
+  background: var(--purple); transition: width .25s ease;
+}
+.nav a:hover { color: var(--text); }
+.nav a:hover::after, .nav a.active::after { width: 100%; }
+.nav a.active { color: var(--text); }
+
+.header-actions { display: flex; align-items: center; gap: 12px; }
+
+.menu-btn {
+  display: none; width: 42px; height: 42px; border-radius: 10px;
+  background: var(--surface); border: 1px solid var(--line);
+  cursor: pointer; padding: 0; place-items: center; gap: 5px;
+}
+.menu-btn span {
+  display: block; width: 17px; height: 1.5px; background: var(--text);
+  transition: transform .25s ease, opacity .25s ease;
+}
+.menu-btn[aria-expanded="true"] span:first-child { transform: translateY(3px) rotate(45deg); }
+.menu-btn[aria-expanded="true"] span:last-child { transform: translateY(-3px) rotate(-45deg); }
+
+/* ---------- Knoppen ---------- */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 9px;
+  padding: 13px 24px; border-radius: 999px; border: 1px solid transparent;
+  font: inherit; font-size: 15px; font-weight: 500; cursor: pointer;
+  transition: transform .2s ease, background .25s ease, border-color .25s ease, box-shadow .25s ease, color .2s ease;
+  white-space: nowrap;
+}
+.btn:active { transform: translateY(1px); }
+.btn-sm { padding: 10px 18px; font-size: 14px; }
+.btn-lg { padding: 16px 32px; font-size: 16px; }
+.btn-block { width: 100%; margin-top: 4px; }
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--purple), var(--purple-2));
+  color: #fff;
+  box-shadow: 0 8px 28px rgba(124, 58, 237, .30);
+}
+.btn-primary:hover { box-shadow: 0 12px 34px rgba(124, 58, 237, .45); transform: translateY(-1px); }
+
+.btn-ghost {
+  background: rgba(255, 255, 255, .03);
+  border-color: var(--line-2);
+  color: var(--text);
+}
+.btn-ghost:hover { background: rgba(255, 255, 255, .07); border-color: rgba(168, 85, 247, .5); }
+
+.ico { width: 18px; height: 18px; fill: currentColor; flex: none; }
+
+/* ---------- Hero ---------- */
+.hero { padding: 96px 0 0; }
+.hero-inner { text-align: center; max-width: 860px; }
+
+.eyebrow {
+  font-size: 13px; letter-spacing: .18em; text-transform: uppercase;
+  color: var(--faint); margin-bottom: 22px;
+}
+.eyebrow::before {
+  content: '✦'; color: var(--purple); margin-right: 10px; letter-spacing: 0;
+}
+
+.hero-title {
+  font-size: clamp(42px, 8vw, 78px);
+  font-weight: 600;
+  letter-spacing: -.035em;
+}
+.accent { color: var(--purple); display: inline-block; }
+.accent em {
+  font-family: var(--serif); font-style: italic; font-weight: 400;
+  letter-spacing: -.01em;
+}
+
+.hero-lead {
+  margin: 26px auto 0; max-width: 620px;
+  color: var(--muted); font-size: 18px;
+}
+
+.hero-cta { display: flex; gap: 14px; justify-content: center; margin-top: 38px; flex-wrap: wrap; }
+
+.hero-stats {
+  display: flex; justify-content: center; gap: 0; margin: 60px 0 0; padding: 0;
+  border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+}
+.hero-stats > div { flex: 1; padding: 22px 12px; }
+.hero-stats > div + div { border-left: 1px solid var(--line); }
+.hero-stats dt { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--faint); }
+.hero-stats dd { margin: 6px 0 0; font-size: 17px; font-weight: 500; }
+
+/* ---------- Lopende band ---------- */
+.marquee {
+  margin-top: 70px; padding: 16px 0;
+  border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+  background: rgba(255, 255, 255, .015);
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+          mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+}
+.marquee-track {
+  display: flex; align-items: center; gap: 28px; width: max-content;
+  animation: slide 42s linear infinite;
+}
+.marquee-track span {
+  font-family: var(--serif); font-size: 26px; color: rgba(255, 255, 255, .55);
+  white-space: nowrap;
+}
+.marquee-track i { color: var(--purple); font-style: normal; font-size: 13px; }
+@keyframes slide { to { transform: translateX(-50%); } }
+
+/* ---------- Secties ---------- */
+.section { padding: 110px 0; }
+.section-alt {
+  background: linear-gradient(180deg, transparent, rgba(255, 255, 255, .022), transparent);
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+.section-head { max-width: 640px; margin-bottom: 56px; }
+.section-head h2 { font-size: clamp(30px, 4.6vw, 44px); }
+.section-lead { color: var(--muted); margin-top: 16px; }
+
+.note {
+  margin-top: 34px; color: var(--faint); font-size: 15px; max-width: 560px;
+}
+
+/* ---------- Werk ---------- */
+.work-grid {
+  display: grid; gap: 22px;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+.work-card {
+  border: 1px solid var(--line); border-radius: var(--radius);
+  background: var(--surface); padding: 14px 14px 20px;
+  transition: transform .3s ease, border-color .3s ease, box-shadow .3s ease;
+}
+.work-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(168, 85, 247, .38);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, .5);
+}
+.work-thumb {
+  position: relative; aspect-ratio: 4 / 3; border-radius: 11px;
+  background:
+    radial-gradient(120% 90% at 30% 0%, rgba(124, 58, 237, .28), transparent 60%),
+    linear-gradient(160deg, #1b1826, #0a0910);
+  border: 1px solid var(--line);
+  display: grid; place-items: center; overflow: hidden;
+}
+.work-thumb::after {
+  content: attr(data-label);
+  position: absolute; top: 10px; left: 10px;
+  font-size: 11px; letter-spacing: .1em;
+  padding: 3px 8px; border-radius: 999px;
+  background: rgba(0, 0, 0, .55); border: 1px solid var(--line-2); color: var(--muted);
+}
+.work-thumb .play {
+  width: 46px; height: 46px; border-radius: 50%;
+  display: grid; place-items: center; font-size: 13px; padding-left: 3px;
+  background: rgba(255, 255, 255, .06); border: 1px solid var(--line-2);
+  backdrop-filter: blur(4px);
+  transition: background .25s ease, transform .25s ease;
+}
+.work-card:hover .play { background: var(--purple); transform: scale(1.08); }
+.work-card h3 { font-size: 17px; margin-top: 16px; }
+.work-card p { color: var(--muted); font-size: 14.5px; margin-top: 6px; }
+
+/* ---------- Kaarten (diensten) ---------- */
+.cards {
+  display: grid; gap: 22px;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+/* Vier diensten: netter als een vierkant van twee bij twee. */
+@media (min-width: 900px) {
+  .cards { grid-template-columns: 1fr 1fr; }
+}
+.card {
+  position: relative; overflow: hidden;
+  padding: 32px 28px; border-radius: var(--radius);
+  border: 1px solid var(--line); background: var(--surface);
+  transition: transform .3s ease, border-color .3s ease, background .3s ease;
+}
+.card::before {
+  content: ''; position: absolute; inset: 0 0 auto 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(168, 85, 247, .8), transparent);
+  opacity: 0; transition: opacity .3s ease;
+}
+.card:hover { transform: translateY(-4px); border-color: var(--line-2); background: var(--surface-2); }
+.card:hover::before { opacity: 1; }
+.card-ico {
+  display: grid; place-items: center; width: 38px; height: 38px;
+  border-radius: 10px; margin-bottom: 20px; font-size: 12px;
+  color: var(--purple); background: var(--purple-dim);
+  border: 1px solid rgba(168, 85, 247, .28);
+}
+.card h3 { font-size: 20px; }
+.card p { color: var(--muted); margin-top: 12px; font-size: 15.5px; }
+
+.ticks { list-style: none; padding: 0; margin: 20px 0 0; display: grid; gap: 9px; }
+.ticks li {
+  position: relative; padding-left: 24px; font-size: 14.5px; color: var(--muted);
+}
+.ticks li::before {
+  content: ''; position: absolute; left: 0; top: .55em;
+  width: 11px; height: 6px; border-left: 1.5px solid var(--purple);
+  border-bottom: 1.5px solid var(--purple); transform: rotate(-45deg);
+}
+
+/* ---------- Werkwijze ---------- */
+.steps {
+  list-style: none; padding: 0; margin: 0;
+  display: grid; gap: 0;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+}
+.steps li {
+  padding: 30px 26px 30px 0;
+  border-top: 1px solid var(--line);
+  position: relative;
+}
+.steps li + li { padding-left: 26px; }
+@media (min-width: 900px) {
+  .steps li + li { border-left: 1px solid var(--line); }
+}
+.step-n {
+  display: block; font-family: var(--serif); font-size: 34px;
+  color: var(--purple); line-height: 1; margin-bottom: 16px;
+}
+.steps h3 { font-size: 18px; }
+.steps p { color: var(--muted); font-size: 15px; margin-top: 10px; }
+
+/* ---------- Tarieven ---------- */
+.prices {
+  display: grid; gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  align-items: start;
+}
+.price {
+  padding: 30px 26px; border-radius: var(--radius);
+  border: 1px solid var(--line); background: var(--surface);
+  display: flex; flex-direction: column; gap: 4px;
+  transition: transform .3s ease, border-color .3s ease;
+}
+.price:hover { transform: translateY(-4px); border-color: var(--line-2); }
+.price-featured {
+  border-color: rgba(168, 85, 247, .45);
+  background:
+    radial-gradient(130% 80% at 50% 0%, rgba(124, 58, 237, .16), transparent 62%),
+    var(--surface-2);
+  box-shadow: 0 0 0 1px rgba(168, 85, 247, .12), 0 20px 50px rgba(0, 0, 0, .45);
+}
+.tag {
+  align-self: flex-start; margin-bottom: 12px;
+  font-size: 11.5px; letter-spacing: .12em; text-transform: uppercase;
+  padding: 4px 11px; border-radius: 999px;
+  color: var(--purple); background: var(--purple-dim);
+  border: 1px solid rgba(168, 85, 247, .3);
+}
+.len {
+  font-size: 13px; letter-spacing: .16em; text-transform: uppercase; color: var(--faint);
+}
+.amount {
+  font-family: var(--serif); font-size: 52px; line-height: 1.05; margin: 8px 0 2px;
+}
+.price-for { color: var(--muted); font-size: 14.5px; }
+.price .ticks { margin-bottom: 24px; flex: 1; }
+
+/* ---------- Aanvraag ---------- */
+.booking-grid {
+  display: grid; gap: 40px;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr);
+  align-items: start;
+}
+@media (max-width: 940px) { .booking-grid { grid-template-columns: 1fr; } }
+
+.form {
+  padding: 34px; border-radius: var(--radius);
+  border: 1px solid var(--line); background: var(--surface);
+  display: grid; gap: 20px;
+}
+.row { display: grid; gap: 20px; grid-template-columns: 1fr 1fr; }
+@media (max-width: 620px) { .row { grid-template-columns: 1fr; } }
+
+.field { display: grid; gap: 8px; }
+.field label { font-size: 14px; font-weight: 500; }
+.req { color: var(--purple); }
+.opt { color: var(--faint); font-weight: 400; font-size: 12.5px; }
+
+input, select, textarea {
+  width: 100%; font: inherit; font-size: 15px; color: var(--text);
+  background: #0b0a11; border: 1px solid var(--line-2);
+  border-radius: var(--radius-sm); padding: 13px 14px;
+  transition: border-color .2s ease, box-shadow .2s ease, background .2s ease;
+}
+textarea { resize: vertical; min-height: 120px; line-height: 1.55; }
+input::placeholder, textarea::placeholder { color: var(--faint); }
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--purple);
+  box-shadow: 0 0 0 3px rgba(168, 85, 247, .16);
+  background: #0d0c14;
+}
+select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5 6 6.5l5-5' stroke='%23a6a3b4' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 14px center; background-size: 12px;
+  padding-right: 38px; cursor: pointer;
+}
+select option { background: #0b0a11; color: var(--text); }
+input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(.7); cursor: pointer; }
+
+.err { display: none; color: #f0a0c0; font-size: 13px; }
+.field.invalid .err { display: block; }
+.field.invalid input,
+.field.invalid select,
+.field.invalid textarea { border-color: rgba(240, 160, 192, .6); }
+
+.form-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 4px; }
+.form-foot { color: var(--faint); font-size: 13.5px; }
+.form-foot strong { color: var(--text); font-weight: 500; }
+
+/* Telefoonvoorbeeld */
+.preview { position: sticky; top: 100px; }
+.phone {
+  border-radius: 24px; padding: 14px;
+  border: 1px solid var(--line-2);
+  background: linear-gradient(180deg, #131120, #09080e);
+  box-shadow: 0 30px 70px rgba(0, 0, 0, .55);
+}
+.phone-top {
+  display: flex; align-items: center; gap: 11px;
+  padding: 6px 6px 14px; border-bottom: 1px solid var(--line);
+}
+.avatar {
+  width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center;
+  font-family: var(--serif); font-size: 19px;
+  background: linear-gradient(135deg, var(--purple), var(--purple-2)); color: #fff;
+}
+.phone-top strong { display: block; font-size: 15px; font-weight: 600; }
+.phone-top small { color: #6ee7a8; font-size: 12px; }
+.phone-body {
+  padding: 18px 6px 8px; min-height: 260px;
+  background-image: radial-gradient(rgba(255, 255, 255, .045) 1px, transparent 1px);
+  background-size: 18px 18px;
+}
+.bubble {
+  background: rgba(168, 85, 247, .12);
+  border: 1px solid rgba(168, 85, 247, .26);
+  border-radius: 14px 14px 14px 4px;
+  padding: 14px 16px; font-size: 14.5px; line-height: 1.6;
+  color: var(--text); white-space: pre-wrap; word-break: break-word;
+}
+.preview-note { text-align: center; color: var(--faint); font-size: 13px; margin-top: 14px; }
+
+/* ---------- FAQ ---------- */
+.faq { display: grid; gap: 0; border-top: 1px solid var(--line); }
+.faq details { border-bottom: 1px solid var(--line); }
+.faq summary {
+  list-style: none; cursor: pointer; padding: 22px 44px 22px 0;
+  font-size: 17px; font-weight: 500; position: relative;
+  transition: color .2s ease;
+}
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary:hover { color: var(--purple); }
+.faq summary::after {
+  content: ''; position: absolute; right: 8px; top: 30px;
+  width: 11px; height: 11px;
+  border-right: 1.5px solid var(--purple); border-bottom: 1.5px solid var(--purple);
+  transform: rotate(45deg); transition: transform .25s ease;
+}
+.faq details[open] summary::after { transform: rotate(-135deg); top: 34px; }
+.faq details p { color: var(--muted); padding: 0 40px 24px 0; margin-top: -4px; font-size: 15.5px; }
+
+/* ---------- Slot-oproep ---------- */
+.cta-band {
+  padding: 120px 0;
+  background: radial-gradient(90% 140% at 50% 100%, rgba(124, 58, 237, .20), transparent 65%);
+  border-top: 1px solid var(--line);
+}
+.cta-inner { text-align: center; }
+.cta-inner h2 { font-size: clamp(30px, 5.4vw, 52px); margin-bottom: 34px; }
+
+/* ---------- Voet ---------- */
+.site-footer { border-top: 1px solid var(--line); padding: 64px 0 34px; background: var(--bg-2); }
+.footer-inner {
+  display: grid; gap: 34px;
+  grid-template-columns: 1.2fr .8fr 1fr;
+  align-items: start;
+}
+@media (max-width: 800px) { .footer-inner { grid-template-columns: 1fr; } }
+.footer-line { color: var(--muted); font-size: 14.5px; margin-top: 14px; max-width: 280px; }
+.footer-nav { display: grid; gap: 10px; }
+.footer-nav a { color: var(--muted); font-size: 15px; width: fit-content; }
+.footer-nav a:hover { color: var(--purple); }
+.footer-contact { display: grid; gap: 8px; justify-items: start; }
+.wa-link {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-size: 19px; font-weight: 500;
+}
+.wa-link:hover { color: var(--purple); }
+.wa-link .ico { color: var(--purple); width: 20px; height: 20px; }
+.footer-small { color: var(--faint); font-size: 13.5px; }
+.footer-bottom {
+  display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+  margin-top: 48px; padding-top: 22px; border-top: 1px solid var(--line);
+  color: var(--faint); font-size: 13.5px;
+}
+
+/* ---------- Zwevende knop ---------- */
+.fab {
+  position: fixed; right: 22px; bottom: 22px; z-index: 70;
+  width: 56px; height: 56px; border-radius: 50%;
+  display: grid; place-items: center;
+  background: linear-gradient(135deg, var(--purple), var(--purple-2));
+  box-shadow: 0 10px 30px rgba(124, 58, 237, .45);
+  opacity: 0; transform: translateY(14px) scale(.9); pointer-events: none;
+  transition: opacity .3s ease, transform .3s ease;
+}
+.fab.show { opacity: 1; transform: none; pointer-events: auto; }
+.fab:hover { transform: scale(1.06); }
+.fab svg { width: 26px; height: 26px; fill: #fff; }
+
+/* ---------- Melding ---------- */
+.toast {
+  position: fixed; left: 50%; bottom: 30px; transform: translate(-50%, 20px);
+  z-index: 90; padding: 12px 22px; border-radius: 999px;
+  background: var(--surface-2); border: 1px solid rgba(168, 85, 247, .4);
+  color: var(--text); font-size: 14.5px;
+  opacity: 0; pointer-events: none; transition: opacity .25s ease, transform .25s ease;
+}
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+/* ---------- Verschijnen bij scrollen ---------- */
+.reveal { opacity: 0; transform: translateY(20px); transition: opacity .7s ease, transform .7s ease; }
+.reveal.in { opacity: 1; transform: none; }
+
+/* ---------- Kleine schermen ---------- */
+@media (max-width: 860px) {
+  body { font-size: 16px; }
+  .menu-btn { display: grid; }
+  .nav {
+    position: absolute; top: 76px; left: 0; right: 0;
+    flex-direction: column; gap: 0;
+    background: rgba(10, 9, 15, .97); backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--line);
+    padding: 8px 24px 20px;
+    display: none;
+  }
+  .nav.open { display: flex; }
+  .nav a { padding: 14px 0; border-bottom: 1px solid var(--line); font-size: 16px; }
+  .nav a:last-child { border-bottom: 0; }
+  .hero { padding-top: 64px; }
+  /* De kop moet op één regel passen naast de knop en het menu. */
+  .wrap { padding: 0 20px; }
+  .header-inner { gap: 12px; height: 68px; }
+  .brand-name { font-size: 16px; }
+  .header-actions { gap: 8px; }
+  .header-actions .btn-sm { padding: 9px 14px; font-size: 13.5px; gap: 7px; }
+  .header-actions .btn-sm .ico { width: 16px; height: 16px; }
+  .menu-btn { width: 38px; height: 38px; }
+  .hero-stats { flex-direction: column; }
+  .hero-stats > div + div { border-left: 0; border-top: 1px solid var(--line); }
+  .section { padding: 78px 0; }
+  .form { padding: 24px 20px; }
+  .preview { position: static; }
+  .steps li, .steps li + li { padding-left: 0; border-left: 0; }
+}
+
+/* ---------- Minder beweging ---------- */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .marquee-track { animation: none; }
+  .reveal { opacity: 1; transform: none; transition: none; }
+  * { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
+
+@media (max-width: 400px) {
+  .header-actions .btn-sm { font-size: 0; padding: 10px; gap: 0; }
+  .header-actions .btn-sm .ico { width: 18px; height: 18px; }
+}
+</style>
+</head>
+
+<body>
+
+<!-- Sfeer: paarse gloed en fijne ruis over de hele pagina -->
+<div class="glow glow-1" aria-hidden="true"></div>
+<div class="glow glow-2" aria-hidden="true"></div>
+<div class="grain" aria-hidden="true"></div>
+
+<a class="skip-link" href="#main">Ga naar de inhoud</a>
+
+<!-- ============ Kop ============ -->
+<header class="site-header" id="siteHeader">
+  <div class="wrap header-inner">
+    <a class="brand" href="#top" aria-label="Rania Works, naar boven">
+      <span class="brand-mark" aria-hidden="true">R</span>
+      <span class="brand-name">Rania <em>Works</em></span>
+    </a>
+
+    <nav class="nav" id="nav" aria-label="Hoofdmenu">
+      <a href="#werk">Werk</a>
+      <a href="#diensten">Diensten</a>
+      <a href="#werkwijze">Werkwijze</a>
+      <a href="#tarieven">Tarieven</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+
+    <div class="header-actions">
+      <a class="btn btn-primary btn-sm" href="#aanvraag">
+        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 3.5A11 11 0 0 0 3.2 16.9L2 22l5.2-1.2A11 11 0 1 0 20.5 3.5Z"/><path d="M8.4 7.8c.2-.5.4-.5.6-.5h.6c.2 0 .5 0 .7.5l.8 1.9c.1.3 0 .5-.1.7l-.5.6c-.2.2-.3.4-.1.7a7.4 7.4 0 0 0 3.4 3c.3.2.5.1.7-.1l.6-.7c.2-.2.4-.2.6-.1l1.9.9c.3.1.5.3.5.6v.6c0 .9-.9 1.7-1.8 1.7-3.9 0-7.9-4-7.9-7.9 0-.6.1-1.2.3-1.9Z"/></svg>
+        Boek je edit
+      </a>
+      <button class="menu-btn" id="menuBtn" aria-label="Menu openen" aria-expanded="false" aria-controls="nav">
+        <span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+
+  <!-- ============ Hero ============ -->
+  <section class="hero" id="top">
+    <div class="wrap hero-inner">
+      <p class="eyebrow reveal">Video-editing studio · België</p>
+
+      <h1 class="hero-title reveal">
+        Edits die mensen
+        <span class="accent"><em>doen stoppen</em></span>
+        met scrollen.
+      </h1>
+
+      <p class="hero-lead reveal">
+        Ik ben Rania. Jij stuurt je ruwe beelden, ik maak er iets van dat past bij
+        jouw merk of bij jou. Voor bedrijven, voor creators, en voor die ene video
+        die gewoon goed moet zijn.
+      </p>
+
+      <div class="hero-cta reveal">
+        <a class="btn btn-primary" href="#aanvraag">Vraag een edit aan</a>
+        <a class="btn btn-ghost" href="#werk">Bekijk het werk</a>
+      </div>
+
+      <dl class="hero-stats reveal">
+        <div><dt>Levering</dt><dd>2–5 dagen</dd></div>
+        <div><dt>Revisies</dt><dd>Inbegrepen</dd></div>
+        <div><dt>Boeken via</dt><dd>WhatsApp</dd></div>
+      </dl>
+    </div>
+
+    <!-- Lopende band met steekwoorden -->
+    <div class="marquee" aria-hidden="true">
+      <div class="marquee-track">
+        <span>Reels</span><i>✦</i><span>TikTok</span><i>✦</i><span>Shorts</span><i>✦</i>
+        <span>Promovideo</span><i>✦</i><span>Aftermovie</span><i>✦</i><span>Ondertiteling</span><i>✦</i>
+        <span>Color grading</span><i>✦</i><span>Thumbnails</span><i>✦</i>
+        <span>Reels</span><i>✦</i><span>TikTok</span><i>✦</i><span>Shorts</span><i>✦</i>
+        <span>Promovideo</span><i>✦</i><span>Aftermovie</span><i>✦</i><span>Ondertiteling</span><i>✦</i>
+        <span>Color grading</span><i>✦</i><span>Thumbnails</span><i>✦</i>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Werk ============ -->
+  <section class="section" id="werk">
+    <div class="wrap">
+      <header class="section-head reveal">
+        <p class="eyebrow">01 — Werk</p>
+        <h2>Een greep uit de edits</h2>
+        <p class="section-lead">
+          Verticaal voor social, horizontaal voor je website. Zelfde aanpak:
+          strak ritme, nette kleuren, geen ruis.
+        </p>
+      </header>
+
+      <div class="work-grid">
+        <article class="work-card reveal">
+          <div class="work-thumb" data-label="9:16"><span class="play" aria-hidden="true">▶</span></div>
+          <h3>Sneakerdrop — Reel</h3>
+          <p>Snelle cuts op de beat, tekst in beeld, 22 sec.</p>
+        </article>
+        <article class="work-card reveal">
+          <div class="work-thumb" data-label="16:9"><span class="play" aria-hidden="true">▶</span></div>
+          <h3>Restaurant — Promo</h3>
+          <p>Rustige sfeerbeelden, warme grade, voice-over.</p>
+        </article>
+        <article class="work-card reveal">
+          <div class="work-thumb" data-label="9:16"><span class="play" aria-hidden="true">▶</span></div>
+          <h3>Coach — Talking head</h3>
+          <p>Ondertiteling, b-roll, hook in de eerste 2 sec.</p>
+        </article>
+        <article class="work-card reveal">
+          <div class="work-thumb" data-label="16:9"><span class="play" aria-hidden="true">▶</span></div>
+          <h3>Bruiloft — Aftermovie</h3>
+          <p>Van ceremonie tot feest, 3 minuten, op muziek.</p>
+        </article>
+      </div>
+
+      <p class="note reveal">
+        Meer zien? Vraag het gerust — ik stuur je met plezier voorbeelden die bij
+        jouw project passen.
+      </p>
+    </div>
+  </section>
+
+  <!-- ============ Diensten ============ -->
+  <section class="section section-alt" id="diensten">
+    <div class="wrap">
+      <header class="section-head reveal">
+        <p class="eyebrow">02 — Diensten</p>
+        <h2>Voor je bedrijf, of gewoon voor jezelf</h2>
+      </header>
+
+      <div class="cards">
+        <article class="card reveal">
+          <span class="card-ico" aria-hidden="true">◆</span>
+          <h3>Social media edits</h3>
+          <p>Reels, TikToks en Shorts die in de eerste seconden vasthouden. Hooks,
+             ondertiteling, geluid dat klopt.</p>
+          <ul class="ticks">
+            <li>Verticaal, 15–60 sec</li>
+            <li>Ondertiteling in jouw stijl</li>
+            <li>Los of in een serie</li>
+          </ul>
+        </article>
+
+        <article class="card reveal">
+          <span class="card-ico" aria-hidden="true">◆</span>
+          <h3>Bedrijfs- &amp; promovideo</h3>
+          <p>Eén video die uitlegt wat je doet en waarom het deugt. Voor je site,
+             je advertentie of een beurs.</p>
+          <ul class="ticks">
+            <li>Script- en montageadvies</li>
+            <li>Logo, kleuren, lettertype</li>
+            <li>Versies per kanaal</li>
+          </ul>
+        </article>
+
+        <article class="card reveal">
+          <span class="card-ico" aria-hidden="true">◆</span>
+          <h3>Persoonlijke edits</h3>
+          <p>Aftermovie, verjaardag, reisvideo, gaming-highlights. Jouw beelden,
+             netjes en met gevoel gemonteerd.</p>
+          <ul class="ticks">
+            <li>Muziek in overleg</li>
+            <li>Korte versie voor social</li>
+            <li>Cadeau-klaar opgeleverd</li>
+          </ul>
+        </article>
+
+        <article class="card reveal">
+          <span class="card-ico" aria-hidden="true">◆</span>
+          <h3>Losse afwerking</h3>
+          <p>Heb je al een montage? Dan pak ik alleen de laatste laag: kleur,
+             geluid, tekst en thumbnails.</p>
+          <ul class="ticks">
+            <li>Color grading</li>
+            <li>Ondertiteling en captions</li>
+            <li>Thumbnails en covers</li>
+          </ul>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Werkwijze ============ -->
+  <section class="section" id="werkwijze">
+    <div class="wrap">
+      <header class="section-head reveal">
+        <p class="eyebrow">03 — Werkwijze</p>
+        <h2>Van appje tot afgewerkte video</h2>
+      </header>
+
+      <ol class="steps">
+        <li class="reveal"><span class="step-n">01</span>
+          <h3>Je stuurt je aanvraag</h3>
+          <p>Via het formulier hieronder. Dat belandt meteen als bericht in mijn
+             WhatsApp, met alles wat ik nodig heb.</p>
+        </li>
+        <li class="reveal"><span class="step-n">02</span>
+          <h3>We leggen het vast</h3>
+          <p>Ik bevestig prijs, stijl en deadline. Jij deelt je beelden via
+             WeTransfer, Drive of Dropbox.</p>
+        </li>
+        <li class="reveal"><span class="step-n">03</span>
+          <h3>Ik monteer</h3>
+          <p>Je krijgt een eerste versie om te bekijken. Opmerkingen mag je gewoon
+             per tijdstip doorgeven.</p>
+        </li>
+        <li class="reveal"><span class="step-n">04</span>
+          <h3>Jij krijgt de bestanden</h3>
+          <p>Afgewerkt, in de juiste formaten per kanaal. Klaar om te posten.</p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ============ Tarieven ============ -->
+  <section class="section section-alt" id="tarieven">
+    <div class="wrap">
+      <header class="section-head reveal">
+        <p class="eyebrow">04 — Tarieven</p>
+        <h2>Prijs per lengte</h2>
+        <p class="section-lead">Je betaalt per lengte van de afgewerkte video. Geen
+          verrassingen achteraf: wat hier staat, is wat het kost.</p>
+      </header>
+
+      <div class="prices">
+        <article class="price reveal">
+          <p class="len">tot 10 sec</p>
+          <p class="amount">€10</p>
+          <p class="price-for">Korte clip of snelle teaser</p>
+          <ul class="ticks">
+            <li>Montage op ritme</li>
+            <li>Ondertiteling</li>
+            <li>1 revisieronde</li>
+          </ul>
+          <button class="btn btn-ghost btn-block" data-lengte="tot 10 seconden" data-prijs="€10">Kies deze lengte</button>
+        </article>
+
+        <article class="price reveal">
+          <p class="len">10 – 20 sec</p>
+          <p class="amount">€15</p>
+          <p class="price-for">Reel of Short</p>
+          <ul class="ticks">
+            <li>Montage op ritme</li>
+            <li>Ondertiteling</li>
+            <li>1 revisieronde</li>
+          </ul>
+          <button class="btn btn-ghost btn-block" data-lengte="10 tot 20 seconden" data-prijs="€15">Kies deze lengte</button>
+        </article>
+
+        <article class="price price-featured reveal">
+          <span class="tag">Meest gekozen</span>
+          <p class="len">20 – 30 sec</p>
+          <p class="amount">€20</p>
+          <p class="price-for">De klassieke social-edit</p>
+          <ul class="ticks">
+            <li>Montage op ritme</li>
+            <li>Ondertiteling</li>
+            <li>Kleur en geluid afgewerkt</li>
+            <li>1 revisieronde</li>
+          </ul>
+          <button class="btn btn-primary btn-block" data-lengte="20 tot 30 seconden" data-prijs="€20">Kies deze lengte</button>
+        </article>
+
+        <article class="price reveal">
+          <p class="len">60 – 90 sec</p>
+          <p class="amount">€40</p>
+          <p class="price-for">Promo of langere montage</p>
+          <ul class="ticks">
+            <li>Montage op ritme</li>
+            <li>Ondertiteling</li>
+            <li>Kleur en geluid afgewerkt</li>
+            <li>Versies per kanaal</li>
+          </ul>
+          <button class="btn btn-ghost btn-block" data-lengte="60 tot 90 seconden" data-prijs="€40">Kies deze lengte</button>
+        </article>
+      </div>
+
+      <p class="note reveal">
+        Andere lengte nodig — bijvoorbeeld tussen 30 en 60 seconden, of langer dan
+        anderhalve minuut? Stuur je aanvraag door, dan krijg je meteen een prijs.
+      </p>
+    </div>
+  </section>
+
+  <!-- ============ Aanvraag ============ -->
+  <section class="section" id="aanvraag">
+    <div class="wrap booking">
+      <header class="section-head reveal">
+        <p class="eyebrow">05 — Aanvraag</p>
+        <h2>Vraag je edit aan</h2>
+        <p class="section-lead">
+          Vul in wat je nodig hebt. Met één klik staat het als volledig bericht
+          klaar in WhatsApp — je hoeft alleen nog op verzenden te duwen.
+        </p>
+      </header>
+
+      <div class="booking-grid">
+        <form class="form reveal" id="bookingForm" novalidate>
+          <div class="field">
+            <label for="naam">Je naam <span class="req">*</span></label>
+            <input id="naam" name="naam" type="text" autocomplete="name" placeholder="Rania Peeters" required>
+            <p class="err" data-err="naam">Vul je naam in.</p>
+          </div>
+
+          <div class="field">
+            <label for="bedrijf">Bedrijf <span class="opt">optioneel</span></label>
+            <input id="bedrijf" name="bedrijf" type="text" autocomplete="organization" placeholder="Laat leeg als het voor jezelf is">
+          </div>
+
+          <div class="row">
+            <div class="field">
+              <label for="type">Wat mag ik maken? <span class="req">*</span></label>
+              <select id="type" name="type" required>
+                <option value="">Kies een soort edit</option>
+                <option>Social media edit (Reel / TikTok / Short)</option>
+                <option>Bedrijfs- of promovideo</option>
+                <option>Persoonlijke edit (aftermovie, reis, feest)</option>
+                <option>Gaming- of sporthighlights</option>
+                <option>Alleen afwerking (kleur, geluid, ondertiteling)</option>
+                <option>Iets anders — ik leg het uit</option>
+              </select>
+              <p class="err" data-err="type">Kies wat je nodig hebt.</p>
+            </div>
+
+            <div class="field">
+              <label for="platform">Waar komt het op?</label>
+              <select id="platform" name="platform">
+                <option value="">Maakt niet uit</option>
+                <option>Instagram</option>
+                <option>TikTok</option>
+                <option>YouTube</option>
+                <option>LinkedIn</option>
+                <option>Website of webshop</option>
+                <option>Privé / familie</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="field">
+              <label for="deadline">Wanneer heb je het nodig?</label>
+              <input id="deadline" name="deadline" type="date">
+            </div>
+
+            <div class="field">
+              <label for="lengte">Hoe lang wordt de video?</label>
+              <select id="lengte" name="lengte">
+                <option value="">Nog geen idee</option>
+                <option>tot 10 seconden — €10</option>
+                <option>10 tot 20 seconden — €15</option>
+                <option>20 tot 30 seconden — €20</option>
+                <option>60 tot 90 seconden — €40</option>
+                <option>Andere lengte — graag een prijs</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="bericht">Vertel kort wat je in gedachten hebt <span class="req">*</span></label>
+            <textarea id="bericht" name="bericht" rows="5" required
+              placeholder="Bijvoorbeeld: 12 clips van een fotoshoot, ongeveer 30 seconden, strak op de beat, met onze huiskleuren."></textarea>
+            <p class="err" data-err="bericht">Schrijf kort wat je zoekt.</p>
+          </div>
+
+          <div class="form-actions">
+            <button class="btn btn-primary btn-wa" type="submit">
+              <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 3.5A11 11 0 0 0 3.2 16.9L2 22l5.2-1.2A11 11 0 1 0 20.5 3.5Z"/><path d="M8.4 7.8c.2-.5.4-.5.6-.5h.6c.2 0 .5 0 .7.5l.8 1.9c.1.3 0 .5-.1.7l-.5.6c-.2.2-.3.4-.1.7a7.4 7.4 0 0 0 3.4 3c.3.2.5.1.7-.1l.6-.7c.2-.2.4-.2.6-.1l1.9.9c.3.1.5.3.5.6v.6c0 .9-.9 1.7-1.8 1.7-3.9 0-7.9-4-7.9-7.9 0-.6.1-1.2.3-1.9Z"/></svg>
+              Versturen via WhatsApp
+            </button>
+            <button class="btn btn-ghost" type="button" id="copyBtn">Kopieer bericht</button>
+          </div>
+
+          <p class="form-foot">
+            Je aanvraag gaat rechtstreeks naar <strong>0473 29 27 39</strong>.
+            Er wordt niets opgeslagen op deze website.
+          </p>
+        </form>
+
+        <!-- Live voorbeeld van het WhatsApp-bericht -->
+        <aside class="preview reveal" aria-live="polite">
+          <div class="phone">
+            <div class="phone-top">
+              <span class="avatar" aria-hidden="true">R</span>
+              <div>
+                <strong>Rania Works</strong>
+                <small>online</small>
+              </div>
+            </div>
+            <div class="phone-body">
+              <div class="bubble" id="previewBubble">Vul het formulier in — je bericht verschijnt hier.</div>
+            </div>
+          </div>
+          <p class="preview-note">Zo komt je bericht binnen.</p>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FAQ ============ -->
+  <section class="section section-alt" id="faq">
+    <div class="wrap wrap-narrow">
+      <header class="section-head reveal">
+        <p class="eyebrow">06 — FAQ</p>
+        <h2>Veelgestelde vragen</h2>
+      </header>
+
+      <div class="faq">
+        <details class="reveal">
+          <summary>Hoe stuur ik mijn beelden door?</summary>
+          <p>Via WeTransfer, Google Drive of Dropbox. Na je aanvraag stuur ik je
+             precies door hoe en waar.</p>
+        </details>
+        <details class="reveal">
+          <summary>Hoe lang duurt een edit?</summary>
+          <p>Meestal 2 tot 5 werkdagen, afhankelijk van de lengte en hoeveel
+             materiaal er is. Heb je het sneller nodig? Zeg het erbij, spoed kan
+             vaak wel.</p>
+        </details>
+        <details class="reveal">
+          <summary>Wat als ik iets wil aanpassen?</summary>
+          <p>Dat hoort erbij. Je geeft je opmerkingen door per tijdstip
+             ("op 0:14 iets korter") en ik pas het aan.</p>
+        </details>
+        <details class="reveal">
+          <summary>Mag ik zelf muziek kiezen?</summary>
+          <p>Zeker. Stuur je nummer mee, of ik zoek iets dat past en vrij
+             bruikbaar is voor je kanaal.</p>
+        </details>
+        <details class="reveal">
+          <summary>Werk je ook voor particulieren?</summary>
+          <p>Ja. Een aftermovie van een trouw, een reisvideo of een montage als
+             cadeau — even welkom als bedrijfswerk.</p>
+        </details>
+        <details class="reveal">
+          <summary>Hoe betaal ik?</summary>
+          <p>Via overschrijving of Payconiq, na goedkeuring van de eerste versie.
+             Bij grotere projecten werk ik met een voorschot.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Slot-oproep ============ -->
+  <section class="cta-band">
+    <div class="wrap cta-inner reveal">
+      <h2>Heb je beelden liggen?<br><span class="accent"><em>Dan maken we er iets van.</em></span></h2>
+      <a class="btn btn-primary btn-lg" href="#aanvraag">Start je aanvraag</a>
+    </div>
+  </section>
+
+</main>
+
+<!-- ============ Voet ============ -->
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <div>
+      <a class="brand" href="#top">
+        <span class="brand-mark" aria-hidden="true">R</span>
+        <span class="brand-name">Rania <em>Works</em></span>
+      </a>
+      <p class="footer-line">Video-editing voor bedrijven en particulieren.</p>
+    </div>
+
+    <nav class="footer-nav" aria-label="Voetmenu">
+      <a href="#werk">Werk</a>
+      <a href="#diensten">Diensten</a>
+      <a href="#tarieven">Tarieven</a>
+      <a href="#aanvraag">Aanvraag</a>
+    </nav>
+
+    <div class="footer-contact">
+      <a class="wa-link" id="footerWa" href="#">
+        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 3.5A11 11 0 0 0 3.2 16.9L2 22l5.2-1.2A11 11 0 1 0 20.5 3.5Z"/><path d="M8.4 7.8c.2-.5.4-.5.6-.5h.6c.2 0 .5 0 .7.5l.8 1.9c.1.3 0 .5-.1.7l-.5.6c-.2.2-.3.4-.1.7a7.4 7.4 0 0 0 3.4 3c.3.2.5.1.7-.1l.6-.7c.2-.2.4-.2.6-.1l1.9.9c.3.1.5.3.5.6v.6c0 .9-.9 1.7-1.8 1.7-3.9 0-7.9-4-7.9-7.9 0-.6.1-1.2.3-1.9Z"/></svg>
+        0473 29 27 39
+      </a>
+      <p class="footer-small">Antwoord meestal binnen een paar uur.</p>
+    </div>
+  </div>
+  <div class="wrap footer-bottom">
+    <p>© <span id="jaar">2026</span> Rania Works</p>
+    <p>Gemaakt met zorg.</p>
+  </div>
+</footer>
+
+<!-- Zwevende WhatsApp-knop -->
+<a class="fab" id="fabWa" href="#" aria-label="Boek via WhatsApp">
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 3.5A11 11 0 0 0 3.2 16.9L2 22l5.2-1.2A11 11 0 1 0 20.5 3.5Z"/><path d="M8.4 7.8c.2-.5.4-.5.6-.5h.6c.2 0 .5 0 .7.5l.8 1.9c.1.3 0 .5-.1.7l-.5.6c-.2.2-.3.4-.1.7a7.4 7.4 0 0 0 3.4 3c.3.2.5.1.7-.1l.6-.7c.2-.2.4-.2.6-.1l1.9.9c.3.1.5.3.5.6v.6c0 .9-.9 1.7-1.8 1.7-3.9 0-7.9-4-7.9-7.9 0-.6.1-1.2.3-1.9Z"/></svg>
+</a>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+/* ==========================================================================
+   Rania Works — gedrag van de pagina
+   Geen framework, geen build. Gewoon wat JavaScript.
+   ========================================================================== */
+
+/* Het WhatsApp-nummer. 0473 29 27 39 wordt internationaal 32473292739.
+   Wil je later een ander nummer? Pas enkel deze regel aan. */
+var WHATSAPP = '32473292739';
+
+/* Adres van een WhatsApp-gesprek, met tekst er alvast ingezet. */
+function waLink(tekst) {
+  return 'https://wa.me/' + WHATSAPP + '?text=' + encodeURIComponent(tekst);
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+  var $ = function (sel) { return document.querySelector(sel); };
+  var $$ = function (sel) { return Array.prototype.slice.call(document.querySelectorAll(sel)); };
+
+  /* ---------- Jaartal in de voet ---------- */
+  var jaar = $('#jaar');
+  if (jaar) jaar.textContent = new Date().getFullYear();
+
+  /* ---------- Kop: achtergrond zodra je scrolt + zwevende knop ---------- */
+  var header = $('#siteHeader');
+  var fab = $('#fabWa');
+
+  function bijScrollen() {
+    var y = window.scrollY;
+    header.classList.toggle('scrolled', y > 20);
+    if (fab) fab.classList.toggle('show', y > 700);
+  }
+  window.addEventListener('scroll', bijScrollen, { passive: true });
+  bijScrollen();
+
+  /* ---------- Menu op gsm ---------- */
+  var menuBtn = $('#menuBtn');
+  var nav = $('#nav');
+  if (menuBtn && nav) {
+    menuBtn.addEventListener('click', function () {
+      var open = nav.classList.toggle('open');
+      menuBtn.setAttribute('aria-expanded', String(open));
+      menuBtn.setAttribute('aria-label', open ? 'Menu sluiten' : 'Menu openen');
+    });
+    nav.addEventListener('click', function (e) {
+      if (e.target.tagName === 'A') {
+        nav.classList.remove('open');
+        menuBtn.setAttribute('aria-expanded', 'false');
+      }
+    });
+  }
+
+  /* ---------- Onderdelen laten verschijnen bij het scrollen ---------- */
+  var teTonen = $$('.reveal');
+  if ('IntersectionObserver' in window) {
+    var kijker = new IntersectionObserver(function (items) {
+      items.forEach(function (item, i) {
+        if (!item.isIntersecting) return;
+        var el = item.target;
+        setTimeout(function () { el.classList.add('in'); }, Math.min(i * 70, 280));
+        kijker.unobserve(el);
+      });
+    }, { rootMargin: '0px 0px -60px 0px', threshold: 0.1 });
+    teTonen.forEach(function (el) { kijker.observe(el); });
+  } else {
+    teTonen.forEach(function (el) { el.classList.add('in'); });
+  }
+
+  /* ---------- Welk menu-item is in beeld ---------- */
+  var secties = ['werk', 'diensten', 'werkwijze', 'tarieven', 'faq']
+    .map(function (id) { return document.getElementById(id); })
+    .filter(Boolean);
+
+  if ('IntersectionObserver' in window && secties.length) {
+    var menuKijker = new IntersectionObserver(function (items) {
+      items.forEach(function (item) {
+        if (!item.isIntersecting) return;
+        $$('.nav a').forEach(function (a) {
+          a.classList.toggle('active', a.getAttribute('href') === '#' + item.target.id);
+        });
+      });
+    }, { rootMargin: '-45% 0px -50% 0px' });
+    secties.forEach(function (s) { menuKijker.observe(s); });
+  }
+
+  /* ---------- Korte melding onderaan ---------- */
+  var toast = $('#toast');
+  var toastTimer;
+  function melding(tekst) {
+    if (!toast) return;
+    toast.textContent = tekst;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { toast.classList.remove('show'); }, 2600);
+  }
+
+  /* ======================================================================
+     Het aanvraagformulier
+     ====================================================================== */
+  var form = $('#bookingForm');
+  var bubble = $('#previewBubble');
+  var verplicht = ['naam', 'type', 'bericht'];
+
+  /* Datum leesbaar maken: 2026-09-24 wordt "donderdag 24 september 2026". */
+  function datumInTekst(waarde) {
+    if (!waarde) return '';
+    var d = new Date(waarde + 'T00:00:00');
+    if (isNaN(d)) return waarde;
+    try {
+      return d.toLocaleDateString('nl-BE', {
+        weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+      });
+    } catch (e) {
+      return waarde;
+    }
+  }
+
+  /* Alles wat is ingevuld omzetten naar één net WhatsApp-bericht. */
+  function berichtOpbouwen() {
+    if (!form) return '';
+    var v = function (id) {
+      var el = document.getElementById(id);
+      return el ? el.value.trim() : '';
+    };
+
+    var naam = v('naam');
+    var regels = [];
+
+    regels.push('Hallo Rania, ik zou graag een edit laten maken.');
+    regels.push('');
+    if (naam) regels.push('Naam: ' + naam);
+    if (v('bedrijf')) regels.push('Bedrijf: ' + v('bedrijf'));
+    if (v('type')) regels.push('Soort edit: ' + v('type'));
+    if (v('platform')) regels.push('Platform: ' + v('platform'));
+    if (v('lengte')) regels.push('Lengte: ' + v('lengte'));
+    if (v('deadline')) regels.push('Nodig tegen: ' + datumInTekst(v('deadline')));
+    if (v('bericht')) {
+      regels.push('');
+      regels.push('Wat ik in gedachten heb:');
+      regels.push(v('bericht'));
+    }
+    regels.push('');
+    regels.push('Laat maar weten wat het zou kosten en wanneer het klaar kan zijn. Bedankt!');
+
+    return regels.join('\n');
+  }
+
+  /* Het voorbeeld in de telefoon meteen bijwerken. */
+  function voorbeeldBijwerken() {
+    if (!bubble) return;
+    var iets = ['naam', 'bedrijf', 'type', 'platform', 'lengte', 'deadline', 'bericht']
+      .some(function (id) {
+        var el = document.getElementById(id);
+        return el && el.value.trim() !== '';
+      });
+
+    bubble.textContent = iets
+      ? berichtOpbouwen()
+      : 'Vul het formulier in — je bericht verschijnt hier.';
+  }
+
+  /* Controleren of het nodige is ingevuld. */
+  function isVolledig() {
+    var goed = true;
+    verplicht.forEach(function (id) {
+      var el = document.getElementById(id);
+      if (!el) return;
+      var veld = el.closest('.field');
+      var leeg = el.value.trim() === '';
+      if (veld) veld.classList.toggle('invalid', leeg);
+      if (leeg && goed) {
+        goed = false;
+        el.focus({ preventScroll: false });
+      }
+    });
+    return goed;
+  }
+
+  if (form) {
+    form.addEventListener('input', voorbeeldBijwerken);
+    form.addEventListener('change', voorbeeldBijwerken);
+
+    /* Foutmelding weghalen zodra iemand iets invult. */
+    form.addEventListener('input', function (e) {
+      var veld = e.target.closest('.field');
+      if (veld && e.target.value.trim() !== '') veld.classList.remove('invalid');
+    });
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      if (!isVolledig()) {
+        melding('Vul de velden met een * nog even in.');
+        return;
+      }
+      window.open(waLink(berichtOpbouwen()), '_blank', 'noopener');
+    });
+
+    /* Geen datum in het verleden kunnen kiezen. */
+    var deadline = document.getElementById('deadline');
+    if (deadline) deadline.min = new Date().toISOString().slice(0, 10);
+
+    voorbeeldBijwerken();
+  }
+
+  /* ---------- Bericht kopiëren ---------- */
+  var copyBtn = $('#copyBtn');
+  if (copyBtn) {
+    copyBtn.addEventListener('click', function () {
+      var tekst = berichtOpbouwen();
+      var klaar = function () { melding('Bericht gekopieerd.'); };
+
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(tekst).then(klaar, function () { terugval(tekst, klaar); });
+      } else {
+        terugval(tekst, klaar);
+      }
+    });
+  }
+
+  /* Kopiëren op oudere browsers of zonder https. */
+  function terugval(tekst, klaar) {
+    var hulp = document.createElement('textarea');
+    hulp.value = tekst;
+    hulp.setAttribute('readonly', '');
+    hulp.style.position = 'fixed';
+    hulp.style.opacity = '0';
+    document.body.appendChild(hulp);
+    hulp.select();
+    try { document.execCommand('copy'); klaar(); }
+    catch (e) { melding('Kopiëren lukte niet — selecteer de tekst zelf.'); }
+    document.body.removeChild(hulp);
+  }
+
+  /* ---------- Knoppen bij de tarieven ---------- */
+  $$('[data-lengte]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var keuze = btn.getAttribute('data-lengte') + ' — ' + btn.getAttribute('data-prijs');
+      var select = document.getElementById('lengte');
+
+      if (select) {
+        var gevonden = Array.prototype.some.call(select.options, function (opt) {
+          if (opt.value === keuze || opt.text === keuze) { select.value = opt.value; return true; }
+          return false;
+        });
+        if (!gevonden) select.value = '';
+      }
+
+      voorbeeldBijwerken();
+      document.getElementById('aanvraag').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      setTimeout(function () {
+        var naam = document.getElementById('naam');
+        if (naam && !naam.value) naam.focus({ preventScroll: true });
+      }, 700);
+    });
+  });
+
+  /* ---------- Directe WhatsApp-links (voet en zwevende knop) ---------- */
+  var kortBericht = 'Hallo Rania, ik zag je website en zou graag een edit laten maken.';
+  ['#footerWa', '#fabWa'].forEach(function (sel) {
+    var el = $(sel);
+    if (!el) return;
+    el.href = waLink(kortBericht);
+    el.target = '_blank';
+    el.rel = 'noopener';
+  });
+});
+</script>
+</body>
+</html>

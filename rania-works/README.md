@@ -11,6 +11,23 @@ server. Drie bestanden:
 - **`styles.css`** — de vormgeving
 - **`script.js`** — het menu, de animaties en het WhatsApp-bericht
 
+Daarnaast staat er **`rania-works-compleet.html`**: precies dezelfde website,
+maar met de stijl en het script erin gebakken. Eén bestand dat je kan
+doorsturen, op een usb-stick zetten of gewoon dubbelklikken. Pas je iets aan in
+de drie losse bestanden, maak dat bestand dan opnieuw:
+
+```bash
+cd rania-works
+python3 - <<'EOF'
+html = open('index.html').read()
+html = html.replace('<link rel="stylesheet" href="styles.css">',
+                    '<style>\n' + open('styles.css').read() + '\n</style>')
+html = html.replace('<script src="script.js"></script>',
+                    '<script>\n' + open('script.js').read() + '\n</script>')
+open('rania-works-compleet.html', 'w').write(html)
+EOF
+```
+
 ---
 
 ## Bekijken
