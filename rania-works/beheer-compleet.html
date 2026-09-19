@@ -1,0 +1,1228 @@
+<!DOCTYPE html>
+<!--
+  Rania Works - het beheer in een bestand.
+
+  Dit bestand werkt op zichzelf: de stijl en het script zitten erin.
+  Dubbelklik het om het te openen.
+
+  Wijzig je iets? Doe dat in de losse bestanden en draai daarna
+  "python3 bouw.py" om dit bestand opnieuw te maken.
+-->
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Beheer — Rania Works</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#08070c">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%230a0910'/%3E%3Cpath d='M11 23V9h5.6a4.2 4.2 0 0 1 1.2 8.2L21 23h-3.3l-2.8-5.3H14V23z' fill='%23fff'/%3E%3Ccircle cx='24' cy='9' r='2.5' fill='%23a855f7'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+/* ==========================================================================
+   Beheer — Rania Works
+   Zelfde donkere stijl als de website: zwart, wit, paars accent.
+   ========================================================================== */
+:root {
+  --bg: #08070c;
+  --surface: #111018;
+  --surface-2: #16141f;
+  --veld: #0b0a11;
+  --line: rgba(255,255,255,.09);
+  --line-2: rgba(255,255,255,.16);
+  --text: #f4f3f7;
+  --muted: #a6a3b4;
+  --faint: #87849a;
+  --purple: #a855f7;
+  --purple-2: #7c3aed;
+  --purple-dim: rgba(168,85,247,.16);
+  --goed: #4ade80;
+  --bezig: #fbbf24;
+  --weg: #9693a6;
+  --sans: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--text);
+  font-family: var(--sans); font-size: 15px; line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3 { margin: 0; line-height: 1.2; letter-spacing: -.02em; font-weight: 600; }
+p { margin: 0; }
+a { color: var(--purple); }
+::selection { background: var(--purple); color: #fff; }
+:focus-visible { outline: 2px solid var(--purple); outline-offset: 2px; border-radius: 4px; }
+
+/* ---------- Toegang ---------- */
+.slot {
+  min-height: 100vh; display: grid; place-items: center; padding: 24px;
+  background: radial-gradient(70% 50% at 50% 0%, rgba(124,58,237,.22), transparent 70%);
+}
+.slot-kaart {
+  width: 100%; max-width: 380px; text-align: center;
+  padding: 36px 30px; border-radius: 18px;
+  background: var(--surface); border: 1px solid var(--line);
+}
+.slot-kaart h1 { font-size: 24px; margin-bottom: 8px; }
+.slot-kaart p { color: var(--muted); font-size: 14px; margin-bottom: 22px; }
+.slot-kaart input { text-align: center; letter-spacing: .2em; }
+.slot-hint { font-size: 12.5px; color: var(--faint); margin-top: 18px; line-height: 1.5; }
+
+/* ---------- Raamwerk ---------- */
+.app { display: none; min-height: 100vh; grid-template-columns: 236px 1fr; }
+.app.aan { display: grid; }
+
+.zijbalk {
+  border-right: 1px solid var(--line); background: #0a0910;
+  padding: 22px 16px; position: sticky; top: 0; height: 100vh;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.merk { display: flex; align-items: center; gap: 10px; padding: 0 8px 20px; }
+.merk-teken {
+  width: 32px; height: 32px; border-radius: 9px; display: grid; place-items: center;
+  background: linear-gradient(145deg,#1a1726,#0b0a10); border: 1px solid var(--line-2);
+  font-weight: 600; font-size: 15px;
+}
+.merk strong { font-size: 15px; font-weight: 600; display: block; }
+.merk small { color: var(--faint); font-size: 12px; }
+
+.zij-knop {
+  display: flex; align-items: center; gap: 10px; width: 100%;
+  padding: 10px 12px; border-radius: 10px; border: 1px solid transparent;
+  background: none; color: var(--muted); font: inherit; font-size: 14.5px;
+  cursor: pointer; text-align: left; transition: background .2s, color .2s;
+}
+.zij-knop:hover { background: rgba(255,255,255,.04); color: var(--text); }
+.zij-knop.aan { background: var(--purple-dim); border-color: rgba(168,85,247,.3); color: var(--text); }
+.zij-knop .tel {
+  margin-left: auto; font-size: 12px; color: var(--faint);
+  background: rgba(255,255,255,.06); border-radius: 999px; padding: 1px 8px;
+}
+.zij-onder { margin-top: auto; display: grid; gap: 8px; padding-top: 16px; border-top: 1px solid var(--line); }
+
+.inhoud { padding: 30px 34px 70px; min-width: 0; }
+.kop { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 26px; flex-wrap: wrap; }
+.kop h2 { font-size: 26px; }
+.kop p { color: var(--muted); font-size: 14.5px; margin-top: 6px; }
+
+/* ---------- Knoppen ---------- */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 10px 18px; border-radius: 999px; border: 1px solid transparent;
+  font: inherit; font-size: 14.5px; font-weight: 500; cursor: pointer;
+  transition: background .2s, border-color .2s, transform .15s, box-shadow .2s;
+  white-space: nowrap;
+}
+.btn:active { transform: translateY(1px); }
+a.btn { text-decoration: none; color: var(--text); }
+.btn-p { background: linear-gradient(135deg,var(--purple),var(--purple-2)); color: #fff; box-shadow: 0 6px 20px rgba(124,58,237,.3); }
+.btn-p:hover { box-shadow: 0 10px 26px rgba(124,58,237,.42); }
+.btn-g { background: rgba(255,255,255,.03); border-color: var(--line-2); color: var(--text); }
+.btn-g:hover { background: rgba(255,255,255,.07); border-color: rgba(168,85,247,.45); }
+.btn-klein { padding: 6px 12px; font-size: 13px; }
+.btn-weg { color: #f0a0c0; border-color: rgba(240,160,192,.3); background: rgba(240,160,192,.06); }
+.btn-weg:hover { background: rgba(240,160,192,.12); border-color: rgba(240,160,192,.5); }
+.btn-blok { width: 100%; }
+
+/* ---------- Tegels met cijfers ---------- */
+.tegels { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(190px,1fr)); margin-bottom: 30px; }
+.tegel { padding: 20px 22px; border-radius: 14px; background: var(--surface); border: 1px solid var(--line); }
+.tegel .label { color: var(--faint); font-size: 13px; }
+.tegel .waarde { font-size: 34px; font-weight: 600; letter-spacing: -.03em; margin-top: 6px; line-height: 1.1; }
+.tegel .bij { color: var(--muted); font-size: 13px; margin-top: 4px; }
+.tegel-uit { background: radial-gradient(120% 90% at 50% 0%, rgba(124,58,237,.16), transparent 65%), var(--surface-2); border-color: rgba(168,85,247,.35); }
+
+/* ---------- Panelen, lijsten, tabellen ---------- */
+.paneel { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 24px; margin-bottom: 20px; }
+.paneel h3 { font-size: 17px; margin-bottom: 4px; }
+.paneel .uitleg { color: var(--muted); font-size: 13.5px; margin-bottom: 18px; }
+
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th { text-align: left; color: var(--faint); font-weight: 500; font-size: 12.5px; letter-spacing: .06em; text-transform: uppercase; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+td { padding: 14px 12px 14px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+tr:last-child td { border-bottom: 0; }
+td.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.tabel-wrap { overflow-x: auto; }
+
+.staat { display: inline-flex; align-items: center; gap: 7px; font-size: 13px; white-space: nowrap; }
+.staat::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--weg); flex: none; }
+.staat-nieuw::before { background: var(--purple); }
+.staat-bezig::before { background: var(--bezig); }
+.staat-geleverd::before { background: var(--goed); }
+.staat-geannuleerd::before { background: var(--weg); }
+
+.rij-acties { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+
+.leeg { text-align: center; color: var(--muted); padding: 44px 20px; }
+.leeg strong { display: block; color: var(--text); font-size: 16px; margin-bottom: 6px; }
+
+/* ---------- Filters ---------- */
+.filters { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 18px; }
+.chip {
+  padding: 7px 14px; border-radius: 999px; font: inherit; font-size: 13.5px; cursor: pointer;
+  background: rgba(255,255,255,.03); border: 1px solid var(--line-2); color: var(--muted);
+}
+.chip.aan { background: var(--purple-dim); border-color: rgba(168,85,247,.45); color: var(--text); }
+.zoek { margin-left: auto; min-width: 200px; }
+
+/* ---------- Formuliervelden ---------- */
+label { display: block; font-size: 13.5px; font-weight: 500; margin-bottom: 7px; }
+input, select, textarea {
+  width: 100%; font: inherit; font-size: 14.5px; color: var(--text);
+  background: var(--veld); border: 1px solid var(--line-2); border-radius: 10px; padding: 11px 13px;
+  transition: border-color .2s, box-shadow .2s;
+}
+textarea { resize: vertical; min-height: 92px; line-height: 1.55; }
+input:focus, select:focus, textarea:focus { outline: none; border-color: var(--purple); box-shadow: 0 0 0 3px rgba(168,85,247,.16); }
+input::placeholder, textarea::placeholder { color: var(--faint); }
+select { appearance: none; cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5 6 6.5l5-5' stroke='%23a6a3b4' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 13px center; background-size: 12px; padding-right: 36px; }
+select option { background: var(--veld); }
+input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(.7); cursor: pointer; }
+.veld { margin-bottom: 16px; }
+.veld-rij { display: grid; gap: 16px; grid-template-columns: 1fr 1fr; }
+.vink { display: flex; align-items: center; gap: 10px; font-size: 14px; }
+.vink input { width: 18px; height: 18px; accent-color: var(--purple); padding: 0; }
+.hulp { color: var(--faint); font-size: 12.5px; margin-top: 6px; }
+
+/* ---------- Venster ---------- */
+.venster { position: fixed; inset: 0; z-index: 100; display: none; place-items: center; padding: 20px;
+  background: rgba(4,3,8,.72); backdrop-filter: blur(6px); }
+.venster.open { display: grid; }
+.venster-kaart {
+  width: 100%; max-width: 560px; max-height: 88vh; overflow-y: auto;
+  background: var(--surface); border: 1px solid var(--line-2); border-radius: 16px; padding: 26px;
+}
+.venster-kop { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+.venster-kop h3 { font-size: 19px; }
+.sluit { background: none; border: 0; color: var(--muted); font-size: 24px; line-height: 1; cursor: pointer; padding: 4px 8px; border-radius: 8px; }
+.sluit:hover { color: var(--text); background: rgba(255,255,255,.06); }
+.venster-voet { display: flex; gap: 10px; justify-content: flex-end; margin-top: 8px; flex-wrap: wrap; }
+
+/* ---------- Melding ---------- */
+.melding {
+  position: fixed; left: 50%; bottom: 26px; transform: translate(-50%, 16px); z-index: 200;
+  padding: 11px 20px; border-radius: 999px; background: var(--surface-2);
+  border: 1px solid rgba(168,85,247,.4); font-size: 14px;
+  opacity: 0; pointer-events: none; transition: opacity .25s, transform .25s;
+}
+.melding.zie { opacity: 1; transform: translate(-50%, 0); }
+
+.waarschuwing {
+  background: rgba(251,191,36,.1); border: 1px solid rgba(251,191,36,.35);
+  border-radius: 12px; padding: 14px 16px; font-size: 13.5px; color: var(--text); margin-bottom: 20px;
+}
+
+/* ---------- Kleine schermen ---------- */
+@media (max-width: 820px) {
+  .app.aan { grid-template-columns: 1fr; }
+  .zijbalk {
+    position: static; height: auto; flex-direction: row; overflow-x: auto;
+    border-right: 0; border-bottom: 1px solid var(--line); padding: 12px;
+  }
+  .merk, .zij-onder { display: none; }
+  .zij-knop { width: auto; white-space: nowrap; }
+  .inhoud { padding: 22px 18px 60px; }
+  .veld-rij { grid-template-columns: 1fr; }
+  .zoek { margin-left: 0; width: 100%; }
+}
+</style>
+</head>
+
+<body>
+
+<!-- ============ Toegang ============ -->
+<div class="slot" id="slot">
+  <form class="slot-kaart" id="slotForm">
+    <h1>Beheer</h1>
+    <p>Rania Works</p>
+    <input type="password" id="codeVeld" placeholder="• • • • •" autocomplete="current-password" aria-label="Toegangscode">
+    <button class="btn btn-p btn-blok" type="submit" style="margin-top:14px">Openen</button>
+    <p class="slot-hint">
+      De eerste keer is de code <strong>rania</strong>. Je kan die wijzigen bij
+      Instellingen.<br><br>
+      Let op: dit slot houdt enkel meekijkers tegen. Alles draait in de browser,
+      dus wie het bestand heeft, kan de gegevens uitlezen. Zet er niets in dat
+      echt geheim moet blijven.
+    </p>
+  </form>
+</div>
+
+<!-- ============ Beheer ============ -->
+<div class="app" id="app">
+
+  <nav class="zijbalk" aria-label="Beheermenu">
+    <div class="merk">
+      <span class="merk-teken" aria-hidden="true">R</span>
+      <span><strong>Rania Works</strong><small>Beheer</small></span>
+    </div>
+
+    <button class="zij-knop aan" data-blad="overzicht">Overzicht</button>
+    <button class="zij-knop" data-blad="aanvragen">Aanvragen <span class="tel" id="telAanvragen">0</span></button>
+    <button class="zij-knop" data-blad="werk">Werk <span class="tel" id="telWerk">0</span></button>
+    <button class="zij-knop" data-blad="tarieven">Tarieven <span class="tel" id="telTarieven">0</span></button>
+    <button class="zij-knop" data-blad="teksten">Teksten</button>
+    <button class="zij-knop" data-blad="instellingen">Instellingen</button>
+
+    <div class="zij-onder">
+      <a class="btn btn-g btn-blok" href="index.html" target="_blank" rel="noopener">Bekijk de site</a>
+      <button class="btn btn-g btn-blok" id="afsluiten">Afsluiten</button>
+    </div>
+  </nav>
+
+  <main class="inhoud">
+    <div id="opslagWaarschuwing"></div>
+
+    <!-- ---------- Overzicht ---------- -->
+    <section data-paneel="overzicht">
+      <div class="kop">
+        <div>
+          <h2>Overzicht</h2>
+          <p id="vandaag"></p>
+        </div>
+        <button class="btn btn-p" data-nieuw="aanvraag">Nieuwe aanvraag</button>
+      </div>
+
+      <div class="tegels" id="tegels"></div>
+
+      <div class="paneel">
+        <h3>Laatste aanvragen</h3>
+        <p class="uitleg">De vijf meest recente, nieuwste eerst.</p>
+        <div class="tabel-wrap" id="laatsteAanvragen"></div>
+      </div>
+    </section>
+
+    <!-- ---------- Aanvragen ---------- -->
+    <section data-paneel="aanvragen" hidden>
+      <div class="kop">
+        <div>
+          <h2>Aanvragen</h2>
+          <p>Wat via WhatsApp binnenkomt, zet je hier bij om het op te volgen.</p>
+        </div>
+        <button class="btn btn-p" data-nieuw="aanvraag">Nieuwe aanvraag</button>
+      </div>
+
+      <div class="filters" id="filters">
+        <button class="chip aan" data-filter="alle">Alle</button>
+        <button class="chip" data-filter="nieuw">Nieuw</button>
+        <button class="chip" data-filter="bezig">Bezig</button>
+        <button class="chip" data-filter="geleverd">Geleverd</button>
+        <button class="chip" data-filter="geannuleerd">Geannuleerd</button>
+        <input class="zoek" type="search" id="zoek" placeholder="Zoek op naam of bedrijf" aria-label="Zoeken">
+      </div>
+
+      <div class="paneel">
+        <div class="tabel-wrap" id="aanvraagTabel"></div>
+      </div>
+    </section>
+
+    <!-- ---------- Werk ---------- -->
+    <section data-paneel="werk" hidden>
+      <div class="kop">
+        <div>
+          <h2>Werk</h2>
+          <p>Wat er in de sectie "Een greep uit de edits" op de site staat.</p>
+        </div>
+        <button class="btn btn-p" data-nieuw="werk">Voorbeeld toevoegen</button>
+      </div>
+      <div id="werkLijst"></div>
+    </section>
+
+    <!-- ---------- Tarieven ---------- -->
+    <section data-paneel="tarieven" hidden>
+      <div class="kop">
+        <div>
+          <h2>Tarieven</h2>
+          <p>De prijs per lengte. Deze lijst staat ook in het aanvraagformulier.</p>
+        </div>
+        <button class="btn btn-p" data-nieuw="tarief">Tarief toevoegen</button>
+      </div>
+      <div id="tariefLijst"></div>
+    </section>
+
+    <!-- ---------- Teksten ---------- -->
+    <section data-paneel="teksten" hidden>
+      <div class="kop">
+        <div>
+          <h2>Teksten</h2>
+          <p>De losse stukken tekst die je vaak wil bijsturen.</p>
+        </div>
+      </div>
+
+      <form class="paneel" id="tekstForm">
+        <div class="veld">
+          <label for="tLead">Tekst onder de titel</label>
+          <textarea id="tLead" rows="4"></textarea>
+        </div>
+        <div class="veld-rij">
+          <div class="veld">
+            <label for="tLevering">Levertijd</label>
+            <input id="tLevering" type="text" placeholder="2–5 dagen">
+          </div>
+          <div class="veld">
+            <label for="tRevisies">Revisies</label>
+            <input id="tRevisies" type="text" placeholder="Inbegrepen">
+          </div>
+        </div>
+        <button class="btn btn-p" type="submit">Opslaan</button>
+      </form>
+    </section>
+
+    <!-- ---------- Instellingen ---------- -->
+    <section data-paneel="instellingen" hidden>
+      <div class="kop">
+        <div>
+          <h2>Instellingen</h2>
+          <p>Nummer, toegangscode en je gegevens.</p>
+        </div>
+      </div>
+
+      <form class="paneel" id="nummerForm">
+        <h3>WhatsApp-nummer</h3>
+        <p class="uitleg">Hier komen alle aanvragen van de site binnen.</p>
+        <div class="veld-rij">
+          <div class="veld">
+            <label for="iNummer">Nummer om naar te sturen</label>
+            <input id="iNummer" type="text" inputmode="numeric" placeholder="32473292739">
+            <p class="hulp">Internationaal, zonder +, zonder spaties, zonder de nul vooraan.</p>
+          </div>
+          <div class="veld">
+            <label for="iGetoond">Zoals het op de site staat</label>
+            <input id="iGetoond" type="text" placeholder="0473 29 27 39">
+          </div>
+        </div>
+        <button class="btn btn-p" type="submit">Opslaan</button>
+      </form>
+
+      <form class="paneel" id="codeForm">
+        <h3>Toegangscode</h3>
+        <p class="uitleg">De code om dit beheer te openen op dit toestel.</p>
+        <div class="veld-rij">
+          <div class="veld">
+            <label for="iCode1">Nieuwe code</label>
+            <input id="iCode1" type="password" autocomplete="new-password">
+          </div>
+          <div class="veld">
+            <label for="iCode2">Nog eens</label>
+            <input id="iCode2" type="password" autocomplete="new-password">
+          </div>
+        </div>
+        <button class="btn btn-p" type="submit">Code wijzigen</button>
+      </form>
+
+      <div class="paneel">
+        <h3>Je gegevens</h3>
+        <p class="uitleg">
+          Alles staat in de browser van dit toestel. Maak af en toe een kopie —
+          dan kan je alles terugzetten, ook op een andere computer of gsm.
+        </p>
+        <div class="venster-voet" style="justify-content:flex-start">
+          <button class="btn btn-g" id="uitvoer">Kopie opslaan</button>
+          <button class="btn btn-g" id="invoerKnop">Kopie terugzetten</button>
+          <input type="file" id="invoer" accept="application/json" hidden>
+          <button class="btn btn-weg" id="herstel">Alles wissen</button>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- ============ Venster voor toevoegen en wijzigen ============ -->
+<div class="venster" id="venster" role="dialog" aria-modal="true" aria-labelledby="vensterTitel">
+  <form class="venster-kaart" id="vensterForm">
+    <div class="venster-kop">
+      <h3 id="vensterTitel">Wijzigen</h3>
+      <button class="sluit" type="button" id="vensterSluit" aria-label="Sluiten">×</button>
+    </div>
+    <div id="vensterVelden"></div>
+    <div class="venster-voet">
+      <button class="btn btn-g" type="button" id="vensterAnnuleer">Annuleren</button>
+      <button class="btn btn-p" type="submit">Bewaren</button>
+    </div>
+  </form>
+</div>
+
+<div class="melding" id="melding" role="status" aria-live="polite"></div>
+
+<script>
+/* ==========================================================================
+   Rania Works — de inhoud van de site
+   --------------------------------------------------------------------------
+   Dit is de enige plek waar de teksten, de tarieven en het werk staan.
+   Zowel de website (index.html) als het beheer (beheer.html) lezen dit
+   bestand.
+
+   Verander je iets in het beheer, dan wordt dat bewaard in de browser en
+   gaat dat vóór op wat hier staat. Wil je iets blijvend aanpassen, voor
+   iedereen en op elk toestel, pas het dan hier aan.
+   ========================================================================== */
+
+var STANDAARD_INHOUD = {
+
+  /* Het WhatsApp-nummer, internationaal: zonder +, zonder spaties,
+     zonder de nul vooraan. 0473 29 27 39 wordt dus 32473292739. */
+  nummer: '32473292739',
+
+  /* Hoe het nummer op de site getoond wordt. */
+  nummerGetoond: '0473 29 27 39',
+
+  /* Losse teksten die je wil kunnen bijsturen. */
+  teksten: {
+    lead: 'Ik ben Rania. Jij stuurt je ruwe beelden, ik maak er iets van dat past bij jouw merk of bij jou. Voor bedrijven, voor creators, en voor die ene video die gewoon goed moet zijn.',
+    levering: '2–5 dagen',
+    revisies: 'Inbegrepen'
+  },
+
+  /* Het werk dat op de site staat. Nu één voorbeeld-edit.
+     - formaat:      het label linksboven op het beeld, bv. 9:16 of 16:9
+     - beeld:        adres van een afbeelding (leeg = paars vlak met knop)
+     - link:         adres van de video (leeg = de kaart is niet klikbaar) */
+  werk: [
+    {
+      titel: 'Sneakerdrop — Reel',
+      omschrijving: 'Snelle cuts op de beat, tekst in beeld, 22 seconden. Gemaakt van twaalf losse clips van een shoot.',
+      formaat: '9:16',
+      beeld: '',
+      link: ''
+    }
+  ],
+
+  /* De tarieven. De volgorde hier is de volgorde op de site.
+     - kort:      het kleine label boven de prijs
+     - lengte:    hoe het in het WhatsApp-bericht komt te staan
+     - uitgelicht: true zet er "Meest gekozen" bij (hou het bij één) */
+  tarieven: [
+    {
+      kort: 'tot 10 sec',
+      lengte: 'tot 10 seconden',
+      prijs: '€10',
+      voor: 'Korte clip of snelle teaser',
+      punten: ['Montage op ritme', 'Ondertiteling', '1 revisieronde'],
+      uitgelicht: false
+    },
+    {
+      kort: '10 – 20 sec',
+      lengte: '10 tot 20 seconden',
+      prijs: '€15',
+      voor: 'Reel of Short',
+      punten: ['Montage op ritme', 'Ondertiteling', '1 revisieronde'],
+      uitgelicht: false
+    },
+    {
+      kort: '20 – 30 sec',
+      lengte: '20 tot 30 seconden',
+      prijs: '€20',
+      voor: 'De klassieke social-edit',
+      punten: ['Montage op ritme', 'Ondertiteling', 'Kleur en geluid afgewerkt', '1 revisieronde'],
+      uitgelicht: true
+    },
+    {
+      kort: '60 – 90 sec',
+      lengte: '60 tot 90 seconden',
+      prijs: '€40',
+      voor: 'Promo of langere montage',
+      punten: ['Montage op ritme', 'Ondertiteling', 'Kleur en geluid afgewerkt', 'Versies per kanaal'],
+      uitgelicht: false
+    }
+  ]
+};
+
+/* Waar het beheer zijn gegevens bewaart in de browser. */
+var OPSLAG_INHOUD = 'raniaworks:inhoud';
+var OPSLAG_AANVRAGEN = 'raniaworks:aanvragen';
+var OPSLAG_CODE = 'raniaworks:code';
+
+/* De inhoud ophalen: wat in het beheer is opgeslagen, anders het bovenstaande.
+   Gaat er iets mis met de opslag (privémodus, geblokkeerde cookies), dan
+   vallen we netjes terug op de standaardinhoud. */
+function inhoudOphalen() {
+  var basis = JSON.parse(JSON.stringify(STANDAARD_INHOUD));
+  try {
+    var bewaard = window.localStorage.getItem(OPSLAG_INHOUD);
+    if (!bewaard) return basis;
+    var eigen = JSON.parse(bewaard);
+    if (!eigen || typeof eigen !== 'object') return basis;
+
+    if (eigen.nummer) basis.nummer = String(eigen.nummer);
+    if (eigen.nummerGetoond) basis.nummerGetoond = String(eigen.nummerGetoond);
+    if (eigen.teksten) {
+      Object.keys(basis.teksten).forEach(function (k) {
+        if (eigen.teksten[k]) basis.teksten[k] = String(eigen.teksten[k]);
+      });
+    }
+    if (Array.isArray(eigen.werk)) basis.werk = eigen.werk;
+    if (Array.isArray(eigen.tarieven) && eigen.tarieven.length) basis.tarieven = eigen.tarieven;
+    return basis;
+  } catch (e) {
+    return basis;
+  }
+}
+</script>
+<script>
+/* ==========================================================================
+   Beheer — alle gedrag
+   ========================================================================== */
+(function () {
+  'use strict';
+
+  var $ = function (s) { return document.querySelector(s); };
+  var $$ = function (s) { return Array.prototype.slice.call(document.querySelectorAll(s)); };
+  var esc = function (t) {
+    return String(t == null ? '' : t)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  };
+
+  var STATUSSEN = ['nieuw', 'bezig', 'geleverd', 'geannuleerd'];
+
+  /* ---------- Opslag ---------- */
+  var opslagWerkt = (function () {
+    try {
+      window.localStorage.setItem('raniaworks:test', '1');
+      window.localStorage.removeItem('raniaworks:test');
+      return true;
+    } catch (e) { return false; }
+  })();
+
+  function lees(sleutel, terugval) {
+    if (!opslagWerkt) return terugval;
+    try {
+      var r = window.localStorage.getItem(sleutel);
+      return r ? JSON.parse(r) : terugval;
+    } catch (e) { return terugval; }
+  }
+  function schrijf(sleutel, waarde) {
+    if (!opslagWerkt) return false;
+    try {
+      window.localStorage.setItem(sleutel, JSON.stringify(waarde));
+      return true;
+    } catch (e) {
+      melding('Opslaan lukte niet — de opslag van de browser zit vol of staat uit.');
+      return false;
+    }
+  }
+
+  var inhoud = inhoudOphalen();
+  var aanvragen = lees(OPSLAG_AANVRAGEN, []);
+  if (!Array.isArray(aanvragen)) aanvragen = [];
+
+  function bewaarInhoud() {
+    schrijf(OPSLAG_INHOUD, inhoud);
+    tellersBijwerken();
+  }
+  function bewaarAanvragen() {
+    schrijf(OPSLAG_AANVRAGEN, aanvragen);
+    tellersBijwerken();
+  }
+
+  /* ---------- Melding ---------- */
+  var meldTimer;
+  function melding(tekst) {
+    var m = $('#melding');
+    m.textContent = tekst;
+    m.classList.add('zie');
+    clearTimeout(meldTimer);
+    meldTimer = setTimeout(function () { m.classList.remove('zie'); }, 2800);
+  }
+
+  /* ======================================================================
+     Toegang
+     ====================================================================== */
+  function huidigeCode() { return lees(OPSLAG_CODE, 'rania'); }
+
+  $('#slotForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    if ($('#codeVeld').value === huidigeCode()) {
+      openen();
+    } else {
+      melding('Die code klopt niet.');
+      $('#codeVeld').value = '';
+      $('#codeVeld').focus();
+    }
+  });
+
+  function openen() {
+    $('#slot').style.display = 'none';
+    $('#app').classList.add('aan');
+    try { sessionStorage.setItem('raniaworks:open', '1'); } catch (e) {}
+    allesTekenen();
+  }
+
+  $('#afsluiten').addEventListener('click', function () {
+    try { sessionStorage.removeItem('raniaworks:open'); } catch (e) {}
+    location.reload();
+  });
+
+  /* Binnen dezelfde browsersessie blijf je binnen. */
+  try {
+    if (sessionStorage.getItem('raniaworks:open') === '1') openen();
+  } catch (e) {}
+
+  /* ======================================================================
+     Navigatie
+     ====================================================================== */
+  $$('.zij-knop').forEach(function (knop) {
+    knop.addEventListener('click', function () {
+      var blad = knop.getAttribute('data-blad');
+      $$('.zij-knop').forEach(function (k) { k.classList.toggle('aan', k === knop); });
+      $$('[data-paneel]').forEach(function (p) {
+        p.hidden = p.getAttribute('data-paneel') !== blad;
+      });
+      window.scrollTo(0, 0);
+    });
+  });
+
+  /* ======================================================================
+     Hulpjes
+     ====================================================================== */
+  function vandaagISO() { return new Date().toISOString().slice(0, 10); }
+
+  function datumKort(iso) {
+    if (!iso) return '—';
+    var d = new Date(iso + 'T00:00:00');
+    if (isNaN(d)) return iso;
+    try { return d.toLocaleDateString('nl-BE', { day: 'numeric', month: 'short', year: 'numeric' }); }
+    catch (e) { return iso; }
+  }
+
+  function euro(bedrag) {
+    var n = Number(bedrag) || 0;
+    return '€' + (Math.round(n * 100) / 100).toString().replace('.', ',');
+  }
+
+  /* Uit "€20" het getal 20 halen. */
+  function prijsGetal(tekst) {
+    var n = parseFloat(String(tekst).replace(/[^0-9,.]/g, '').replace(',', '.'));
+    return isNaN(n) ? 0 : n;
+  }
+
+  function nieuwId() {
+    return 'a' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+  }
+
+  function tellersBijwerken() {
+    $('#telAanvragen').textContent = aanvragen.filter(function (a) {
+      return a.status === 'nieuw' || a.status === 'bezig';
+    }).length;
+    $('#telWerk').textContent = (inhoud.werk || []).length;
+    $('#telTarieven').textContent = (inhoud.tarieven || []).length;
+  }
+
+  /* ======================================================================
+     Overzicht
+     ====================================================================== */
+  function overzichtTekenen() {
+    var nu = new Date();
+    var maand = nu.getFullYear() + '-' + String(nu.getMonth() + 1).padStart(2, '0');
+
+    var open = aanvragen.filter(function (a) { return a.status === 'nieuw' || a.status === 'bezig'; });
+    var nieuw = aanvragen.filter(function (a) { return a.status === 'nieuw'; });
+    var dezeMaand = aanvragen.filter(function (a) {
+      return a.status === 'geleverd' && String(a.datum || '').slice(0, 7) === maand;
+    });
+    var omzetMaand = dezeMaand.reduce(function (s, a) { return s + (Number(a.prijs) || 0); }, 0);
+    var omzetTotaal = aanvragen.filter(function (a) { return a.status === 'geleverd'; })
+      .reduce(function (s, a) { return s + (Number(a.prijs) || 0); }, 0);
+
+    $('#tegels').innerHTML =
+      tegel('Openstaand', open.length,
+        nieuw.length + (nieuw.length === 1 ? ' nieuwe wacht' : ' nieuwe wachten') + ' op jou', true) +
+      tegel('Geleverd deze maand', dezeMaand.length,
+        'Van ' + aanvragen.length + (aanvragen.length === 1 ? ' aanvraag' : ' aanvragen') + ' in totaal') +
+      tegel('Omzet deze maand', euro(omzetMaand), 'Enkel geleverde edits') +
+      tegel('Omzet totaal', euro(omzetTotaal), 'Sinds het begin');
+
+    var recent = aanvragen.slice().sort(function (a, b) {
+      return String(b.datum || '').localeCompare(String(a.datum || ''));
+    }).slice(0, 5);
+
+    $('#laatsteAanvragen').innerHTML = recent.length
+      ? tabelVan(recent, false)
+      : '<div class="leeg"><strong>Nog geen aanvragen</strong>Zet hier bij wat via WhatsApp binnenkomt.</div>';
+
+    try {
+      $('#vandaag').textContent = nu.toLocaleDateString('nl-BE', {
+        weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+      });
+    } catch (e) { $('#vandaag').textContent = ''; }
+  }
+
+  function tegel(label, waarde, bij, uit) {
+    return '<div class="tegel' + (uit ? ' tegel-uit' : '') + '">' +
+      '<p class="label">' + esc(label) + '</p>' +
+      '<p class="waarde">' + esc(waarde) + '</p>' +
+      '<p class="bij">' + esc(bij) + '</p></div>';
+  }
+
+  /* ======================================================================
+     Aanvragen
+     ====================================================================== */
+  var filter = 'alle';
+  var zoekterm = '';
+
+  $('#filters').addEventListener('click', function (e) {
+    var chip = e.target.closest('.chip');
+    if (!chip) return;
+    filter = chip.getAttribute('data-filter');
+    $$('.chip').forEach(function (c) { c.classList.toggle('aan', c === chip); });
+    aanvragenTekenen();
+  });
+
+  $('#zoek').addEventListener('input', function (e) {
+    zoekterm = e.target.value.trim().toLowerCase();
+    aanvragenTekenen();
+  });
+
+  function gefilterd() {
+    return aanvragen.filter(function (a) {
+      if (filter !== 'alle' && a.status !== filter) return false;
+      if (!zoekterm) return true;
+      return ((a.naam || '') + ' ' + (a.bedrijf || '')).toLowerCase().indexOf(zoekterm) !== -1;
+    }).sort(function (a, b) {
+      return String(b.datum || '').localeCompare(String(a.datum || ''));
+    });
+  }
+
+  function tabelVan(lijst, metActies) {
+    var rijen = lijst.map(function (a) {
+      return '<tr>' +
+        '<td class="num">' + esc(datumKort(a.datum)) + '</td>' +
+        '<td><strong>' + esc(a.naam || '—') + '</strong>' +
+          (a.bedrijf ? '<br><span style="color:var(--faint);font-size:13px">' + esc(a.bedrijf) + '</span>' : '') +
+        '</td>' +
+        '<td>' + esc(a.type || '—') +
+          (a.lengte ? '<br><span style="color:var(--faint);font-size:13px">' + esc(a.lengte) + '</span>' : '') +
+        '</td>' +
+        '<td class="num">' + esc(euro(a.prijs)) + '</td>' +
+        '<td><span class="staat staat-' + esc(a.status) + '">' + esc(a.status) + '</span></td>' +
+        (metActies
+          ? '<td><div class="rij-acties">' +
+              (a.telefoon ? '<a class="btn btn-g btn-klein" href="https://wa.me/' + esc(String(a.telefoon).replace(/[^0-9]/g, '')) + '" target="_blank" rel="noopener">App</a>' : '') +
+              '<button class="btn btn-g btn-klein" data-wijzig="' + esc(a.id) + '">Wijzig</button>' +
+              '<button class="btn btn-weg btn-klein" data-verwijder="' + esc(a.id) + '">Wis</button>' +
+            '</div></td>'
+          : '') +
+      '</tr>';
+    }).join('');
+
+    return '<table><thead><tr>' +
+      '<th>Datum</th><th>Klant</th><th>Soort</th><th>Prijs</th><th>Status</th>' +
+      (metActies ? '<th></th>' : '') +
+      '</tr></thead><tbody>' + rijen + '</tbody></table>';
+  }
+
+  function aanvragenTekenen() {
+    var lijst = gefilterd();
+    $('#aanvraagTabel').innerHTML = lijst.length
+      ? tabelVan(lijst, true)
+      : '<div class="leeg"><strong>Niets gevonden</strong>' +
+        (aanvragen.length ? 'Pas je filter of zoekterm aan.' : 'Voeg je eerste aanvraag toe.') +
+        '</div>';
+  }
+
+  /* ======================================================================
+     Werk
+     ====================================================================== */
+  function werkTekenen() {
+    var lijst = inhoud.werk || [];
+    if (!lijst.length) {
+      $('#werkLijst').innerHTML = '<div class="paneel"><div class="leeg">' +
+        '<strong>Nog geen werk</strong>Voeg een voorbeeld toe; het verschijnt meteen op de site.</div></div>';
+      return;
+    }
+
+    $('#werkLijst').innerHTML = lijst.map(function (w, i) {
+      return '<div class="paneel">' +
+        '<div class="kop" style="margin-bottom:12px">' +
+          '<div><h3>' + esc(w.titel || 'Zonder titel') + '</h3>' +
+          '<p style="color:var(--muted);font-size:13.5px;margin-top:6px">' + esc(w.omschrijving || '') + '</p></div>' +
+          '<div class="rij-acties">' +
+            '<button class="btn btn-g btn-klein" data-op="' + i + '"' + (i === 0 ? ' disabled' : '') + '>↑</button>' +
+            '<button class="btn btn-g btn-klein" data-neer="' + i + '"' + (i === lijst.length - 1 ? ' disabled' : '') + '>↓</button>' +
+            '<button class="btn btn-g btn-klein" data-werkwijzig="' + i + '">Wijzig</button>' +
+            '<button class="btn btn-weg btn-klein" data-werkweg="' + i + '">Wis</button>' +
+          '</div>' +
+        '</div>' +
+        '<p class="hulp">Formaat: ' + esc(w.formaat || '—') +
+          ' · Beeld: ' + (w.beeld ? esc(w.beeld) : 'geen') +
+          ' · Video: ' + (w.link ? esc(w.link) : 'geen') + '</p>' +
+      '</div>';
+    }).join('');
+  }
+
+  /* ======================================================================
+     Tarieven
+     ====================================================================== */
+  function tarievenTekenen() {
+    var lijst = inhoud.tarieven || [];
+    if (!lijst.length) {
+      $('#tariefLijst').innerHTML = '<div class="paneel"><div class="leeg">' +
+        '<strong>Nog geen tarieven</strong>Zonder tarieven toont de site geen prijzen.</div></div>';
+      return;
+    }
+
+    $('#tariefLijst').innerHTML = '<div class="paneel"><div class="tabel-wrap"><table>' +
+      '<thead><tr><th>Label</th><th>Lengte in het bericht</th><th>Prijs</th><th>Uitgelicht</th><th></th></tr></thead><tbody>' +
+      lijst.map(function (t, i) {
+        return '<tr>' +
+          '<td><strong>' + esc(t.kort || '') + '</strong></td>' +
+          '<td>' + esc(t.lengte || '') + '<br><span style="color:var(--faint);font-size:13px">' + esc(t.voor || '') + '</span></td>' +
+          '<td class="num">' + esc(t.prijs || '') + '</td>' +
+          '<td>' + (t.uitgelicht ? '<span class="staat staat-geleverd">ja</span>' : '<span style="color:var(--faint)">—</span>') + '</td>' +
+          '<td><div class="rij-acties">' +
+            '<button class="btn btn-g btn-klein" data-top="' + i + '"' + (i === 0 ? ' disabled' : '') + '>↑</button>' +
+            '<button class="btn btn-g btn-klein" data-tneer="' + i + '"' + (i === lijst.length - 1 ? ' disabled' : '') + '>↓</button>' +
+            '<button class="btn btn-g btn-klein" data-tarwijzig="' + i + '">Wijzig</button>' +
+            '<button class="btn btn-weg btn-klein" data-tarweg="' + i + '">Wis</button>' +
+          '</div></td>' +
+        '</tr>';
+      }).join('') +
+      '</tbody></table></div></div>';
+  }
+
+  /* ======================================================================
+     Het venster: één formulier voor alles
+     ====================================================================== */
+  var venster = $('#venster');
+  var bewaarActie = null;
+
+  function vensterOpen(titel, velden, bijBewaren) {
+    $('#vensterTitel').textContent = titel;
+    $('#vensterVelden').innerHTML = velden;
+    bewaarActie = bijBewaren;
+    venster.classList.add('open');
+    var eerste = venster.querySelector('input, select, textarea');
+    if (eerste) eerste.focus();
+  }
+
+  function vensterDicht() {
+    venster.classList.remove('open');
+    bewaarActie = null;
+  }
+
+  $('#vensterSluit').addEventListener('click', vensterDicht);
+  $('#vensterAnnuleer').addEventListener('click', vensterDicht);
+  venster.addEventListener('mousedown', function (e) { if (e.target === venster) vensterDicht(); });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && venster.classList.contains('open')) vensterDicht();
+  });
+
+  $('#vensterForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    if (!bewaarActie) return;
+    var waarden = {};
+    $$('#vensterVelden [name]').forEach(function (el) {
+      waarden[el.name] = el.type === 'checkbox' ? el.checked : el.value.trim();
+    });
+    if (bewaarActie(waarden) !== false) {
+      vensterDicht();
+      allesTekenen();
+    }
+  });
+
+  function veld(naam, label, waarde, soort, hulp) {
+    var v = esc(waarde == null ? '' : waarde);
+    var invoer;
+    if (soort === 'tekstvak') {
+      invoer = '<textarea id="' + naam + '" name="' + naam + '" rows="3">' + v + '</textarea>';
+    } else if (soort === 'status') {
+      invoer = '<select id="' + naam + '" name="' + naam + '">' + STATUSSEN.map(function (s) {
+        return '<option' + (s === waarde ? ' selected' : '') + '>' + s + '</option>';
+      }).join('') + '</select>';
+    } else if (soort === 'vink') {
+      invoer = '<label class="vink"><input type="checkbox" name="' + naam + '"' + (waarde ? ' checked' : '') + '> ' + esc(label) + '</label>';
+      return '<div class="veld">' + invoer + (hulp ? '<p class="hulp">' + esc(hulp) + '</p>' : '') + '</div>';
+    } else {
+      invoer = '<input id="' + naam + '" type="' + (soort || 'text') + '" name="' + naam + '" value="' + v + '">';
+    }
+    return '<div class="veld"><label for="' + naam + '">' + esc(label) + '</label>' +
+      invoer + (hulp ? '<p class="hulp">' + esc(hulp) + '</p>' : '') + '</div>';
+  }
+
+  /* ---------- Aanvraag toevoegen of wijzigen ---------- */
+  function aanvraagVenster(bestaande) {
+    var a = bestaande || {
+      id: nieuwId(), datum: vandaagISO(), naam: '', bedrijf: '', telefoon: '',
+      type: '', lengte: '', prijs: '', deadline: '', status: 'nieuw', notitie: ''
+    };
+
+    var lengtes = (inhoud.tarieven || []).map(function (t) {
+      var label = t.lengte + ' — ' + t.prijs;
+      return '<option' + (label === a.lengte ? ' selected' : '') + '>' + esc(label) + '</option>';
+    }).join('');
+
+    vensterOpen(bestaande ? 'Aanvraag wijzigen' : 'Nieuwe aanvraag',
+      '<div class="veld-rij">' +
+        veld('naam', 'Naam', a.naam) +
+        veld('bedrijf', 'Bedrijf', a.bedrijf) +
+      '</div>' +
+      '<div class="veld-rij">' +
+        veld('telefoon', 'Telefoon', a.telefoon, 'text', 'Bv. 32470123456 — wordt een App-knop in de lijst.') +
+        veld('datum', 'Datum van de aanvraag', a.datum, 'date') +
+      '</div>' +
+      veld('type', 'Soort edit', a.type) +
+      '<div class="veld"><label for="lengte">Lengte</label>' +
+        '<select id="lengte" name="lengte"><option value="">—</option>' + lengtes +
+        (a.lengte && lengtes.indexOf('selected') === -1 ? '<option selected>' + esc(a.lengte) + '</option>' : '') +
+        '<option' + (a.lengte === 'Andere lengte' ? ' selected' : '') + '>Andere lengte</option></select></div>' +
+      '<div class="veld-rij">' +
+        veld('prijs', 'Prijs in euro', a.prijs, 'number') +
+        veld('deadline', 'Klaar tegen', a.deadline, 'date') +
+      '</div>' +
+      veld('status', 'Status', a.status, 'status') +
+      veld('notitie', 'Notitie', a.notitie, 'tekstvak'),
+
+      function (w) {
+        if (!w.naam) { melding('Vul minstens een naam in.'); return false; }
+
+        /* Kiest ze een lengte uit de lijst, dan nemen we die prijs over
+           zolang er zelf niets is ingevuld. */
+        var prijs = Number(w.prijs) || 0;
+        if (!prijs && w.lengte) prijs = prijsGetal(w.lengte.split('—')[1] || '');
+
+        var nieuw = {
+          id: a.id, datum: w.datum || vandaagISO(), naam: w.naam, bedrijf: w.bedrijf,
+          telefoon: w.telefoon, type: w.type, lengte: w.lengte, prijs: prijs,
+          deadline: w.deadline, status: w.status, notitie: w.notitie
+        };
+
+        var i = aanvragen.findIndex(function (x) { return x.id === a.id; });
+        if (i === -1) aanvragen.push(nieuw); else aanvragen[i] = nieuw;
+        bewaarAanvragen();
+        melding(bestaande ? 'Aanvraag bijgewerkt.' : 'Aanvraag toegevoegd.');
+      });
+  }
+
+  /* ---------- Werk toevoegen of wijzigen ---------- */
+  function werkVenster(index) {
+    var bestaat = typeof index === 'number';
+    var w = bestaat ? inhoud.werk[index] : { titel: '', omschrijving: '', formaat: '9:16', beeld: '', link: '' };
+
+    vensterOpen(bestaat ? 'Voorbeeld wijzigen' : 'Voorbeeld toevoegen',
+      veld('titel', 'Titel', w.titel) +
+      veld('omschrijving', 'Omschrijving', w.omschrijving, 'tekstvak') +
+      veld('formaat', 'Formaat', w.formaat, 'text', 'Het labeltje op het beeld, bv. 9:16 of 16:9.') +
+      veld('beeld', 'Adres van de afbeelding', w.beeld, 'text', 'Leeg laten geeft een paars vlak met een knop.') +
+      veld('link', 'Adres van de video', w.link, 'text', 'Leeg laten maakt de kaart niet klikbaar.'),
+
+      function (v) {
+        if (!v.titel) { melding('Een titel is nodig.'); return false; }
+        if (!inhoud.werk) inhoud.werk = [];
+        if (bestaat) inhoud.werk[index] = v; else inhoud.werk.push(v);
+        bewaarInhoud();
+        melding('Werk bijgewerkt.');
+      });
+  }
+
+  /* ---------- Tarief toevoegen of wijzigen ---------- */
+  function tariefVenster(index) {
+    var bestaat = typeof index === 'number';
+    var t = bestaat ? inhoud.tarieven[index]
+                    : { kort: '', lengte: '', prijs: '', voor: '', punten: [], uitgelicht: false };
+
+    vensterOpen(bestaat ? 'Tarief wijzigen' : 'Tarief toevoegen',
+      '<div class="veld-rij">' +
+        veld('kort', 'Label op de kaart', t.kort, 'text', 'Bv. 20 – 30 sec') +
+        veld('prijs', 'Prijs', t.prijs, 'text', 'Bv. €20') +
+      '</div>' +
+      veld('lengte', 'Lengte zoals in het bericht', t.lengte, 'text', 'Bv. 20 tot 30 seconden') +
+      veld('voor', 'Regel eronder', t.voor, 'text', 'Bv. De klassieke social-edit') +
+      veld('punten', 'Wat erbij zit', (t.punten || []).join('\n'), 'tekstvak', 'Eén per regel.') +
+      veld('uitgelicht', 'Toon dit als "Meest gekozen"', t.uitgelicht, 'vink', 'Hou het bij één tarief.'),
+
+      function (v) {
+        if (!v.kort || !v.prijs) { melding('Label en prijs zijn nodig.'); return false; }
+        var rij = {
+          kort: v.kort, lengte: v.lengte || v.kort, prijs: v.prijs, voor: v.voor,
+          punten: v.punten.split('\n').map(function (p) { return p.trim(); }).filter(Boolean),
+          uitgelicht: !!v.uitgelicht
+        };
+        if (!inhoud.tarieven) inhoud.tarieven = [];
+        if (rij.uitgelicht) {
+          inhoud.tarieven.forEach(function (x, i) { if (i !== index) x.uitgelicht = false; });
+        }
+        if (bestaat) inhoud.tarieven[index] = rij; else inhoud.tarieven.push(rij);
+        bewaarInhoud();
+        melding('Tarief bijgewerkt.');
+      });
+  }
+
+  /* ======================================================================
+     Klikken opvangen
+     ====================================================================== */
+  document.addEventListener('click', function (e) {
+    var el = e.target.closest('[data-nieuw],[data-wijzig],[data-verwijder],[data-werkwijzig],[data-werkweg],[data-op],[data-neer],[data-tarwijzig],[data-tarweg],[data-top],[data-tneer]');
+    if (!el) return;
+
+    var g = function (n) { return el.getAttribute(n); };
+
+    if (g('data-nieuw') === 'aanvraag') return aanvraagVenster(null);
+    if (g('data-nieuw') === 'werk') return werkVenster(null);
+    if (g('data-nieuw') === 'tarief') return tariefVenster(null);
+
+    if (g('data-wijzig')) {
+      var a = aanvragen.find(function (x) { return x.id === g('data-wijzig'); });
+      if (a) aanvraagVenster(a);
+      return;
+    }
+    if (g('data-verwijder')) {
+      var id = g('data-verwijder');
+      var w = aanvragen.find(function (x) { return x.id === id; });
+      if (confirm('De aanvraag van ' + (w && w.naam ? w.naam : 'deze klant') + ' verwijderen?')) {
+        aanvragen = aanvragen.filter(function (x) { return x.id !== id; });
+        bewaarAanvragen();
+        allesTekenen();
+        melding('Aanvraag verwijderd.');
+      }
+      return;
+    }
+
+    if (g('data-werkwijzig')) return werkVenster(Number(g('data-werkwijzig')));
+    if (g('data-werkweg')) {
+      var wi = Number(g('data-werkweg'));
+      if (confirm('"' + (inhoud.werk[wi].titel || 'dit voorbeeld') + '" van de site halen?')) {
+        inhoud.werk.splice(wi, 1);
+        bewaarInhoud(); allesTekenen(); melding('Voorbeeld verwijderd.');
+      }
+      return;
+    }
+    if (g('data-op') || g('data-neer')) {
+      var i = Number(g('data-op') || g('data-neer'));
+      var naar = g('data-op') ? i - 1 : i + 1;
+      verplaats(inhoud.werk, i, naar);
+      bewaarInhoud(); allesTekenen();
+      return;
+    }
+
+    if (g('data-tarwijzig')) return tariefVenster(Number(g('data-tarwijzig')));
+    if (g('data-tarweg')) {
+      var ti = Number(g('data-tarweg'));
+      if (confirm('Het tarief "' + (inhoud.tarieven[ti].kort || '') + '" verwijderen?')) {
+        inhoud.tarieven.splice(ti, 1);
+        bewaarInhoud(); allesTekenen(); melding('Tarief verwijderd.');
+      }
+      return;
+    }
+    if (g('data-top') || g('data-tneer')) {
+      var j = Number(g('data-top') || g('data-tneer'));
+      verplaats(inhoud.tarieven, j, g('data-top') ? j - 1 : j + 1);
+      bewaarInhoud(); allesTekenen();
+    }
+  });
+
+  function verplaats(lijst, van, naar) {
+    if (!lijst || naar < 0 || naar >= lijst.length) return;
+    var stuk = lijst.splice(van, 1)[0];
+    lijst.splice(naar, 0, stuk);
+  }
+
+  /* ======================================================================
+     Teksten en instellingen
+     ====================================================================== */
+  $('#tekstForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    inhoud.teksten.lead = $('#tLead').value.trim() || STANDAARD_INHOUD.teksten.lead;
+    inhoud.teksten.levering = $('#tLevering').value.trim() || STANDAARD_INHOUD.teksten.levering;
+    inhoud.teksten.revisies = $('#tRevisies').value.trim() || STANDAARD_INHOUD.teksten.revisies;
+    bewaarInhoud();
+    melding('Teksten opgeslagen.');
+  });
+
+  $('#nummerForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var nr = $('#iNummer').value.replace(/[^0-9]/g, '');
+    if (nr.length < 8) { melding('Dat nummer lijkt niet te kloppen.'); return; }
+    inhoud.nummer = nr;
+    inhoud.nummerGetoond = $('#iGetoond').value.trim() || nr;
+    bewaarInhoud();
+    melding('Nummer opgeslagen.');
+  });
+
+  $('#codeForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var a = $('#iCode1').value, b = $('#iCode2').value;
+    if (a.length < 4) { melding('Neem een code van minstens vier tekens.'); return; }
+    if (a !== b) { melding('De twee codes zijn niet gelijk.'); return; }
+    schrijf(OPSLAG_CODE, a);
+    $('#iCode1').value = $('#iCode2').value = '';
+    melding('Code gewijzigd.');
+  });
+
+  /* ---------- Kopie opslaan en terugzetten ---------- */
+  $('#uitvoer').addEventListener('click', function () {
+    var pak = { bewaardOp: new Date().toISOString(), inhoud: inhoud, aanvragen: aanvragen };
+    var blob = new Blob([JSON.stringify(pak, null, 2)], { type: 'application/json' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'rania-works-' + vandaagISO() + '.json';
+    a.click();
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+    melding('Kopie opgeslagen.');
+  });
+
+  $('#invoerKnop').addEventListener('click', function () { $('#invoer').click(); });
+  $('#invoer').addEventListener('change', function (e) {
+    var bestand = e.target.files[0];
+    if (!bestand) return;
+    var lezer = new FileReader();
+    lezer.onload = function () {
+      try {
+        var pak = JSON.parse(lezer.result);
+        if (pak.inhoud) { inhoud = pak.inhoud; schrijf(OPSLAG_INHOUD, inhoud); }
+        if (Array.isArray(pak.aanvragen)) { aanvragen = pak.aanvragen; schrijf(OPSLAG_AANVRAGEN, aanvragen); }
+        veldenInvullen();
+        allesTekenen();
+        melding('Kopie teruggezet.');
+      } catch (err) {
+        melding('Dat bestand kon ik niet lezen.');
+      }
+      e.target.value = '';
+    };
+    lezer.readAsText(bestand);
+  });
+
+  $('#herstel').addEventListener('click', function () {
+    if (!confirm('Alles wissen? De tarieven, het werk en alle aanvragen gaan terug naar het begin. Dit kan niet ongedaan gemaakt worden.')) return;
+    try {
+      localStorage.removeItem(OPSLAG_INHOUD);
+      localStorage.removeItem(OPSLAG_AANVRAGEN);
+    } catch (err) {}
+    inhoud = inhoudOphalen();
+    aanvragen = [];
+    veldenInvullen();
+    allesTekenen();
+    melding('Alles staat weer op het begin.');
+  });
+
+  function veldenInvullen() {
+    $('#tLead').value = inhoud.teksten.lead;
+    $('#tLevering').value = inhoud.teksten.levering;
+    $('#tRevisies').value = inhoud.teksten.revisies;
+    $('#iNummer').value = inhoud.nummer;
+    $('#iGetoond').value = inhoud.nummerGetoond;
+  }
+
+  /* ======================================================================
+     Alles tekenen
+     ====================================================================== */
+  function allesTekenen() {
+    tellersBijwerken();
+    overzichtTekenen();
+    aanvragenTekenen();
+    werkTekenen();
+    tarievenTekenen();
+    veldenInvullen();
+
+    if (!opslagWerkt) {
+      $('#opslagWaarschuwing').innerHTML = '<div class="waarschuwing">' +
+        'Deze browser bewaart niets (privémodus of geblokkeerde opslag). ' +
+        'Je kan alles bekijken en aanpassen, maar het is weg zodra je het venster sluit.</div>';
+    }
+  }
+})();
+</script>
+</body>
+</html>

@@ -1,24 +1,128 @@
 /* ==========================================================================
    Rania Works — gedrag van de pagina
    Geen framework, geen build. Gewoon wat JavaScript.
+
+   De teksten, het werk en de tarieven staan in inhoud.js. Wat in het beheer
+   (beheer.html) is aangepast, gaat daarop voor.
    ========================================================================== */
 
-/* Het WhatsApp-nummer. 0473 29 27 39 wordt internationaal 32473292739.
-   Wil je later een ander nummer? Pas enkel deze regel aan. */
-var WHATSAPP = '32473292739';
+var INHOUD = (typeof inhoudOphalen === 'function') ? inhoudOphalen() : STANDAARD_INHOUD;
+
+/* Het WhatsApp-nummer waar alles naartoe gaat. */
+var WHATSAPP = INHOUD.nummer;
 
 /* Adres van een WhatsApp-gesprek, met tekst er alvast ingezet. */
 function waLink(tekst) {
   return 'https://wa.me/' + WHATSAPP + '?text=' + encodeURIComponent(tekst);
 }
 
+/* Tekst veilig in HTML zetten. */
+function veilig(tekst) {
+  return String(tekst == null ? '' : tekst)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
 document.addEventListener('DOMContentLoaded', function () {
   var $ = function (sel) { return document.querySelector(sel); };
   var $$ = function (sel) { return Array.prototype.slice.call(document.querySelectorAll(sel)); };
 
+  /* ======================================================================
+     De inhoud op de pagina zetten
+     ====================================================================== */
+
+  /* ---------- Losse teksten en het nummer ---------- */
+  function tekstenPlaatsen() {
+    var zet = function (id, waarde) {
+      var el = document.getElementById(id);
+      if (el) el.textContent = waarde;
+    };
+    zet('heroLead', INHOUD.teksten.lead);
+    zet('statLevering', INHOUD.teksten.levering);
+    zet('statRevisies', INHOUD.teksten.revisies);
+    zet('formNummer', INHOUD.nummerGetoond);
+    zet('footerNummer', INHOUD.nummerGetoond);
+  }
+
+  /* ---------- Het werk ---------- */
+  function werkPlaatsen() {
+    var grid = document.getElementById('werkGrid');
+    if (!grid) return;
+
+    var lijst = (INHOUD.werk || []).filter(function (w) { return w && w.titel; });
+    grid.classList.toggle('solo', lijst.length === 1);
+
+    if (!lijst.length) {
+      grid.innerHTML = '<p class="note">Er staat nog geen werk op de site.</p>';
+      return;
+    }
+
+    grid.innerHTML = lijst.map(function (w) {
+      var beeld = w.beeld
+        ? '<img src="' + veilig(w.beeld) + '" alt="Beeld uit: ' + veilig(w.titel) + '">'
+        : '<span class="play" aria-hidden="true">▶</span>';
+
+      var binnen =
+        '<div class="work-thumb" data-label="' + veilig(w.formaat || '') + '">' + beeld + '</div>' +
+        '<div class="work-info">' +
+          '<h3>' + veilig(w.titel) + '</h3>' +
+          '<p>' + veilig(w.omschrijving || '') + '</p>' +
+          (w.link ? '<span class="work-link">Bekijk de video →</span>' : '') +
+        '</div>';
+
+      return w.link
+        ? '<a class="work-card reveal" href="' + veilig(w.link) + '" target="_blank" rel="noopener">' + binnen + '</a>'
+        : '<article class="work-card reveal">' + binnen + '</article>';
+    }).join('');
+  }
+
+  /* ---------- De tarieven, en dezelfde lijst in het formulier ---------- */
+  function tarievenPlaatsen() {
+    var grid = document.getElementById('tarievenGrid');
+    var lijst = INHOUD.tarieven || [];
+
+    if (grid) {
+      grid.innerHTML = lijst.map(function (t) {
+        var punten = (t.punten || []).map(function (p) {
+          return '<li>' + veilig(p) + '</li>';
+        }).join('');
+
+        return '<article class="price reveal' + (t.uitgelicht ? ' price-featured' : '') + '">' +
+          (t.uitgelicht ? '<span class="tag">Meest gekozen</span>' : '') +
+          '<p class="len">' + veilig(t.kort || t.lengte) + '</p>' +
+          '<p class="amount">' + veilig(t.prijs) + '</p>' +
+          '<p class="price-for">' + veilig(t.voor || '') + '</p>' +
+          '<ul class="ticks">' + punten + '</ul>' +
+          '<button class="btn ' + (t.uitgelicht ? 'btn-primary' : 'btn-ghost') + ' btn-block"' +
+            ' data-lengte="' + veilig(t.lengte) + '" data-prijs="' + veilig(t.prijs) + '">' +
+            'Kies deze lengte</button>' +
+        '</article>';
+      }).join('');
+    }
+
+    var select = document.getElementById('lengte');
+    if (select) {
+      select.innerHTML =
+        '<option value="">Nog geen idee</option>' +
+        lijst.map(function (t) {
+          var label = veilig(t.lengte) + ' — ' + veilig(t.prijs);
+          return '<option>' + label + '</option>';
+        }).join('') +
+        '<option>Andere lengte — graag een prijs</option>';
+    }
+  }
+
+  tekstenPlaatsen();
+  werkPlaatsen();
+  tarievenPlaatsen();
+
   /* ---------- Jaartal in de voet ---------- */
   var jaar = $('#jaar');
   if (jaar) jaar.textContent = new Date().getFullYear();
+
+  /* ======================================================================
+     Gedrag
+     ====================================================================== */
 
   /* ---------- Kop: achtergrond zodra je scrolt + zwevende knop ---------- */
   var header = $('#siteHeader');
@@ -122,12 +226,10 @@ document.addEventListener('DOMContentLoaded', function () {
       return el ? el.value.trim() : '';
     };
 
-    var naam = v('naam');
     var regels = [];
-
     regels.push('Hallo Rania, ik zou graag een edit laten maken.');
     regels.push('');
-    if (naam) regels.push('Naam: ' + naam);
+    if (v('naam')) regels.push('Naam: ' + v('naam'));
     if (v('bedrijf')) regels.push('Bedrijf: ' + v('bedrijf'));
     if (v('type')) regels.push('Soort edit: ' + v('type'));
     if (v('platform')) regels.push('Platform: ' + v('platform'));
@@ -169,7 +271,7 @@ document.addEventListener('DOMContentLoaded', function () {
       if (veld) veld.classList.toggle('invalid', leeg);
       if (leeg && goed) {
         goed = false;
-        el.focus({ preventScroll: false });
+        el.focus();
       }
     });
     return goed;
@@ -231,26 +333,27 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   /* ---------- Knoppen bij de tarieven ---------- */
-  $$('[data-lengte]').forEach(function (btn) {
-    btn.addEventListener('click', function () {
-      var keuze = btn.getAttribute('data-lengte') + ' — ' + btn.getAttribute('data-prijs');
-      var select = document.getElementById('lengte');
+  document.addEventListener('click', function (e) {
+    var btn = e.target.closest('[data-lengte]');
+    if (!btn) return;
 
-      if (select) {
-        var gevonden = Array.prototype.some.call(select.options, function (opt) {
-          if (opt.value === keuze || opt.text === keuze) { select.value = opt.value; return true; }
-          return false;
-        });
-        if (!gevonden) select.value = '';
-      }
+    var keuze = btn.getAttribute('data-lengte') + ' — ' + btn.getAttribute('data-prijs');
+    var select = document.getElementById('lengte');
 
-      voorbeeldBijwerken();
-      document.getElementById('aanvraag').scrollIntoView({ behavior: 'smooth', block: 'start' });
-      setTimeout(function () {
-        var naam = document.getElementById('naam');
-        if (naam && !naam.value) naam.focus({ preventScroll: true });
-      }, 700);
-    });
+    if (select) {
+      var gevonden = Array.prototype.some.call(select.options, function (opt) {
+        if (opt.value === keuze || opt.text === keuze) { select.value = opt.value; return true; }
+        return false;
+      });
+      if (!gevonden) select.value = '';
+    }
+
+    voorbeeldBijwerken();
+    document.getElementById('aanvraag').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    setTimeout(function () {
+      var naam = document.getElementById('naam');
+      if (naam && !naam.value) naam.focus({ preventScroll: true });
+    }, 700);
   });
 
   /* ---------- Directe WhatsApp-links (voet en zwevende knop) ---------- */

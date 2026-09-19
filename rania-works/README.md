@@ -1,65 +1,81 @@
-# Rania Works — website
+# Rania Works — website + beheer
 
-Een eenpagina-website voor **Rania Works**, waar bezoekers een video-edit kunnen
-aanvragen. Donker en strak: zwart en wit, met paars als accent. De aanvraag komt
-als kant-en-klaar bericht binnen op WhatsApp — **0473 29 27 39**.
+Een website waar bezoekers een video-edit kunnen aanvragen, en een beheerpagina
+waar Rania de site bijhoudt. Donker en strak: zwart en wit, met paars als accent.
+Aanvragen komen als kant-en-klaar bericht binnen op WhatsApp — **0473 29 27 39**.
 
-De site is gewone HTML, CSS en JavaScript. Geen buildstap, geen framework, geen
-server. Drie bestanden:
+Gewone HTML, CSS en JavaScript. Geen buildstap, geen framework, geen server.
 
-- **`index.html`** — de hele pagina en alle teksten
-- **`styles.css`** — de vormgeving
-- **`script.js`** — het menu, de animaties en het WhatsApp-bericht
-
-Daarnaast staat er **`rania-works-compleet.html`**: precies dezelfde website,
-maar met de stijl en het script erin gebakken. Eén bestand dat je kan
-doorsturen, op een usb-stick zetten of gewoon dubbelklikken. Pas je iets aan in
-de drie losse bestanden, maak dat bestand dan opnieuw:
-
-```bash
-cd rania-works
-python3 - <<'EOF'
-html = open('index.html').read()
-html = html.replace('<link rel="stylesheet" href="styles.css">',
-                    '<style>\n' + open('styles.css').read() + '\n</style>')
-html = html.replace('<script src="script.js"></script>',
-                    '<script>\n' + open('script.js').read() + '\n</script>')
-open('rania-works-compleet.html', 'w').write(html)
-EOF
-```
+| Bestand | Wat het is |
+|---|---|
+| `index.html` | de website |
+| `styles.css` | de vormgeving van de website |
+| `script.js` | het gedrag van de website |
+| `inhoud.js` | **de teksten, het werk en de tarieven** — gedeeld door beide pagina's |
+| `beheer.html` | de beheerpagina (stijl en script zitten erin) |
+| `bouw.py` | maakt de twee "compleet"-bestanden hieronder |
+| `rania-works-compleet.html` | de hele website in één bestand |
+| `beheer-compleet.html` | het hele beheer in één bestand |
 
 ---
 
 ## Bekijken
 
-Open `index.html` gewoon in je browser. Of, als je liever een echte server draait:
+Dubbelklik `index.html` of `beheer.html`. Of draai een kleine server, wat het
+dichtst bij de echte situatie komt:
 
 ```bash
 cd rania-works
 python3 -m http.server 8080
 ```
 
-Ga dan naar <http://localhost:8080>.
+Dan staat de site op <http://localhost:8080> en het beheer op
+<http://localhost:8080/beheer.html>.
 
 ---
 
-## Wat staat er op de pagina
+## Het beheer
 
-| Onderdeel | Inhoud |
-|---|---|
-| Hero | naam, belofte en twee knoppen |
-| Werk | vier voorbeeldkaarten (nog te vervangen door echte video's) |
-| Diensten | social edits, bedrijfsvideo, persoonlijke edits, losse afwerking |
-| Werkwijze | vier stappen, van aanvraag tot oplevering |
-| Tarieven | prijs per lengte van de video |
-| Aanvraag | formulier dat live een WhatsApp-bericht opbouwt |
-| FAQ | zes veelgestelde vragen |
+Openen met een code. De eerste keer is dat **`rania`**; je wijzigt hem bij
+Instellingen. Zes onderdelen:
+
+- **Overzicht** — wat openstaat, wat je deze maand geleverd hebt, en de omzet
+  daarvan. Plus de laatste vijf aanvragen.
+- **Aanvragen** — wat via WhatsApp binnenkomt, zet je hier bij. Met status
+  (nieuw · bezig · geleverd · geannuleerd), prijs, deadline, notitie en een
+  knop om de klant meteen te appen. Filteren en zoeken kan.
+- **Werk** — de voorbeelden in de sectie "Een greep uit de edits". Toevoegen,
+  wijzigen, van volgorde wisselen. Staat er één voorbeeld, dan toont de site
+  het groot, met het beeld naast de tekst.
+- **Tarieven** — de prijzen per lengte. Wat je hier verandert, verandert
+  meteen ook de keuzelijst in het aanvraagformulier.
+- **Teksten** — de tekst onder de titel, de levertijd en de revisies.
+- **Instellingen** — het WhatsApp-nummer, de toegangscode, en een kopie van je
+  gegevens opslaan of terugzetten.
+
+### Twee dingen om te weten
+
+**De code is geen echte beveiliging.** Alles draait in de browser, dus wie het
+bestand heeft, kan de gegevens uitlezen. Het slot houdt meekijkers tegen, meer
+niet. Zet er niets in dat echt geheim moet blijven. Wil je het beheer niet
+online hebben staan, zet dan enkel `index.html`, `styles.css`, `script.js` en
+`inhoud.js` op je webhosting, en hou `beheer.html` op je eigen computer.
+
+**De gegevens staan in je browser, op dat ene toestel.** Ze gaan niet naar een
+server en zijn dus niet zichtbaar op je gsm als je ze op je laptop invulde.
+Maak daarom af en toe een kopie (Instellingen → *Kopie opslaan*); dat bestand
+kan je op een ander toestel terugzetten. Wis je je browsergegevens, dan is het
+weg — met een kopie zet je alles weer recht.
+
+Wat je in het beheer aanpast, gaat vóór op wat in `inhoud.js` staat. Wil je iets
+blijvend veranderen — voor iedereen, op elk toestel — pas het dan aan in
+`inhoud.js`.
 
 ---
 
 ## De prijzen
 
-Die staan in `index.html`, in de sectie `<section id="tarieven">`:
+Staan in `inhoud.js`, en zijn ook in het beheer aan te passen:
 
 | Lengte | Prijs |
 |---|---|
@@ -68,32 +84,26 @@ Die staan in `index.html`, in de sectie `<section id="tarieven">`:
 | 20 tot 30 seconden | € 20 |
 | 60 tot 90 seconden | € 40 |
 
-Wijzig je een prijs of een lengte? Pas dan twee plekken aan, zodat ze gelijk
-blijven lopen:
-
-1. de kaart in de sectie `tarieven` (het bedrag én `data-lengte` / `data-prijs`
-   op de knop);
-2. de keuzelijst `id="lengte"` in het aanvraagformulier.
-
-Voor lengtes tussen 30 en 60 seconden — en alles boven anderhalve minuut — staat
-er nu "prijs op aanvraag". Heb je daar een vast tarief voor, zeg het, dan zet ik
-er een kaart bij.
+Voor lengtes tussen 30 en 60 seconden — en alles boven anderhalve minuut —
+staat er "prijs op aanvraag". Heb je daar een vast tarief voor, voeg het dan
+toe bij Tarieven.
 
 ---
 
 ## Het WhatsApp-nummer
 
-Staat op één plek, bovenaan in `script.js`:
+Staat bovenaan in `inhoud.js`:
 
 ```js
-var WHATSAPP = '32473292739';
+nummer: '32473292739',
+nummerGetoond: '0473 29 27 39',
 ```
 
-Dat is 0473 29 27 39 in internationale vorm, zonder `+`, zonder spaties en
-zonder de nul vooraan. Verandert het nummer, dan pas je enkel deze regel aan —
-en het nummer dat onderaan de pagina in beeld staat (in `index.html`).
+Dat eerste is het nummer waar de berichten heen gaan: internationaal, zonder
+`+`, zonder spaties, zonder de nul vooraan. Het tweede is hoe het op de site
+getoond wordt. Je kan het ook wijzigen bij Instellingen.
 
-Wat het formulier verstuurt, ziet er zo uit:
+Wat het formulier verstuurt:
 
 ```
 Hallo Rania, ik zou graag een edit laten maken.
@@ -110,33 +120,41 @@ Wat ik in gedachten heb:
 ```
 
 De bezoeker ziet dat bericht al staan in het telefoonvenster naast het
-formulier, en hoeft in WhatsApp enkel nog op verzenden te duwen.
-
-> Er wordt niets opgeslagen en niets verstuurd naar een server. Alles gebeurt in
-> de browser van de bezoeker; het bericht gaat rechtstreeks naar WhatsApp.
+formulier, en hoeft in WhatsApp enkel nog op verzenden te duwen. Er wordt niets
+opgeslagen en niets naar een server gestuurd.
 
 ---
 
 ## Eigen werk toevoegen
 
-De vier kaarten onder "Werk" zijn nu nog gekleurde vlakken. Vervang de
-`<div class="work-thumb">` door je eigen beeld of video:
+In het beheer, bij **Werk**. Je vult in:
 
-```html
-<div class="work-thumb">
-  <img src="werk/reel-sneakers.jpg" alt="Beeld uit de sneaker-reel">
-</div>
+- **titel** en **omschrijving** — wat onder het beeld komt
+- **formaat** — het labeltje op het beeld, bv. `9:16` of `16:9`
+- **adres van de afbeelding** — bv. `werk/bakkerij.jpg` (zet je bestanden in een
+  map `werk/` naast `index.html`). Laat je dit leeg, dan toont de site een paars
+  vlak met een afspeelknop.
+- **adres van de video** — vul je dit in, dan wordt de kaart klikbaar
+
+---
+
+## De losse bestanden opnieuw samenvoegen
+
+Pas je iets aan in `index.html`, `styles.css`, `script.js`, `inhoud.js` of
+`beheer.html`, maak de twee "compleet"-bestanden dan opnieuw:
+
+```bash
+cd rania-works
+python3 bouw.py
 ```
-
-Zet je bestanden in een map `werk/` naast `index.html`.
 
 ---
 
 ## Online zetten
 
-Sleep de map `rania-works` naar [Netlify Drop](https://app.netlify.com/drop) of
+Sleep de map naar [Netlify Drop](https://app.netlify.com/drop) of
 [Vercel](https://vercel.com). Meer is er niet nodig: het is een statische site.
 
 Let op: de `netlify.toml` in de hoofdmap van deze repository wijst naar
-`ai-app`. Wil je deze site via die Netlify-koppeling publiceren, zet dan `base`
-op `rania-works` en `publish` op `.` (en haal de regels over `functions` weg).
+`ai-app`. Wil je deze site via die koppeling publiceren, zet dan `base` op
+`rania-works` en `publish` op `.` (en haal de regels over `functions` weg).

@@ -14,7 +14,7 @@
 
   --text:      #f4f3f7;
   --muted:     #a6a3b4;
-  --faint:     #6e6b7d;
+  --faint:     #87849a;
 
   --purple:    #a855f7;
   --purple-2:  #7c3aed;
@@ -69,6 +69,14 @@ a { color: inherit; text-decoration: none; }
   background: var(--purple); color: #fff; padding: 10px 16px; border-radius: 8px;
 }
 .skip-link:focus { left: 16px; }
+
+.noscript {
+  position: relative; z-index: 5;
+  max-width: var(--wrap); margin: 0 auto; padding: 14px 24px;
+  font-size: 15px; color: var(--text);
+  background: rgba(168, 85, 247, .13);
+  border-bottom: 1px solid rgba(168, 85, 247, .3);
+}
 
 /* ---------- Sfeer: gloed en ruis ---------- */
 .glow {
@@ -293,8 +301,28 @@ main, .site-header, .site-footer { position: relative; z-index: 2; }
   transition: background .25s ease, transform .25s ease;
 }
 .work-card:hover .play { background: var(--purple); transform: scale(1.08); }
-.work-card h3 { font-size: 17px; margin-top: 16px; }
+.work-thumb img { width: 100%; height: 100%; object-fit: cover; }
+a.work-card { display: block; color: inherit; }
+.work-info { padding: 16px 4px 0; }
+.work-card h3 { font-size: 17px; }
 .work-card p { color: var(--muted); font-size: 14.5px; margin-top: 6px; }
+.work-link { display: inline-block; margin-top: 12px; font-size: 14.5px; color: var(--purple); }
+
+/* Staat er maar één voorbeeld op de site, dan tonen we het groot:
+   beeld links, tekst rechts. */
+.work-grid.solo { grid-template-columns: 1fr; max-width: 920px; }
+.work-grid.solo .work-card {
+  display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr);
+  gap: 28px; align-items: center; padding: 18px;
+}
+.work-grid.solo .work-thumb { aspect-ratio: 16 / 10; }
+.work-grid.solo .work-info { padding: 0 10px 0 0; }
+.work-grid.solo h3 { font-size: 25px; }
+.work-grid.solo p { font-size: 16px; margin-top: 12px; }
+@media (max-width: 720px) {
+  .work-grid.solo .work-card { grid-template-columns: 1fr; }
+  .work-grid.solo .work-info { padding: 14px 6px 4px; }
+}
 
 /* ---------- Kaarten (diensten) ---------- */
 .cards {
