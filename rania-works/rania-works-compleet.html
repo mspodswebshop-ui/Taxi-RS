@@ -375,6 +375,15 @@ main, .site-header, .site-footer { position: relative; z-index: 2; }
 }
 .work-card:hover .play { background: var(--purple); transform: scale(1.08); }
 .work-thumb img { width: 100%; height: 100%; object-fit: cover; }
+
+/* Speelt er een video in de kaart, dan vult die het hele kader. */
+.work-thumb.speelt { padding: 0; }
+.work-thumb iframe,
+.work-thumb video {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  border: 0; background: #000; object-fit: cover; border-radius: inherit;
+}
+.work-thumb.speelt::after { z-index: 2; }
 a.work-card { display: block; color: inherit; }
 .work-info { padding: 16px 4px 0; }
 .work-card h3 { font-size: 17px; }
@@ -1439,6 +1448,24 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   /* ---------- Het werk ---------- */
+
+  /* Wat voor adres is dit? Een YouTube- of Vimeo-video sluiten we in,
+     een los videobestand spelen we zelf af, de rest wordt een gewone link. */
+  function videoSoort(adres) {
+    adres = String(adres || '').trim();
+    if (!adres) return null;
+
+    var yt = adres.match(/(?:youtube\.com\/(?:watch\?v=|shorts\/|embed\/|live\/)|youtu\.be\/)([\w-]{6,})/);
+    if (yt) return { soort: 'insluiten', bron: 'https://www.youtube.com/embed/' + yt[1] };
+
+    var vi = adres.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+    if (vi) return { soort: 'insluiten', bron: 'https://player.vimeo.com/video/' + vi[1] };
+
+    if (/\.(mp4|webm|ogv|mov|m4v)(\?.*)?$/i.test(adres)) return { soort: 'bestand', bron: adres };
+
+    return { soort: 'link', bron: adres };
+  }
+
   function werkPlaatsen() {
     var grid = document.getElementById('werkGrid');
     if (!grid) return;
@@ -1452,21 +1479,39 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     grid.innerHTML = lijst.map(function (w) {
-      var beeld = w.beeld
-        ? '<img src="' + veilig(w.beeld) + '" alt="Beeld uit: ' + veilig(w.titel) + '">'
-        : '<span class="play" aria-hidden="true">▶</span>';
+      var video = videoSoort(w.link);
+      var kader = '';
 
-      var binnen =
-        '<div class="work-thumb" data-label="' + veilig(w.formaat || '') + '">' + beeld + '</div>' +
-        '<div class="work-info">' +
+      if (video && video.soort === 'insluiten') {
+        kader = '<div class="work-thumb speelt" data-label="' + veilig(w.formaat || '') + '">' +
+          '<iframe src="' + veilig(video.bron) + '" title="' + veilig(w.titel) + '"' +
+          ' loading="lazy" allow="accelerometer; clipboard-write; encrypted-media; picture-in-picture"' +
+          ' allowfullscreen></iframe></div>';
+
+      } else if (video && video.soort === 'bestand') {
+        kader = '<div class="work-thumb speelt" data-label="' + veilig(w.formaat || '') + '">' +
+          '<video src="' + veilig(video.bron) + '" controls playsinline preload="metadata"' +
+          (w.beeld ? ' poster="' + veilig(w.beeld) + '"' : '') + '></video></div>';
+
+      } else {
+        kader = '<div class="work-thumb" data-label="' + veilig(w.formaat || '') + '">' +
+          (w.beeld
+            ? '<img src="' + veilig(w.beeld) + '" alt="Beeld uit: ' + veilig(w.titel) + '">'
+            : '<span class="play" aria-hidden="true">▶</span>') +
+          '</div>';
+      }
+
+      var tekst = '<div class="work-info">' +
           '<h3>' + veilig(w.titel) + '</h3>' +
           '<p>' + veilig(w.omschrijving || '') + '</p>' +
-          (w.link ? '<span class="work-link">Bekijk de video →</span>' : '') +
+          (video && video.soort === 'link' ? '<span class="work-link">Bekijk de video →</span>' : '') +
         '</div>';
 
-      return w.link
-        ? '<a class="work-card reveal" href="' + veilig(w.link) + '" target="_blank" rel="noopener">' + binnen + '</a>'
-        : '<article class="work-card reveal">' + binnen + '</article>';
+      /* Speelt de video in de kaart zelf, dan mag de kaart geen link zijn:
+         anders spring je weg zodra je op afspelen duwt. */
+      return (video && video.soort === 'link')
+        ? '<a class="work-card reveal" href="' + veilig(video.bron) + '" target="_blank" rel="noopener">' + kader + tekst + '</a>'
+        : '<article class="work-card reveal">' + kader + tekst + '</article>';
     }).join('');
   }
 

@@ -784,8 +784,8 @@ window.addEventListener('error', function (e) {
           '</div>' +
         '</div>' +
         '<p class="hulp">Formaat: ' + esc(w.formaat || '—') +
-          ' · Beeld: ' + (w.beeld ? esc(w.beeld) : 'geen') +
-          ' · Video: ' + (w.link ? esc(w.link) : 'geen') + '</p>' +
+          ' · Video: ' + (w.link ? esc(w.link) : 'geen') +
+          ' · Afbeelding: ' + (w.beeld ? esc(w.beeld) : 'geen') + '</p>' +
       '</div>';
     }).join('');
   }
@@ -1075,8 +1075,10 @@ window.addEventListener('error', function (e) {
       veld('titel', 'Titel', w.titel) +
       veld('omschrijving', 'Omschrijving', w.omschrijving, 'tekstvak') +
       veld('formaat', 'Formaat', w.formaat, 'text', 'Het labeltje op het beeld, bv. 9:16 of 16:9.') +
-      veld('beeld', 'Adres van de afbeelding', w.beeld, 'text', 'Leeg laten geeft een paars vlak met een knop.') +
-      veld('link', 'Adres van de video', w.link, 'text', 'Leeg laten maakt de kaart niet klikbaar.'),
+      veld('link', 'De video', w.link, 'text',
+'Plak hier een YouTube- of Vimeo-link: die speelt dan af op de site zelf. Of de naam van je eigen videobestand, bv. werk/reel.mp4 — zet dat bestand dan in een map werk/ naast je site. Een link van Instagram of TikTok kan ook, maar die maakt de kaart enkel aanklikbaar.') +
+      veld('beeld', 'Afbeelding erbij', w.beeld, 'text',
+           'Het beeld dat je ziet vóór het afspelen, of gewoon een foto als je geen video hebt. Leeg laten mag.'),
 
       function (v) {
         if (!v.titel) { melding('Een titel is nodig.'); return false; }

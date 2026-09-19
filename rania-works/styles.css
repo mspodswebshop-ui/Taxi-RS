@@ -342,6 +342,15 @@ main, .site-header, .site-footer { position: relative; z-index: 2; }
 }
 .work-card:hover .play { background: var(--purple); transform: scale(1.08); }
 .work-thumb img { width: 100%; height: 100%; object-fit: cover; }
+
+/* Speelt er een video in de kaart, dan vult die het hele kader. */
+.work-thumb.speelt { padding: 0; }
+.work-thumb iframe,
+.work-thumb video {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  border: 0; background: #000; object-fit: cover; border-radius: inherit;
+}
+.work-thumb.speelt::after { z-index: 2; }
 a.work-card { display: block; color: inherit; }
 .work-info { padding: 16px 4px 0; }
 .work-card h3 { font-size: 17px; }

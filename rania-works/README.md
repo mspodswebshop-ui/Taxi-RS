@@ -172,16 +172,30 @@ opgeslagen en niets naar een server gestuurd.
 
 ---
 
-## Eigen werk toevoegen
+## Een video toevoegen
 
-In het beheer, bij **Werk**. Je vult in:
+In het beheer, bij **Werk → Voorbeeld toevoegen**. Er zijn drie manieren, en
+de site kiest zelf wat ze met je adres doet:
+
+| Wat je invult bij "De video" | Wat de bezoeker ziet |
+|---|---|
+| `https://youtu.be/xxxx` of een YouTube-, Shorts- of Vimeo-link | de video speelt **op de site zelf** |
+| `werk/reel.mp4` (je eigen bestand) | de video speelt op de site, met je eigen speler |
+| een Instagram- of TikTok-link | de kaart wordt aanklikbaar en opent daar |
+| niets | een paars vlak, of je afbeelding als je er een invult |
+
+**Je eigen videobestand gebruiken.** Zet het bestand in een map `werk/` naast
+`index.html`, en vul dan `werk/reel.mp4` in. Die map gaat mee als je je site op
+je hosting zet. Let op het gewicht: een video van 50 MB laadt traag op mobiel
+internet. Voor langere video's is een YouTube- of Vimeo-link bijna altijd
+beter — die zorgen zelf voor een vlotte weergave.
+
+De andere velden:
 
 - **titel** en **omschrijving** — wat onder het beeld komt
 - **formaat** — het labeltje op het beeld, bv. `9:16` of `16:9`
-- **adres van de afbeelding** — bv. `werk/bakkerij.jpg` (zet je bestanden in een
-  map `werk/` naast `index.html`). Laat je dit leeg, dan toont de site een paars
-  vlak met een afspeelknop.
-- **adres van de video** — vul je dit in, dan wordt de kaart klikbaar
+- **afbeelding erbij** — het beeld dat je ziet vóór het afspelen, of gewoon een
+  foto als je geen video hebt
 
 ---
 
