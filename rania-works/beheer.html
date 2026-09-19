@@ -60,6 +60,11 @@ a { color: var(--purple); }
 .slot-kaart p { color: var(--muted); font-size: 14px; margin-bottom: 22px; }
 .slot-kaart input { text-align: center; letter-spacing: .2em; }
 .slot-hint { font-size: 12.5px; color: var(--faint); margin-top: 18px; line-height: 1.5; }
+.slot-fout {
+  margin-top: 14px; padding: 11px 14px; border-radius: 10px; font-size: 13.5px;
+  background: rgba(240,160,192,.1); border: 1px solid rgba(240,160,192,.35); color: #ffd7e6;
+  text-align: left;
+}
 
 /* ---------- Raamwerk ---------- */
 .app { display: none; min-height: 100vh; grid-template-columns: 236px 1fr; }
@@ -231,6 +236,7 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(.7); curs
     <h1>Beheer</h1>
     <p>Rania Works</p>
     <input type="password" id="codeVeld" placeholder="• • • • •" autocomplete="current-password" aria-label="Toegangscode">
+    <p class="slot-fout" id="slotFout" hidden></p>
     <button class="btn btn-p btn-blok" type="submit" style="margin-top:14px">Openen</button>
     <p class="slot-hint">
       De eerste keer is de code <strong>rania</strong>. Je kan die wijzigen bij
@@ -438,6 +444,17 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(.7); curs
 
 <div class="melding" id="melding" role="status" aria-live="polite"></div>
 
+<script>
+/* Dit staat bewust vóór de rest. Loopt het script hieronder vast, dan zegt de
+   pagina wat er scheelt in plaats van niets te doen als je op Openen drukt. */
+window.addEventListener('error', function (e) {
+  var vak = document.getElementById('slotFout');
+  if (!vak) return;
+  vak.hidden = false;
+  vak.textContent = 'Er ging iets mis met deze pagina (' + (e.message || 'onbekende fout') +
+    '). Gebruik beheer-compleet.html, of zet inhoud.js in dezelfde map als dit bestand.';
+});
+</script>
 <script src="inhoud.js"></script>
 <script>
 /* ==========================================================================
@@ -483,16 +500,49 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(.7); curs
     }
   }
 
-  var inhoud = inhoudOphalen();
-  var aanvragen = lees(OPSLAG_AANVRAGEN, []);
+  /* De sleutels en de standaardinhoud komen uit inhoud.js. Ontbreekt dat
+     bestand, dan werkt het beheer gewoon verder met wat er al bewaard is. */
+  var S_INHOUD = (typeof OPSLAG_INHOUD !== 'undefined') ? OPSLAG_INHOUD : 'raniaworks:inhoud';
+  var S_AANVRAGEN = (typeof OPSLAG_AANVRAGEN !== 'undefined') ? OPSLAG_AANVRAGEN : 'raniaworks:aanvragen';
+  var S_CODE = (typeof OPSLAG_CODE !== 'undefined') ? OPSLAG_CODE : 'raniaworks:code';
+
+  var inhoudBestandGevonden = (typeof STANDAARD_INHOUD !== 'undefined');
+  var BASIS = inhoudBestandGevonden ? STANDAARD_INHOUD : {
+    nummer: '32473292739',
+    nummerGetoond: '0473 29 27 39',
+    teksten: { lead: '', levering: '', revisies: '' },
+    werk: [],
+    tarieven: []
+  };
+
+  /* Wat in het beheer is opgeslagen, anders de standaardinhoud. */
+  function inhoudLezen() {
+    var basis = JSON.parse(JSON.stringify(BASIS));
+    var eigen = lees(S_INHOUD, null);
+    if (!eigen || typeof eigen !== 'object') return basis;
+
+    if (eigen.nummer) basis.nummer = String(eigen.nummer);
+    if (eigen.nummerGetoond) basis.nummerGetoond = String(eigen.nummerGetoond);
+    if (eigen.teksten) {
+      Object.keys(basis.teksten).forEach(function (k) {
+        if (eigen.teksten[k]) basis.teksten[k] = String(eigen.teksten[k]);
+      });
+    }
+    if (Array.isArray(eigen.werk)) basis.werk = eigen.werk;
+    if (Array.isArray(eigen.tarieven) && eigen.tarieven.length) basis.tarieven = eigen.tarieven;
+    return basis;
+  }
+
+  var inhoud = inhoudLezen();
+  var aanvragen = lees(S_AANVRAGEN, []);
   if (!Array.isArray(aanvragen)) aanvragen = [];
 
   function bewaarInhoud() {
-    schrijf(OPSLAG_INHOUD, inhoud);
+    schrijf(S_INHOUD, inhoud);
     tellersBijwerken();
   }
   function bewaarAanvragen() {
-    schrijf(OPSLAG_AANVRAGEN, aanvragen);
+    schrijf(S_AANVRAGEN, aanvragen);
     tellersBijwerken();
   }
 
@@ -509,17 +559,37 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(.7); curs
   /* ======================================================================
      Toegang
      ====================================================================== */
-  function huidigeCode() { return lees(OPSLAG_CODE, 'rania'); }
+  function huidigeCode() { return lees(S_CODE, 'rania'); }
+
+  /* Spaties en hoofdletters mogen niet uitmaken: dit slot moet vlot opengaan,
+     ook als je gsm er een hoofdletter van maakt. */
+  function gelijk(a, b) {
+    return String(a).trim().toLowerCase() === String(b).trim().toLowerCase();
+  }
+
+  function slotFout(tekst) {
+    var vak = $('#slotFout');
+    vak.hidden = !tekst;
+    vak.textContent = tekst || '';
+  }
 
   $('#slotForm').addEventListener('submit', function (e) {
     e.preventDefault();
-    if ($('#codeVeld').value === huidigeCode()) {
-      openen();
-    } else {
-      melding('Die code klopt niet.');
+    var ingevuld = $('#codeVeld').value;
+
+    if (!ingevuld.trim()) {
+      slotFout('Vul eerst je code in.');
+      $('#codeVeld').focus();
+      return;
+    }
+    if (!gelijk(ingevuld, huidigeCode())) {
+      slotFout('Die code klopt niet. De eerste keer is het "rania".');
       $('#codeVeld').value = '';
       $('#codeVeld').focus();
+      return;
     }
+    slotFout('');
+    openen();
   });
 
   function openen() {
@@ -1002,9 +1072,9 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(.7); curs
      ====================================================================== */
   $('#tekstForm').addEventListener('submit', function (e) {
     e.preventDefault();
-    inhoud.teksten.lead = $('#tLead').value.trim() || STANDAARD_INHOUD.teksten.lead;
-    inhoud.teksten.levering = $('#tLevering').value.trim() || STANDAARD_INHOUD.teksten.levering;
-    inhoud.teksten.revisies = $('#tRevisies').value.trim() || STANDAARD_INHOUD.teksten.revisies;
+    inhoud.teksten.lead = $('#tLead').value.trim() || BASIS.teksten.lead;
+    inhoud.teksten.levering = $('#tLevering').value.trim() || BASIS.teksten.levering;
+    inhoud.teksten.revisies = $('#tRevisies').value.trim() || BASIS.teksten.revisies;
     bewaarInhoud();
     melding('Teksten opgeslagen.');
   });
@@ -1024,7 +1094,7 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(.7); curs
     var a = $('#iCode1').value, b = $('#iCode2').value;
     if (a.length < 4) { melding('Neem een code van minstens vier tekens.'); return; }
     if (a !== b) { melding('De twee codes zijn niet gelijk.'); return; }
-    schrijf(OPSLAG_CODE, a);
+    schrijf(S_CODE, a);
     $('#iCode1').value = $('#iCode2').value = '';
     melding('Code gewijzigd.');
   });
@@ -1049,8 +1119,8 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(.7); curs
     lezer.onload = function () {
       try {
         var pak = JSON.parse(lezer.result);
-        if (pak.inhoud) { inhoud = pak.inhoud; schrijf(OPSLAG_INHOUD, inhoud); }
-        if (Array.isArray(pak.aanvragen)) { aanvragen = pak.aanvragen; schrijf(OPSLAG_AANVRAGEN, aanvragen); }
+        if (pak.inhoud) { inhoud = pak.inhoud; schrijf(S_INHOUD, inhoud); }
+        if (Array.isArray(pak.aanvragen)) { aanvragen = pak.aanvragen; schrijf(S_AANVRAGEN, aanvragen); }
         veldenInvullen();
         allesTekenen();
         melding('Kopie teruggezet.');
@@ -1065,10 +1135,10 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(.7); curs
   $('#herstel').addEventListener('click', function () {
     if (!confirm('Alles wissen? De tarieven, het werk en alle aanvragen gaan terug naar het begin. Dit kan niet ongedaan gemaakt worden.')) return;
     try {
-      localStorage.removeItem(OPSLAG_INHOUD);
-      localStorage.removeItem(OPSLAG_AANVRAGEN);
+      localStorage.removeItem(S_INHOUD);
+      localStorage.removeItem(S_AANVRAGEN);
     } catch (err) {}
-    inhoud = inhoudOphalen();
+    inhoud = inhoudLezen();
     aanvragen = [];
     veldenInvullen();
     allesTekenen();
@@ -1094,11 +1164,19 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(.7); curs
     tarievenTekenen();
     veldenInvullen();
 
+    var waarschuwingen = '';
     if (!opslagWerkt) {
-      $('#opslagWaarschuwing').innerHTML = '<div class="waarschuwing">' +
+      waarschuwingen += '<div class="waarschuwing">' +
         'Deze browser bewaart niets (privémodus of geblokkeerde opslag). ' +
         'Je kan alles bekijken en aanpassen, maar het is weg zodra je het venster sluit.</div>';
     }
+    if (!inhoudBestandGevonden) {
+      waarschuwingen += '<div class="waarschuwing">' +
+        'Het bestand inhoud.js staat niet naast deze pagina. Het beheer werkt, ' +
+        'maar begint leeg. Zet inhoud.js in dezelfde map, of gebruik ' +
+        'beheer-compleet.html — daar zit alles al in.</div>';
+    }
+    $('#opslagWaarschuwing').innerHTML = waarschuwingen;
   }
 })();
 </script>
