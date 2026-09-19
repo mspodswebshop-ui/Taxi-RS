@@ -1306,6 +1306,7 @@ var TEKSTVELDEN = [
   ]}
 ];
 </script>
+<script src="opslag.js"></script>
 <script>
 /* ==========================================================================
    Rania Works — gedrag van de pagina
@@ -1490,13 +1491,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
       } else if (video && video.soort === 'bestand') {
         kader = '<div class="work-thumb speelt" data-label="' + veilig(w.formaat || '') + '">' +
-          '<video src="' + veilig(video.bron) + '" controls playsinline preload="metadata"' +
-          (w.beeld ? ' poster="' + veilig(w.beeld) + '"' : '') + '></video></div>';
+          '<video src="' + veilig(video.bron) + '" data-pad="' + veilig(video.bron) + '"' +
+          ' controls playsinline preload="metadata"' +
+          (w.beeld ? ' poster="' + veilig(w.beeld) + '" data-poster="' + veilig(w.beeld) + '"' : '') +
+          '></video></div>';
 
       } else {
         kader = '<div class="work-thumb" data-label="' + veilig(w.formaat || '') + '">' +
           (w.beeld
-            ? '<img src="' + veilig(w.beeld) + '" alt="Beeld uit: ' + veilig(w.titel) + '">'
+            ? '<img src="' + veilig(w.beeld) + '" data-pad="' + veilig(w.beeld) + '" alt="Beeld uit: ' + veilig(w.titel) + '">'
             : '<span class="play" aria-hidden="true">▶</span>') +
           '</div>';
       }
@@ -1513,6 +1516,25 @@ document.addEventListener('DOMContentLoaded', function () {
         ? '<a class="work-card reveal" href="' + veilig(video.bron) + '" target="_blank" rel="noopener">' + kader + tekst + '</a>'
         : '<article class="work-card reveal">' + kader + tekst + '</article>';
     }).join('');
+
+    eigenBestandenTonen(grid);
+  }
+
+  /* Wat je in het beheer uploadde, staat in de browser van dat toestel.
+     Vinden we daar niets, dan blijft het pad staan zoals het er is — en dat
+     werkt zodra het bestand echt naast de pagina staat, op je hosting. */
+  function eigenBestandenTonen(waar) {
+    if (typeof bestandOphalen !== 'function') return;
+
+    Array.prototype.forEach.call(waar.querySelectorAll('[data-pad], [data-poster]'), function (el) {
+      [['data-pad', 'src'], ['data-poster', 'poster']].forEach(function (paar) {
+        var pad = el.getAttribute(paar[0]);
+        if (!pad || !eigenBestand(pad)) return;
+        bestandOphalen(pad).then(function (blob) {
+          if (blob) el.setAttribute(paar[1], URL.createObjectURL(blob));
+        });
+      });
+    });
   }
 
   /* ---------- De diensten ---------- */

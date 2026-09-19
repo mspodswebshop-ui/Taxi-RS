@@ -130,6 +130,14 @@ td.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
 
 .rij-acties { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
 
+/* Alles wat je kan aantikken om het te wijzigen. */
+.klikbaar { cursor: pointer; transition: background .2s ease, border-color .2s ease; }
+.paneel.klikbaar:hover { border-color: rgba(168, 85, 247, .4); }
+tr.klikbaar:hover td { background: rgba(255, 255, 255, .03); }
+.rij { padding: 16px 12px 16px 0; border-bottom: 1px solid var(--line); border-radius: 8px; }
+.rij:hover { background: rgba(255, 255, 255, .03); }
+.klikbaar:focus-visible { outline: 2px solid var(--purple); outline-offset: 2px; }
+
 .leeg { text-align: center; color: var(--muted); padding: 44px 20px; }
 .leeg strong { display: block; color: var(--text); font-size: 16px; margin-bottom: 6px; }
 
@@ -161,6 +169,10 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(.7); curs
 .veld-rij { display: grid; gap: 16px; grid-template-columns: 1fr 1fr; }
 .vink { display: flex; align-items: center; gap: 10px; font-size: 14px; }
 .vink input { width: 18px; height: 18px; accent-color: var(--purple); padding: 0; }
+.bestandveld { display: flex; gap: 8px; align-items: stretch; }
+.bestandveld input[type="text"] { flex: 1; min-width: 0; }
+.bestandknop { cursor: pointer; white-space: nowrap; padding: 11px 16px; font-size: 14px; }
+@media (max-width: 560px) { .bestandveld { flex-direction: column; } }
 .hulp { color: var(--faint); font-size: 12.5px; margin-top: 6px; overflow-wrap: anywhere; }
 
 /* ---------- Venster ---------- */
@@ -339,6 +351,7 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(.7); curs
         <button class="btn btn-p" data-nieuw="werk">Voorbeeld toevoegen</button>
       </div>
       <div id="werkLijst"></div>
+      <div id="bestandLijst"></div>
     </section>
 
     <!-- ---------- Tarieven ---------- -->
@@ -490,6 +503,7 @@ window.addEventListener('error', function (e) {
 });
 </script>
 <script src="inhoud.js"></script>
+<script src="opslag.js"></script>
 <script src="sitebestanden.js"></script>
 <script>
 /* ==========================================================================
@@ -725,7 +739,7 @@ window.addEventListener('error', function (e) {
 
   function tabelVan(lijst, metActies) {
     var rijen = lijst.map(function (a) {
-      return '<tr>' +
+      return '<tr' + (metActies ? ' class="klikbaar" data-open="aanvraag:' + esc(a.id) + '"' : '') + '>' +
         '<td class="num" data-label="Datum"><div class="cel">' + esc(datumKort(a.datum)) + '</div></td>' +
         '<td data-label="Klant"><div class="cel"><strong>' + esc(a.naam || '—') + '</strong>' +
           (a.bedrijf ? '<br><span style="color:var(--faint);font-size:13px">' + esc(a.bedrijf) + '</span>' : '') +
@@ -772,7 +786,7 @@ window.addEventListener('error', function (e) {
     }
 
     $('#werkLijst').innerHTML = lijst.map(function (w, i) {
-      return '<div class="paneel">' +
+      return '<div class="paneel klikbaar" data-open="werk:' + i + '" tabindex="0" role="button">' +
         '<div class="kop" style="margin-bottom:12px">' +
           '<div><h3>' + esc(w.titel || 'Zonder titel') + '</h3>' +
           '<p style="color:var(--muted);font-size:13.5px;margin-top:6px">' + esc(w.omschrijving || '') + '</p></div>' +
@@ -802,7 +816,7 @@ window.addEventListener('error', function (e) {
     }
 
     $('#dienstLijst').innerHTML = lijst.map(function (d, i) {
-      return '<div class="paneel">' +
+      return '<div class="paneel klikbaar" data-open="dienst:' + i + '" tabindex="0" role="button">' +
         '<div class="kop" style="margin-bottom:12px">' +
           '<div><h3>' + esc(d.titel || 'Zonder titel') + '</h3>' +
           '<p style="color:var(--muted);font-size:13.5px;margin-top:6px">' + esc(d.tekst || '') + '</p></div>' +
@@ -851,7 +865,7 @@ window.addEventListener('error', function (e) {
     }
 
     $('#stapLijst').innerHTML = '<div class="paneel">' + lijst.map(function (st, i) {
-      return '<div style="padding:16px 0;border-bottom:1px solid var(--line)">' +
+      return '<div class="klikbaar rij" data-open="stap:' + i + '" tabindex="0" role="button">' +
         '<div class="kop" style="margin-bottom:0">' +
           '<div><h3 style="font-size:16px">' + ('0' + (i + 1)).slice(-2) + ' · ' + esc(st.titel) + '</h3>' +
           '<p style="color:var(--muted);font-size:13.5px;margin-top:6px">' + esc(st.tekst || '') + '</p></div>' +
@@ -893,7 +907,7 @@ window.addEventListener('error', function (e) {
     }
 
     $('#faqLijstBeheer').innerHTML = '<div class="paneel">' + lijst.map(function (v, i) {
-      return '<div style="padding:16px 0;border-bottom:1px solid var(--line)">' +
+      return '<div class="klikbaar rij" data-open="vraag:' + i + '" tabindex="0" role="button">' +
         '<div class="kop" style="margin-bottom:0">' +
           '<div><h3 style="font-size:16px">' + esc(v.vraag) + '</h3>' +
           '<p style="color:var(--muted);font-size:13.5px;margin-top:6px">' + esc(v.antwoord || '') + '</p></div>' +
@@ -937,7 +951,7 @@ window.addEventListener('error', function (e) {
     $('#tariefLijst').innerHTML = '<div class="paneel"><div class="tabel-wrap"><table>' +
       '<thead><tr><th>Label</th><th>Lengte in het bericht</th><th>Prijs</th><th>Uitgelicht</th><th></th></tr></thead><tbody>' +
       lijst.map(function (t, i) {
-        return '<tr>' +
+        return '<tr class="klikbaar" data-open="tarief:' + i + '">' +
           '<td data-label="Label"><div class="cel"><strong>' + esc(t.kort || '') + '</strong></div></td>' +
           '<td data-label="Lengte"><div class="cel">' + esc(t.lengte || '') + '<br><span style="color:var(--faint);font-size:13px">' + esc(t.voor || '') + '</span></div></td>' +
           '<td class="num" data-label="Prijs"><div class="cel">' + esc(t.prijs || '') + '</div></td>' +
@@ -1002,6 +1016,13 @@ window.addEventListener('error', function (e) {
       invoer = '<select id="' + naam + '" name="' + naam + '">' + STATUSSEN.map(function (s) {
         return '<option' + (s === waarde ? ' selected' : '') + '>' + s + '</option>';
       }).join('') + '</select>';
+    } else if (soort === 'bestand') {
+      invoer = '<div class="bestandveld">' +
+        '<input id="' + naam + '" type="text" name="' + naam + '" value="' + v + '" placeholder="Plak een link, of kies een bestand">' +
+        '<label class="btn btn-g bestandknop">Bestand kiezen' +
+          '<input type="file" data-doel="' + naam + '" accept="video/*,image/*" hidden>' +
+        '</label>' +
+      '</div>';
     } else if (soort === 'vink') {
       invoer = '<label class="vink"><input type="checkbox" name="' + naam + '"' + (waarde ? ' checked' : '') + '> ' + esc(label) + '</label>';
       return '<div class="veld">' + invoer + (hulp ? '<p class="hulp">' + esc(hulp) + '</p>' : '') + '</div>';
@@ -1075,10 +1096,11 @@ window.addEventListener('error', function (e) {
       veld('titel', 'Titel', w.titel) +
       veld('omschrijving', 'Omschrijving', w.omschrijving, 'tekstvak') +
       veld('formaat', 'Formaat', w.formaat, 'text', 'Het labeltje op het beeld, bv. 9:16 of 16:9.') +
-      veld('link', 'De video', w.link, 'text',
-'Plak hier een YouTube- of Vimeo-link: die speelt dan af op de site zelf. Of de naam van je eigen videobestand, bv. werk/reel.mp4 — zet dat bestand dan in een map werk/ naast je site. Een link van Instagram of TikTok kan ook, maar die maakt de kaart enkel aanklikbaar.') +
-      veld('beeld', 'Afbeelding erbij', w.beeld, 'text',
-           'Het beeld dat je ziet vóór het afspelen, of gewoon een foto als je geen video hebt. Leeg laten mag.'),
+      veld('link', 'De video', w.link, 'bestand',
+           'Kies een videobestand van je toestel, of plak een YouTube- of Vimeo-link. ' +
+           'Een bestand wordt in je browser bewaard en gaat mee in de zip die je downloadt.') +
+      veld('beeld', 'Afbeelding erbij', w.beeld, 'bestand',
+           'Het beeld dat je ziet vóór het afspelen, of gewoon een foto als je geen video hebt.'),
 
       function (v) {
         if (!v.titel) { melding('Een titel is nodig.'); return false; }
@@ -1123,13 +1145,87 @@ window.addEventListener('error', function (e) {
   }
 
   /* ======================================================================
+     Bestanden van je toestel
+     ====================================================================== */
+  document.addEventListener('change', function (e) {
+    var kiezer = e.target.closest('input[type="file"][data-doel]');
+    if (!kiezer || !kiezer.files || !kiezer.files[0]) return;
+
+    var bestand = kiezer.files[0];
+    var doel = document.getElementById(kiezer.getAttribute('data-doel'));
+    var pad = veiligePadnaam(bestand.name);
+
+    melding('Bezig met bewaren…');
+    bestandOpslaan(pad, bestand).then(function () {
+      if (doel) doel.value = pad;
+      melding(bestand.name + ' bewaard (' + grootteInTekst(bestand.size) + ').');
+      bestandenTekenen();
+    }, function (fout) {
+      melding('Bewaren lukte niet: ' + ((fout && fout.message) || 'onbekende fout'));
+    });
+
+    kiezer.value = '';
+  });
+
+  /* Het lijstje met wat er op dit toestel staat. */
+  function bestandenTekenen() {
+    var vak = $('#bestandLijst');
+    if (!vak || typeof bestandenLijst !== 'function') return;
+
+    bestandenLijst().then(function (lijst) {
+      if (!lijst.length) {
+        vak.innerHTML = '<div class="paneel"><h3>Bestanden op dit toestel</h3>' +
+          '<p class="uitleg">Nog niets geüpload. Kies bij een voorbeeld een video of foto ' +
+          'van je toestel; die komt hier te staan.</p></div>';
+        return;
+      }
+
+      var totaal = lijst.reduce(function (n, b) { return n + b.grootte; }, 0);
+      vak.innerHTML = '<div class="paneel"><h3>Bestanden op dit toestel</h3>' +
+        '<p class="uitleg">Samen ' + esc(grootteInTekst(totaal)) + '. Ze staan in de browser van ' +
+        'dit toestel en gaan mee in de zip die je bij Instellingen downloadt.</p>' +
+        '<div class="tabel-wrap"><table><thead><tr><th>Bestand</th><th>Grootte</th><th></th></tr></thead><tbody>' +
+        lijst.map(function (b) {
+          return '<tr>' +
+            '<td data-label="Bestand"><div class="cel">' + esc(b.pad) + '</div></td>' +
+            '<td class="num" data-label="Grootte"><div class="cel">' + esc(grootteInTekst(b.grootte)) + '</div></td>' +
+            '<td class="acties"><div class="rij-acties">' +
+              '<button class="btn btn-weg btn-klein" data-bestandweg="' + esc(b.pad) + '">Wis</button>' +
+            '</div></td></tr>';
+        }).join('') +
+        '</tbody></table></div></div>';
+    });
+  }
+
+  /* ======================================================================
      Klikken opvangen
      ====================================================================== */
   document.addEventListener('click', function (e) {
-    var el = e.target.closest('[data-nieuw],[data-wijzig],[data-verwijder],[data-werkwijzig],[data-werkweg],[data-op],[data-neer],[data-tarwijzig],[data-tarweg],[data-top],[data-tneer],[data-dwijzig],[data-dweg],[data-dop],[data-dneer],[data-vwijzig],[data-vweg],[data-vop],[data-vneer],[data-swijzig],[data-sweg],[data-sop],[data-sneer]');
+    var el = e.target.closest('[data-nieuw],[data-wijzig],[data-verwijder],[data-werkwijzig],[data-werkweg],[data-op],[data-neer],[data-tarwijzig],[data-tarweg],[data-top],[data-tneer],[data-dwijzig],[data-dweg],[data-dop],[data-dneer],[data-vwijzig],[data-vweg],[data-vop],[data-vneer],[data-swijzig],[data-sweg],[data-sop],[data-sneer],[data-bestandweg],[data-open]');
     if (!el) return;
 
+    /* Tikte je op een knop of een link binnen een aanklikbare rij, dan telt
+       die knop, niet de rij. */
+    var interactief = e.target.closest('button, a');
+    if (interactief && interactief !== el && el.hasAttribute('data-open')) return;
+
     var g = function (n) { return el.getAttribute(n); };
+
+    if (g('data-open')) {
+      var stukken = g('data-open').split(':');
+      var wat = stukken[0], welke = stukken.slice(1).join(':');
+      if (wat === 'werk') return werkVenster(Number(welke));
+      if (wat === 'dienst') return dienstVenster(Number(welke));
+      if (wat === 'stap') return stapVenster(Number(welke));
+      if (wat === 'vraag') return vraagVenster(Number(welke));
+      if (wat === 'tarief') return tariefVenster(Number(welke));
+      if (wat === 'aanvraag') {
+        var gevonden = aanvragen.find(function (x) { return x.id === welke; });
+        if (gevonden) aanvraagVenster(gevonden);
+        return;
+      }
+      return;
+    }
 
     if (g('data-nieuw') === 'aanvraag') return aanvraagVenster(null);
     if (g('data-nieuw') === 'werk') return werkVenster(null);
@@ -1151,6 +1247,17 @@ window.addEventListener('error', function (e) {
         bewaarAanvragen();
         allesTekenen();
         melding('Aanvraag verwijderd.');
+      }
+      return;
+    }
+
+    if (g('data-bestandweg')) {
+      var pad = g('data-bestandweg');
+      if (confirm('Het bestand "' + pad + '" van dit toestel wissen? Het verdwijnt dan ook van je site.')) {
+        bestandWissen(pad).then(function () {
+          melding('Bestand gewist.');
+          bestandenTekenen();
+        });
       }
       return;
     }
@@ -1234,6 +1341,15 @@ window.addEventListener('error', function (e) {
       verplaats(inhoud.werkwijze, sk, g('data-sop') ? sk - 1 : sk + 1);
       bewaarInhoud(); allesTekenen();
     }
+  });
+
+  /* Enter of spatie op een aanklikbare kaart doet hetzelfde als een tik. */
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    var el = e.target.closest('[data-open]');
+    if (!el || e.target.closest('button, a')) return;
+    e.preventDefault();
+    el.click();
   });
 
   function verplaats(lijst, van, naar) {
@@ -1374,7 +1490,7 @@ window.addEventListener('error', function (e) {
     var delen = [], centraal = [], plek = 0;
 
     bestanden.forEach(function (b) {
-      var data = enc.encode(b.tekst);
+      var data = b.bytes ? b.bytes : enc.encode(b.tekst);
       var naam = enc.encode(b.naam);
       var som = crc32(data);
 
@@ -1472,11 +1588,30 @@ window.addEventListener('error', function (e) {
     mee.push({ naam: 'inhoud.js', tekst: inhoudBestandMaken() });
     mee.push({ naam: 'LEESMIJ.txt', tekst: leesmij });
 
-    var zip = zipMaken(mee);
+    melding('Bezig met inpakken…');
 
+    /* De video's en foto's die je uploadde gaan mee, elk op hun eigen pad. */
+    bestandenLijst().then(function (lijst) {
+      return Promise.all(lijst.map(function (b) {
+        return bestandOphalen(b.pad).then(function (blob) {
+          if (!blob) return null;
+          return blob.arrayBuffer().then(function (buffer) {
+            return { naam: b.pad, bytes: new Uint8Array(buffer) };
+          });
+        });
+      }));
+    }).then(function (extra) {
+      zipAfronden(mee.concat(extra.filter(Boolean)));
+    }, function () {
+      zipAfronden(mee);
+    });
+  });
+
+  function zipAfronden(alles) {
+    var zip = zipMaken(alles);
     bestandBewaren('rania-works-site-' + vandaagISO() + '.zip', zip);
     if (!viewerBewaart()) melding('Je site is gedownload.');
-  });
+  }
 
   /* ---------- Kopie opslaan en terugzetten ---------- */
   $('#uitvoer').addEventListener('click', function () {
@@ -1533,6 +1668,7 @@ window.addEventListener('error', function (e) {
     overzichtTekenen();
     aanvragenTekenen();
     werkTekenen();
+    bestandenTekenen();
     dienstenTekenen();
     stappenTekenen();
     tekstenTekenen();

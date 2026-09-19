@@ -16,6 +16,7 @@ geen server. De site telt zeven pagina's, met een hamburgermenu.
 | `delen/*.html` | de stukken waaruit de pagina's zijn opgebouwd |
 | `styles.css` | de vormgeving |
 | `script.js` | het gedrag |
+| `opslag.js` | bewaart de geüploade video's en foto's in de browser |
 | `beheer.html` | de beheerpagina |
 
 ### Wat `bouw.py` daaruit maakt
@@ -174,28 +175,37 @@ opgeslagen en niets naar een server gestuurd.
 
 ## Een video toevoegen
 
-In het beheer, bij **Werk → Voorbeeld toevoegen**. Er zijn drie manieren, en
-de site kiest zelf wat ze met je adres doet:
+In het beheer, bij **Werk**. Klik op een voorbeeld (de hele kaart is
+aanklikbaar) of op *Voorbeeld toevoegen*. Bij **De video** heb je twee wegen:
 
-| Wat je invult bij "De video" | Wat de bezoeker ziet |
+**1. Een bestand van je toestel.** Druk op *Bestand kiezen* en neem je video of
+foto. Die wordt bewaard in je browser en speelt meteen af op de site. Bij Werk
+zie je onderaan alles wat je zo hebt geüpload, met de grootte erbij.
+
+**2. Een link plakken.** Een YouTube-, Shorts- of Vimeo-link speelt af op de
+site zelf. Een link van Instagram of TikTok maakt de kaart aanklikbaar en opent
+daar — die diensten laten insluiten niet toe.
+
+| Wat er in het veld staat | Wat de bezoeker ziet |
 |---|---|
-| `https://youtu.be/xxxx` of een YouTube-, Shorts- of Vimeo-link | de video speelt **op de site zelf** |
-| `werk/reel.mp4` (je eigen bestand) | de video speelt op de site, met je eigen speler |
-| een Instagram- of TikTok-link | de kaart wordt aanklikbaar en opent daar |
-| niets | een paars vlak, of je afbeelding als je er een invult |
+| `werk/reel.mp4` (geüpload bestand) | de video speelt af op je site |
+| een YouTube-, Shorts- of Vimeo-link | de video speelt af op je site |
+| een Instagram- of TikTok-link | de kaart opent daar |
+| niets | een paars vlak, of je foto als je er een koos |
 
-**Je eigen videobestand gebruiken.** Zet het bestand in een map `werk/` naast
-`index.html`, en vul dan `werk/reel.mp4` in. Die map gaat mee als je je site op
-je hosting zet. Let op het gewicht: een video van 50 MB laadt traag op mobiel
-internet. Voor langere video's is een YouTube- of Vimeo-link bijna altijd
-beter — die zorgen zelf voor een vlotte weergave.
+### Waar staan die bestanden?
 
-De andere velden:
+In je browser, op dat ene toestel — niet op een server. Ze gaan **mee in de zip**
+die je bij Instellingen downloadt, in een map `werk/`. Zet je die bestanden op
+je hosting, dan ziet iedereen ze.
 
-- **titel** en **omschrijving** — wat onder het beeld komt
-- **formaat** — het labeltje op het beeld, bv. `9:16` of `16:9`
-- **afbeelding erbij** — het beeld dat je ziet vóór het afspelen, of gewoon een
-  foto als je geen video hebt
+Drie dingen om te weten:
+
+- Wis je je browsergegevens, dan zijn ze weg. De zip is je back-up.
+- Op een ander toestel staan ze niet; ook de kopie bij *Kopie opslaan* bevat
+  ze niet (die is enkel tekst).
+- Een video van 50 MB laadt traag op mobiel internet. Voor langere video's is
+  een YouTube- of Vimeo-link bijna altijd beter.
 
 ---
 
