@@ -233,6 +233,7 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(.7); curs
     <button class="zij-knop" data-blad="werk">Werk <span class="tel" id="telWerk">0</span></button>
     <button class="zij-knop" data-blad="tarieven">Tarieven <span class="tel" id="telTarieven">0</span></button>
     <button class="zij-knop" data-blad="diensten">Diensten <span class="tel" id="telDiensten">0</span></button>
+    <button class="zij-knop" data-blad="werkwijze">Werkwijze <span class="tel" id="telWerkwijze">0</span></button>
     <button class="zij-knop" data-blad="faq">Vragen <span class="tel" id="telFaq">0</span></button>
     <button class="zij-knop" data-blad="teksten">Teksten</button>
     <button class="zij-knop" data-blad="instellingen">Instellingen</button>
@@ -324,6 +325,18 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(.7); curs
       <div id="dienstLijst"></div>
     </section>
 
+    <!-- ---------- Werkwijze ---------- -->
+    <section data-paneel="werkwijze" hidden>
+      <div class="kop">
+        <div>
+          <h2>Werkwijze</h2>
+          <p>De stappen onder "Van appje tot afgewerkte video". De nummers zet de site er zelf bij.</p>
+        </div>
+        <button class="btn btn-p" data-nieuw="stap">Stap toevoegen</button>
+      </div>
+      <div id="stapLijst"></div>
+    </section>
+
     <!-- ---------- Vragen ---------- -->
     <section data-paneel="faq" hidden>
       <div class="kop">
@@ -341,32 +354,11 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(.7); curs
       <div class="kop">
         <div>
           <h2>Teksten</h2>
-          <p>De losse stukken tekst die je vaak wil bijsturen.</p>
+          <p>Alles wat er op de site staat. Wat je tussen *sterretjes* zet, wordt paars en cursief.</p>
         </div>
+        <button class="btn btn-p" id="tekstenBewaren">Alles opslaan</button>
       </div>
-
-      <form class="paneel" id="tekstForm">
-        <div class="veld">
-          <label for="tTitel">Grote titel</label>
-          <textarea id="tTitel" rows="2"></textarea>
-          <p class="hulp">Wat je tussen *sterretjes* zet, wordt paars en cursief.</p>
-        </div>
-        <div class="veld">
-          <label for="tLead">Tekst onder de titel</label>
-          <textarea id="tLead" rows="4"></textarea>
-        </div>
-        <div class="veld-rij">
-          <div class="veld">
-            <label for="tLevering">Levertijd</label>
-            <input id="tLevering" type="text" placeholder="2–5 dagen">
-          </div>
-          <div class="veld">
-            <label for="tRevisies">Revisies</label>
-            <input id="tRevisies" type="text" placeholder="Inbegrepen">
-          </div>
-        </div>
-        <button class="btn btn-p" type="submit">Opslaan</button>
-      </form>
+      <div id="tekstVelden"></div>
     </section>
 
     <!-- ---------- Instellingen ---------- -->
@@ -374,7 +366,7 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(.7); curs
       <div class="kop">
         <div>
           <h2>Instellingen</h2>
-          <p>Nummer, toegangscode en je gegevens.</p>
+          <p>Je nummer, je site downloaden en een kopie van je gegevens.</p>
         </div>
       </div>
 
@@ -394,6 +386,23 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(.7); curs
         </div>
         <button class="btn btn-p" type="submit">Opslaan</button>
       </form>
+
+      <div class="paneel">
+        <h3>Je site downloaden</h3>
+        <p class="uitleg">
+          Alles wat je hier aanpast, staat in je browser. Om het ook online te
+          krijgen, download je de site met jouw wijzigingen erin en zet je die
+          bestanden op je webhosting.
+        </p>
+        <div class="venster-voet" style="justify-content:flex-start">
+          <button class="btn btn-p" id="zipKnop">Download de site (zip)</button>
+          <button class="btn btn-g" id="inhoudKnop">Alleen inhoud.js</button>
+        </div>
+        <p class="hulp" style="margin-top:14px">
+          Staat je site al online? Dan volstaat het om enkel <strong>inhoud.js</strong>
+          te vervangen — de rest blijft gelijk.
+        </p>
+      </div>
 
       <div class="paneel">
         <h3>Je gegevens</h3>
@@ -441,6 +450,7 @@ window.addEventListener('error', function (e) {
 });
 </script>
 <script src="inhoud.js"></script>
+<script src="sitebestanden.js"></script>
 <script>
 /* ==========================================================================
    Beheer — alle gedrag
@@ -595,6 +605,7 @@ window.addEventListener('error', function (e) {
     $('#telTarieven').textContent = (inhoud.tarieven || []).length;
     $('#telDiensten').textContent = (inhoud.diensten || []).length;
     $('#telFaq').textContent = (inhoud.faq || []).length;
+    $('#telWerkwijze').textContent = (inhoud.werkwijze || []).length;
   }
 
   /* ======================================================================
@@ -785,6 +796,48 @@ window.addEventListener('error', function (e) {
         if (bestaat) inhoud.diensten[index] = rij; else inhoud.diensten.push(rij);
         bewaarInhoud();
         melding('Diensten bijgewerkt.');
+      });
+  }
+
+  /* ======================================================================
+     Werkwijze
+     ====================================================================== */
+  function stappenTekenen() {
+    var lijst = inhoud.werkwijze || [];
+    if (!lijst.length) {
+      $('#stapLijst').innerHTML = '<div class="paneel"><div class="leeg">' +
+        '<strong>Nog geen stappen</strong>Zonder stappen blijft dat stuk van de site leeg.</div></div>';
+      return;
+    }
+
+    $('#stapLijst').innerHTML = '<div class="paneel">' + lijst.map(function (st, i) {
+      return '<div style="padding:16px 0;border-bottom:1px solid var(--line)">' +
+        '<div class="kop" style="margin-bottom:0">' +
+          '<div><h3 style="font-size:16px">' + ('0' + (i + 1)).slice(-2) + ' · ' + esc(st.titel) + '</h3>' +
+          '<p style="color:var(--muted);font-size:13.5px;margin-top:6px">' + esc(st.tekst || '') + '</p></div>' +
+          '<div class="rij-acties">' +
+            '<button class="btn btn-g btn-klein" data-sop="' + i + '"' + (i === 0 ? ' disabled' : '') + '>↑</button>' +
+            '<button class="btn btn-g btn-klein" data-sneer="' + i + '"' + (i === lijst.length - 1 ? ' disabled' : '') + '>↓</button>' +
+            '<button class="btn btn-g btn-klein" data-swijzig="' + i + '">Wijzig</button>' +
+            '<button class="btn btn-weg btn-klein" data-sweg="' + i + '">Wis</button>' +
+          '</div>' +
+        '</div></div>';
+    }).join('') + '</div>';
+  }
+
+  function stapVenster(index) {
+    var bestaat = typeof index === 'number';
+    var st = bestaat ? inhoud.werkwijze[index] : { titel: '', tekst: '' };
+
+    vensterOpen(bestaat ? 'Stap wijzigen' : 'Stap toevoegen',
+      veld('titel', 'Titel van de stap', st.titel) +
+      veld('tekst', 'Uitleg', st.tekst, 'tekstvak'),
+      function (w) {
+        if (!w.titel) { melding('Een titel is nodig.'); return false; }
+        if (!inhoud.werkwijze) inhoud.werkwijze = [];
+        if (bestaat) inhoud.werkwijze[index] = w; else inhoud.werkwijze.push(w);
+        bewaarInhoud();
+        melding('Werkwijze bijgewerkt.');
       });
   }
 
@@ -1031,7 +1084,7 @@ window.addEventListener('error', function (e) {
      Klikken opvangen
      ====================================================================== */
   document.addEventListener('click', function (e) {
-    var el = e.target.closest('[data-nieuw],[data-wijzig],[data-verwijder],[data-werkwijzig],[data-werkweg],[data-op],[data-neer],[data-tarwijzig],[data-tarweg],[data-top],[data-tneer],[data-dwijzig],[data-dweg],[data-dop],[data-dneer],[data-vwijzig],[data-vweg],[data-vop],[data-vneer]');
+    var el = e.target.closest('[data-nieuw],[data-wijzig],[data-verwijder],[data-werkwijzig],[data-werkweg],[data-op],[data-neer],[data-tarwijzig],[data-tarweg],[data-top],[data-tneer],[data-dwijzig],[data-dweg],[data-dop],[data-dneer],[data-vwijzig],[data-vweg],[data-vop],[data-vneer],[data-swijzig],[data-sweg],[data-sop],[data-sneer]');
     if (!el) return;
 
     var g = function (n) { return el.getAttribute(n); };
@@ -1041,6 +1094,7 @@ window.addEventListener('error', function (e) {
     if (g('data-nieuw') === 'tarief') return tariefVenster(null);
     if (g('data-nieuw') === 'dienst') return dienstVenster(null);
     if (g('data-nieuw') === 'vraag') return vraagVenster(null);
+    if (g('data-nieuw') === 'stap') return stapVenster(null);
 
     if (g('data-wijzig')) {
       var a = aanvragen.find(function (x) { return x.id === g('data-wijzig'); });
@@ -1121,6 +1175,22 @@ window.addEventListener('error', function (e) {
       var vk = Number(g('data-vop') || g('data-vneer'));
       verplaats(inhoud.faq, vk, g('data-vop') ? vk - 1 : vk + 1);
       bewaarInhoud(); allesTekenen();
+      return;
+    }
+
+    if (g('data-swijzig')) return stapVenster(Number(g('data-swijzig')));
+    if (g('data-sweg')) {
+      var si = Number(g('data-sweg'));
+      if (confirm('De stap "' + (inhoud.werkwijze[si].titel || '') + '" verwijderen?')) {
+        inhoud.werkwijze.splice(si, 1);
+        bewaarInhoud(); allesTekenen(); melding('Stap verwijderd.');
+      }
+      return;
+    }
+    if (g('data-sop') || g('data-sneer')) {
+      var sk = Number(g('data-sop') || g('data-sneer'));
+      verplaats(inhoud.werkwijze, sk, g('data-sop') ? sk - 1 : sk + 1);
+      bewaarInhoud(); allesTekenen();
     }
   });
 
@@ -1133,13 +1203,42 @@ window.addEventListener('error', function (e) {
   /* ======================================================================
      Teksten en instellingen
      ====================================================================== */
-  $('#tekstForm').addEventListener('submit', function (e) {
-    e.preventDefault();
-    inhoud.teksten.titel = $('#tTitel').value.trim() || BASIS.teksten.titel;
-    inhoud.teksten.lead = $('#tLead').value.trim() || BASIS.teksten.lead;
-    inhoud.teksten.levering = $('#tLevering').value.trim() || BASIS.teksten.levering;
-    inhoud.teksten.revisies = $('#tRevisies').value.trim() || BASIS.teksten.revisies;
+  /* Alle teksten, gegroepeerd zoals ze op de site staan. */
+  var GROEPEN = (typeof TEKSTVELDEN !== 'undefined') ? TEKSTVELDEN : [];
+
+  function tekstenTekenen() {
+    var vak = $('#tekstVelden');
+    if (!vak) return;
+
+    if (!GROEPEN.length) {
+      vak.innerHTML = '<div class="paneel"><div class="leeg"><strong>Geen tekstenlijst</strong>' +
+        'Gebruik beheer-compleet.html — daar zit alles in.</div></div>';
+      return;
+    }
+
+    vak.innerHTML = GROEPEN.map(function (groep) {
+      return '<div class="paneel"><h3>' + esc(groep.groep) + '</h3><div style="margin-top:16px">' +
+        groep.velden.map(function (v) {
+          var sleutel = v[0], label = v[1], soort = v[2];
+          var waarde = esc(inhoud.teksten[sleutel] == null ? '' : inhoud.teksten[sleutel]);
+          return '<div class="veld"><label for="t_' + sleutel + '">' + esc(label) + '</label>' +
+            (soort === 'lang'
+              ? '<textarea id="t_' + sleutel + '" data-sleutel="' + sleutel + '" rows="3">' + waarde + '</textarea>'
+              : '<input id="t_' + sleutel + '" data-sleutel="' + sleutel + '" type="text" value="' + waarde + '">') +
+          '</div>';
+        }).join('') +
+      '</div></div>';
+    }).join('');
+  }
+
+  $('#tekstenBewaren').addEventListener('click', function () {
+    $$('#tekstVelden [data-sleutel]').forEach(function (el) {
+      var sleutel = el.getAttribute('data-sleutel');
+      var waarde = el.value.trim();
+      inhoud.teksten[sleutel] = waarde || BASIS.teksten[sleutel] || '';
+    });
     bewaarInhoud();
+    tekstenTekenen();
     melding('Teksten opgeslagen.');
   });
 
@@ -1151,6 +1250,149 @@ window.addEventListener('error', function (e) {
     inhoud.nummerGetoond = $('#iGetoond').value.trim() || nr;
     bewaarInhoud();
     melding('Nummer opgeslagen.');
+  });
+
+  /* ======================================================================
+     De site downloaden
+     --------------------------------------------------------------------
+     Het beheer draagt de sitebestanden bij zich (sitebestanden.js). Samen
+     met jouw inhoud maken we daar hier een zip van, zodat je die zo op je
+     webhosting kan zetten.
+     ====================================================================== */
+
+  /* Een inhoud.js met alles wat je hebt aangepast. */
+  function inhoudBestandMaken() {
+    var staart = (typeof SITEBESTANDEN !== 'undefined' && SITEBESTANDEN['inhoud-staart.js']) || '';
+    var datum = new Date().toLocaleDateString('nl-BE');
+    return '/* Rania Works - de inhoud van de site.\n' +
+           '   Opgeslagen vanuit het beheer op ' + datum + '.\n' +
+           '   Wil je iets veranderen? Doe dat in het beheer en download opnieuw. */\n\n' +
+           'var STANDAARD_INHOUD = ' + JSON.stringify(inhoud, null, 2) + ';\n\n' + staart;
+  }
+
+  function bestandBewaren(naam, data, soort) {
+    var blob = (data instanceof Blob) ? data : new Blob([data], { type: soort || 'text/plain;charset=utf-8' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = naam;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 1500);
+  }
+
+  /* --- Een zip in elkaar zetten, zonder hulpbibliotheek. --------------- */
+  var crcTabel = (function () {
+    var t = new Uint32Array(256);
+    for (var n = 0; n < 256; n++) {
+      var c = n;
+      for (var k = 0; k < 8; k++) c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
+      t[n] = c >>> 0;
+    }
+    return t;
+  })();
+
+  function crc32(bytes) {
+    var c = 0xFFFFFFFF;
+    for (var i = 0; i < bytes.length; i++) c = crcTabel[(c ^ bytes[i]) & 0xFF] ^ (c >>> 8);
+    return (c ^ 0xFFFFFFFF) >>> 0;
+  }
+
+  function zipMaken(bestanden) {
+    var enc = new TextEncoder();
+    var nu = new Date();
+    var tijd = (nu.getHours() << 11) | (nu.getMinutes() << 5) | (nu.getSeconds() >> 1);
+    var datum = ((nu.getFullYear() - 1980) << 9) | ((nu.getMonth() + 1) << 5) | nu.getDate();
+
+    var delen = [], centraal = [], plek = 0;
+
+    bestanden.forEach(function (b) {
+      var data = enc.encode(b.tekst);
+      var naam = enc.encode(b.naam);
+      var som = crc32(data);
+
+      var kop = new Uint8Array(30 + naam.length);
+      var k = new DataView(kop.buffer);
+      k.setUint32(0, 0x04034b50, true);
+      k.setUint16(4, 20, true);
+      k.setUint16(6, 0x0800, true);   /* namen in UTF-8 */
+      k.setUint16(8, 0, true);        /* geen compressie */
+      k.setUint16(10, tijd, true);
+      k.setUint16(12, datum, true);
+      k.setUint32(14, som, true);
+      k.setUint32(18, data.length, true);
+      k.setUint32(22, data.length, true);
+      k.setUint16(26, naam.length, true);
+      kop.set(naam, 30);
+      delen.push(kop, data);
+
+      var c = new Uint8Array(46 + naam.length);
+      var d = new DataView(c.buffer);
+      d.setUint32(0, 0x02014b50, true);
+      d.setUint16(4, 20, true);
+      d.setUint16(6, 20, true);
+      d.setUint16(8, 0x0800, true);
+      d.setUint16(10, 0, true);
+      d.setUint16(12, tijd, true);
+      d.setUint16(14, datum, true);
+      d.setUint32(16, som, true);
+      d.setUint32(20, data.length, true);
+      d.setUint32(24, data.length, true);
+      d.setUint16(28, naam.length, true);
+      d.setUint32(42, plek, true);
+      c.set(naam, 46);
+      centraal.push(c);
+
+      plek += kop.length + data.length;
+    });
+
+    var centraalLengte = centraal.reduce(function (n, c) { return n + c.length; }, 0);
+    var eind = new Uint8Array(22);
+    var e = new DataView(eind.buffer);
+    e.setUint32(0, 0x06054b50, true);
+    e.setUint16(8, bestanden.length, true);
+    e.setUint16(10, bestanden.length, true);
+    e.setUint32(12, centraalLengte, true);
+    e.setUint32(16, plek, true);
+
+    return new Blob(delen.concat(centraal, [eind]), { type: 'application/zip' });
+  }
+
+  $('#inhoudKnop').addEventListener('click', function () {
+    bestandBewaren('inhoud.js', inhoudBestandMaken(), 'text/javascript;charset=utf-8');
+    melding('inhoud.js gedownload.');
+  });
+
+  $('#zipKnop').addEventListener('click', function () {
+    if (typeof SITEBESTANDEN === 'undefined') {
+      melding('De sitebestanden ontbreken — gebruik beheer-compleet.html.');
+      return;
+    }
+
+    var leesmij =
+      'Rania Works - je website\r\n' +
+      '========================\r\n\r\n' +
+      'Deze map is je volledige website, met alles wat je in het beheer hebt\r\n' +
+      'aangepast. Zet de vier bestanden samen op je webhosting, of sleep de map\r\n' +
+      'naar netlify.com/drop.\r\n\r\n' +
+      '  index.html   de pagina\r\n' +
+      '  styles.css   de vormgeving\r\n' +
+      '  script.js    het gedrag\r\n' +
+      '  inhoud.js    jouw teksten, werk, diensten, vragen en tarieven\r\n\r\n' +
+      'Verander je later iets in het beheer? Download dan opnieuw, of vervang\r\n' +
+      'enkel inhoud.js - de rest blijft gelijk.\r\n\r\n' +
+      'Het beheer zelf zit hier bewust niet in: zet dat niet online.\r\n';
+
+    var zip = zipMaken([
+      { naam: 'index.html', tekst: SITEBESTANDEN['index.html'] },
+      { naam: 'styles.css', tekst: SITEBESTANDEN['styles.css'] },
+      { naam: 'script.js', tekst: SITEBESTANDEN['script.js'] },
+      { naam: 'inhoud.js', tekst: inhoudBestandMaken() },
+      { naam: 'LEESMIJ.txt', tekst: leesmij }
+    ]);
+
+    bestandBewaren('rania-works-site-' + vandaagISO() + '.zip', zip);
+    melding('Je site is gedownload.');
   });
 
   /* ---------- Kopie opslaan en terugzetten ---------- */
@@ -1200,10 +1442,6 @@ window.addEventListener('error', function (e) {
   });
 
   function veldenInvullen() {
-    $('#tTitel').value = inhoud.teksten.titel || '';
-    $('#tLead').value = inhoud.teksten.lead;
-    $('#tLevering').value = inhoud.teksten.levering;
-    $('#tRevisies').value = inhoud.teksten.revisies;
     $('#iNummer').value = inhoud.nummer;
     $('#iGetoond').value = inhoud.nummerGetoond;
   }
@@ -1217,6 +1455,8 @@ window.addEventListener('error', function (e) {
     aanvragenTekenen();
     werkTekenen();
     dienstenTekenen();
+    stappenTekenen();
+    tekstenTekenen();
     faqTekenen();
     tarievenTekenen();
     veldenInvullen();

@@ -31,24 +31,52 @@ document.addEventListener('DOMContentLoaded', function () {
      De inhoud op de pagina zetten
      ====================================================================== */
 
-  /* ---------- Losse teksten en het nummer ---------- */
+  /* ---------- Alle teksten en het nummer ---------- */
+
+  /* Wat tussen *sterretjes* staat, wordt paars en cursief. */
+  function metAccent(tekst) {
+    return veilig(tekst).replace(/\*([^*]+)\*/g, '<span class="accent"><em>$1</em></span>');
+  }
+
   function tekstenPlaatsen() {
+    $$('[data-tekst]').forEach(function (el) {
+      var sleutel = el.getAttribute('data-tekst');
+      var waarde = INHOUD.teksten[sleutel];
+      if (waarde == null) return;
+      el.innerHTML = metAccent(waarde);
+    });
+
     var zet = function (id, waarde) {
       var el = document.getElementById(id);
       if (el) el.textContent = waarde;
     };
-    zet('heroLead', INHOUD.teksten.lead);
-
-    /* In de titel wordt alles tussen *sterretjes* paars en cursief. */
-    var titel = document.getElementById('heroTitel');
-    if (titel) {
-      titel.innerHTML = veilig(INHOUD.teksten.titel || '')
-        .replace(/\*([^*]+)\*/g, '<span class="accent"><em>$1</em></span>');
-    }
-    zet('statLevering', INHOUD.teksten.levering);
-    zet('statRevisies', INHOUD.teksten.revisies);
     zet('formNummer', INHOUD.nummerGetoond);
     zet('footerNummer', INHOUD.nummerGetoond);
+
+    /* De lopende band: de woorden twee keer, zodat ze naadloos doorlopen. */
+    var band = document.getElementById('marqueeTrack');
+    if (band) {
+      var woorden = String(INHOUD.teksten.marquee || '').split(',')
+        .map(function (w) { return w.trim(); }).filter(Boolean);
+      var stuk = woorden.map(function (w) {
+        return '<span>' + veilig(w) + '</span><i>✦</i>';
+      }).join('');
+      band.innerHTML = stuk + stuk;
+    }
+  }
+
+  /* ---------- De werkwijze ---------- */
+  function werkwijzePlaatsen() {
+    var lijst = document.getElementById('werkwijzeLijst');
+    if (!lijst) return;
+
+    lijst.innerHTML = (INHOUD.werkwijze || []).map(function (stap, i) {
+      return '<li class="reveal">' +
+        '<span class="step-n">' + ('0' + (i + 1)).slice(-2) + '</span>' +
+        '<h3>' + veilig(stap.titel) + '</h3>' +
+        '<p>' + veilig(stap.tekst || '') + '</p>' +
+      '</li>';
+    }).join('');
   }
 
   /* ---------- Het werk ---------- */
@@ -154,6 +182,7 @@ document.addEventListener('DOMContentLoaded', function () {
   tekstenPlaatsen();
   werkPlaatsen();
   dienstenPlaatsen();
+  werkwijzePlaatsen();
   faqPlaatsen();
   tarievenPlaatsen();
 

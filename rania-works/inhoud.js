@@ -19,14 +19,67 @@ var STANDAARD_INHOUD = {
   /* Hoe het nummer op de site getoond wordt. */
   nummerGetoond: '0473 29 27 39',
 
-  /* Losse teksten die je wil kunnen bijsturen.
-     In de titel wordt alles tussen *sterretjes* paars en cursief. */
+  /* Alle losse teksten van de site.
+     Waar *sterretjes* rond staan, wordt het paars en cursief. */
   teksten: {
+    /* Bovenaan */
+    heroLabel: 'Video-editing studio · België',
     titel: 'Edits die mensen *doen stoppen* met scrollen.',
     lead: 'Ik ben Rania. Jij stuurt je ruwe beelden, ik maak er iets van dat past bij jouw merk of bij jou. Voor bedrijven, voor creators, en voor die ene video die gewoon goed moet zijn.',
+    knopA: 'Vraag een edit aan',
+    knopB: 'Bekijk het werk',
     levering: '2–5 dagen',
-    revisies: 'Inbegrepen'
+    revisies: 'Inbegrepen',
+    boekenVia: 'WhatsApp',
+    marquee: 'Reels, TikTok, Shorts, Promovideo, Aftermovie, Ondertiteling, Color grading, Thumbnails',
+
+    /* Werk */
+    werkLabel: '01 — Werk',
+    werkTitel: 'Een greep uit de edits',
+    werkLead: 'Verticaal voor social, horizontaal voor je website. Zelfde aanpak: strak ritme, nette kleuren, geen ruis.',
+    werkNoot: 'Meer zien? Vraag het gerust — ik stuur je met plezier voorbeelden die bij jouw project passen.',
+
+    /* Diensten */
+    dienstenLabel: '02 — Diensten',
+    dienstenTitel: 'Voor je bedrijf, of gewoon voor jezelf',
+
+    /* Werkwijze */
+    werkwijzeLabel: '03 — Werkwijze',
+    werkwijzeTitel: 'Van appje tot afgewerkte video',
+
+    /* Tarieven */
+    tarievenLabel: '04 — Tarieven',
+    tarievenTitel: 'Prijs per lengte',
+    tarievenLead: 'Je betaalt per lengte van de afgewerkte video. Geen verrassingen achteraf: wat hier staat, is wat het kost.',
+    tarievenNoot: 'Andere lengte nodig — bijvoorbeeld tussen 30 en 60 seconden, of langer dan anderhalve minuut? Stuur je aanvraag door, dan krijg je meteen een prijs.',
+
+    /* Aanvraag */
+    aanvraagLabel: '05 — Aanvraag',
+    aanvraagTitel: 'Vraag je edit aan',
+    aanvraagLead: 'Vul in wat je nodig hebt. Met één klik staat het als volledig bericht klaar in WhatsApp — je hoeft alleen nog op verzenden te duwen.',
+
+    /* Vragen */
+    faqLabel: '06 — FAQ',
+    faqTitel: 'Veelgestelde vragen',
+
+    /* Onderaan */
+    slotTitel: 'Heb je beelden liggen? *Dan maken we er iets van.*',
+    slotKnop: 'Start je aanvraag',
+    voetLijn: 'Video-editing voor bedrijven en particulieren.',
+    voetKlein: 'Antwoord meestal binnen een paar uur.'
   },
+
+  /* De vier stappen onder "Van appje tot afgewerkte video". */
+  werkwijze: [
+    { titel: 'Je stuurt je aanvraag',
+      tekst: 'Via het formulier hieronder. Dat belandt meteen als bericht in mijn WhatsApp, met alles wat ik nodig heb.' },
+    { titel: 'We leggen het vast',
+      tekst: 'Ik bevestig prijs, stijl en deadline. Jij deelt je beelden via WeTransfer, Drive of Dropbox.' },
+    { titel: 'Ik monteer',
+      tekst: 'Je krijgt een eerste versie om te bekijken. Opmerkingen mag je gewoon per tijdstip doorgeven.' },
+    { titel: 'Jij krijgt de bestanden',
+      tekst: 'Afgewerkt, in de juiste formaten per kanaal. Klaar om te posten.' }
+  ],
 
   /* De vier blokken onder "Voor je bedrijf, of gewoon voor jezelf". */
   diensten: [
@@ -147,6 +200,7 @@ function inhoudOphalen() {
     }
     if (Array.isArray(eigen.werk)) basis.werk = eigen.werk;
     if (Array.isArray(eigen.diensten)) basis.diensten = eigen.diensten;
+    if (Array.isArray(eigen.werkwijze)) basis.werkwijze = eigen.werkwijze;
     if (Array.isArray(eigen.faq)) basis.faq = eigen.faq;
     if (Array.isArray(eigen.tarieven) && eigen.tarieven.length) basis.tarieven = eigen.tarieven;
     return basis;
@@ -154,3 +208,53 @@ function inhoudOphalen() {
     return basis;
   }
 }
+
+/* Hoe de teksten in het beheer gegroepeerd en genoemd worden. */
+var TEKSTVELDEN = [
+  { groep: 'Bovenaan', velden: [
+    ['heroLabel', 'Klein labeltje bovenaan', 'kort'],
+    ['titel', 'De grote titel', 'lang'],
+    ['lead', 'Tekst onder de titel', 'lang'],
+    ['knopA', 'Tekst op de paarse knop', 'kort'],
+    ['knopB', 'Tekst op de tweede knop', 'kort'],
+    ['levering', 'Levertijd', 'kort'],
+    ['revisies', 'Revisies', 'kort'],
+    ['boekenVia', 'Boeken via', 'kort'],
+    ['marquee', 'Woorden in de lopende band', 'lang']
+  ]},
+  { groep: 'Werk', velden: [
+    ['werkLabel', 'Labeltje', 'kort'],
+    ['werkTitel', 'Titel', 'kort'],
+    ['werkLead', 'Tekst eronder', 'lang'],
+    ['werkNoot', 'Regel onder de voorbeelden', 'lang']
+  ]},
+  { groep: 'Diensten', velden: [
+    ['dienstenLabel', 'Labeltje', 'kort'],
+    ['dienstenTitel', 'Titel', 'kort']
+  ]},
+  { groep: 'Werkwijze', velden: [
+    ['werkwijzeLabel', 'Labeltje', 'kort'],
+    ['werkwijzeTitel', 'Titel', 'kort']
+  ]},
+  { groep: 'Tarieven', velden: [
+    ['tarievenLabel', 'Labeltje', 'kort'],
+    ['tarievenTitel', 'Titel', 'kort'],
+    ['tarievenLead', 'Tekst eronder', 'lang'],
+    ['tarievenNoot', 'Regel onder de prijzen', 'lang']
+  ]},
+  { groep: 'Aanvraag', velden: [
+    ['aanvraagLabel', 'Labeltje', 'kort'],
+    ['aanvraagTitel', 'Titel', 'kort'],
+    ['aanvraagLead', 'Tekst eronder', 'lang']
+  ]},
+  { groep: 'Vragen', velden: [
+    ['faqLabel', 'Labeltje', 'kort'],
+    ['faqTitel', 'Titel', 'kort']
+  ]},
+  { groep: 'Onderaan', velden: [
+    ['slotTitel', 'Slottitel', 'lang'],
+    ['slotKnop', 'Tekst op de knop', 'kort'],
+    ['voetLijn', 'Regel onder het logo', 'lang'],
+    ['voetKlein', 'Kleine regel bij het nummer', 'kort']
+  ]}
+];

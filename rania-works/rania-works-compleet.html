@@ -717,34 +717,27 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(.7); curs
   <!-- ============ Hero ============ -->
   <section class="hero" id="top">
     <div class="wrap hero-inner">
-      <p class="eyebrow reveal">Video-editing studio · België</p>
+      <p class="eyebrow reveal" data-tekst="heroLabel"></p>
 
-      <h1 class="hero-title reveal" id="heroTitel"></h1>
+      <h1 class="hero-title reveal" data-tekst="titel"></h1>
 
-      <p class="hero-lead reveal" id="heroLead"></p>
+      <p class="hero-lead reveal" data-tekst="lead"></p>
 
       <div class="hero-cta reveal">
-        <a class="btn btn-primary" href="#aanvraag">Vraag een edit aan</a>
-        <a class="btn btn-ghost" href="#werk">Bekijk het werk</a>
+        <a class="btn btn-primary" href="#aanvraag" data-tekst="knopA"></a>
+        <a class="btn btn-ghost" href="#werk" data-tekst="knopB"></a>
       </div>
 
       <dl class="hero-stats reveal">
-        <div><dt>Levering</dt><dd id="statLevering"></dd></div>
-        <div><dt>Revisies</dt><dd id="statRevisies"></dd></div>
-        <div><dt>Boeken via</dt><dd>WhatsApp</dd></div>
+        <div><dt>Levering</dt><dd data-tekst="levering"></dd></div>
+        <div><dt>Revisies</dt><dd data-tekst="revisies"></dd></div>
+        <div><dt>Boeken via</dt><dd data-tekst="boekenVia"></dd></div>
       </dl>
     </div>
 
     <!-- Lopende band met steekwoorden -->
     <div class="marquee" aria-hidden="true">
-      <div class="marquee-track">
-        <span>Reels</span><i>✦</i><span>TikTok</span><i>✦</i><span>Shorts</span><i>✦</i>
-        <span>Promovideo</span><i>✦</i><span>Aftermovie</span><i>✦</i><span>Ondertiteling</span><i>✦</i>
-        <span>Color grading</span><i>✦</i><span>Thumbnails</span><i>✦</i>
-        <span>Reels</span><i>✦</i><span>TikTok</span><i>✦</i><span>Shorts</span><i>✦</i>
-        <span>Promovideo</span><i>✦</i><span>Aftermovie</span><i>✦</i><span>Ondertiteling</span><i>✦</i>
-        <span>Color grading</span><i>✦</i><span>Thumbnails</span><i>✦</i>
-      </div>
+      <div class="marquee-track" id="marqueeTrack"></div>
     </div>
   </section>
 
@@ -752,20 +745,14 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(.7); curs
   <section class="section" id="werk">
     <div class="wrap">
       <header class="section-head reveal">
-        <p class="eyebrow">01 — Werk</p>
-        <h2>Een greep uit de edits</h2>
-        <p class="section-lead">
-          Verticaal voor social, horizontaal voor je website. Zelfde aanpak:
-          strak ritme, nette kleuren, geen ruis.
-        </p>
+        <p class="eyebrow" data-tekst="werkLabel"></p>
+        <h2 data-tekst="werkTitel"></h2>
+        <p class="section-lead" data-tekst="werkLead"></p>
       </header>
 
       <div class="work-grid" id="werkGrid"></div>
 
-      <p class="note reveal">
-        Meer zien? Vraag het gerust — ik stuur je met plezier voorbeelden die bij
-        jouw project passen.
-      </p>
+      <p class="note reveal" data-tekst="werkNoot"></p>
     </div>
   </section>
 
@@ -773,8 +760,8 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(.7); curs
   <section class="section section-alt" id="diensten">
     <div class="wrap">
       <header class="section-head reveal">
-        <p class="eyebrow">02 — Diensten</p>
-        <h2>Voor je bedrijf, of gewoon voor jezelf</h2>
+        <p class="eyebrow" data-tekst="dienstenLabel"></p>
+        <h2 data-tekst="dienstenTitel"></h2>
       </header>
 
       <div class="cards" id="dienstenGrid"></div>
@@ -785,31 +772,11 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(.7); curs
   <section class="section" id="werkwijze">
     <div class="wrap">
       <header class="section-head reveal">
-        <p class="eyebrow">03 — Werkwijze</p>
-        <h2>Van appje tot afgewerkte video</h2>
+        <p class="eyebrow" data-tekst="werkwijzeLabel"></p>
+        <h2 data-tekst="werkwijzeTitel"></h2>
       </header>
 
-      <ol class="steps">
-        <li class="reveal"><span class="step-n">01</span>
-          <h3>Je stuurt je aanvraag</h3>
-          <p>Via het formulier hieronder. Dat belandt meteen als bericht in mijn
-             WhatsApp, met alles wat ik nodig heb.</p>
-        </li>
-        <li class="reveal"><span class="step-n">02</span>
-          <h3>We leggen het vast</h3>
-          <p>Ik bevestig prijs, stijl en deadline. Jij deelt je beelden via
-             WeTransfer, Drive of Dropbox.</p>
-        </li>
-        <li class="reveal"><span class="step-n">03</span>
-          <h3>Ik monteer</h3>
-          <p>Je krijgt een eerste versie om te bekijken. Opmerkingen mag je gewoon
-             per tijdstip doorgeven.</p>
-        </li>
-        <li class="reveal"><span class="step-n">04</span>
-          <h3>Jij krijgt de bestanden</h3>
-          <p>Afgewerkt, in de juiste formaten per kanaal. Klaar om te posten.</p>
-        </li>
-      </ol>
+      <ol class="steps" id="werkwijzeLijst"></ol>
     </div>
   </section>
 
@@ -817,18 +784,14 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(.7); curs
   <section class="section section-alt" id="tarieven">
     <div class="wrap">
       <header class="section-head reveal">
-        <p class="eyebrow">04 — Tarieven</p>
-        <h2>Prijs per lengte</h2>
-        <p class="section-lead">Je betaalt per lengte van de afgewerkte video. Geen
-          verrassingen achteraf: wat hier staat, is wat het kost.</p>
+        <p class="eyebrow" data-tekst="tarievenLabel"></p>
+        <h2 data-tekst="tarievenTitel"></h2>
+        <p class="section-lead" data-tekst="tarievenLead"></p>
       </header>
 
       <div class="prices" id="tarievenGrid"></div>
 
-      <p class="note reveal">
-        Andere lengte nodig — bijvoorbeeld tussen 30 en 60 seconden, of langer dan
-        anderhalve minuut? Stuur je aanvraag door, dan krijg je meteen een prijs.
-      </p>
+      <p class="note reveal" data-tekst="tarievenNoot"></p>
     </div>
   </section>
 
@@ -836,12 +799,9 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(.7); curs
   <section class="section" id="aanvraag">
     <div class="wrap booking">
       <header class="section-head reveal">
-        <p class="eyebrow">05 — Aanvraag</p>
-        <h2>Vraag je edit aan</h2>
-        <p class="section-lead">
-          Vul in wat je nodig hebt. Met één klik staat het als volledig bericht
-          klaar in WhatsApp — je hoeft alleen nog op verzenden te duwen.
-        </p>
+        <p class="eyebrow" data-tekst="aanvraagLabel"></p>
+        <h2 data-tekst="aanvraagTitel"></h2>
+        <p class="section-lead" data-tekst="aanvraagLead"></p>
       </header>
 
       <div class="booking-grid">
@@ -943,8 +903,8 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(.7); curs
   <section class="section section-alt" id="faq">
     <div class="wrap wrap-narrow">
       <header class="section-head reveal">
-        <p class="eyebrow">06 — FAQ</p>
-        <h2>Veelgestelde vragen</h2>
+        <p class="eyebrow" data-tekst="faqLabel"></p>
+        <h2 data-tekst="faqTitel"></h2>
       </header>
 
       <div class="faq" id="faqLijst"></div>
@@ -954,8 +914,8 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(.7); curs
   <!-- ============ Slot-oproep ============ -->
   <section class="cta-band">
     <div class="wrap cta-inner reveal">
-      <h2>Heb je beelden liggen?<br><span class="accent"><em>Dan maken we er iets van.</em></span></h2>
-      <a class="btn btn-primary btn-lg" href="#aanvraag">Start je aanvraag</a>
+      <h2 data-tekst="slotTitel"></h2>
+      <a class="btn btn-primary btn-lg" href="#aanvraag" data-tekst="slotKnop"></a>
     </div>
   </section>
 
@@ -969,7 +929,7 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(.7); curs
         <span class="brand-mark" aria-hidden="true">R</span>
         <span class="brand-name">Rania <em>Works</em></span>
       </a>
-      <p class="footer-line">Video-editing voor bedrijven en particulieren.</p>
+      <p class="footer-line" data-tekst="voetLijn"></p>
     </div>
 
     <nav class="footer-nav" aria-label="Voetmenu">
@@ -984,7 +944,7 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(.7); curs
         <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 3.5A11 11 0 0 0 3.2 16.9L2 22l5.2-1.2A11 11 0 1 0 20.5 3.5Z"/><path d="M8.4 7.8c.2-.5.4-.5.6-.5h.6c.2 0 .5 0 .7.5l.8 1.9c.1.3 0 .5-.1.7l-.5.6c-.2.2-.3.4-.1.7a7.4 7.4 0 0 0 3.4 3c.3.2.5.1.7-.1l.6-.7c.2-.2.4-.2.6-.1l1.9.9c.3.1.5.3.5.6v.6c0 .9-.9 1.7-1.8 1.7-3.9 0-7.9-4-7.9-7.9 0-.6.1-1.2.3-1.9Z"/></svg>
         <span id="footerNummer"></span>
       </a>
-      <p class="footer-small">Antwoord meestal binnen een paar uur.</p>
+      <p class="footer-small" data-tekst="voetKlein"></p>
     </div>
   </div>
   <div class="wrap footer-bottom">
@@ -1022,14 +982,67 @@ var STANDAARD_INHOUD = {
   /* Hoe het nummer op de site getoond wordt. */
   nummerGetoond: '0473 29 27 39',
 
-  /* Losse teksten die je wil kunnen bijsturen.
-     In de titel wordt alles tussen *sterretjes* paars en cursief. */
+  /* Alle losse teksten van de site.
+     Waar *sterretjes* rond staan, wordt het paars en cursief. */
   teksten: {
+    /* Bovenaan */
+    heroLabel: 'Video-editing studio · België',
     titel: 'Edits die mensen *doen stoppen* met scrollen.',
     lead: 'Ik ben Rania. Jij stuurt je ruwe beelden, ik maak er iets van dat past bij jouw merk of bij jou. Voor bedrijven, voor creators, en voor die ene video die gewoon goed moet zijn.',
+    knopA: 'Vraag een edit aan',
+    knopB: 'Bekijk het werk',
     levering: '2–5 dagen',
-    revisies: 'Inbegrepen'
+    revisies: 'Inbegrepen',
+    boekenVia: 'WhatsApp',
+    marquee: 'Reels, TikTok, Shorts, Promovideo, Aftermovie, Ondertiteling, Color grading, Thumbnails',
+
+    /* Werk */
+    werkLabel: '01 — Werk',
+    werkTitel: 'Een greep uit de edits',
+    werkLead: 'Verticaal voor social, horizontaal voor je website. Zelfde aanpak: strak ritme, nette kleuren, geen ruis.',
+    werkNoot: 'Meer zien? Vraag het gerust — ik stuur je met plezier voorbeelden die bij jouw project passen.',
+
+    /* Diensten */
+    dienstenLabel: '02 — Diensten',
+    dienstenTitel: 'Voor je bedrijf, of gewoon voor jezelf',
+
+    /* Werkwijze */
+    werkwijzeLabel: '03 — Werkwijze',
+    werkwijzeTitel: 'Van appje tot afgewerkte video',
+
+    /* Tarieven */
+    tarievenLabel: '04 — Tarieven',
+    tarievenTitel: 'Prijs per lengte',
+    tarievenLead: 'Je betaalt per lengte van de afgewerkte video. Geen verrassingen achteraf: wat hier staat, is wat het kost.',
+    tarievenNoot: 'Andere lengte nodig — bijvoorbeeld tussen 30 en 60 seconden, of langer dan anderhalve minuut? Stuur je aanvraag door, dan krijg je meteen een prijs.',
+
+    /* Aanvraag */
+    aanvraagLabel: '05 — Aanvraag',
+    aanvraagTitel: 'Vraag je edit aan',
+    aanvraagLead: 'Vul in wat je nodig hebt. Met één klik staat het als volledig bericht klaar in WhatsApp — je hoeft alleen nog op verzenden te duwen.',
+
+    /* Vragen */
+    faqLabel: '06 — FAQ',
+    faqTitel: 'Veelgestelde vragen',
+
+    /* Onderaan */
+    slotTitel: 'Heb je beelden liggen? *Dan maken we er iets van.*',
+    slotKnop: 'Start je aanvraag',
+    voetLijn: 'Video-editing voor bedrijven en particulieren.',
+    voetKlein: 'Antwoord meestal binnen een paar uur.'
   },
+
+  /* De vier stappen onder "Van appje tot afgewerkte video". */
+  werkwijze: [
+    { titel: 'Je stuurt je aanvraag',
+      tekst: 'Via het formulier hieronder. Dat belandt meteen als bericht in mijn WhatsApp, met alles wat ik nodig heb.' },
+    { titel: 'We leggen het vast',
+      tekst: 'Ik bevestig prijs, stijl en deadline. Jij deelt je beelden via WeTransfer, Drive of Dropbox.' },
+    { titel: 'Ik monteer',
+      tekst: 'Je krijgt een eerste versie om te bekijken. Opmerkingen mag je gewoon per tijdstip doorgeven.' },
+    { titel: 'Jij krijgt de bestanden',
+      tekst: 'Afgewerkt, in de juiste formaten per kanaal. Klaar om te posten.' }
+  ],
 
   /* De vier blokken onder "Voor je bedrijf, of gewoon voor jezelf". */
   diensten: [
@@ -1150,6 +1163,7 @@ function inhoudOphalen() {
     }
     if (Array.isArray(eigen.werk)) basis.werk = eigen.werk;
     if (Array.isArray(eigen.diensten)) basis.diensten = eigen.diensten;
+    if (Array.isArray(eigen.werkwijze)) basis.werkwijze = eigen.werkwijze;
     if (Array.isArray(eigen.faq)) basis.faq = eigen.faq;
     if (Array.isArray(eigen.tarieven) && eigen.tarieven.length) basis.tarieven = eigen.tarieven;
     return basis;
@@ -1157,6 +1171,56 @@ function inhoudOphalen() {
     return basis;
   }
 }
+
+/* Hoe de teksten in het beheer gegroepeerd en genoemd worden. */
+var TEKSTVELDEN = [
+  { groep: 'Bovenaan', velden: [
+    ['heroLabel', 'Klein labeltje bovenaan', 'kort'],
+    ['titel', 'De grote titel', 'lang'],
+    ['lead', 'Tekst onder de titel', 'lang'],
+    ['knopA', 'Tekst op de paarse knop', 'kort'],
+    ['knopB', 'Tekst op de tweede knop', 'kort'],
+    ['levering', 'Levertijd', 'kort'],
+    ['revisies', 'Revisies', 'kort'],
+    ['boekenVia', 'Boeken via', 'kort'],
+    ['marquee', 'Woorden in de lopende band', 'lang']
+  ]},
+  { groep: 'Werk', velden: [
+    ['werkLabel', 'Labeltje', 'kort'],
+    ['werkTitel', 'Titel', 'kort'],
+    ['werkLead', 'Tekst eronder', 'lang'],
+    ['werkNoot', 'Regel onder de voorbeelden', 'lang']
+  ]},
+  { groep: 'Diensten', velden: [
+    ['dienstenLabel', 'Labeltje', 'kort'],
+    ['dienstenTitel', 'Titel', 'kort']
+  ]},
+  { groep: 'Werkwijze', velden: [
+    ['werkwijzeLabel', 'Labeltje', 'kort'],
+    ['werkwijzeTitel', 'Titel', 'kort']
+  ]},
+  { groep: 'Tarieven', velden: [
+    ['tarievenLabel', 'Labeltje', 'kort'],
+    ['tarievenTitel', 'Titel', 'kort'],
+    ['tarievenLead', 'Tekst eronder', 'lang'],
+    ['tarievenNoot', 'Regel onder de prijzen', 'lang']
+  ]},
+  { groep: 'Aanvraag', velden: [
+    ['aanvraagLabel', 'Labeltje', 'kort'],
+    ['aanvraagTitel', 'Titel', 'kort'],
+    ['aanvraagLead', 'Tekst eronder', 'lang']
+  ]},
+  { groep: 'Vragen', velden: [
+    ['faqLabel', 'Labeltje', 'kort'],
+    ['faqTitel', 'Titel', 'kort']
+  ]},
+  { groep: 'Onderaan', velden: [
+    ['slotTitel', 'Slottitel', 'lang'],
+    ['slotKnop', 'Tekst op de knop', 'kort'],
+    ['voetLijn', 'Regel onder het logo', 'lang'],
+    ['voetKlein', 'Kleine regel bij het nummer', 'kort']
+  ]}
+];
 </script>
 <script>
 /* ==========================================================================
@@ -1192,24 +1256,52 @@ document.addEventListener('DOMContentLoaded', function () {
      De inhoud op de pagina zetten
      ====================================================================== */
 
-  /* ---------- Losse teksten en het nummer ---------- */
+  /* ---------- Alle teksten en het nummer ---------- */
+
+  /* Wat tussen *sterretjes* staat, wordt paars en cursief. */
+  function metAccent(tekst) {
+    return veilig(tekst).replace(/\*([^*]+)\*/g, '<span class="accent"><em>$1</em></span>');
+  }
+
   function tekstenPlaatsen() {
+    $$('[data-tekst]').forEach(function (el) {
+      var sleutel = el.getAttribute('data-tekst');
+      var waarde = INHOUD.teksten[sleutel];
+      if (waarde == null) return;
+      el.innerHTML = metAccent(waarde);
+    });
+
     var zet = function (id, waarde) {
       var el = document.getElementById(id);
       if (el) el.textContent = waarde;
     };
-    zet('heroLead', INHOUD.teksten.lead);
-
-    /* In de titel wordt alles tussen *sterretjes* paars en cursief. */
-    var titel = document.getElementById('heroTitel');
-    if (titel) {
-      titel.innerHTML = veilig(INHOUD.teksten.titel || '')
-        .replace(/\*([^*]+)\*/g, '<span class="accent"><em>$1</em></span>');
-    }
-    zet('statLevering', INHOUD.teksten.levering);
-    zet('statRevisies', INHOUD.teksten.revisies);
     zet('formNummer', INHOUD.nummerGetoond);
     zet('footerNummer', INHOUD.nummerGetoond);
+
+    /* De lopende band: de woorden twee keer, zodat ze naadloos doorlopen. */
+    var band = document.getElementById('marqueeTrack');
+    if (band) {
+      var woorden = String(INHOUD.teksten.marquee || '').split(',')
+        .map(function (w) { return w.trim(); }).filter(Boolean);
+      var stuk = woorden.map(function (w) {
+        return '<span>' + veilig(w) + '</span><i>✦</i>';
+      }).join('');
+      band.innerHTML = stuk + stuk;
+    }
+  }
+
+  /* ---------- De werkwijze ---------- */
+  function werkwijzePlaatsen() {
+    var lijst = document.getElementById('werkwijzeLijst');
+    if (!lijst) return;
+
+    lijst.innerHTML = (INHOUD.werkwijze || []).map(function (stap, i) {
+      return '<li class="reveal">' +
+        '<span class="step-n">' + ('0' + (i + 1)).slice(-2) + '</span>' +
+        '<h3>' + veilig(stap.titel) + '</h3>' +
+        '<p>' + veilig(stap.tekst || '') + '</p>' +
+      '</li>';
+    }).join('');
   }
 
   /* ---------- Het werk ---------- */
@@ -1315,6 +1407,7 @@ document.addEventListener('DOMContentLoaded', function () {
   tekstenPlaatsen();
   werkPlaatsen();
   dienstenPlaatsen();
+  werkwijzePlaatsen();
   faqPlaatsen();
   tarievenPlaatsen();
 
