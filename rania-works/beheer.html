@@ -161,7 +161,7 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(.7); curs
 .veld-rij { display: grid; gap: 16px; grid-template-columns: 1fr 1fr; }
 .vink { display: flex; align-items: center; gap: 10px; font-size: 14px; }
 .vink input { width: 18px; height: 18px; accent-color: var(--purple); padding: 0; }
-.hulp { color: var(--faint); font-size: 12.5px; margin-top: 6px; }
+.hulp { color: var(--faint); font-size: 12.5px; margin-top: 6px; overflow-wrap: anywhere; }
 
 /* ---------- Venster ---------- */
 .venster { position: fixed; inset: 0; z-index: 100; display: none; place-items: center; padding: 20px;
@@ -189,6 +189,33 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(.7); curs
 .waarschuwing {
   background: rgba(251,191,36,.1); border: 1px solid rgba(251,191,36,.35);
   border-radius: 12px; padding: 14px 16px; font-size: 13.5px; color: var(--text); margin-bottom: 20px;
+}
+
+/* ---------- Tabellen worden kaartjes op een smal scherm ---------- */
+@media (max-width: 720px) {
+  .tabel-wrap table, .tabel-wrap tbody, .tabel-wrap tr, .tabel-wrap td { display: block; width: 100%; }
+  .tabel-wrap thead { display: none; }
+  .tabel-wrap tr {
+    border: 1px solid var(--line); border-radius: 12px;
+    padding: 6px 16px; margin-bottom: 12px; background: var(--veld);
+  }
+  .tabel-wrap tr:last-child { margin-bottom: 0; }
+  .tabel-wrap td {
+    border: 0; padding: 9px 0; display: flex; gap: 14px;
+    align-items: flex-start; justify-content: space-between; text-align: right;
+  }
+  .tabel-wrap td + td { border-top: 1px solid var(--line); }
+  .tabel-wrap td::before {
+    content: attr(data-label);
+    color: var(--faint); font-size: 12px; letter-spacing: .08em; text-transform: uppercase;
+    flex: none; text-align: left; padding-top: 2px;
+  }
+  .tabel-wrap td .cel { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+  .tabel-wrap td.acties { padding-top: 12px; }
+  /* Knoppen in een rij moeten met een vinger te raken zijn. */
+  .btn-klein { padding: 9px 15px; font-size: 13.5px; }
+  .tabel-wrap td.acties::before { content: none; }
+  .tabel-wrap .rij-acties { width: 100%; justify-content: flex-end; }
 }
 
 /* ---------- Kleine schermen ---------- */
@@ -686,17 +713,17 @@ window.addEventListener('error', function (e) {
   function tabelVan(lijst, metActies) {
     var rijen = lijst.map(function (a) {
       return '<tr>' +
-        '<td class="num">' + esc(datumKort(a.datum)) + '</td>' +
-        '<td><strong>' + esc(a.naam || '—') + '</strong>' +
+        '<td class="num" data-label="Datum"><div class="cel">' + esc(datumKort(a.datum)) + '</div></td>' +
+        '<td data-label="Klant"><div class="cel"><strong>' + esc(a.naam || '—') + '</strong>' +
           (a.bedrijf ? '<br><span style="color:var(--faint);font-size:13px">' + esc(a.bedrijf) + '</span>' : '') +
-        '</td>' +
-        '<td>' + esc(a.type || '—') +
+        '</div></td>' +
+        '<td data-label="Soort"><div class="cel">' + esc(a.type || '—') +
           (a.lengte ? '<br><span style="color:var(--faint);font-size:13px">' + esc(a.lengte) + '</span>' : '') +
-        '</td>' +
-        '<td class="num">' + esc(euro(a.prijs)) + '</td>' +
-        '<td><span class="staat staat-' + esc(a.status) + '">' + esc(a.status) + '</span></td>' +
+        '</div></td>' +
+        '<td class="num" data-label="Prijs"><div class="cel">' + esc(euro(a.prijs)) + '</div></td>' +
+        '<td data-label="Status"><div class="cel"><span class="staat staat-' + esc(a.status) + '">' + esc(a.status) + '</span></div></td>' +
         (metActies
-          ? '<td><div class="rij-acties">' +
+          ? '<td class="acties"><div class="rij-acties">' +
               (a.telefoon ? '<a class="btn btn-g btn-klein" href="https://wa.me/' + esc(String(a.telefoon).replace(/[^0-9]/g, '')) + '" target="_blank" rel="noopener">App</a>' : '') +
               '<button class="btn btn-g btn-klein" data-wijzig="' + esc(a.id) + '">Wijzig</button>' +
               '<button class="btn btn-weg btn-klein" data-verwijder="' + esc(a.id) + '">Wis</button>' +
@@ -898,11 +925,11 @@ window.addEventListener('error', function (e) {
       '<thead><tr><th>Label</th><th>Lengte in het bericht</th><th>Prijs</th><th>Uitgelicht</th><th></th></tr></thead><tbody>' +
       lijst.map(function (t, i) {
         return '<tr>' +
-          '<td><strong>' + esc(t.kort || '') + '</strong></td>' +
-          '<td>' + esc(t.lengte || '') + '<br><span style="color:var(--faint);font-size:13px">' + esc(t.voor || '') + '</span></td>' +
-          '<td class="num">' + esc(t.prijs || '') + '</td>' +
-          '<td>' + (t.uitgelicht ? '<span class="staat staat-geleverd">ja</span>' : '<span style="color:var(--faint)">—</span>') + '</td>' +
-          '<td><div class="rij-acties">' +
+          '<td data-label="Label"><div class="cel"><strong>' + esc(t.kort || '') + '</strong></div></td>' +
+          '<td data-label="Lengte"><div class="cel">' + esc(t.lengte || '') + '<br><span style="color:var(--faint);font-size:13px">' + esc(t.voor || '') + '</span></div></td>' +
+          '<td class="num" data-label="Prijs"><div class="cel">' + esc(t.prijs || '') + '</div></td>' +
+          '<td data-label="Uitgelicht"><div class="cel">' + (t.uitgelicht ? '<span class="staat staat-geleverd">ja</span>' : '<span style="color:var(--faint)">—</span>') + '</div></td>' +
+          '<td class="acties"><div class="rij-acties">' +
             '<button class="btn btn-g btn-klein" data-top="' + i + '"' + (i === 0 ? ' disabled' : '') + '>↑</button>' +
             '<button class="btn btn-g btn-klein" data-tneer="' + i + '"' + (i === lijst.length - 1 ? ' disabled' : '') + '>↓</button>' +
             '<button class="btn btn-g btn-klein" data-tarwijzig="' + i + '">Wijzig</button>' +
