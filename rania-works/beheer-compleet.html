@@ -334,7 +334,7 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(.7); curs
     <button class="zij-knop" data-blad="instellingen">Instellingen</button>
 
     <div class="zij-onder">
-      <a class="btn btn-g btn-blok" href="index.html" target="_blank" rel="noopener">Bekijk de site</a>
+      <a class="btn btn-g btn-blok" id="siteLink" href="index.html" target="_blank" rel="noopener">Bekijk de site</a>
     </div>
   </nav>
 
@@ -490,6 +490,7 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(.7); curs
           krijgen, download je de site met jouw wijzigingen erin en zet je die
           bestanden op je webhosting.
         </p>
+        <div id="downloadWaarschuwing"></div>
         <div class="venster-voet" style="justify-content:flex-start">
           <button class="btn btn-p" id="zipKnop">Download de site (zip)</button>
           <button class="btn btn-g" id="inhoudKnop">Alleen inhoud.js</button>
@@ -1474,6 +1475,21 @@ var SITEBESTANDEN = {
       });
   }
 
+  /* Waar staat de site? Naast dit bestand heet ze index.html, maar staat het
+     beheer vooraan (zoals op een privélink), dan heet ze site.html. */
+  (function () {
+    var link = $('#siteLink');
+    if (!link || !window.fetch) return;
+    fetch('site.html', { method: 'HEAD' }).then(function (a) {
+      if (a && a.ok) link.setAttribute('href', 'site.html');
+    })['catch'](function () { /* dan blijft index.html staan */ });
+  })();
+
+  /* Draait deze pagina in een venster dat downloads tegenhoudt? */
+  function inEenKader() {
+    try { return window.top !== window.self; } catch (e) { return true; }
+  }
+
   /* ======================================================================
      Bestanden van je toestel
      ====================================================================== */
@@ -2052,6 +2068,15 @@ var SITEBESTANDEN = {
         'beheer-compleet.html — daar zit alles al in.</div>';
     }
     if (waarschuwingen) $('#opslagWaarschuwing').innerHTML = waarschuwingen;
+
+    var dw = $('#downloadWaarschuwing');
+    if (dw) {
+      dw.innerHTML = (inEenKader() && !viewerBewaart())
+        ? '<div class="waarschuwing">Deze pagina draait in een venster dat downloads ' +
+          'tegenhoudt. Lukt het downloaden niet, open het beheer dan in een eigen tabblad, ' +
+          'of gebruik het beheerbestand op je computer.</div>'
+        : '';
+    }
   }
 
   /* Meteen tonen: er is geen slot meer om eerst te openen. */
