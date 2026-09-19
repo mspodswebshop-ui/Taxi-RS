@@ -1162,6 +1162,12 @@ window.addEventListener('error', function (e) {
       bestandenTekenen();
     }, function (fout) {
       melding('Bewaren lukte niet: ' + ((fout && fout.message) || 'onbekende fout'));
+      var vak = $('#bestandLijst');
+      if (vak) {
+        vak.innerHTML = '<div class="waarschuwing">Dit bestand kon niet bewaard worden: ' +
+          esc((fout && fout.message) || 'onbekende fout') + '. Is het erg groot, of staat de ' +
+          'opslag van je browser uit? Een YouTube- of Vimeo-link werkt altijd.</div>' + vak.innerHTML;
+      }
     });
 
     kiezer.value = '';
@@ -1171,6 +1177,13 @@ window.addEventListener('error', function (e) {
   function bestandenTekenen() {
     var vak = $('#bestandLijst');
     if (!vak || typeof bestandenLijst !== 'function') return;
+
+    if (!window.indexedDB) {
+      vak.innerHTML = '<div class="waarschuwing">Deze browser kan geen bestanden bewaren ' +
+        '(privémodus, of opslag staat uit). Uploaden lukt hier niet — plak zolang een ' +
+        'YouTube- of Vimeo-link, of open het beheer in een gewoon browservenster.</div>';
+      return;
+    }
 
     bestandenLijst().then(function (lijst) {
       if (!lijst.length) {

@@ -631,6 +631,9 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(.7); curs
 .wa-link:hover { color: var(--purple); }
 .wa-link .ico { color: var(--purple); width: 20px; height: 20px; }
 .footer-small { color: var(--faint); font-size: 13.5px; }
+.beheer-link { color: var(--faint); margin-left: 4px; }
+.beheer-link:hover { color: var(--purple); }
+
 .footer-bottom {
   display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap;
   margin-top: 48px; padding-top: 22px; border-top: 1px solid var(--line);

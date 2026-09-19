@@ -567,6 +567,16 @@ document.addEventListener('DOMContentLoaded', function () {
     voorbeeldBijwerken();
   })();
 
+  /* ---------- Het linkje naar het beheer ----------
+     Alleen tonen als beheer.html er echt naast staat. Op je webhosting hoort
+     dat bestand er niet bij te staan, dus daar blijft het weg. */
+  var beheerLink = $('#beheerLink');
+  if (beheerLink && window.fetch && window.location.protocol !== 'file:') {
+    fetch('beheer.html', { method: 'HEAD' }).then(function (antwoord) {
+      if (antwoord && antwoord.ok) beheerLink.hidden = false;
+    })['catch'](function () { /* staat er niet: laat het weg */ });
+  }
+
   /* ---------- Directe WhatsApp-links (voet en zwevende knop) ---------- */
   var kortBericht = 'Hallo Rania, ik zag je website en zou graag een edit laten maken.';
   ['#footerWa', '#fabWa', '#menuWa'].forEach(function (sel) {

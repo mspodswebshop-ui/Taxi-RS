@@ -664,6 +664,9 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(.7); curs
 .wa-link:hover { color: var(--purple); }
 .wa-link .ico { color: var(--purple); width: 20px; height: 20px; }
 .footer-small { color: var(--faint); font-size: 13.5px; }
+.beheer-link { color: var(--faint); margin-left: 4px; }
+.beheer-link:hover { color: var(--purple); }
+
 .footer-bottom {
   display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap;
   margin-top: 48px; padding-top: 22px; border-top: 1px solid var(--line);
@@ -1027,7 +1030,13 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(.7); curs
   </div>
   <div class="wrap footer-bottom">
     <p>© <span id="jaar">2026</span> Rania Works</p>
-    <p>Gemaakt met zorg.</p>
+    <p>
+      Gemaakt met zorg.
+      <!-- Dit linkje verschijnt alleen als beheer.html echt naast de site
+           staat. Op je gewone webhosting zet je dat bestand er niet bij,
+           dus daar blijft het vanzelf weg. -->
+      <a class="beheer-link" id="beheerLink" href="beheer.html" hidden>· Beheer</a>
+    </p>
   </div>
 </footer>
 
@@ -1876,6 +1885,16 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     voorbeeldBijwerken();
   })();
+
+  /* ---------- Het linkje naar het beheer ----------
+     Alleen tonen als beheer.html er echt naast staat. Op je webhosting hoort
+     dat bestand er niet bij te staan, dus daar blijft het weg. */
+  var beheerLink = $('#beheerLink');
+  if (beheerLink && window.fetch && window.location.protocol !== 'file:') {
+    fetch('beheer.html', { method: 'HEAD' }).then(function (antwoord) {
+      if (antwoord && antwoord.ok) beheerLink.hidden = false;
+    })['catch'](function () { /* staat er niet: laat het weg */ });
+  }
 
   /* ---------- Directe WhatsApp-links (voet en zwevende knop) ---------- */
   var kortBericht = 'Hallo Rania, ik zag je website en zou graag een edit laten maken.';
