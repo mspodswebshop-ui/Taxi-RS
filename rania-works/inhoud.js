@@ -19,12 +19,54 @@ var STANDAARD_INHOUD = {
   /* Hoe het nummer op de site getoond wordt. */
   nummerGetoond: '0473 29 27 39',
 
-  /* Losse teksten die je wil kunnen bijsturen. */
+  /* Losse teksten die je wil kunnen bijsturen.
+     In de titel wordt alles tussen *sterretjes* paars en cursief. */
   teksten: {
+    titel: 'Edits die mensen *doen stoppen* met scrollen.',
     lead: 'Ik ben Rania. Jij stuurt je ruwe beelden, ik maak er iets van dat past bij jouw merk of bij jou. Voor bedrijven, voor creators, en voor die ene video die gewoon goed moet zijn.',
     levering: '2–5 dagen',
     revisies: 'Inbegrepen'
   },
+
+  /* De vier blokken onder "Voor je bedrijf, of gewoon voor jezelf". */
+  diensten: [
+    {
+      titel: 'Social media edits',
+      tekst: 'Reels, TikToks en Shorts die in de eerste seconden vasthouden. Hooks, ondertiteling, geluid dat klopt.',
+      punten: ['Verticaal, 15–60 sec', 'Ondertiteling in jouw stijl', 'Los of in een serie']
+    },
+    {
+      titel: 'Bedrijfs- & promovideo',
+      tekst: 'Eén video die uitlegt wat je doet en waarom het deugt. Voor je site, je advertentie of een beurs.',
+      punten: ['Script- en montageadvies', 'Logo, kleuren, lettertype', 'Versies per kanaal']
+    },
+    {
+      titel: 'Persoonlijke edits',
+      tekst: 'Aftermovie, verjaardag, reisvideo, gaming-highlights. Jouw beelden, netjes en met gevoel gemonteerd.',
+      punten: ['Muziek in overleg', 'Korte versie voor social', 'Cadeau-klaar opgeleverd']
+    },
+    {
+      titel: 'Losse afwerking',
+      tekst: 'Heb je al een montage? Dan pak ik alleen de laatste laag: kleur, geluid, tekst en thumbnails.',
+      punten: ['Color grading', 'Ondertiteling en captions', 'Thumbnails en covers']
+    }
+  ],
+
+  /* De veelgestelde vragen onderaan de site. */
+  faq: [
+    { vraag: 'Hoe stuur ik mijn beelden door?',
+      antwoord: 'Via WeTransfer, Google Drive of Dropbox. Na je aanvraag stuur ik je precies door hoe en waar.' },
+    { vraag: 'Hoe lang duurt een edit?',
+      antwoord: 'Meestal 2 tot 5 werkdagen, afhankelijk van de lengte en hoeveel materiaal er is. Heb je het sneller nodig? Zeg het erbij, spoed kan vaak wel.' },
+    { vraag: 'Wat als ik iets wil aanpassen?',
+      antwoord: 'Dat hoort erbij. Je geeft je opmerkingen door per tijdstip ("op 0:14 iets korter") en ik pas het aan.' },
+    { vraag: 'Mag ik zelf muziek kiezen?',
+      antwoord: 'Zeker. Stuur je nummer mee, of ik zoek iets dat past en vrij bruikbaar is voor je kanaal.' },
+    { vraag: 'Werk je ook voor particulieren?',
+      antwoord: 'Ja. Een aftermovie van een trouw, een reisvideo of een montage als cadeau — even welkom als bedrijfswerk.' },
+    { vraag: 'Hoe betaal ik?',
+      antwoord: 'Via overschrijving of Payconiq, na goedkeuring van de eerste versie. Bij grotere projecten werk ik met een voorschot.' }
+  ],
 
   /* Het werk dat op de site staat. Nu één voorbeeld-edit.
      - formaat:      het label linksboven op het beeld, bv. 9:16 of 16:9
@@ -104,6 +146,8 @@ function inhoudOphalen() {
       });
     }
     if (Array.isArray(eigen.werk)) basis.werk = eigen.werk;
+    if (Array.isArray(eigen.diensten)) basis.diensten = eigen.diensten;
+    if (Array.isArray(eigen.faq)) basis.faq = eigen.faq;
     if (Array.isArray(eigen.tarieven) && eigen.tarieven.length) basis.tarieven = eigen.tarieven;
     return basis;
   } catch (e) {

@@ -38,6 +38,13 @@ document.addEventListener('DOMContentLoaded', function () {
       if (el) el.textContent = waarde;
     };
     zet('heroLead', INHOUD.teksten.lead);
+
+    /* In de titel wordt alles tussen *sterretjes* paars en cursief. */
+    var titel = document.getElementById('heroTitel');
+    if (titel) {
+      titel.innerHTML = veilig(INHOUD.teksten.titel || '')
+        .replace(/\*([^*]+)\*/g, '<span class="accent"><em>$1</em></span>');
+    }
     zet('statLevering', INHOUD.teksten.levering);
     zet('statRevisies', INHOUD.teksten.revisies);
     zet('formNummer', INHOUD.nummerGetoond);
@@ -73,6 +80,38 @@ document.addEventListener('DOMContentLoaded', function () {
       return w.link
         ? '<a class="work-card reveal" href="' + veilig(w.link) + '" target="_blank" rel="noopener">' + binnen + '</a>'
         : '<article class="work-card reveal">' + binnen + '</article>';
+    }).join('');
+  }
+
+  /* ---------- De diensten ---------- */
+  function dienstenPlaatsen() {
+    var grid = document.getElementById('dienstenGrid');
+    if (!grid) return;
+
+    grid.innerHTML = (INHOUD.diensten || []).map(function (d) {
+      var punten = (d.punten || []).map(function (p) {
+        return '<li>' + veilig(p) + '</li>';
+      }).join('');
+
+      return '<article class="card reveal">' +
+        '<span class="card-ico" aria-hidden="true">◆</span>' +
+        '<h3>' + veilig(d.titel) + '</h3>' +
+        '<p>' + veilig(d.tekst || '') + '</p>' +
+        (punten ? '<ul class="ticks">' + punten + '</ul>' : '') +
+      '</article>';
+    }).join('');
+  }
+
+  /* ---------- De veelgestelde vragen ---------- */
+  function faqPlaatsen() {
+    var lijst = document.getElementById('faqLijst');
+    if (!lijst) return;
+
+    lijst.innerHTML = (INHOUD.faq || []).map(function (v) {
+      return '<details class="reveal">' +
+        '<summary>' + veilig(v.vraag) + '</summary>' +
+        '<p>' + veilig(v.antwoord || '') + '</p>' +
+      '</details>';
     }).join('');
   }
 
@@ -114,6 +153,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
   tekstenPlaatsen();
   werkPlaatsen();
+  dienstenPlaatsen();
+  faqPlaatsen();
   tarievenPlaatsen();
 
   /* ---------- Jaartal in de voet ---------- */

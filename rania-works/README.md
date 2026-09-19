@@ -11,7 +11,7 @@ Gewone HTML, CSS en JavaScript. Geen buildstap, geen framework, geen server.
 | `index.html` | de website |
 | `styles.css` | de vormgeving van de website |
 | `script.js` | het gedrag van de website |
-| `inhoud.js` | **de teksten, het werk en de tarieven** — gedeeld door beide pagina's |
+| `inhoud.js` | **de teksten, het werk, de diensten, de vragen en de tarieven** — gedeeld door beide pagina's |
 | `beheer.html` | de beheerpagina (stijl en script zitten erin) |
 | `bouw.py` | maakt de twee "compleet"-bestanden hieronder |
 | `rania-works-compleet.html` | de hele website in één bestand |
@@ -36,30 +36,31 @@ Dan staat de site op <http://localhost:8080> en het beheer op
 
 ## Het beheer
 
-Openen met een code. De eerste keer is dat **`rania`**; je wijzigt hem bij
-Instellingen. Zes onderdelen:
+`beheer.html` opent meteen — geen code, niets om in te vullen. Acht onderdelen:
 
 - **Overzicht** — wat openstaat, wat je deze maand geleverd hebt, en de omzet
   daarvan. Plus de laatste vijf aanvragen.
 - **Aanvragen** — wat via WhatsApp binnenkomt, zet je hier bij. Met status
   (nieuw · bezig · geleverd · geannuleerd), prijs, deadline, notitie en een
   knop om de klant meteen te appen. Filteren en zoeken kan.
-- **Werk** — de voorbeelden in de sectie "Een greep uit de edits". Toevoegen,
-  wijzigen, van volgorde wisselen. Staat er één voorbeeld, dan toont de site
-  het groot, met het beeld naast de tekst.
+- **Werk** — de voorbeelden in "Een greep uit de edits". Toevoegen, wijzigen,
+  van volgorde wisselen. Staat er één voorbeeld, dan toont de site het groot,
+  met het beeld naast de tekst.
 - **Tarieven** — de prijzen per lengte. Wat je hier verandert, verandert
   meteen ook de keuzelijst in het aanvraagformulier.
-- **Teksten** — de tekst onder de titel, de levertijd en de revisies.
-- **Instellingen** — het WhatsApp-nummer, de toegangscode, en een kopie van je
-  gegevens opslaan of terugzetten.
+- **Diensten** — de vier blokken onder "Voor je bedrijf, of gewoon voor
+  jezelf".
+- **Vragen** — de veelgestelde vragen onderaan de site.
+- **Teksten** — de grote titel, de tekst eronder, de levertijd en de revisies.
+  Wat je in de titel tussen \*sterretjes\* zet, wordt paars en cursief.
+- **Instellingen** — het WhatsApp-nummer, en een kopie van je gegevens opslaan
+  of terugzetten.
 
 ### Twee dingen om te weten
 
-**De code is geen echte beveiliging.** Alles draait in de browser, dus wie het
-bestand heeft, kan de gegevens uitlezen. Het slot houdt meekijkers tegen, meer
-niet. Zet er niets in dat echt geheim moet blijven. Wil je het beheer niet
-online hebben staan, zet dan enkel `index.html`, `styles.css`, `script.js` en
-`inhoud.js` op je webhosting, en hou `beheer.html` op je eigen computer.
+**Er zit geen slot op.** Wie de pagina opent, kan de site aanpassen. Zet
+`beheer.html` dus niet op je webhosting: hou het op je eigen computer of gsm,
+en zet online enkel `index.html`, `styles.css`, `script.js` en `inhoud.js`.
 
 **De gegevens staan in je browser, op dat ene toestel.** Ze gaan niet naar een
 server en zijn dus niet zichtbaar op je gsm als je ze op je laptop invulde.
@@ -101,7 +102,7 @@ nummerGetoond: '0473 29 27 39',
 
 Dat eerste is het nummer waar de berichten heen gaan: internationaal, zonder
 `+`, zonder spaties, zonder de nul vooraan. Het tweede is hoe het op de site
-getoond wordt. Je kan het ook wijzigen bij Instellingen.
+getoond wordt.
 
 Wat het formulier verstuurt:
 

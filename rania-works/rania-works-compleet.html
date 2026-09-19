@@ -719,11 +719,7 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(.7); curs
     <div class="wrap hero-inner">
       <p class="eyebrow reveal">Video-editing studio · België</p>
 
-      <h1 class="hero-title reveal">
-        Edits die mensen
-        <span class="accent"><em>doen stoppen</em></span>
-        met scrollen.
-      </h1>
+      <h1 class="hero-title reveal" id="heroTitel"></h1>
 
       <p class="hero-lead reveal" id="heroLead"></p>
 
@@ -781,55 +777,7 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(.7); curs
         <h2>Voor je bedrijf, of gewoon voor jezelf</h2>
       </header>
 
-      <div class="cards">
-        <article class="card reveal">
-          <span class="card-ico" aria-hidden="true">◆</span>
-          <h3>Social media edits</h3>
-          <p>Reels, TikToks en Shorts die in de eerste seconden vasthouden. Hooks,
-             ondertiteling, geluid dat klopt.</p>
-          <ul class="ticks">
-            <li>Verticaal, 15–60 sec</li>
-            <li>Ondertiteling in jouw stijl</li>
-            <li>Los of in een serie</li>
-          </ul>
-        </article>
-
-        <article class="card reveal">
-          <span class="card-ico" aria-hidden="true">◆</span>
-          <h3>Bedrijfs- &amp; promovideo</h3>
-          <p>Eén video die uitlegt wat je doet en waarom het deugt. Voor je site,
-             je advertentie of een beurs.</p>
-          <ul class="ticks">
-            <li>Script- en montageadvies</li>
-            <li>Logo, kleuren, lettertype</li>
-            <li>Versies per kanaal</li>
-          </ul>
-        </article>
-
-        <article class="card reveal">
-          <span class="card-ico" aria-hidden="true">◆</span>
-          <h3>Persoonlijke edits</h3>
-          <p>Aftermovie, verjaardag, reisvideo, gaming-highlights. Jouw beelden,
-             netjes en met gevoel gemonteerd.</p>
-          <ul class="ticks">
-            <li>Muziek in overleg</li>
-            <li>Korte versie voor social</li>
-            <li>Cadeau-klaar opgeleverd</li>
-          </ul>
-        </article>
-
-        <article class="card reveal">
-          <span class="card-ico" aria-hidden="true">◆</span>
-          <h3>Losse afwerking</h3>
-          <p>Heb je al een montage? Dan pak ik alleen de laatste laag: kleur,
-             geluid, tekst en thumbnails.</p>
-          <ul class="ticks">
-            <li>Color grading</li>
-            <li>Ondertiteling en captions</li>
-            <li>Thumbnails en covers</li>
-          </ul>
-        </article>
-      </div>
+      <div class="cards" id="dienstenGrid"></div>
     </div>
   </section>
 
@@ -999,39 +947,7 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(.7); curs
         <h2>Veelgestelde vragen</h2>
       </header>
 
-      <div class="faq">
-        <details class="reveal">
-          <summary>Hoe stuur ik mijn beelden door?</summary>
-          <p>Via WeTransfer, Google Drive of Dropbox. Na je aanvraag stuur ik je
-             precies door hoe en waar.</p>
-        </details>
-        <details class="reveal">
-          <summary>Hoe lang duurt een edit?</summary>
-          <p>Meestal 2 tot 5 werkdagen, afhankelijk van de lengte en hoeveel
-             materiaal er is. Heb je het sneller nodig? Zeg het erbij, spoed kan
-             vaak wel.</p>
-        </details>
-        <details class="reveal">
-          <summary>Wat als ik iets wil aanpassen?</summary>
-          <p>Dat hoort erbij. Je geeft je opmerkingen door per tijdstip
-             ("op 0:14 iets korter") en ik pas het aan.</p>
-        </details>
-        <details class="reveal">
-          <summary>Mag ik zelf muziek kiezen?</summary>
-          <p>Zeker. Stuur je nummer mee, of ik zoek iets dat past en vrij
-             bruikbaar is voor je kanaal.</p>
-        </details>
-        <details class="reveal">
-          <summary>Werk je ook voor particulieren?</summary>
-          <p>Ja. Een aftermovie van een trouw, een reisvideo of een montage als
-             cadeau — even welkom als bedrijfswerk.</p>
-        </details>
-        <details class="reveal">
-          <summary>Hoe betaal ik?</summary>
-          <p>Via overschrijving of Payconiq, na goedkeuring van de eerste versie.
-             Bij grotere projecten werk ik met een voorschot.</p>
-        </details>
-      </div>
+      <div class="faq" id="faqLijst"></div>
     </div>
   </section>
 
@@ -1106,12 +1022,54 @@ var STANDAARD_INHOUD = {
   /* Hoe het nummer op de site getoond wordt. */
   nummerGetoond: '0473 29 27 39',
 
-  /* Losse teksten die je wil kunnen bijsturen. */
+  /* Losse teksten die je wil kunnen bijsturen.
+     In de titel wordt alles tussen *sterretjes* paars en cursief. */
   teksten: {
+    titel: 'Edits die mensen *doen stoppen* met scrollen.',
     lead: 'Ik ben Rania. Jij stuurt je ruwe beelden, ik maak er iets van dat past bij jouw merk of bij jou. Voor bedrijven, voor creators, en voor die ene video die gewoon goed moet zijn.',
     levering: '2–5 dagen',
     revisies: 'Inbegrepen'
   },
+
+  /* De vier blokken onder "Voor je bedrijf, of gewoon voor jezelf". */
+  diensten: [
+    {
+      titel: 'Social media edits',
+      tekst: 'Reels, TikToks en Shorts die in de eerste seconden vasthouden. Hooks, ondertiteling, geluid dat klopt.',
+      punten: ['Verticaal, 15–60 sec', 'Ondertiteling in jouw stijl', 'Los of in een serie']
+    },
+    {
+      titel: 'Bedrijfs- & promovideo',
+      tekst: 'Eén video die uitlegt wat je doet en waarom het deugt. Voor je site, je advertentie of een beurs.',
+      punten: ['Script- en montageadvies', 'Logo, kleuren, lettertype', 'Versies per kanaal']
+    },
+    {
+      titel: 'Persoonlijke edits',
+      tekst: 'Aftermovie, verjaardag, reisvideo, gaming-highlights. Jouw beelden, netjes en met gevoel gemonteerd.',
+      punten: ['Muziek in overleg', 'Korte versie voor social', 'Cadeau-klaar opgeleverd']
+    },
+    {
+      titel: 'Losse afwerking',
+      tekst: 'Heb je al een montage? Dan pak ik alleen de laatste laag: kleur, geluid, tekst en thumbnails.',
+      punten: ['Color grading', 'Ondertiteling en captions', 'Thumbnails en covers']
+    }
+  ],
+
+  /* De veelgestelde vragen onderaan de site. */
+  faq: [
+    { vraag: 'Hoe stuur ik mijn beelden door?',
+      antwoord: 'Via WeTransfer, Google Drive of Dropbox. Na je aanvraag stuur ik je precies door hoe en waar.' },
+    { vraag: 'Hoe lang duurt een edit?',
+      antwoord: 'Meestal 2 tot 5 werkdagen, afhankelijk van de lengte en hoeveel materiaal er is. Heb je het sneller nodig? Zeg het erbij, spoed kan vaak wel.' },
+    { vraag: 'Wat als ik iets wil aanpassen?',
+      antwoord: 'Dat hoort erbij. Je geeft je opmerkingen door per tijdstip ("op 0:14 iets korter") en ik pas het aan.' },
+    { vraag: 'Mag ik zelf muziek kiezen?',
+      antwoord: 'Zeker. Stuur je nummer mee, of ik zoek iets dat past en vrij bruikbaar is voor je kanaal.' },
+    { vraag: 'Werk je ook voor particulieren?',
+      antwoord: 'Ja. Een aftermovie van een trouw, een reisvideo of een montage als cadeau — even welkom als bedrijfswerk.' },
+    { vraag: 'Hoe betaal ik?',
+      antwoord: 'Via overschrijving of Payconiq, na goedkeuring van de eerste versie. Bij grotere projecten werk ik met een voorschot.' }
+  ],
 
   /* Het werk dat op de site staat. Nu één voorbeeld-edit.
      - formaat:      het label linksboven op het beeld, bv. 9:16 of 16:9
@@ -1191,6 +1149,8 @@ function inhoudOphalen() {
       });
     }
     if (Array.isArray(eigen.werk)) basis.werk = eigen.werk;
+    if (Array.isArray(eigen.diensten)) basis.diensten = eigen.diensten;
+    if (Array.isArray(eigen.faq)) basis.faq = eigen.faq;
     if (Array.isArray(eigen.tarieven) && eigen.tarieven.length) basis.tarieven = eigen.tarieven;
     return basis;
   } catch (e) {
@@ -1239,6 +1199,13 @@ document.addEventListener('DOMContentLoaded', function () {
       if (el) el.textContent = waarde;
     };
     zet('heroLead', INHOUD.teksten.lead);
+
+    /* In de titel wordt alles tussen *sterretjes* paars en cursief. */
+    var titel = document.getElementById('heroTitel');
+    if (titel) {
+      titel.innerHTML = veilig(INHOUD.teksten.titel || '')
+        .replace(/\*([^*]+)\*/g, '<span class="accent"><em>$1</em></span>');
+    }
     zet('statLevering', INHOUD.teksten.levering);
     zet('statRevisies', INHOUD.teksten.revisies);
     zet('formNummer', INHOUD.nummerGetoond);
@@ -1274,6 +1241,38 @@ document.addEventListener('DOMContentLoaded', function () {
       return w.link
         ? '<a class="work-card reveal" href="' + veilig(w.link) + '" target="_blank" rel="noopener">' + binnen + '</a>'
         : '<article class="work-card reveal">' + binnen + '</article>';
+    }).join('');
+  }
+
+  /* ---------- De diensten ---------- */
+  function dienstenPlaatsen() {
+    var grid = document.getElementById('dienstenGrid');
+    if (!grid) return;
+
+    grid.innerHTML = (INHOUD.diensten || []).map(function (d) {
+      var punten = (d.punten || []).map(function (p) {
+        return '<li>' + veilig(p) + '</li>';
+      }).join('');
+
+      return '<article class="card reveal">' +
+        '<span class="card-ico" aria-hidden="true">◆</span>' +
+        '<h3>' + veilig(d.titel) + '</h3>' +
+        '<p>' + veilig(d.tekst || '') + '</p>' +
+        (punten ? '<ul class="ticks">' + punten + '</ul>' : '') +
+      '</article>';
+    }).join('');
+  }
+
+  /* ---------- De veelgestelde vragen ---------- */
+  function faqPlaatsen() {
+    var lijst = document.getElementById('faqLijst');
+    if (!lijst) return;
+
+    lijst.innerHTML = (INHOUD.faq || []).map(function (v) {
+      return '<details class="reveal">' +
+        '<summary>' + veilig(v.vraag) + '</summary>' +
+        '<p>' + veilig(v.antwoord || '') + '</p>' +
+      '</details>';
     }).join('');
   }
 
@@ -1315,6 +1314,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
   tekstenPlaatsen();
   werkPlaatsen();
+  dienstenPlaatsen();
+  faqPlaatsen();
   tarievenPlaatsen();
 
   /* ---------- Jaartal in de voet ---------- */
