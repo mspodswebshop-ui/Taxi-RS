@@ -1310,8 +1310,14 @@ window.addEventListener('error', function (e) {
            'var STANDAARD_INHOUD = ' + JSON.stringify(inhoud, null, 2) + ';\n\n' + staart;
   }
 
-  function bestandBewaren(naam, data, soort) {
-    var blob = (data instanceof Blob) ? data : new Blob([data], { type: soort || 'text/plain;charset=utf-8' });
+  /* Staat deze pagina als privélink online, dan mag ze niet zomaar een
+     bestand op je toestel zetten; dat loopt via een venster van de viewer.
+     Als bestand op je computer gaat het gewoon via een downloadlink. */
+  function viewerBewaart() {
+    return !!(window.claude && typeof window.claude.use === 'function');
+  }
+
+  function viaLink(naam, blob) {
     var a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
     a.download = naam;
@@ -1319,6 +1325,25 @@ window.addEventListener('error', function (e) {
     a.click();
     document.body.removeChild(a);
     setTimeout(function () { URL.revokeObjectURL(a.href); }, 1500);
+  }
+
+  function bestandBewaren(naam, data, soort) {
+    var blob = (data instanceof Blob) ? data : new Blob([data], { type: soort || 'text/plain;charset=utf-8' });
+
+    if (!viewerBewaart()) {
+      viaLink(naam, blob);
+      return;
+    }
+
+    window.claude.use('downloads').then(function (downloads) {
+      if (!downloads) { viaLink(naam, blob); return; }
+      downloads.save({ filename: naam, data: blob }).then(function () {
+        melding('Bewaard.');
+      }, function (fout) {
+        if (fout && fout.code === 'declined') return;
+        melding('Bewaren lukte niet' + (fout && fout.code ? ' (' + fout.code + ')' : '') + '.');
+      });
+    }, function () { viaLink(naam, blob); });
   }
 
   /* --- Een zip in elkaar zetten, zonder hulpbibliotheek. --------------- */
@@ -1399,8 +1424,15 @@ window.addEventListener('error', function (e) {
   }
 
   $('#inhoudKnop').addEventListener('click', function () {
-    bestandBewaren('inhoud.js', inhoudBestandMaken(), 'text/javascript;charset=utf-8');
-    melding('inhoud.js gedownload.');
+    var tekst = inhoudBestandMaken();
+    if (viewerBewaart()) {
+      /* De viewer laat enkel bepaalde soorten door; een los .js-bestand
+         hoort daar niet bij, dus gaat het als zip mee. */
+      bestandBewaren('inhoud-js.zip', zipMaken([{ naam: 'inhoud.js', tekst: tekst }]));
+    } else {
+      bestandBewaren('inhoud.js', tekst, 'text/javascript;charset=utf-8');
+      melding('inhoud.js gedownload.');
+    }
   });
 
   $('#zipKnop').addEventListener('click', function () {
@@ -1441,19 +1473,15 @@ window.addEventListener('error', function (e) {
     var zip = zipMaken(mee);
 
     bestandBewaren('rania-works-site-' + vandaagISO() + '.zip', zip);
-    melding('Je site is gedownload.');
+    if (!viewerBewaart()) melding('Je site is gedownload.');
   });
 
   /* ---------- Kopie opslaan en terugzetten ---------- */
   $('#uitvoer').addEventListener('click', function () {
     var pak = { bewaardOp: new Date().toISOString(), inhoud: inhoud, aanvragen: aanvragen };
-    var blob = new Blob([JSON.stringify(pak, null, 2)], { type: 'application/json' });
-    var a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'rania-works-' + vandaagISO() + '.json';
-    a.click();
-    setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
-    melding('Kopie opgeslagen.');
+    bestandBewaren('rania-works-' + vandaagISO() + '.json',
+                   JSON.stringify(pak, null, 2), 'application/json');
+    if (!viewerBewaart()) melding('Kopie opgeslagen.');
   });
 
   $('#invoerKnop').addEventListener('click', function () { $('#invoer').click(); });
