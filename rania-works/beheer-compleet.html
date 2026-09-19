@@ -241,6 +241,11 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(.7); curs
 }
 .melding.zie { opacity: 1; transform: translate(-50%, 0); }
 
+.gelukt {
+  background: rgba(74, 222, 128, .1); border: 1px solid rgba(74, 222, 128, .35);
+  border-radius: 12px; padding: 14px 16px; font-size: 13.5px; color: var(--text); margin-bottom: 16px;
+}
+
 .waarschuwing {
   background: rgba(251,191,36,.1); border: 1px solid rgba(251,191,36,.35);
   border-radius: 12px; padding: 14px 16px; font-size: 13.5px; color: var(--text); margin-bottom: 20px;
@@ -491,6 +496,7 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(.7); curs
           bestanden op je webhosting.
         </p>
         <div id="downloadWaarschuwing"></div>
+        <div id="downloadStatus"></div>
         <div class="venster-voet" style="justify-content:flex-start">
           <button class="btn btn-p" id="zipKnop">Download de site (zip)</button>
           <button class="btn btn-g" id="inhoudKnop">Alleen inhoud.js</button>
@@ -1824,23 +1830,58 @@ var SITEBESTANDEN = {
     setTimeout(function () { URL.revokeObjectURL(a.href); }, 1500);
   }
 
+  /* Wat er van het downloaden geworden is, komt altijd in beeld. Stil
+     mislukken is het ergste wat deze knop kan doen. */
+  function downloadStand(tekst, soort) {
+    var vak = $('#downloadStatus');
+    if (vak) {
+      vak.innerHTML = tekst
+        ? '<div class="' + (soort === 'fout' ? 'waarschuwing' : 'gelukt') + '">' + esc(tekst) + '</div>'
+        : '';
+    }
+    if (tekst) melding(tekst.length > 70 ? tekst.slice(0, 68) + '…' : tekst);
+  }
+
+  var GEEN_DOWNLOAD =
+    'Dit venster laat downloaden niet toe. Open deze pagina rechtstreeks in je browser ' +
+    '(Safari, Chrome), of gebruik het beheerbestand op je computer. Je wijzigingen blijven ' +
+    'intussen gewoon bewaard.';
+
   function bestandBewaren(naam, data, soort) {
     var blob = (data instanceof Blob) ? data : new Blob([data], { type: soort || 'text/plain;charset=utf-8' });
+    var maat = grootteInTekst(blob.size);
 
     if (!viewerBewaart()) {
+      /* Een gewoon bestand op je computer: de downloadlink volstaat. Zit de
+         pagina in een kader, dan wordt die link tegengehouden. */
+      if (inEenKader()) { downloadStand(GEEN_DOWNLOAD, 'fout'); return; }
       viaLink(naam, blob);
+      downloadStand(naam + ' (' + maat + ') gedownload. Kijk in je map Downloads.');
       return;
     }
 
+    downloadStand('Bezig met klaarzetten van ' + naam + ' (' + maat + ')…');
+
     window.claude.use('downloads').then(function (downloads) {
-      if (!downloads) { viaLink(naam, blob); return; }
+      if (!downloads) { downloadStand(GEEN_DOWNLOAD, 'fout'); return; }
+
       downloads.save({ filename: naam, data: blob }).then(function () {
-        melding('Bewaard.');
+        downloadStand(naam + ' (' + maat + ') is bewaard.');
       }, function (fout) {
-        if (fout && fout.code === 'declined') return;
-        melding('Bewaren lukte niet' + (fout && fout.code ? ' (' + fout.code + ')' : '') + '.');
+        var code = (fout && fout.code) || '';
+        if (code === 'declined') {
+          downloadStand('Je hebt het bewaren geannuleerd. Druk gerust opnieuw.', 'fout');
+        } else if (code === 'too_large') {
+          downloadStand('Het bestand is te groot om zo te bewaren (' + maat + '). ' +
+            'Wis een paar grote video\'s bij Werk, of download enkel inhoud.js.', 'fout');
+        } else if (code === 'rejected_extension') {
+          downloadStand('Dit soort bestand mag hier niet bewaard worden.', 'fout');
+        } else {
+          downloadStand('Bewaren lukte niet' + (code ? ' (' + code + ')' : '') + '. ' +
+            'Probeer het opnieuw, of open deze pagina in je browser.', 'fout');
+        }
       });
-    }, function () { viaLink(naam, blob); });
+    }, function () { downloadStand(GEEN_DOWNLOAD, 'fout'); });
   }
 
   /* --- Een zip in elkaar zetten, zonder hulpbibliotheek. --------------- */
@@ -1928,7 +1969,6 @@ var SITEBESTANDEN = {
       bestandBewaren('inhoud-js.zip', zipMaken([{ naam: 'inhoud.js', tekst: tekst }]));
     } else {
       bestandBewaren('inhoud.js', tekst, 'text/javascript;charset=utf-8');
-      melding('inhoud.js gedownload.');
     }
   });
 
@@ -1989,7 +2029,6 @@ var SITEBESTANDEN = {
   function zipAfronden(alles) {
     var zip = zipMaken(alles);
     bestandBewaren('rania-works-site-' + vandaagISO() + '.zip', zip);
-    if (!viewerBewaart()) melding('Je site is gedownload.');
   }
 
   /* ---------- Kopie opslaan en terugzetten ---------- */
@@ -1997,7 +2036,6 @@ var SITEBESTANDEN = {
     var pak = { bewaardOp: new Date().toISOString(), inhoud: inhoud, aanvragen: aanvragen };
     bestandBewaren('rania-works-' + vandaagISO() + '.json',
                    JSON.stringify(pak, null, 2), 'application/json');
-    if (!viewerBewaart()) melding('Kopie opgeslagen.');
   });
 
   $('#invoerKnop').addEventListener('click', function () { $('#invoer').click(); });
