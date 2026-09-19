@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#0b0a0c" />
+  <title>Real Scents — Ontdek de luxe geuren van de wereld</title>
+  <meta name="description" content="Real Scents — premium parfums van Tom Ford, Creed, Xerjoff, Parfums de Marly en meer. Bestel eenvoudig via WhatsApp." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <!-- Herbruikbare iconen -->
+  <svg width="0" height="0" aria-hidden="true" style="position:absolute">
+    <symbol id="icon-flacon" viewBox="0 0 24 24">
+      <path d="M9.5 2.6h5a.9.9 0 0 1 .9.9v1.8a.9.9 0 0 1-.9.9h-5a.9.9 0 0 1-.9-.9V3.5a.9.9 0 0 1 .9-.9Z" fill="currentColor"/>
+      <path d="M8.4 7.4h7.2a3.4 3.4 0 0 1 3.4 3.4v7.4a3.4 3.4 0 0 1-3.4 3.4H8.4A3.4 3.4 0 0 1 5 18.2v-7.4a3.4 3.4 0 0 1 3.4-3.4Z" fill="currentColor" opacity=".9"/>
+      <path d="M9.2 10.4h5.6v5.2H9.2z" fill="#0b0a0c" opacity=".55"/>
+    </symbol>
+    <symbol id="icon-tas" viewBox="0 0 24 24">
+      <path d="M6.2 7.5h11.6l1.1 12.1a1.6 1.6 0 0 1-1.6 1.8H6.7a1.6 1.6 0 0 1-1.6-1.8L6.2 7.5Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+      <path d="M9 9.6V6.9a3 3 0 0 1 6 0v2.7" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="icon-whatsapp" viewBox="0 0 24 24">
+      <path d="M12.04 2.5a9.4 9.4 0 0 0-8.1 14.13L2.5 21.5l4.99-1.38A9.4 9.4 0 1 0 12.04 2.5Zm0 1.86a7.54 7.54 0 1 1-3.85 14.02l-.33-.2-2.77.77.75-2.72-.21-.35A7.54 7.54 0 0 1 12.04 4.36Zm4.32 9.45c-.23-.12-1.37-.68-1.58-.75-.21-.08-.37-.12-.52.11s-.6.75-.74.9c-.13.16-.27.17-.5.06a6.2 6.2 0 0 1-1.82-1.12 6.8 6.8 0 0 1-1.26-1.57c-.13-.23 0-.35.1-.47.1-.1.23-.27.34-.41.12-.14.15-.24.23-.4s.04-.29-.02-.4-.52-1.25-.71-1.72c-.19-.45-.38-.39-.52-.4h-.44a.85.85 0 0 0-.61.29 2.58 2.58 0 0 0-.8 1.91 4.5 4.5 0 0 0 .94 2.37 10.25 10.25 0 0 0 3.93 3.46c.55.24.98.38 1.31.49.55.17 1.05.15 1.45.09.44-.07 1.37-.56 1.56-1.1.2-.54.2-1 .14-1.1-.06-.1-.21-.17-.44-.29Z" fill="currentColor"/>
+    </symbol>
+    <symbol id="icon-telefoon" viewBox="0 0 24 24">
+      <path d="M7.4 3.6c.5 0 .95.3 1.14.77l1.2 2.94c.18.44.08.94-.26 1.27l-1.3 1.27a12.3 12.3 0 0 0 5.05 5.05l1.27-1.3c.33-.34.83-.44 1.27-.26l2.94 1.2c.47.19.77.64.77 1.14v2.5a1.9 1.9 0 0 1-2.06 1.9C10.2 19.6 4.4 13.8 3.9 6.86A1.9 1.9 0 0 1 5.8 4.8Z" fill="currentColor"/>
+    </symbol>
+  </svg>
+
+  <header class="site-header" id="siteHeader">
+    <div class="brand">
+      <a class="logo" href="#home" data-goto="home" aria-label="Real Scents home">
+        <svg class="logo-mark" aria-hidden="true"><use href="#icon-flacon"/></svg>
+        <span class="logo-text">Real Scents</span>
+      </a>
+
+      <nav class="nav" aria-label="Hoofdmenu">
+        <ul class="nav-links" id="navLinks">
+          <li><a href="#home" class="nav-link active">Home</a></li>
+          <li><a href="#shop" class="nav-link">Shop</a></li>
+          <li><a href="#brands" class="nav-link">Merken</a></li>
+          <li><a href="#deals" class="nav-link">Acties</a></li>
+          <li><a href="#contact" class="nav-link">Contact</a></li>
+        </ul>
+      </nav>
+
+      <div class="header-actions">
+        <button id="cartButton" class="cart-btn" aria-label="Winkelmandje openen">
+          <svg class="icon" aria-hidden="true"><use href="#icon-tas"/></svg>
+          <span id="cartCount">0</span>
+        </button>
+        <button class="hamburger" id="hamburger" aria-label="Menu" aria-expanded="false" aria-controls="navLinks">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section id="home" class="section visible">
+      <div class="hero">
+        <picture>
+          <source media="(max-width:900px)" srcset="./assets/hero-mobile.jpg" />
+          <img class="hero-img" src="./assets/hero.jpg" alt="" aria-hidden="true" width="1404" height="524" fetchpriority="high" />
+        </picture>
+        <div class="hero-inner">
+          <p class="hero-eyebrow">Luxe parfums · Origineel · Snel geleverd</p>
+          <h1 class="hero-title">Real Scents</h1>
+          <p class="hero-sub">Ontdek de luxe geuren van de wereld</p>
+          <div class="hero-cta">
+            <a class="btn btn-primary btn-lg" href="#shop" data-goto="shop">Shop nu</a>
+            <a class="btn btn-ghost btn-lg" id="whatsapp-hero" href="#">Bestel via WhatsApp</a>
+          </div>
+          <div class="hero-deals">
+            <span class="deal-badge">4+1 gratis</span>
+            <span class="deal-badge">6+2 gratis</span>
+            <span class="deal-badge">10× €40 p.s.</span>
+          </div>
+        </div>
+        <a class="hero-scroll" href="#shop" data-goto="shop" aria-label="Naar de collectie">
+          <span class="hero-scroll-line"></span>
+          Bekijk collectie
+        </a>
+      </div>
+    </section>
+
+    <section id="shop" class="section">
+      <header class="section-head">
+        <p class="section-eyebrow">De collectie</p>
+        <h2>Shop alle parfums</h2>
+        <p class="section-lead">Meer dan 400 originele geuren — van dagelijkse klassiekers tot zeldzame nicheparfums.</p>
+      </header>
+
+      <div class="filters">
+        <div class="field">
+          <label class="field-label" for="filterBrand">Merk</label>
+          <select id="filterBrand"><option value="">Alle merken</option></select>
+        </div>
+        <div class="field field-grow">
+          <label class="field-label" for="searchInput">Zoeken</label>
+          <input id="searchInput" type="search" placeholder="Zoek op merk of parfum…" />
+        </div>
+      </div>
+
+      <div id="productGrid" class="grid"></div>
+
+      <div class="pagination">
+        <button id="prevPage" class="btn btn-ghost">Vorige</button>
+        <span id="pageInfo" class="muted"></span>
+        <button id="nextPage" class="btn btn-ghost">Volgende</button>
+      </div>
+    </section>
+
+    <section id="brands" class="section">
+      <header class="section-head">
+        <p class="section-eyebrow">Huizen</p>
+        <h2>Merken</h2>
+        <p class="section-lead">Kies een merk en spring direct naar de bijbehorende geuren.</p>
+      </header>
+      <div id="brandList" class="brand-list"></div>
+    </section>
+
+    <section id="deals" class="section">
+      <header class="section-head">
+        <p class="section-eyebrow">Voordeel</p>
+        <h2>Acties</h2>
+        <p class="section-lead">Combineer vrij uit de hele collectie — de korting wordt bij je bestelling verrekend.</p>
+      </header>
+      <ul class="deal-list">
+        <li class="deal-card">
+          <span class="deal-kicker">4+1</span>
+          <h3>Koop 4, krijg 1 gratis</h3>
+          <p class="muted">De goedkoopste van de vijf gaat er gratis uit.</p>
+        </li>
+        <li class="deal-card">
+          <span class="deal-kicker">6+2</span>
+          <h3>Koop 6, krijg 2 gratis</h3>
+          <p class="muted">Ideaal om te delen of cadeau te geven.</p>
+        </li>
+        <li class="deal-card">
+          <span class="deal-kicker">10×</span>
+          <h3>10 stuks à €40 per stuk</h3>
+          <p class="muted">Onze scherpste prijs voor grotere bestellingen.</p>
+        </li>
+      </ul>
+    </section>
+
+    <section id="contact" class="section">
+      <header class="section-head">
+        <p class="section-eyebrow">Persoonlijk advies</p>
+        <h2>Contact</h2>
+        <p class="section-lead">Twijfel je tussen twee geuren? Stuur een bericht — we denken graag mee.</p>
+      </header>
+      <div class="contact-cards">
+        <a class="contact-card" id="whatsappLink" href="#">
+          <svg class="icon" aria-hidden="true"><use href="#icon-whatsapp"/></svg>
+          <span class="contact-label">WhatsApp</span>
+          <strong>+32 467 83 94 07</strong>
+        </a>
+        <a class="contact-card" href="tel:+32467839407">
+          <svg class="icon" aria-hidden="true"><use href="#icon-telefoon"/></svg>
+          <span class="contact-label">Bellen</span>
+          <strong>+32 467 83 94 07</strong>
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <aside id="cartPanel" class="cart-panel" aria-label="Winkelmandje">
+    <div class="cart-header">
+      <h3>Winkelmandje</h3>
+      <button id="cartClose" class="btn btn-ghost btn-sm">Sluiten</button>
+    </div>
+
+    <div id="cartItems" class="cart-items"></div>
+
+    <div class="checkout-delivery">
+      <label for="deliveryOption">Levering of afhalen</label>
+      <select id="deliveryOption">
+        <option value="levering">Levering</option>
+        <option value="afhalen">Afhalen</option>
+      </select>
+    </div>
+
+    <div class="checkout-address" id="addressBlock">
+      <label for="address">Leveradres</label>
+      <input id="address" type="text" placeholder="Straat, nr, postcode, stad" />
+    </div>
+
+    <div class="cart-footer">
+      <div class="cart-total">
+        <span class="muted">Totaal</span>
+        <strong id="cartTotal">€0</strong>
+      </div>
+      <div class="checkout-actions">
+        <button id="checkoutWhatsApp" class="btn btn-primary">Bestel via WhatsApp</button>
+      </div>
+    </div>
+  </aside>
+
+  <div class="fab-stack">
+    <a id="fabWhatsApp" class="fab fab-wa" href="#" aria-label="Bestel via WhatsApp" target="_blank" rel="noopener">
+      <svg class="icon" aria-hidden="true"><use href="#icon-whatsapp"/></svg>
+    </a>
+    <a class="fab fab-tel" href="tel:+32467839407" aria-label="Bel Real Scents">
+      <svg class="icon" aria-hidden="true"><use href="#icon-telefoon"/></svg>
+    </a>
+  </div>
+
+  <footer class="site-footer">
+    <a class="logo logo-footer" href="#home" data-goto="home">
+      <svg class="logo-mark" aria-hidden="true"><use href="#icon-flacon"/></svg>
+      <span class="logo-text">Real Scents</span>
+    </a>
+    <p class="muted">Ontdek de luxe geuren van de wereld</p>
+    <nav class="footer-links" aria-label="Footer">
+      <a href="#shop" data-goto="shop">Shop</a>
+      <a href="#brands" data-goto="brands">Merken</a>
+      <a href="#deals" data-goto="deals">Acties</a>
+      <a href="#contact" data-goto="contact">Contact</a>
+    </nav>
+    <p class="footer-copy muted">© Real Scents</p>
+  </footer>
+
+  <script src="./script.js"></script>
+</body>
+</html>
