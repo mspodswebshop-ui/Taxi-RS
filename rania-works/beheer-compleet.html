@@ -230,12 +230,25 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(.7); curs
 /* ---------- Kleine schermen ---------- */
 @media (max-width: 820px) {
   .app { grid-template-columns: 1fr; }
+
+  /* Geen zijwaarts schuivende strip meer: alle knoppen staan onder elkaar
+     te wachten, zodat er nooit eentje buiten beeld valt. */
   .zijbalk {
-    position: static; height: auto; flex-direction: row; overflow-x: auto;
-    border-right: 0; border-bottom: 1px solid var(--line); padding: 12px;
+    position: static; height: auto; overflow: visible;
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(138px, 1fr)); gap: 8px;
+    border-right: 0; border-bottom: 1px solid var(--line);
+    padding: 14px 16px 16px;
   }
-  .merk, .zij-onder { display: none; }
-  .zij-knop { width: auto; white-space: nowrap; }
+  .merk { grid-column: 1 / -1; padding: 0 0 4px; }
+  .zij-knop {
+    width: auto; white-space: nowrap;
+    justify-content: center; padding: 11px 12px; font-size: 14px;
+    border: 1px solid var(--line);
+  }
+  .zij-knop .tel { margin-left: 8px; }
+  .zij-onder {
+    grid-column: 1 / -1; margin-top: 4px; padding-top: 12px; display: block;
+  }
   .inhoud { padding: 22px 18px 60px; }
   .veld-rij { grid-template-columns: 1fr; }
   .zoek { margin-left: 0; width: 100%; }
