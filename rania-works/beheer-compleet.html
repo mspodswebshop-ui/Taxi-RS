@@ -194,10 +194,28 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(.7); curs
 .veld-rij { display: grid; gap: 16px; grid-template-columns: 1fr 1fr; }
 .vink { display: flex; align-items: center; gap: 10px; font-size: 14px; }
 .vink input { width: 18px; height: 18px; accent-color: var(--purple); padding: 0; }
-.bestandveld { display: flex; gap: 8px; align-items: stretch; }
-.bestandveld input[type="text"] { flex: 1; min-width: 0; }
-.bestandknop { cursor: pointer; white-space: nowrap; padding: 11px 16px; font-size: 14px; }
-@media (max-width: 560px) { .bestandveld { flex-direction: column; } }
+.bestandveld { display: grid; gap: 8px; }
+.of { color: var(--faint); font-size: 12.5px; margin: 0; }
+
+/* De bestandskiezer zelf, in de stijl van de rest. */
+.bestandkiezer {
+  width: 100%; padding: 10px; font: inherit; font-size: 13.5px; color: var(--muted);
+  background: var(--veld); border: 1px dashed var(--line-2); border-radius: 10px;
+  cursor: pointer;
+}
+.bestandkiezer::file-selector-button {
+  font: inherit; font-size: 13.5px; font-weight: 500; margin-right: 12px;
+  padding: 9px 16px; border-radius: 999px; cursor: pointer;
+  background: linear-gradient(135deg, var(--purple), var(--purple-2));
+  border: 0; color: #fff;
+}
+.bestandkiezer::-webkit-file-upload-button {
+  font: inherit; font-size: 13.5px; font-weight: 500; margin-right: 12px;
+  padding: 9px 16px; border-radius: 999px; cursor: pointer;
+  background: linear-gradient(135deg, var(--purple), var(--purple-2));
+  border: 0; color: #fff;
+}
+.bestandkiezer:hover { border-color: rgba(168, 85, 247, .5); }
 .hulp { color: var(--faint); font-size: 12.5px; margin-top: 6px; overflow-wrap: anywhere; }
 
 /* ---------- Venster ---------- */
@@ -1326,11 +1344,14 @@ var SITEBESTANDEN = {
         return '<option' + (s === waarde ? ' selected' : '') + '>' + s + '</option>';
       }).join('') + '</select>';
     } else if (soort === 'bestand') {
+      /* De kiezer staat er bewust zichtbaar bij. Verstop je hem achter een
+         knop, dan opent hij op een iPhone vaak niet. */
       invoer = '<div class="bestandveld">' +
-        '<input id="' + naam + '" type="text" name="' + naam + '" value="' + v + '" placeholder="Plak een link, of kies een bestand">' +
-        '<label class="btn btn-g bestandknop">Bestand kiezen' +
-          '<input type="file" data-doel="' + naam + '" accept="video/*,image/*" hidden>' +
-        '</label>' +
+        '<p class="of">Kies een bestand van je toestel:</p>' +
+        '<input class="bestandkiezer" type="file" data-doel="' + naam + '"' +
+          ' accept="video/*,image/*,.mp4,.mov,.m4v,.webm,.jpg,.jpeg,.png,.webp">' +
+        '<p class="of">of plak een adres:</p>' +
+        '<input id="' + naam + '" type="text" name="' + naam + '" value="' + v + '" placeholder="youtu.be/…">' +
       '</div>';
     } else if (soort === 'vink') {
       invoer = '<label class="vink"><input type="checkbox" name="' + naam + '"' + (waarde ? ' checked' : '') + '> ' + esc(label) + '</label>';
