@@ -147,12 +147,14 @@ een_pagina = pagina_maken('home',
 site = inbakken(een_pagina, [
     ('<link rel="stylesheet" href="styles.css">', 'styles.css', 'style'),
     ('<script src="inhoud.js"></script>', 'inhoud.js', 'script'),
+    ('<script src="opslag.js"></script>', 'opslag.js', 'script'),
     ('<script src="script.js"></script>', 'script.js', 'script'),
 ])
 schrijf('rania-works-compleet.html', site, 'Rania Works - de website in een bestand.')
 
 beheer = inbakken(lees('beheer.html'), [
     ('<script src="inhoud.js"></script>', 'inhoud.js', 'script'),
+    ('<script src="opslag.js"></script>', 'opslag.js', 'script'),
     ('<script src="sitebestanden.js"></script>', 'sitebestanden.js', 'script'),
 ])
 schrijf('beheer-compleet.html', beheer, 'Rania Works - het beheer in een bestand.')
