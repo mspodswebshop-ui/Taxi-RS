@@ -1,0 +1,419 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Weblity reclamevideo</title>
+<!--
+  Reclamevideo voor Weblity, als geanimeerde HTML-pagina.
+
+  - Open dit bestand in een browser om de video als voorbeeld af te spelen.
+    ?formaat=liggend  -> 16:9 (laptop, YouTube, website)
+    ?formaat=staand   -> 9:16 (telefoon, Reels, TikTok, WhatsApp-status)
+  - render.mjs zet de pagina beeld voor beeld om naar een MP4. Daarvoor roept
+    het window.renderFrame(t) aan; alle animaties hangen alleen van t af.
+
+  Teksten aanpassen? Zoek hieronder naar de zinnen en vervang ze.
+-->
+<style>
+  @font-face { font-family: "Montserrat"; font-weight: 600; src: url(fonts/Montserrat-600.ttf); }
+  @font-face { font-family: "Montserrat"; font-weight: 800; src: url(fonts/Montserrat-800.ttf); }
+  @font-face { font-family: "Montserrat"; font-weight: 900; src: url(fonts/Montserrat-900.ttf); }
+
+  :root {
+    --ink: #0a0e1f;
+    --ink-2: #131a33;
+    --wit: #ffffff;
+    --zacht: #aab3d6;
+    --a1: #6d5cff;   /* violet */
+    --a2: #22d3ee;   /* cyaan  */
+    --a3: #ff5c8a;   /* roze   */
+    --grad: linear-gradient(100deg, var(--a1), var(--a2));
+    --wa: #25d366;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: #000; overflow: hidden; }
+  body { font-family: "Montserrat", "Liberation Sans", Arial, sans-serif; color: var(--wit); }
+
+  #stage {
+    position: relative; overflow: hidden;
+    width: var(--W); height: var(--H);
+    background: radial-gradient(120% 80% at 50% 0%, var(--ink-2), var(--ink) 70%);
+    transform-origin: 0 0;
+  }
+  /* u = 1% van de korte zijde: zo schaalt alles mee met het formaat */
+  #stage { --u: calc(min(var(--W), var(--H)) / 100); }
+
+  .blob { position: absolute; border-radius: 50%; filter: blur(calc(var(--u) * 9)); opacity: .55; }
+  .grid {
+    position: absolute; inset: 0; opacity: .07;
+    background-image:
+      linear-gradient(var(--wit) 1px, transparent 1px),
+      linear-gradient(90deg, var(--wit) 1px, transparent 1px);
+    background-size: calc(var(--u) * 8) calc(var(--u) * 8);
+  }
+
+  .scene { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+  [data-in] { opacity: 0; will-change: transform, opacity; }
+
+  .grad-text { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+  /* ---------- Scène 1: haak ---------- */
+  .s1 { flex-direction: column; text-align: center; gap: calc(var(--u) * 4); padding: 0 calc(var(--u) * 8); }
+  .s1 h1 { font-weight: 900; font-size: calc(var(--u) * 10); line-height: 1.05; letter-spacing: -.02em; }
+  .s1 p  { font-weight: 600; font-size: calc(var(--u) * 5.2); color: var(--zacht); }
+  .caret { display: inline-block; width: .08em; height: .9em; background: var(--a2); vertical-align: -.08em; margin-left: .05em; }
+
+  /* ---------- Scène 2: website bouwen ---------- */
+  .s2 { gap: calc(var(--u) * 6); padding: calc(var(--u) * 6); }
+  .s2 .tekst h2 { font-weight: 900; font-size: calc(var(--u) * 7.4); line-height: 1.08; letter-spacing: -.02em; }
+  .s2 .tekst p  { font-weight: 600; font-size: calc(var(--u) * 4.2); color: var(--zacht); margin-top: calc(var(--u) * 2.5); }
+  .s2 .tekst .wissel { position: relative; display: block; height: 1.2em; }
+  .s2 .tekst .wissel span { position: absolute; left: 0; top: 0; white-space: nowrap; }
+  .landscape .s2 { flex-direction: row; }
+  .landscape .s2 .tekst { width: 38%; }
+  .portrait  .s2 { flex-direction: column; text-align: center; }
+  .portrait  .s2 .tekst .wissel span { left: 50%; transform: translateX(-50%); }
+
+  .apparaten { position: relative; }
+  .landscape .apparaten { width: 52%; }
+  .portrait  .apparaten { width: 88%; }
+
+  .browser {
+    position: relative; width: 100%; aspect-ratio: 16 / 10.5;
+    border-radius: calc(var(--u) * 1.8); overflow: hidden;
+    background: #fff; box-shadow: 0 calc(var(--u) * 4) calc(var(--u) * 10) rgba(0,0,0,.55);
+  }
+  .browser .balk { height: 7%; background: #e9ecf5; display: flex; align-items: center; gap: 1.2%; padding: 0 2.4%; }
+  .browser .balk i { width: 1.6%; aspect-ratio: 1; border-radius: 50%; background: #c5cbe0; }
+  .browser .balk i:nth-child(1) { background: #ff6159; } .browser .balk i:nth-child(2) { background: #ffbd2e; } .browser .balk i:nth-child(3) { background: #28c941; }
+  .browser .balk .url {
+    margin-left: 3%; flex: 1; height: 58%; border-radius: 99px; background: #fff;
+    font-weight: 600; font-size: calc(var(--u) * 1.6); color: #6b7393; display: flex; align-items: center; padding-left: 2.5%;
+  }
+  .pagina { position: absolute; inset: 7% 0 0 0; }
+
+  /* Een sitepagina, twee keer: als schets (.wire) en als afgewerkt design (.final). */
+  .site { position: absolute; inset: 0; padding: 4% 5%; display: grid; gap: 4%; grid-template-rows: 8% 46% 1fr; }
+  .site .nav { display: flex; align-items: center; justify-content: space-between; }
+  .site .logo { width: 18%; height: 70%; border-radius: 6px; }
+  .site .links { display: flex; gap: 6%; width: 40%; justify-content: flex-end; }
+  .site .links b { width: 22%; height: .55em; border-radius: 99px; font-size: calc(var(--u) * 2); }
+  .site .hero { display: grid; grid-template-columns: 1.1fr 1fr; gap: 6%; align-items: center; }
+  .site .hero .kop b { display: block; height: calc(var(--u) * 2.2); border-radius: 6px; margin-bottom: 7%; }
+  .site .hero .kop b:nth-child(1) { width: 92%; } .site .hero .kop b:nth-child(2) { width: 70%; }
+  .site .hero .kop b.knop { width: 42%; height: calc(var(--u) * 3.2); border-radius: 99px; margin-top: 10%; }
+  .site .hero .beeld { height: 100%; border-radius: 10px; }
+  .site .kaarten { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4%; }
+  .site .kaarten div { border-radius: 10px; }
+
+  .wire { background: #fff; }
+  .wire .logo, .wire .links b, .wire .kop b, .wire .beeld, .wire .kaarten div { background: #e6e9f2; border: 2px dashed #b9c0d8; }
+
+  .final { background: #0f1430; }
+  .final .logo { background: var(--grad); }
+  .final .links b { background: #3a4370; }
+  .final .kop b:nth-child(1) { background: #fff; } .final .kop b:nth-child(2) { background: #8c95c4; }
+  .final .kop b.knop { background: var(--grad); box-shadow: 0 0 calc(var(--u) * 2) rgba(34,211,238,.5); }
+  .final .beeld { background: linear-gradient(135deg, var(--a1), var(--a3) 55%, #ffb36b); }
+  .final .kaarten div { background: #1d2550; border: 1px solid #2c3770; }
+  .final .kaarten div:nth-child(1) { border-top: 4px solid var(--a2); }
+  .final .kaarten div:nth-child(2) { border-top: 4px solid var(--a1); }
+  .final .kaarten div:nth-child(3) { border-top: 4px solid var(--a3); }
+
+  .muis { position: absolute; width: calc(var(--u) * 3.2); left: 0; top: 0; filter: drop-shadow(0 2px 3px rgba(0,0,0,.4)); }
+  .klik { position: absolute; width: calc(var(--u) * 6); aspect-ratio: 1; border-radius: 50%; border: 3px solid var(--a2); left: 0; top: 0; opacity: 0; }
+
+  .telefoon {
+    position: absolute; width: 27%; aspect-ratio: 9 / 19; right: -6%; bottom: -14%;
+    background: #05070f; border-radius: calc(var(--u) * 3); padding: 1.6%;
+    box-shadow: 0 calc(var(--u) * 3) calc(var(--u) * 8) rgba(0,0,0,.6);
+  }
+  .telefoon .scherm { position: relative; width: 100%; height: 100%; border-radius: calc(var(--u) * 2.3); overflow: hidden; background: #0f1430; padding: 12% 9%; display: flex; flex-direction: column; gap: 6%; }
+  .telefoon .notch { position: absolute; top: 3%; left: 50%; width: 32%; height: 3.2%; transform: translateX(-50%); background: #05070f; border-radius: 99px; }
+  .telefoon .m-logo { width: 40%; height: 3.5%; border-radius: 4px; background: var(--grad); }
+  .telefoon .m-beeld { height: 30%; border-radius: 8px; background: linear-gradient(135deg, var(--a1), var(--a3) 55%, #ffb36b); }
+  .telefoon .m-lijn { height: 3%; border-radius: 4px; background: #fff; }
+  .telefoon .m-lijn.kort { width: 70%; background: #8c95c4; }
+  .telefoon .m-knop { height: 6%; width: 60%; border-radius: 99px; background: var(--grad); }
+  .telefoon .m-kaart { flex: 1; border-radius: 8px; background: #1d2550; border-top: 3px solid var(--a2); }
+
+  /* ---------- Scène 3: voordelen ---------- */
+  .s3 { flex-direction: column; gap: calc(var(--u) * 5); padding: 0 calc(var(--u) * 7); }
+  .s3 h2 { font-weight: 900; font-size: calc(var(--u) * 8.4); letter-spacing: -.02em; text-align: center; }
+  .s3 ul { list-style: none; display: grid; gap: calc(var(--u) * 2.6); }
+  .landscape .s3 ul { grid-template-columns: 1fr 1fr; column-gap: calc(var(--u) * 4); }
+  .s3 li {
+    display: flex; align-items: center; gap: calc(var(--u) * 2.6);
+    background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1);
+    border-radius: calc(var(--u) * 2.4); padding: calc(var(--u) * 2.4) calc(var(--u) * 3.2);
+    font-weight: 800; font-size: calc(var(--u) * 4.2);
+  }
+  .landscape .s3 li { font-size: calc(var(--u) * 3.6); min-width: calc(var(--u) * 62); }
+  .s3 li .ico {
+    flex: none; width: calc(var(--u) * 8); aspect-ratio: 1; border-radius: calc(var(--u) * 2);
+    display: grid; place-items: center; background: var(--grad);
+  }
+  .s3 li .ico svg { width: 55%; height: 55%; }
+
+  /* ---------- Scène 4: afsluiter ---------- */
+  .s4 { flex-direction: column; text-align: center; gap: calc(var(--u) * 3.6); padding: 0 calc(var(--u) * 6); }
+  .woordmerk { font-weight: 900; font-size: calc(var(--u) * 17); letter-spacing: -.04em; line-height: 1; }
+  .woordmerk .punt { color: var(--a2); }
+  .s4 .slogan { font-weight: 800; font-size: calc(var(--u) * 5.4); }
+  .s4 .oproep { font-weight: 600; font-size: calc(var(--u) * 4.2); color: var(--zacht); margin-top: calc(var(--u) * 2); }
+  .knoppen { display: flex; gap: calc(var(--u) * 3); justify-content: center; }
+  .pil {
+    display: flex; align-items: center; gap: calc(var(--u) * 1.6);
+    font-weight: 800; font-size: calc(var(--u) * 4.2);
+    padding: calc(var(--u) * 2.2) calc(var(--u) * 4.4); border-radius: 99px;
+  }
+  .pil svg { width: calc(var(--u) * 5); height: calc(var(--u) * 5); }
+  .pil.bel { background: var(--grad); }
+  .pil.wa  { background: var(--wa); color: #06210f; }
+  .webadres {
+    font-weight: 800; font-size: calc(var(--u) * 4.6);
+    padding: calc(var(--u) * 2) calc(var(--u) * 4); border-radius: calc(var(--u) * 2);
+    border: 2px solid rgba(255,255,255,.18); background: rgba(255,255,255,.06);
+  }
+  .s4 .klein { font-weight: 600; font-size: calc(var(--u) * 3); color: var(--zacht); }
+
+  /* Staand heeft meer hoogte: daar mag de tekst groter. */
+  .portrait .s1 h1 { font-size: calc(var(--u) * 12); }
+  .portrait .s3 h2 { font-size: calc(var(--u) * 9.4); }
+  .portrait .s3 ul { gap: calc(var(--u) * 3.2); }
+  .portrait .s3 li { font-size: calc(var(--u) * 4.8); padding: calc(var(--u) * 3) calc(var(--u) * 3.6); }
+  .portrait .s4 { gap: calc(var(--u) * 4.6); }
+  .portrait .woordmerk { font-size: calc(var(--u) * 21); }
+  .landscape .s2 .tekst p { font-size: calc(var(--u) * 3.6); }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div class="blob" id="b1"></div>
+  <div class="blob" id="b2"></div>
+  <div class="blob" id="b3"></div>
+  <div class="grid"></div>
+
+  <!-- Scène 1 -->
+  <section class="scene s1" data-in="0" data-out="3.4" data-fx="fade">
+    <h1><span id="typ"></span><span class="caret" id="caret"></span></h1>
+    <p data-in="1.7" data-out="99" data-fx="up">Laat het meteen goed zien.</p>
+  </section>
+
+  <!-- Scène 2 -->
+  <section class="scene s2" data-in="3.6" data-out="9.4" data-fx="fade">
+    <div class="tekst">
+      <h2 data-in="3.8" data-out="99" data-fx="up">Wij ontwerpen<br>en bouwen</h2>
+      <h2 class="wissel">
+        <span class="grad-text" data-in="4.1" data-out="7.2" data-fx="up">jouw website.</span>
+        <span class="grad-text" data-in="7.45" data-out="99" data-fx="up">op elk scherm.</span>
+      </h2>
+      <p data-in="4.5" data-out="99" data-fx="up">Van idee tot online — wij regelen het.</p>
+    </div>
+
+    <div class="apparaten" data-in="3.9" data-out="99" data-fx="pop">
+      <div class="browser">
+        <div class="balk"><i></i><i></i><i></i><div class="url">weblitybee.netlify.app</div></div>
+        <div class="pagina">
+          <div class="site wire">
+            <div class="nav"><div class="logo" data-in="4.4" data-out="99" data-fx="grow"></div>
+              <div class="links"><b data-in="4.5" data-out="99" data-fx="grow"></b><b data-in="4.58" data-out="99" data-fx="grow"></b><b data-in="4.66" data-out="99" data-fx="grow"></b></div></div>
+            <div class="hero">
+              <div class="kop"><b data-in="4.75" data-out="99" data-fx="grow"></b><b data-in="4.9" data-out="99" data-fx="grow"></b><b class="knop" data-in="5.1" data-out="99" data-fx="grow"></b></div>
+              <div class="beeld" data-in="5.0" data-out="99" data-fx="grow"></div>
+            </div>
+            <div class="kaarten"><div data-in="5.3" data-out="99" data-fx="grow"></div><div data-in="5.42" data-out="99" data-fx="grow"></div><div data-in="5.54" data-out="99" data-fx="grow"></div></div>
+          </div>
+          <div class="site final" id="final">
+            <div class="nav"><div class="logo"></div><div class="links"><b></b><b></b><b></b></div></div>
+            <div class="hero">
+              <div class="kop"><b></b><b></b><b class="knop" id="siteKnop"></b></div>
+              <div class="beeld"></div>
+            </div>
+            <div class="kaarten"><div></div><div></div><div></div></div>
+          </div>
+          <div class="klik" id="klik"></div>
+          <svg class="muis" id="muis" viewBox="0 0 24 24"><path d="M4 2l15 9.5-6.6 1.3L16 20l-3 1.5-3.6-7.3L4 18z" fill="#fff" stroke="#0a0e1f" stroke-width="1.4" stroke-linejoin="round"/></svg>
+        </div>
+      </div>
+
+      <div class="telefoon" data-in="7.3" data-out="99" data-fx="rise">
+        <div class="scherm">
+          <div class="notch"></div>
+          <div class="m-logo"></div>
+          <div class="m-beeld"></div>
+          <div class="m-lijn"></div>
+          <div class="m-lijn kort"></div>
+          <div class="m-knop"></div>
+          <div class="m-kaart"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Scène 3 -->
+  <section class="scene s3" data-in="9.6" data-out="15.2" data-fx="fade">
+    <h2 data-in="9.7" data-out="99" data-fx="up">Waarom <span class="grad-text">Weblity</span>?</h2>
+    <ul>
+      <li data-in="10.4" data-out="99" data-fx="left">
+        <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.2 5.6L20 11l-5.8 2.4L12 19l-2.2-5.6L4 11l5.8-2.4z"/></svg></span>
+        Uniek design op maat
+      </li>
+      <li data-in="10.9" data-out="99" data-fx="left">
+        <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg></span>
+        Snel &amp; mobielvriendelijk
+      </li>
+      <li data-in="11.4" data-out="99" data-fx="left">
+        <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 4.5-3 7.7-7 9-4-1.3-7-4.5-7-9V6z"/><path d="M9 12l2 2 4-4"/></svg></span>
+        Professionele uitstraling
+      </li>
+      <li data-in="11.9" data-out="99" data-fx="left">
+        <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 9.5h8M8 12.5h5"/></svg></span>
+        Persoonlijk contact
+      </li>
+    </ul>
+  </section>
+
+  <!-- Scène 4 -->
+  <section class="scene s4" data-in="15.4" data-out="99" data-fx="fade">
+    <div class="woordmerk" data-in="15.5" data-out="99" data-fx="pop">Weblity<span class="punt">.</span></div>
+    <div class="slogan" data-in="16.0" data-out="99" data-fx="up">Websites die voor je werken.</div>
+    <div class="oproep" data-in="16.6" data-out="99" data-fx="up">Bel of WhatsApp ons vandaag nog</div>
+    <div class="knoppen" data-in="17.0" data-out="99" data-fx="up">
+      <div class="pil bel" id="pilBel">
+        <svg viewBox="0 0 24 24" fill="#fff"><path d="M6.6 10.8a15.1 15.1 0 006.6 6.6l2.2-2.2a1 1 0 011-.25 11.4 11.4 0 003.6.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1c0 1.25.2 2.45.57 3.57a1 1 0 01-.25 1z"/></svg>
+        Bellen
+      </div>
+      <div class="pil wa" id="pilWa">
+        <svg viewBox="0 0 24 24" fill="#06210f"><path d="M12 2a10 10 0 00-8.6 15.1L2 22l5-1.3A10 10 0 1012 2zm0 18.2a8.2 8.2 0 01-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1112 20.2zm4.5-6.1c-.25-.12-1.46-.72-1.69-.8-.23-.08-.39-.12-.56.12-.16.25-.64.8-.78.97-.14.16-.29.18-.54.06a6.7 6.7 0 01-3.3-2.9c-.25-.43.25-.4.71-1.33.08-.16.04-.3-.02-.43l-.76-1.83c-.2-.48-.4-.41-.56-.42h-.47a.9.9 0 00-.66.31 2.8 2.8 0 00-.87 2.07 4.8 4.8 0 001 2.57 11 11 0 004.23 3.74c1.57.68 2.19.74 2.98.62.48-.07 1.46-.6 1.67-1.18.2-.58.2-1.07.14-1.18-.06-.1-.22-.16-.47-.28z"/></svg>
+        WhatsApp
+      </div>
+    </div>
+    <div class="webadres" id="webadres" data-in="17.6" data-out="99" data-fx="up">weblitybee.netlify.app</div>
+    <div class="klein" data-in="18.1" data-out="99" data-fx="fade">Alle info &amp; contactgegevens op onze website</div>
+  </section>
+</div>
+
+<script>
+  const DUUR = 22;
+
+  // Formaat: ?formaat=staand (1080x1920) of ?formaat=liggend (1920x1080)
+  const formaat = new URLSearchParams(location.search).get("formaat") === "staand" ? "staand" : "liggend";
+  const W = formaat === "staand" ? 1080 : 1920;
+  const H = formaat === "staand" ? 1920 : 1080;
+  const stage = document.getElementById("stage");
+  stage.style.setProperty("--W", W + "px");
+  stage.style.setProperty("--H", H + "px");
+  stage.classList.add(formaat === "staand" ? "portrait" : "landscape");
+
+  const clamp = (x) => Math.max(0, Math.min(1, x));
+  const prog = (t, a, b) => clamp((t - a) / (b - a));
+  const mix = (a, b, p) => a + (b - a) * p;
+  const easeOut = (x) => 1 - Math.pow(1 - x, 3);
+  const easeInOut = (x) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
+  const easeBack = (x) => { const c = 1.70158; return 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2); };
+
+  const animEls = [...document.querySelectorAll("[data-in]")].map((el) => ({
+    el, tin: +el.dataset.in, tout: +el.dataset.out, fx: el.dataset.fx,
+  }));
+
+  // Achtergrondvlekken: drijven traag rond, alleen afhankelijk van t.
+  const blobs = [
+    { el: b1, kleur: "var(--a1)", r: 0.75, x: 0.15, y: 0.2, ax: 0.12, ay: 0.08, s: 0.21 },
+    { el: b2, kleur: "var(--a2)", r: 0.55, x: 0.85, y: 0.75, ax: 0.1, ay: 0.1, s: 0.17 },
+    { el: b3, kleur: "var(--a3)", r: 0.45, x: 0.6, y: 0.1, ax: 0.14, ay: 0.06, s: 0.13 },
+  ];
+  const kort = Math.min(W, H);
+  for (const b of blobs) {
+    b.el.style.background = b.kleur;
+    b.el.style.width = b.el.style.height = b.r * kort + "px";
+  }
+
+  const typTekst = "Je bedrijf online?";
+  const typ = document.getElementById("typ");
+  const caret = document.getElementById("caret");
+  const final = document.getElementById("final");
+  const muis = document.getElementById("muis");
+  const klik = document.getElementById("klik");
+  const siteKnop = document.getElementById("siteKnop");
+  const pagina = document.querySelector(".pagina");
+
+  function renderFrame(t) {
+    for (const b of blobs) {
+      const x = (b.x + b.ax * Math.sin(t * b.s * 2 * Math.PI / 3)) * W - (b.r * kort) / 2;
+      const y = (b.y + b.ay * Math.cos(t * b.s * 2 * Math.PI / 3)) * H - (b.r * kort) / 2;
+      b.el.style.transform = `translate(${x}px, ${y}px)`;
+    }
+
+    for (const a of animEls) {
+      const pin = prog(t, a.tin, a.tin + (a.fx === "grow" ? 0.3 : 0.6));
+      const pout = prog(t, a.tout, a.tout + 0.35);
+      let o = pin * (1 - pout);
+      let tr = "";
+      const e = easeOut(pin);
+      const u = kort / 100;
+      switch (a.fx) {
+        case "up":   tr = `translateY(${(1 - e) * 5 * u - pout * 3 * u}px)`; break;
+        case "left": tr = `translateX(${(1 - e) * -10 * u}px)`; break;
+        case "rise": tr = `translateY(${(1 - e) * 25 * u}px) rotate(${(1 - e) * 8}deg)`; break;
+        case "pop":  tr = `scale(${mix(0.82, 1, easeBack(pin)) * (1 - pout * 0.06)})`; break;
+        case "grow": tr = `scaleX(${mix(0.2, 1, e)})`; break;
+        case "fade": tr = `scale(${1 + pout * 0.04})`; break;
+      }
+      // In de staande versie centreert de wisseltekst zich met translateX(-50%).
+      if (a.el.parentElement.classList.contains("wissel") && formaat === "staand") tr = "translateX(-50%) " + tr;
+      a.el.style.opacity = o;
+      a.el.style.transform = tr;
+      a.el.style.transformOrigin = a.fx === "grow" ? "left center" : "";
+    }
+
+    // Scène 1: typmachine
+    const n = Math.round(prog(t, 0.3, 1.4) * typTekst.length);
+    typ.textContent = typTekst.slice(0, n);
+    caret.style.opacity = t < 1.4 || Math.floor(t * 2.5) % 2 === 0 ? 1 : 0;
+
+    // Scène 2: muis gaat naar de knop, klikt, en het design "valt" over de schets.
+    const pr = pagina.getBoundingClientRect();
+    const kr = siteKnop.getBoundingClientRect();
+    const sx = stage.getBoundingClientRect();
+    const sc = pr.width / pagina.offsetWidth || 1; // schaal door transforms
+    const doelX = (kr.left + kr.width / 2 - pr.left) / sc;
+    const doelY = (kr.top + kr.height / 2 - pr.top) / sc;
+    const pw = pagina.offsetWidth, ph = pagina.offsetHeight;
+    const pm = easeInOut(prog(t, 5.6, 6.35));
+    const mx = mix(pw * 0.92, doelX, pm);
+    const my = mix(ph * 0.95, doelY, pm) - Math.sin(pm * Math.PI) * ph * 0.12;
+    const muisZicht = prog(t, 5.5, 5.7) * (1 - prog(t, 7.0, 7.3));
+    const indruk = t > 6.4 && t < 6.55 ? 0.85 : 1;
+    muis.style.opacity = muisZicht;
+    muis.style.transform = `translate(${mx}px, ${my}px) scale(${indruk})`;
+    const kp = prog(t, 6.45, 7.0);
+    klik.style.opacity = kp > 0 && kp < 1 ? 1 - kp : 0;
+    const kw = klik.offsetWidth;
+    klik.style.transform = `translate(${doelX - kw / 2}px, ${doelY - kw / 2}px) scale(${mix(0.2, 1.6, easeOut(kp))})`;
+    const wipe = easeInOut(prog(t, 6.5, 7.2));
+    final.style.clipPath = `circle(${wipe * 150}% at ${(doelX / pw) * 100}% ${(doelY / ph) * 100}%)`;
+    final.style.opacity = wipe > 0 ? 1 : 0;
+
+    // Scène 4: zachte puls op de knoppen en de URL
+    const puls = t > 18.4 ? 1 + 0.035 * Math.sin((t - 18.4) * Math.PI * 1.6) : 1;
+    for (const id of ["pilBel", "pilWa"]) document.getElementById(id).style.transform = `scale(${puls})`;
+  }
+  window.renderFrame = renderFrame;
+  window.DUUR = DUUR;
+
+  // Voorbeeldweergave in de browser: schaal naar het venster en speel in een lus af.
+  if (!new URLSearchParams(location.search).has("render")) {
+    const pas = () => {
+      const s = Math.min(innerWidth / W, innerHeight / H);
+      stage.style.transform = `translate(${(innerWidth - W * s) / 2}px, ${(innerHeight - H * s) / 2}px) scale(${s})`;
+    };
+    addEventListener("resize", pas); pas();
+    const start = performance.now();
+    const lus = (nu) => { renderFrame(((nu - start) / 1000) % DUUR); requestAnimationFrame(lus); };
+    document.fonts.ready.then(() => requestAnimationFrame(lus));
+  }
+</script>
+</body>
+</html>
