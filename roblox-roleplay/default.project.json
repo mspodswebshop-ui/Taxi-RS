@@ -1,0 +1,38 @@
+{
+  "name": "Zonnestad",
+  "tree": {
+    "$className": "DataModel",
+    "ReplicatedStorage": {
+      "Shared": {
+        "$path": "src/shared"
+      }
+    },
+    "ServerScriptService": {
+      "Server": {
+        "$path": "src/server"
+      }
+    },
+    "StarterPlayer": {
+      "StarterPlayerScripts": {
+        "Client": {
+          "$path": "src/client"
+        }
+      }
+    },
+    "Players": {
+      "$properties": {
+        "CharacterAutoLoads": false
+      }
+    },
+    "Workspace": {
+      "$properties": {
+        "StreamingEnabled": false
+      }
+    },
+    "Lighting": {
+      "$properties": {
+        "Technology": "Future"
+      }
+    }
+  }
+}
