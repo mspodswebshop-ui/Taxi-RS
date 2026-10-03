@@ -8,7 +8,7 @@
 
 import { spawn } from "node:child_process";
 import { createRequire } from "node:module";
-import { mkdirSync } from "node:fs";
+import { existsSync, mkdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
@@ -46,9 +46,16 @@ for (const naam of gekozen) {
   const totaal = Math.round(duur * FPS);
 
   const uit = join(hier, "video", f.bestand);
+  // Geluidsband (voice-over + muziek) uit audio/maak_audio.py, als die er is.
+  const audio = join(hier, "audio", "weblity-audio.wav");
+  const geluid = existsSync(audio)
+    ? ["-i", audio, "-map", "0:v", "-map", "1:a", "-af", "loudnorm=I=-14:TP=-1.5:LRA=11,aresample=44100",
+       "-c:a", "aac", "-b:a", "192k", "-shortest"]
+    : [];
   const ffmpeg = spawn("ffmpeg", [
     "-y", "-loglevel", "error",
     "-f", "image2pipe", "-framerate", String(FPS), "-i", "-",
+    ...geluid,
     "-c:v", "libx264", "-preset", "slow", "-crf", "18",
     "-pix_fmt", "yuv420p", "-movflags", "+faststart",
     uit,
