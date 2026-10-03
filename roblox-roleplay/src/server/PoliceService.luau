@@ -50,6 +50,14 @@ function PoliceService.Init(roleService: any, world: any, vehicleService: any)
 		end
 
 		vehicleService.Despawn(target)
+		-- gestolen geld afpakken
+		target:SetAttribute("Wanted", nil)
+		for _, container in { target:FindFirstChildOfClass("Backpack"), target.Character } do
+			local bag = container and container:FindFirstChild("Geldzak")
+			if bag then
+				bag:Destroy()
+			end
+		end
 		nextCell = nextCell % #world.JailCells + 1
 		target:SetAttribute("JailedUntil", os.time() + Config.JailTime)
 		teleport(target, world.JailCells[nextCell])

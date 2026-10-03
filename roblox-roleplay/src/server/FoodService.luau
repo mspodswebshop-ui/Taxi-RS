@@ -1,5 +1,5 @@
--- FoodService: eten en drinken uit de snackbar (als Tool in je rugzak).
--- Klik 3 keer om het op te eten.
+-- FoodService: eten en spullen uit de snackbar en supermarkt (als Tool in je rugzak).
+-- Klik 3 keer om eten op te eten.
 
 local Shared = game:GetService("ReplicatedStorage"):WaitForChild("Shared")
 local Config = require(Shared.Config)
@@ -57,6 +57,27 @@ local SHAPES = {
 		local h = part(tool, nil, Vector3.zero, Vector3.new(0.5, 1.2, 0.5), Color3.fromRGB(220, 170, 100))
 		part(tool, h, Vector3.new(0, 0.9, 0), Vector3.new(0.95, 0.95, 0.95), color, Enum.PartType.Ball)
 	end,
+	Boodschappen = function(tool: Tool, color: Color3)
+		local h = part(tool, nil, Vector3.zero, Vector3.new(1.6, 1.6, 0.9), color)
+		part(tool, h, Vector3.new(0, 0.95, 0), Vector3.new(0.9, 0.3, 0.1), color)
+		part(tool, h, Vector3.new(-0.3, 0.9, 0.1), Vector3.new(0.4, 0.6, 0.4), Color3.fromRGB(205, 150, 80))
+		part(tool, h, Vector3.new(0.35, 1, 0), Vector3.new(0.35, 0.8, 0.35), Color3.new(1, 1, 1))
+	end,
+	Brood = function(tool: Tool, color: Color3)
+		part(tool, nil, Vector3.zero, Vector3.new(0.8, 0.7, 1.8), color)
+	end,
+	Melk = function(tool: Tool, color: Color3)
+		local h = part(tool, nil, Vector3.zero, Vector3.new(0.7, 1.4, 0.7), color)
+		part(tool, h, Vector3.new(0, 0.1, -0.36), Vector3.new(0.6, 0.5, 0.05), Color3.fromRGB(60, 120, 220))
+	end,
+	Appel = function(tool: Tool, color: Color3)
+		local h = part(tool, nil, Vector3.zero, Vector3.new(0.9, 0.9, 0.9), color, Enum.PartType.Ball)
+		part(tool, h, Vector3.new(0, 0.55, 0), Vector3.new(0.1, 0.3, 0.1), Color3.fromRGB(90, 60, 30))
+	end,
+	Chips = function(tool: Tool, color: Color3)
+		local h = part(tool, nil, Vector3.zero, Vector3.new(1, 1.4, 0.4), color)
+		part(tool, h, Vector3.new(0, 0, -0.21), Vector3.new(0.7, 0.5, 0.05), Color3.fromRGB(200, 40, 40))
+	end,
 }
 
 function FoodService.Give(player: Player, foodId: string)
@@ -87,6 +108,9 @@ function FoodService.Give(player: Player, foodId: string)
 
 	local bites = 0
 	tool.Activated:Connect(function()
+		if def.Id == "Boodschappen" then
+			return
+		end
 		bites += 1
 		if bites >= 3 then
 			tool:Destroy()
@@ -95,7 +119,7 @@ function FoodService.Give(player: Player, foodId: string)
 	end)
 
 	tool.Parent = backpack
-	Remotes.Event("Notify"):FireClient(player, "Alsjeblieft, " .. def.Name .. "! 🍟")
+	Remotes.Event("Notify"):FireClient(player, "Alsjeblieft, " .. def.Name .. "!")
 end
 
 function FoodService.Init(world: any)
@@ -103,9 +127,21 @@ function FoodService.Init(world: any)
 		if typeof(foodId) ~= "string" then
 			return
 		end
+		local shop = nil
+		for _, f in Config.Food do
+			if f.Id == foodId then
+				shop = f.Shop
+			end
+		end
 		local root = player.Character and player.Character:FindFirstChild("HumanoidRootPart") :: BasePart?
-		if not root or (root.Position - world.SnackCounter).Magnitude > 30 then
-			Remotes.Event("Notify"):FireClient(player, "Ga naar de snackbar om te bestellen.")
+		local near = false
+		for _, counter in world.ShopCounters[shop or ""] or {} do
+			if root and (root.Position - counter).Magnitude < 30 then
+				near = true
+			end
+		end
+		if not near then
+			Remotes.Event("Notify"):FireClient(player, "Ga naar de " .. string.lower(shop or "winkel") .. " om dit te halen.")
 			return
 		end
 		FoodService.Give(player, foodId)

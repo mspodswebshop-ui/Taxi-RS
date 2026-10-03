@@ -7,11 +7,14 @@
 	3. Maak per gamepass hieronder een pass aan en zet de prijs in Robux.
 	4. Kopieer het ID van de pass en vul het hieronder in bij Id.
 
-	Zolang een Id op 0 staat, krijg je die gamepass GRATIS in Roblox Studio,
-	zodat je alles kunt testen. In het echte spel is hij dan niet te koop.
+	Zolang een Id op 0 staat, is die gamepass nog niet te koop en heeft niemand hem.
+	Wil je in Roblox Studio alles gratis testen? Zet dan GratisInStudio op true.
+	(Dit werkt alleen in Studio, nooit in het echte spel.)
 ]]
 
 local Config = {}
+
+Config.GratisInStudio = false
 
 Config.TownName = "Zonnestad"
 
@@ -49,8 +52,11 @@ Config.Vehicles = {
 	{ Id = "Pickup", Name = "Pick-up", Style = "Pickup", MaxSpeed = 55 },
 	{ Id = "Busje", Name = "Busje", Style = "Van", MaxSpeed = 50 },
 	{ Id = "Taxi", Name = "Taxi", Style = "Taxi", MaxSpeed = 65 },
+	{ Id = "Schoolbus", Name = "Schoolbus", Style = "Bus", MaxSpeed = 45 },
 	{ Id = "Scooter", Name = "Scooter", Style = "Scooter", MaxSpeed = 45 },
 	{ Id = "Politieauto", Name = "Politieauto", Style = "Police", MaxSpeed = 85, Role = "Politie" },
+	{ Id = "Ambulance", Name = "Ambulance", Style = "Ambulance", MaxSpeed = 80, Role = "Dokter" },
+	{ Id = "Brandweerwagen", Name = "Brandweerwagen", Style = "FireTruck", MaxSpeed = 70, Role = "Brandweer" },
 	{ Id = "Sportwagen", Name = "Sportwagen", Style = "Sports", MaxSpeed = 100, GamePass = "Sportwagens" },
 	{ Id = "Supercar", Name = "Supercar", Style = "Super", MaxSpeed = 125, GamePass = "Sportwagens" },
 	{ Id = "Racemotor", Name = "Racemotor", Style = "Motorbike", MaxSpeed = 110, GamePass = "Motoren" },
@@ -72,21 +78,32 @@ Config.VehicleColors = {
 Config.Roles = {
 	{ Id = "Burger", Name = "Burger", TeamColor = "Medium stone grey", Description = "Gewone inwoner van de stad" },
 	{ Id = "Politie", Name = "Politie", TeamColor = "Bright blue", Description = "Rij in de politieauto en arresteer boeven" },
+	{ Id = "Brandweer", Name = "Brandweer", TeamColor = "Bright red", Description = "Rij in de brandweerwagen" },
+	{ Id = "Dokter", Name = "Dokter", TeamColor = "White", Description = "Werk in het ziekenhuis en rij ambulance" },
+	{ Id = "Leraar", Name = "Leraar", TeamColor = "Bright violet", Description = "Geef les op school" },
+	{ Id = "Leerling", Name = "Leerling", TeamColor = "Bright yellow", Description = "Ga naar school" },
 	{ Id = "Snackbar", Name = "Snackbar-medewerker", TeamColor = "Bright orange", Description = "Bak friet en burgers in de snackbar" },
 	{ Id = "Kantoor", Name = "Kantoorbaan", TeamColor = "Dark green", Description = "Werk in de kantoortoren" },
-	{ Id = "Boef", Name = "Boef", TeamColor = "Really black", Description = "Ontloop de politie... als je kunt!" },
+	{ Id = "Boef", Name = "Boef", TeamColor = "Really black", Description = "Overval de bank... en ontloop de politie!" },
 }
 
--- Eten uit de snackbar (gratis)
+-- Eten en spullen uit de winkels (gratis). Shop = waar je het haalt.
 Config.Food = {
-	{ Id = "Friet", Name = "Friet", Color = Color3.fromRGB(245, 200, 60) },
-	{ Id = "Burger", Name = "Burger", Color = Color3.fromRGB(150, 90, 40) },
-	{ Id = "Frikandel", Name = "Frikandel", Color = Color3.fromRGB(110, 50, 30) },
-	{ Id = "Cola", Name = "Cola", Color = Color3.fromRGB(180, 20, 30) },
-	{ Id = "Ijsje", Name = "IJsje", Color = Color3.fromRGB(255, 190, 220) },
+	{ Id = "Friet", Name = "Friet", Shop = "Snackbar", Color = Color3.fromRGB(245, 200, 60) },
+	{ Id = "Burger", Name = "Burger", Shop = "Snackbar", Color = Color3.fromRGB(150, 90, 40) },
+	{ Id = "Frikandel", Name = "Frikandel", Shop = "Snackbar", Color = Color3.fromRGB(110, 50, 30) },
+	{ Id = "Cola", Name = "Cola", Shop = "Snackbar", Color = Color3.fromRGB(180, 20, 30) },
+	{ Id = "Ijsje", Name = "IJsje", Shop = "Snackbar", Color = Color3.fromRGB(255, 190, 220) },
+	{ Id = "Boodschappen", Name = "Boodschappentas", Shop = "Supermarkt", Color = Color3.fromRGB(40, 140, 70) },
+	{ Id = "Brood", Name = "Brood", Shop = "Supermarkt", Color = Color3.fromRGB(205, 150, 80) },
+	{ Id = "Melk", Name = "Melk", Shop = "Supermarkt", Color = Color3.fromRGB(245, 245, 245) },
+	{ Id = "Appel", Name = "Appel", Shop = "Supermarkt", Color = Color3.fromRGB(200, 30, 40) },
+	{ Id = "Chips", Name = "Chips", Shop = "Supermarkt", Color = Color3.fromRGB(240, 190, 30) },
 }
 
 Config.JailTime = 45 -- seconden in de cel
+Config.RobberyTime = 6 -- seconden de knop vasthouden om de kluis te kraken
+Config.RobberyCooldown = 180 -- seconden voordat de bank weer overvallen kan worden
 Config.ArrestDistance = 12
 
 function Config.GetVehicle(id: string)

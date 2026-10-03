@@ -1,6 +1,6 @@
 # Zonnestad: een roleplay-spel voor Roblox (zoals Brookhaven)
 
-Een complete roleplay-stad die zichzelf met code bouwt zodra het spel start.
+Een grote roleplay-stad die zichzelf met code bouwt zodra het spel start.
 
 ![Plattegrond van Zonnestad](plattegrond.png)
 
@@ -8,44 +8,48 @@ Een complete roleplay-stad die zichzelf met code bouwt zodra het spel start.
 
 | | |
 |---|---|
-| 🛣️ **Stad** | 4×4 wegen met strepen en zebrapaden, stoepen, lantaarns die 's avonds aangaan, en een dag- en nachtritme van 12 minuten |
-| ⛲ **Plein** | Fontein met water, bankjes, bloemen en een welkomstbord. Hier verschijn je |
-| 👮 **Politiebureau** | Balie (word politie), bureaus, 3 cellen met tralies, parkeerplaats en een Nederlandse vlag |
-| 🍟 **Snackbar** | Toonbank met menu (friet, burger, frikandel, cola, ijsje), frituur, terras met parasols en een reuze patatzak op het dak |
-| 🏢 **Kantoortoren** | 4 verdiepingen met bureaus, een lift en een helikopterplatform op het dak |
-| 🚗 **Autodealer** | Showroom met sportauto's en garages waar je je voertuig kiest |
-| 🏠 **12 huizen** | Lindelaan, Eikenweg en Berkenhof, elk met bank, tv, keuken, bed, tuin en brievenbus |
-| 👑 **2 villa's** | Met zwembad, palmbomen, ligbedden en luxe inrichting (alleen met Premium) |
-| 🚙 **10 voertuigen** | Gezinsauto, pick-up, busje, taxi, scooter, politieauto met zwaailichten, sportwagen, supercar, racemotor en crossmotor, in 8 kleuren |
-| 👔 **Rollen** | Burger, Politie, Snackbar-medewerker, Kantoorbaan en Boef, met naambordjes en hoedjes |
-| 🚔 **Politie** | Politie kan boeven arresteren. Die zitten dan 45 seconden in de cel |
+| 🗺️ **Stad** | 16 blokken met straten, stoepen, zebrapaden, verkeerslichten en 128 lantaarns die 's avonds aangaan. Rondom liggen heuvels met dennenbomen, en in het zuiden een strand met echte zee om in te zwemmen |
+| 🌅 **Sfeer** | Dag en nacht (12 minuten), wolken, zonnestralen en realistisch licht en schaduw |
+| 🏠 **16 moderne huizen** | 2 verdiepingen met trap, balkon, garage, keuken met kookeiland, woonkamer, ouderslaapkamer, kinderkamer, badkamer, tuin met terras en barbecue |
+| 👑 **4 villa's** | Met zwembad (echt water), supercar in de garage, bioscoopkamer, pooltafel, basketbalveld, palmbomen en een poort |
+| 🚪 **Deuren** | Deuren gaan echt open: draaideuren, schuifdeuren, garagedeuren, en automatische deuren bij winkels |
+| 👮 **Politiebureau** | Balie, bureaus, 3 cellen en garages voor politieauto's |
+| 🚒 **Brandweer** | Brandweerwagens, garagedeuren, kluisjes, glijpaal en oefentoren |
+| 🏥 **Ziekenhuis** | Wachtkamer, ziekenhuisbedden, ambulances en helikopterplatform |
+| 🏫 **School** | 2 klaslokalen, gang met kluisjes, sportveld en schoolbus |
+| 🏦 **Bank** | Loketten en een kluis die boeven kunnen kraken (met alarm!) |
+| 🍟 **Winkels** | Snackbar met terras, supermarkt met schappen en kassa's, tankstation |
+| 🏢 **Kantoortoren** | 6 verdiepingen met lift en helikopterplatform |
+| 🚗 **Autodealer** | Showroom en 5 garages om je voertuig te kiezen |
+| 🌳 **Park** | Vijver met steiger, speeltuin met glijbaan en schommels, sportveld, picknicktafels en een ijscokar |
+| 🏖️ **Strand** | Palmbomen, parasols, ligbedden, strandwacht, volleybalnet en een strandtent |
+| 🚙 **13 voertuigen** | Gezinsauto, pick-up, busje, taxi, schoolbus, scooter, politieauto, ambulance, brandweerwagen, sportwagen, supercar, racemotor en crossmotor, in 8 kleuren |
+| 👔 **9 rollen** | Burger, Politie, Brandweer, Dokter, Leraar, Leerling, Snackbar, Kantoor en Boef |
 | 💎 **Robux-winkel** | 3 gamepasses: Premium (villa's en een gouden naam), Sportwagens en Motoren |
 
 ### Besturing
-- **Menu**: de 4 knoppen links op het scherm (🚗 voertuigen, 🏠 huizen, 👔 banen, 💎 winkel)
+- **Menu**: de 4 knoppen links op je scherm (🚗 voertuigen, 🏠 huizen, 👔 banen, 💎 winkel)
 - **Rijden**: W/S = gas en remmen, A/D = sturen, spatie = uitstappen
-- **In een auto stappen**: loop ernaartoe en druk op **E** ("Instappen")
-- **Huis**: druk bij de voordeur op **E** om het te claimen, en daarna om de deur op slot te doen. Jij kunt zelf altijd door je eigen deur
+- **Instappen**: loop naar een voertuig en druk op **E**
+- **Deuren**: **E** om open of dicht te doen
+- **Huis claimen of op slot doen**: **F** bij de deurbel naast de voordeur
+- **Baan nemen**: **F** bij de balie of het kluisje van het gebouw
 - **Lift in het kantoor**: **E** = omhoog, **R** = omlaag
-- **Baan nemen**: **F** bij de balie (politie), het kluisje (snackbar) of de receptie (kantoor)
-- **Arresteren** (als politie): houd **F** ingedrukt bij een boef
+- **Bank overvallen** (als Boef): houd **E** ingedrukt bij het toetsenpaneel naast de kluis, en pak dan het geld
+- **Arresteren** (als Politie): houd **F** ingedrukt bij een boef
 
 ---
 
 ## Zo zet je het in Roblox Studio
 
-### Manier 1: het kant-en-klare bestand (makkelijkst)
 1. Download **`Zonnestad.rbxl`** uit deze map.
-2. Dubbelklik erop, of open het in Roblox Studio via *File > Open from File*.
-3. Druk op **Play** (F5). De stad wordt gebouwd en je verschijnt op het plein.
+2. Open het in Roblox Studio via *File > Open from File*.
+3. Druk op **Play**. De stad wordt gebouwd en je verschijnt op het plein.
+4. Op Roblox zetten: *File > Publish to Roblox*. Zet het spel daarna op **Public** op create.roblox.com.
 
-### Manier 2: met Rojo (als je de code wilt aanpassen)
-1. Installeer [Rojo](https://rojo.space) en de Rojo-plugin in Studio.
-2. Ga in een terminal naar deze map en typ `rojo serve`.
-3. Klik in Studio op de Rojo-plugin en dan op **Connect**.
-4. Elke wijziging in `src/` staat meteen in Studio.
+**Meer spelers per server?** Ga naar *Game Settings > Places* en zet **Max Players** hoger, bijvoorbeeld 30.
 
-Een nieuw `.rbxl` bestand maak je met:
+Werk je met [Rojo](https://rojo.space)? Gebruik dan `rojo serve`, of maak een nieuw bestand met:
 ```
 rojo build default.project.json -o Zonnestad.rbxl
 ```
@@ -54,22 +58,15 @@ rojo build default.project.json -o Zonnestad.rbxl
 
 ## Robux verdienen met gamepasses
 
-Gamepasses werken pas als je spel gepubliceerd is.
+1. Publiceer je spel.
+2. Ga op [create.roblox.com](https://create.roblox.com) naar je spel → **Monetization → Passes**.
+3. Maak 3 passes aan: **Premium**, **Sportwagens** en **Motoren**. Kies een plaatje en een prijs, en zet ze te koop.
+4. Kopieer van elke pass het **ID**.
+5. Vul de ID's in bij `Id = 0` in `ReplicatedStorage > Shared > Config`. Publiceer daarna opnieuw.
 
-1. **Publiceer** je spel: *File > Publish to Roblox*.
-2. Ga naar [create.roblox.com](https://create.roblox.com), kies je spel en ga naar **Monetization > Passes**.
-3. Maak 3 passes aan: **Premium**, **Sportwagens** en **Motoren**. Upload een plaatje, zet ze **te koop** en kies een prijs.
-4. Kopieer van elke pass het **ID** (het getal in de link).
-5. Open `src/shared/Config.luau` en vul de ID's in:
-   ```lua
-   Premium = {
-       Id = 123456789, -- <- jouw ID
-   ```
-6. Publiceer opnieuw.
+Spelers zien alleen "✔ In bezit" als ze de gamepass echt gekocht hebben. Zolang een ID op `0` staat, heeft niemand die pass.
 
-> 💡 Zolang een ID op `0` staat, krijg je die gamepass **gratis in Studio**. Zo kun je alles testen. In het echte spel staat de knop dan op "nog niet ingesteld".
-
-De prijzen in `Config.luau` worden alleen getoond zolang er nog geen ID is. Daarna leest het spel de echte prijs van Roblox.
+> 💡 Wil je in Studio alles zelf testen, zoals villa's en sportwagens? Zet dan in Config `GratisInStudio = true`. Dit werkt alleen in Studio en nooit in het echte spel.
 
 ---
 
@@ -78,29 +75,27 @@ De prijzen in `Config.luau` worden alleen getoond zolang er nog geen ID is. Daar
 ```
 src/
   shared/
-    Config.luau          <- ALLE instellingen: gamepasses, voertuigen, kleuren, rollen, eten
+    Config.luau          <- ALLE instellingen: gamepasses, voertuigen, kleuren, rollen, winkels
     Remotes.luau         <- communicatie tussen server en speler
   server/
-    Main.server.luau     <- start alles op, dag en nacht
-    WorldBuilder.luau    <- bouwt de stad (wegen, gebouwen, huizen, meubels)
-    VehicleBuilder.luau  <- bouwt de auto's en motoren
+    Main.server.luau     <- start alles op: licht, dag en nacht, spelers
+    WorldBuilder.luau    <- indeling van de stad, wegen, terrein, heuvels en zee
+    Buildings.luau       <- alle openbare gebouwen
+    Homes.luau           <- huizen en villa's
+    Furniture.luau       <- meubels, bomen, lantaarns en andere decoratie
+    Doors.luau           <- deuren die opengaan
+    Build.luau           <- hulpfuncties: muren met ramen, trappen, relingen
+    VehicleBuilder.luau  <- hoe de voertuigen eruitzien
     VehicleService.luau  <- spawnen en besturen van voertuigen
-    HouseService.luau    <- huizen claimen en deuren op slot
+    HouseService.luau    <- huizen claimen en op slot doen
     RoleService.luau     <- banen, teams, naambordjes en hoedjes
     PoliceService.luau   <- arresteren en de cel
-    FoodService.luau     <- eten uit de snackbar
+    BankService.luau     <- bankoverval met alarm
+    FoodService.luau     <- eten en spullen uit de winkels
     Monetization.luau    <- gamepasses (Robux)
-    Build.luau           <- hulpfuncties om onderdelen te bouwen
   client/
     Main.client.luau     <- het menu op je scherm
 ```
 
-### Zelf dingen toevoegen
-- **Nieuw voertuig**: voeg een regel toe aan `Config.Vehicles` en gebruik een bestaande `Style` (Sedan, Pickup, Van, Taxi, Police, Sports, Super, Scooter, Motorbike of Dirtbike).
-- **Nieuwe kleur**: voeg een regel toe aan `Config.VehicleColors`.
-- **Nieuwe baan**: voeg een regel toe aan `Config.Roles`.
-- **Nieuw eten**: voeg een regel toe aan `Config.Food` en een vorm in `FoodService.luau`.
-- **Stad aanpassen**: in `WorldBuilder.luau` onderaan, in `WorldBuilder.Build()`.
-
-## Ideeën voor later
-Ziekenhuis met ambulance, brandweer, school, supermarkt, telefoon-app, huisdieren, kleding kiezen, meer verdiepingen in huizen, een strand, en geld verdienen met banen.
+## Nog mooier maken
+Alles in Zonnestad is met code gebouwd uit blokken. Brookhaven gebruikt ook 3D-modellen die in Blender gemaakt zijn. Wil je het nog echter maken? Zoek dan in Studio in de **Toolbox** (Creator Store) naar gratis modellen, bijvoorbeeld meubels, en zet die in de huizen.

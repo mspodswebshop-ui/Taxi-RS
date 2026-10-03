@@ -31,8 +31,9 @@ function Monetization.Owns(player: Player, key: string?): boolean
 		return false
 	end
 	if pass.Id == 0 then
-		-- Nog geen echte gamepass ingesteld: gratis in Studio om te testen
-		return RunService:IsStudio()
+		-- Nog geen echte gamepass ingesteld: niemand heeft hem
+		-- (behalve als je in Studio test met Config.GratisInStudio = true)
+		return Config.GratisInStudio == true and RunService:IsStudio()
 	end
 	local list = owned[player]
 	return list ~= nil and list[key] == true

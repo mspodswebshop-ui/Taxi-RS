@@ -1,10 +1,12 @@
--- HouseService: huizen claimen, deur op slot doen en naar je huis teleporteren.
+-- HouseService: huizen claimen, deuren op slot doen en naar je huis teleporteren.
+-- Claimen en op slot doen gaat met F bij de deurbel naast de voordeur, of via het menu.
 -- Villa's (Premium = true) kun je alleen claimen met de Premium-gamepass.
 
 local Players = game:GetService("Players")
 
 local Shared = game:GetService("ReplicatedStorage"):WaitForChild("Shared")
 local Remotes = require(Shared.Remotes)
+local Doors = require(script.Parent.Doors)
 
 local HouseService = {}
 
@@ -13,6 +15,9 @@ local byId: { [string]: any } = {}
 local owners: { [string]: Player } = {}
 local playerHouse: { [Player]: string } = {}
 local monetization: any
+
+local GREEN = Color3.fromRGB(40, 220, 80)
+local RED = Color3.fromRGB(230, 40, 40)
 
 local function notify(player: Player, text: string)
 	Remotes.Event("Notify"):FireClient(player, text)
@@ -28,7 +33,7 @@ function HouseService.Snapshot()
 			Premium = house.Premium,
 			Owner = owner and owner.DisplayName or nil,
 			OwnerUserId = owner and owner.UserId or nil,
-			Locked = house.Door:GetAttribute("Locked") == true,
+			Locked = house.Locked == true,
 		})
 	end
 	return list
@@ -39,19 +44,21 @@ local function broadcast()
 end
 
 local function setLocked(house: any, locked: boolean)
-	local door = house.Door :: BasePart
-	door:SetAttribute("Locked", locked)
-	door.CanCollide = locked
-	door.Transparency = locked and 0 or 0.6
-	house.LockLight.Color = locked and Color3.fromRGB(230, 40, 40) or Color3.fromRGB(40, 220, 80)
+	house.Locked = locked
+	for _, door in house.Doors do
+		Doors.SetLocked(door, locked)
+	end
+	house.LockLight.Color = locked and RED or GREEN
 end
 
 local function refresh(house: any)
 	local owner = owners[house.Id]
-	house.Door:SetAttribute("OwnerUserId", owner and owner.UserId or 0)
+	for _, door in house.Doors do
+		Doors.SetOwner(door, owner and owner.UserId or 0)
+	end
 	if owner then
-		house.Sign.Text = "🏠 " .. owner.DisplayName
-		house.Prompt.ActionText = "Slot open/dicht"
+		house.Sign.Text = owner.DisplayName
+		house.Prompt.ActionText = "Op slot / open"
 		house.Prompt.ObjectText = house.Name
 	else
 		house.Sign.Text = house.Premium and "👑 Te koop" or "Te koop"
@@ -94,7 +101,7 @@ function HouseService.Claim(player: Player, id: string)
 	setLocked(house, false)
 	refresh(house)
 	broadcast()
-	notify(player, "Welkom thuis! " .. house.Name .. " is nu van jou.")
+	notify(player, "Welkom thuis! " .. house.Name .. " is nu van jou. 🏠")
 end
 
 function HouseService.ToggleLock(player: Player)
@@ -104,10 +111,10 @@ function HouseService.ToggleLock(player: Player)
 		return
 	end
 	local house = byId[id]
-	local locked = not (house.Door:GetAttribute("Locked") == true)
+	local locked = not house.Locked
 	setLocked(house, locked)
 	broadcast()
-	notify(player, locked and "Deur op slot 🔒" or "Deur open 🔓")
+	notify(player, locked and "Alle deuren op slot 🔒" or "Deuren van het slot 🔓")
 end
 
 function HouseService.GoTo(player: Player, id: string)

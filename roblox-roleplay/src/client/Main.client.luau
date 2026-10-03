@@ -4,7 +4,6 @@ local MarketplaceService = game:GetService("MarketplaceService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
-local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = require(Shared.Config)
@@ -438,16 +437,22 @@ menus.Shop = function()
 	end
 end
 
-menus.Food = function()
-	title.Text = "🍟 Snackbar"
-	for _, f in Config.Food do
-		row(f.Name, "Gratis", {
-			textButton("Bestel", COLORS.Green, UDim2.new(), function()
-				Remotes.Event("OrderFood"):FireServer(f.Id)
-			end),
-		})
+local function shopMenu(shop: string, heading: string)
+	return function()
+		title.Text = heading
+		for _, f in Config.Food do
+			if f.Shop == shop then
+				row(f.Name, "Gratis", {
+					textButton("Pakken", COLORS.Green, UDim2.new(), function()
+						Remotes.Event("OrderFood"):FireServer(f.Id)
+					end),
+				})
+			end
+		end
 	end
 end
+menus["Food:Snackbar"] = shopMenu("Snackbar", "🍟 Snackbar")
+menus["Food:Supermarkt"] = shopMenu("Supermarkt", "🛒 Supermarkt")
 
 local function openMenu(name: string?)
 	if name == nil or (currentMenu == name and panel.Visible) then
@@ -536,35 +541,6 @@ task.spawn(function()
 	passes = state.Passes
 	houses = state.Houses
 	refresh()
-end)
-
-------------------------------------------------------------------------
--- Je eigen huisdeur: jij kunt er altijd door, ook als hij op slot is
-------------------------------------------------------------------------
-
-local function watchDoor(door: BasePart)
-	local function update()
-		if door:GetAttribute("OwnerUserId") == player.UserId and door.CanCollide then
-			door.CanCollide = false
-		end
-	end
-	door:GetAttributeChangedSignal("OwnerUserId"):Connect(update)
-	door:GetPropertyChangedSignal("CanCollide"):Connect(update)
-	update()
-end
-
-task.spawn(function()
-	local map = Workspace:WaitForChild("Stad")
-	for _, d in map:GetDescendants() do
-		if d.Name == "Door" and d:IsA("BasePart") then
-			watchDoor(d)
-		end
-	end
-	map.DescendantAdded:Connect(function(d)
-		if d.Name == "Door" and d:IsA("BasePart") then
-			watchDoor(d)
-		end
-	end)
 end)
 
 ------------------------------------------------------------------------

@@ -14,6 +14,8 @@ local Monetization: any
 
 local HATS = {
 	Politie = { Color = Color3.fromRGB(20, 30, 70), Size = Vector3.new(1.5, 0.45, 1.5), Shape = Enum.PartType.Cylinder },
+	Brandweer = { Color = Color3.fromRGB(240, 200, 40), Size = Vector3.new(1.6, 0.7, 1.6), Shape = Enum.PartType.Cylinder },
+	Dokter = { Color = Color3.fromRGB(120, 200, 190), Size = Vector3.new(1.4, 0.35, 1.4), Shape = Enum.PartType.Cylinder },
 	Snackbar = { Color = Color3.fromRGB(250, 250, 250), Size = Vector3.new(1.0, 1.1, 1.1), Shape = Enum.PartType.Cylinder },
 	Boef = { Color = Color3.fromRGB(20, 20, 20), Size = Vector3.new(1.4, 1.4, 1.4), Shape = Enum.PartType.Ball },
 }
@@ -115,6 +117,10 @@ function RoleService.UpdateNametag(player: Player)
 	if RoleService.GetRole(player) == "Boef" then
 		roleLabel.TextColor3 = Color3.fromRGB(255, 80, 80)
 	end
+	if player:GetAttribute("Wanted") then
+		roleLabel.Text = "🚨 GEZOCHT 🚨"
+		roleLabel.TextColor3 = Color3.fromRGB(255, 50, 50)
+	end
 end
 
 function RoleService.SetRole(player: Player, roleId: string)
@@ -146,6 +152,9 @@ function RoleService.Init(monetization: any)
 		player.CharacterAdded:Connect(function(character)
 			character:WaitForChild("Head")
 			updateHat(player)
+			RoleService.UpdateNametag(player)
+		end)
+		player:GetAttributeChangedSignal("Wanted"):Connect(function()
 			RoleService.UpdateNametag(player)
 		end)
 	end
