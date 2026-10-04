@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reviews · Idriss Bakkerij</title>
+<meta name="description" content="Lees wat klanten zeggen over Idriss Bakkerij in Boom.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-page="reviews.html">
+<div id="site-header"></div>
+
+<main>
+  <header class="page-head">
+    <div class="wrap">
+      <div class="crumbs"><a href="index.html">Home</a> / Reviews</div>
+      <h1>Wat klanten zeggen</h1>
+      <p>Jouw mening maakt ons beter. Bedankt voor elke review!</p>
+    </div>
+  </header>
+
+  <section>
+    <div class="wrap">
+      <div class="rating-card">
+        <div class="score" data-rating></div>
+        <div>
+          <div class="stars" data-rating-stars></div>
+          <div class="muted">Gemiddelde score op Google, op basis van <b data-rating-count></b> reviews</div>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center">
+          <a class="btn" data-google target="_blank" rel="noopener">Schrijf een review</a>
+          <a class="btn ghost" data-google target="_blank" rel="noopener">Bekijk op Google</a>
+        </div>
+      </div>
+
+      <p class="concept-note"><b>Concept:</b> de reviews hieronder zijn voorbeelden. Ze worden vervangen door echte Google-reviews voordat de site live gaat.</p>
+
+      <div class="tabs" id="filters"></div>
+      <div class="reviews" id="reviews"></div>
+    </div>
+  </section>
+
+  <section style="padding-top:0">
+    <div class="wrap">
+      <div class="cta">
+        <div><h2>Zelf proeven?</h2><p>Bestel vooraf en haal je bestelling warm af.</p></div>
+        <a href="bestellen.html" class="btn light">Bestel nu</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div id="site-footer"></div>
+<script src="app.js"></script>
+<script>
+  let filter = 0;
+  const FILTERS = [[0, 'Alle reviews'], [5, '5 sterren'], [4, '4 sterren']];
+  function render() {
+    $('#filters').innerHTML = FILTERS.map(([n, l]) =>
+      `<button class="tab" aria-selected="${n === filter}" data-n="${n}">${l}</button>`).join('');
+    $$('#filters .tab').forEach(b => b.onclick = () => { filter = +b.dataset.n; render(); });
+    const list = REVIEWS.filter(r => !filter || r.stars === filter);
+    $('#reviews').innerHTML = list.length ? list.map(reviewCard).join('') : '<p class="muted">Geen reviews in deze selectie.</p>';
+  }
+  render();
+</script>
+</body>
+</html>

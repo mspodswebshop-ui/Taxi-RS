@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bestellen · Idriss Bakkerij</title>
+<meta name="description" content="Bestel vooraf bij Idriss Bakkerij in Boom en haal je bestelling vers af.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-page="bestellen.html">
+<div id="site-header"></div>
+
+<main>
+  <header class="page-head">
+    <div class="wrap">
+      <div class="crumbs"><a href="index.html">Home</a> / Bestellen</div>
+      <h1>Bestel vooraf</h1>
+      <p>Je bestelling gaat rechtstreeks via WhatsApp naar de bakkerij. Betalen doe je bij het afhalen.</p>
+    </div>
+  </header>
+
+  <section>
+    <div class="wrap">
+      <div class="steps">
+        <div class="step"><b>1</b><span>Kies je producten</span></div>
+        <div class="step"><b>2</b><span>Vul naam en afhaaltijd in</span></div>
+        <div class="step"><b>3</b><span>Verstuur via WhatsApp</span></div>
+      </div>
+
+      <div class="order-grid">
+        <div class="panel">
+          <h3>Jouw bestelling</h3>
+          <div id="basket"></div>
+          <div class="total"><span>Totaal (indicatief)</span><span id="total">€ 0,00</span></div>
+          <p class="note" style="margin-top:18px">Snel toevoegen:</p>
+          <div class="quick" id="quick"></div>
+          <p style="margin:16px 0 0"><a href="assortiment.html">Bekijk het volledige assortiment →</a></p>
+        </div>
+
+        <form class="panel" id="orderForm">
+          <h3>Afhaalgegevens</h3>
+          <label for="name">Naam</label>
+          <input id="name" required autocomplete="name" placeholder="Je naam">
+          <label for="phone">Telefoon</label>
+          <input id="phone" type="tel" required autocomplete="tel" placeholder="04xx xx xx xx">
+          <div class="two">
+            <div>
+              <label for="date">Afhaaldag</label>
+              <input id="date" type="date" required>
+            </div>
+            <div>
+              <label for="time">Tijdstip</label>
+              <select id="time"></select>
+            </div>
+          </div>
+          <label for="msg">Opmerking (optioneel)</label>
+          <textarea id="msg" rows="3" placeholder="Bv. taart met tekst ‘Gefeliciteerd Sara’"></textarea>
+          <div style="margin-top:18px"><button class="btn whatsapp" type="submit"><svg><use href="#i-chat"/></svg>Verstuur via WhatsApp</button></div>
+          <p class="note">Voor grote bestellingen of taarten: minstens 48 uur op voorhand.</p>
+        </form>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div id="site-footer"></div>
+<script src="app.js"></script>
+<script>
+  function onBasketChange() {
+    const ids = Object.keys(basket).filter(id => PRODUCTS.some(p => p.id === id));
+    let total = 0;
+    $('#basket').innerHTML = ids.length ? ids.map(id => {
+      const p = PRODUCTS.find(x => x.id === id);
+      total += p.price * basket[id];
+      return `<div class="line-item"><span>${p.name}<small>${euro(p.price)} per stuk</small></span>
+        <span class="qty"><button type="button" data-id="${id}" data-d="-1" aria-label="Minder ${p.name}">−</button>
+        <b>${basket[id]}</b><button type="button" data-id="${id}" data-d="1" aria-label="Meer ${p.name}">+</button></span></div>`;
+    }).join('') : '<p class="basket-empty">Nog niets gekozen. Voeg hieronder snel iets toe of kijk in het assortiment.</p>';
+    $$('#basket .qty button').forEach(b => b.onclick = () => change(b.dataset.id, +b.dataset.d));
+    $('#total').textContent = euro(total);
+  }
+
+  $('#quick').innerHTML = PRODUCTS.slice(0, 8).map(p => `<button type="button" data-id="${p.id}">+ ${p.name}</button>`).join('');
+  $$('#quick button').forEach(b => b.onclick = () => change(b.dataset.id, 1, true));
+
+  const sel = $('#time');
+  for (let m = toMin('07:00'); m <= toMin('18:30'); m += 30) {
+    const t = String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0');
+    sel.add(new Option(t, t));
+  }
+  const today = new Date(); today.setMinutes(today.getMinutes() - today.getTimezoneOffset());
+  $('#date').min = $('#date').value = today.toISOString().slice(0, 10);
+
+  $('#orderForm').onsubmit = e => {
+    e.preventDefault();
+    const ids = Object.keys(basket);
+    if (!ids.length) { toast('Kies eerst een product'); return; }
+    const lines = ids.map(id => `• ${basket[id]}× ${PRODUCTS.find(p => p.id === id).name}`).join('\n');
+    const v = id => $('#' + id).value.trim();
+    const text = `Salaam, ik wil graag bestellen:\n${lines}\n\nNaam: ${v('name')}\nTel: ${v('phone')}\nAfhalen: ${v('date')} om ${v('time')}` + (v('msg') ? `\nOpmerking: ${v('msg')}` : '');
+    window.open(`https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(text)}`, '_blank');
+  };
+
+  onBasketChange();
+</script>
+</body>
+</html>
