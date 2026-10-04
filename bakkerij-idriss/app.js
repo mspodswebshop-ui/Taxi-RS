@@ -110,6 +110,7 @@ function layout() {
   const links = PAGES.map(([href, label]) =>
     `<a href="${href}"${href === here ? ' aria-current="page"' : ''}>${label}</a>`).join('');
   $('#site-header').outerHTML = `
+    <div class="concept-bar">Concept · voorbeeldwebsite, geen officiële site van ${CONFIG.name}. Gegevens en reviews zijn voorbeelden.</div>
     <nav class="nav" id="nav">
       <div class="wrap">
         <a href="index.html" class="logo">

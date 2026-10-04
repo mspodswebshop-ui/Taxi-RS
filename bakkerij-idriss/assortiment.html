@@ -9,6 +9,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
+<meta name="robots" content="noindex, nofollow">
 </head>
 <body data-page="assortiment.html">
 <div id="site-header"></div>
@@ -52,7 +53,7 @@
   function renderTabs() {
     $('#tabs').innerHTML = CATEGORIES.map(c =>
       `<button class="tab" role="tab" aria-selected="${c === activeCat}" data-cat="${c}">${c}</button>`).join('');
-    $$('.tab').forEach(b => b.onclick = () => { activeCat = b.dataset.cat; renderTabs(); renderProducts(); });
+    $$('#tabs .tab').forEach(b => b.onclick = () => { activeCat = b.dataset.cat; renderTabs(); renderProducts(); });
   }
   function renderProducts() {
     renderGrid($('#products'), PRODUCTS.filter(p => activeCat === 'Alles' || p.cat === activeCat));

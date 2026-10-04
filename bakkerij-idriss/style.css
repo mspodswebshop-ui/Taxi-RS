@@ -59,6 +59,9 @@ section { padding: 72px 0; }
 .btn.whatsapp:hover { background: #178346; }
 .btn svg { width: 18px; height: 18px; }
 
+/* Conceptbalk */
+.concept-bar { background: var(--majorelle); color: #fff; text-align: center; font-size: .8rem; padding: 6px 16px; }
+
 /* Header */
 .nav {
   position: sticky; top: 0; z-index: 30;

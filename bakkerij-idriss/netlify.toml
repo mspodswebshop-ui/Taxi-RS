@@ -1,0 +1,5 @@
+# Netlify-instellingen voor de conceptsite van Idriss Bakkerij.
+# Zet in Netlify de "Base directory" op bakkerij-idriss.
+[build]
+  publish = "."
+  command = "echo Geen buildstap nodig."
