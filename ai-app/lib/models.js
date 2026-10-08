@@ -43,6 +43,20 @@ export const MODELS = [
 ];
 
 export const MODEL_IDS = new Set(MODELS.map((m) => m.id));
+
+/** Kosten van een antwoord in dollar, op basis van het tokengebruik. */
+export function kostenVan(usage, modelId) {
+  const price = MODELS.find((m) => m.id === modelId)?.price;
+  if (!price || !usage) return null;
+  return (
+    ((usage.input ?? 0) * price.input +
+      (usage.output ?? 0) * price.output +
+      (usage.cacheRead ?? 0) * price.cacheRead +
+      // Wegschrijven naar de cache kost ongeveer 1,25x de invoerprijs.
+      (usage.cacheWrite ?? 0) * price.input * 1.25) /
+    1_000_000
+  );
+}
 export const DEFAULT_MODEL = MODELS[0].id;
 
 export const EFFORT_LEVELS = new Set(["low", "medium", "high", "xhigh", "max"]);

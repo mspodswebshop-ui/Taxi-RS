@@ -3,6 +3,8 @@
 /* =======================================================================
    Mijn AI - frontend
    Gesprekken staan in localStorage; de API-sleutel blijft op de server.
+   Of iemand mag chatten (abonnement, model, limiet) bepaalt ook de server;
+   deze pagina toont alleen wat er kan.
    ======================================================================= */
 
 const STORE_KEY = "mijn-ai.chats.v2";
@@ -12,15 +14,21 @@ const el = (id) => document.getElementById(id);
 
 const ui = {
   app: el("app"),
+  main: el("main"),
   sidebar: el("sidebar"),
+  scrim: el("scrim"),
   chatList: el("chatList"),
   searchInput: el("searchInput"),
   messages: el("messages"),
   welcome: el("welcome"),
   welcomeTitle: el("welcomeTitle"),
+  planBadge: el("planBadge"),
   chatTitle: el("chatTitle"),
+  upgradeChip: el("upgradeChip"),
   modelBtn: el("modelBtn"),
   modelBtnLabel: el("modelBtnLabel"),
+  effortChip: el("effortChip"),
+  effortChipLabel: el("effortChipLabel"),
   modelPopover: el("modelPopover"),
   modelOptions: el("modelOptions"),
   effortOptions: el("effortOptions"),
@@ -30,6 +38,9 @@ const ui = {
   sendBtn: el("sendBtn"),
   stopBtn: el("stopBtn"),
   chatCost: el("chatCost"),
+  usageWarning: el("usageWarning"),
+  accountBtn: el("accountBtn"),
+  accountMenu: el("accountMenu"),
   settingsModal: el("settingsModal"),
   systemPrompt: el("systemPrompt"),
   showThinking: el("showThinking"),
@@ -37,18 +48,26 @@ const ui = {
   themeLabel: el("themeLabel"),
   toast: el("toast"),
   payModal: el("payModal"),
-  planPrice: el("planPrice"),
-  planPeriod: el("planPeriod"),
+  plans: el("plans"),
   codeInput: el("codeInput"),
 };
 
 const EFFORTS = [
   { id: "low", label: "Laag", note: "Snelste en goedkoopste antwoorden. Prima voor korte vragen." },
   { id: "medium", label: "Middel", note: "Een goede balans tussen snelheid en diepgang." },
-  { id: "high", label: "Hoog", note: "De standaard: degelijk doordacht, redelijk snel." },
+  { id: "high", label: "Hoog", note: "Degelijk doordacht, redelijk snel." },
   { id: "xhigh", label: "Extra", note: "Denkt duidelijk langer door. Sterk voor code en analyse." },
-  { id: "max", label: "Max", note: "Denkt zo diep mogelijk. Het traagst en het duurst, maar het best voor echt moeilijke vragen." },
+  { id: "max", label: "Max", note: "Denkt zo diep mogelijk. Het traagst, maar het best voor echt moeilijke vragen." },
 ];
+const EFFORT_IDS = EFFORTS.map((e) => e.id);
+
+const ICONS = {
+  copy: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>',
+  check: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg>',
+  retry: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 0 1 15.5-6.2L21 8M21 3v5h-5M21 12a9 9 0 0 1-15.5 6.2L3 16M3 21v-5h5"/></svg>',
+  trash: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>',
+  modelCheck: '<path d="m5 13 4 4L19 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>',
+};
 
 let config = {
   models: [{ id: "claude-fable-5-1", label: "Fable 5.1", tagline: "", note: "", price: null }],
@@ -68,8 +87,13 @@ let prefs = {
   system: null,
   showThinking: false,
   showCost: true,
+  rail: false,
 };
 let controller = null; // AbortController van het lopende verzoek
+
+// Stand van het abonnement, zoals de server die doorgeeft. Zonder Stripe op
+// de server is `vereist` false en is alles vrij toegankelijk.
+let abonnement = { vereist: false, actief: true, plan: null, plannen: [], gebruik: null };
 
 /* ---------------------- Opslag ---------------------- */
 
@@ -124,20 +148,13 @@ function toast(text) {
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => {
     ui.toast.hidden = true;
-  }, 2800);
+  }, 3200);
 }
+
+const isMobile = () => window.matchMedia("(max-width: 768px)").matches;
 
 function activeChat() {
   return chats.find((c) => c.id === activeId) ?? null;
-}
-
-function currentModel() {
-  const id = prefs.model ?? config.defaultModel;
-  return config.models.some((m) => m.id === id) ? id : config.defaultModel;
-}
-
-function currentEffort() {
-  return prefs.effort ?? config.defaultEffort;
 }
 
 function modelInfo(id) {
@@ -148,6 +165,47 @@ function modelInfo(id) {
 function supportsEffort(modelId) {
   return modelId !== "claude-haiku-4-5";
 }
+
+/* ----- Wat mag er met het huidige abonnement? ----- */
+
+function huidigPlan() {
+  if (!abonnement.vereist || !abonnement.actief) return null;
+  return abonnement.plannen?.find((p) => p.id === abonnement.plan) ?? null;
+}
+
+const effortIndex = (id) => EFFORT_IDS.indexOf(id);
+
+/** Zonder lopend abonnement is er niets af te schermen: versturen opent dan de abonnementen. */
+function modelToegestaan(id) {
+  if (!abonnement.vereist || !abonnement.actief) return true;
+  return Boolean(huidigPlan()?.modellen.includes(id));
+}
+
+function effortToegestaan(id) {
+  const plan = huidigPlan();
+  if (!plan) return true;
+  return effortIndex(id) <= effortIndex(plan.maxDenkkracht);
+}
+
+const planVoorModel = (id) => abonnement.plannen?.find((p) => p.modellen.includes(id)) ?? null;
+const planVoorEffort = (id) =>
+  abonnement.plannen?.find((p) => effortIndex(id) <= effortIndex(p.maxDenkkracht)) ?? null;
+
+function currentModel() {
+  const id = prefs.model ?? config.defaultModel;
+  if (config.models.some((m) => m.id === id) && modelToegestaan(id)) return id;
+  // Het beste model dat bij het abonnement hoort (de lijst loopt van sterk naar snel).
+  return config.models.find((m) => modelToegestaan(m.id))?.id ?? config.defaultModel;
+}
+
+function currentEffort() {
+  const gekozen = prefs.effort ?? config.defaultEffort;
+  if (effortToegestaan(gekozen)) return gekozen;
+  return huidigPlan()?.maxDenkkracht ?? gekozen;
+}
+
+/** Kosten tonen heeft alleen zin voor de eigenaar, niet voor abonnees. */
+const toonKosten = () => prefs.showCost && !abonnement.vereist;
 
 function titleFrom(text) {
   const clean = text.replace(/\s+/g, " ").trim();
@@ -187,6 +245,14 @@ function chatCost(chat) {
   }
   return known ? total : null;
 }
+
+function euro(centen) {
+  const bedrag = centen / 100;
+  return `€${Number.isInteger(bedrag) ? bedrag : bedrag.toFixed(2).replace(".", ",")}`;
+}
+
+const datum = (iso) =>
+  iso ? new Date(iso).toLocaleDateString("nl-NL", { day: "numeric", month: "long" }) : "";
 
 function greeting() {
   const hour = new Date().getHours();
@@ -398,7 +464,7 @@ function codeBlockHtml({ lang, code }) {
   return (
     '<div class="code-block">' +
     `<div class="code-head"><span>${escapeHtml(lang || "code")}</span>` +
-    '<button class="copy-btn" data-copy type="button">Kopieren</button></div>' +
+    '<button class="copy-btn" data-copy type="button">Kopiëren</button></div>' +
     `<pre><code>${escapeHtml(code)}</code></pre></div>`
   );
 }
@@ -413,8 +479,8 @@ function groupLabel(timestamp) {
 
   if (then >= startOfToday) return "Vandaag";
   if (days < 1) return "Gisteren";
-  if (days < 7) return "Deze week";
-  if (days < 30) return "Deze maand";
+  if (days < 7) return "Afgelopen 7 dagen";
+  if (days < 30) return "Afgelopen 30 dagen";
   return "Ouder";
 }
 
@@ -430,7 +496,8 @@ function renderChatList() {
   ui.chatList.innerHTML = "";
 
   const term = searchTerm.trim().toLowerCase();
-  const visible = chats.filter((chat) => matchesSearch(chat, term));
+  // Lege gesprekken horen niet in de lijst, zoals bij Claude.
+  const visible = chats.filter((chat) => chat.messages.length > 0 && matchesSearch(chat, term));
 
   if (visible.length === 0) {
     const empty = document.createElement("p");
@@ -465,8 +532,7 @@ function renderChatList() {
     del.type = "button";
     del.title = "Gesprek verwijderen";
     del.setAttribute("aria-label", `Verwijder gesprek: ${chat.title}`);
-    del.innerHTML =
-      '<svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>';
+    del.innerHTML = ICONS.trash;
     del.addEventListener("click", (e) => {
       e.stopPropagation();
       deleteChat(chat.id);
@@ -488,6 +554,10 @@ function renderChatList() {
 
 /* ---------------------- Berichten tonen ---------------------- */
 
+function setEmpty(empty) {
+  ui.main.classList.toggle("empty", empty);
+}
+
 function renderMessages() {
   const chat = activeChat();
   ui.messages.innerHTML = "";
@@ -496,10 +566,12 @@ function renderMessages() {
     ui.welcomeTitle.textContent = greeting();
     ui.messages.append(ui.welcome);
     ui.welcome.hidden = false;
+    setEmpty(true);
     updateCost();
     return;
   }
 
+  setEmpty(false);
   chat.messages.forEach((msg, i) => {
     ui.messages.append(buildMessageEl(msg, i === chat.messages.length - 1));
   });
@@ -509,7 +581,7 @@ function renderMessages() {
 
 function buildMessageEl(msg, isLast = false) {
   const wrap = document.createElement("div");
-  wrap.className = `msg ${msg.role}`;
+  wrap.className = `msg ${msg.role}` + (isLast ? " last" : "");
 
   if (msg.role === "user") {
     const bubble = document.createElement("div");
@@ -518,25 +590,6 @@ function buildMessageEl(msg, isLast = false) {
     wrap.append(bubble);
     return wrap;
   }
-
-  // Kop: avatar, naam en het model dat antwoordde
-  const head = document.createElement("div");
-  head.className = "msg-head";
-  const avatar = document.createElement("span");
-  avatar.className = "msg-avatar";
-  avatar.textContent = "✦";
-  const name = document.createElement("span");
-  name.className = "msg-name";
-  name.textContent = "Assistent";
-  head.append(avatar, name);
-
-  if (msg.model) {
-    const model = document.createElement("span");
-    model.className = "msg-model";
-    model.textContent = modelInfo(msg.model)?.label ?? msg.model;
-    head.append(model);
-  }
-  wrap.append(head);
 
   if (msg.thinking && prefs.showThinking) {
     wrap.append(buildThinkingEl(msg.thinking));
@@ -547,52 +600,48 @@ function buildMessageEl(msg, isLast = false) {
   prose.innerHTML = renderMarkdown(msg.content);
   wrap.append(prose);
 
-  wrap.append(buildFooter(msg, isLast));
+  wrap.append(buildActions(msg, isLast));
   return wrap;
 }
 
-function buildFooter(msg, isLast) {
-  const footer = document.createElement("div");
-  footer.className = "msg-footer";
+function actButton(icon, label, onClick) {
+  const btn = document.createElement("button");
+  btn.className = "act-btn";
+  btn.type = "button";
+  btn.title = label;
+  btn.setAttribute("aria-label", label);
+  btn.innerHTML = icon;
+  btn.addEventListener("click", onClick);
+  return btn;
+}
 
-  const copy = document.createElement("button");
-  copy.className = "copy-btn";
-  copy.type = "button";
-  copy.textContent = "Kopieren";
-  copy.addEventListener("click", () => copyText(msg.content, copy));
-  footer.append(copy);
+function buildActions(msg, isLast) {
+  const bar = document.createElement("div");
+  bar.className = "msg-actions";
+
+  const copy = actButton(ICONS.copy, "Kopiëren", () => copyText(msg.content, copy));
+  bar.append(copy);
 
   if (isLast) {
-    const again = document.createElement("button");
-    again.className = "copy-btn";
-    again.type = "button";
-    again.textContent = "Opnieuw";
-    again.title = "Genereer een nieuw antwoord op dezelfde vraag";
-    again.addEventListener("click", regenerate);
-    footer.append(again);
+    bar.append(actButton(ICONS.retry, "Opnieuw genereren", regenerate));
   }
 
-  if (msg.usage) {
-    const tokens = document.createElement("span");
-    tokens.className = "meta";
+  const info = [];
+  if (msg.model) info.push(modelInfo(msg.model)?.label ?? msg.model);
+  if (msg.usage && toonKosten()) {
     const cached = msg.usage.cacheRead ? ` (${msg.usage.cacheRead} uit cache)` : "";
-    tokens.textContent = `${msg.usage.input} in${cached} · ${msg.usage.output} uit`;
-    footer.append(tokens);
-
+    info.push(`${msg.usage.input} in${cached} · ${msg.usage.output} uit`);
     const cost = costOf(msg.usage, msg.model);
-    if (cost != null && prefs.showCost) {
-      const sep = document.createElement("span");
-      sep.className = "meta meta-sep";
-      sep.textContent = "·";
-      const price = document.createElement("span");
-      price.className = "meta";
-      price.textContent = `ca. ${formatCost(cost)}`;
-      price.title = "Ruwe schatting op basis van het tokengebruik";
-      footer.append(sep, price);
-    }
+    if (cost != null) info.push(`ca. ${formatCost(cost)}`);
+  }
+  if (info.length) {
+    const meta = document.createElement("span");
+    meta.className = "meta";
+    meta.textContent = info.join(" · ");
+    bar.append(meta);
   }
 
-  return footer;
+  return bar;
 }
 
 function buildThinkingEl(text) {
@@ -611,21 +660,36 @@ function scrollToBottom() {
   ui.messages.scrollTop = ui.messages.scrollHeight;
 }
 
+/** Alleen meescrollen als de lezer al onderaan stond, zodat teruglezen kan. */
+function isNearBottom() {
+  const m = ui.messages;
+  return m.scrollHeight - m.scrollTop - m.clientHeight < 120;
+}
+
 function updateCost() {
-  const total = prefs.showCost ? chatCost(activeChat()) : null;
+  const total = toonKosten() ? chatCost(activeChat()) : null;
   ui.chatCost.textContent = total ? `Dit gesprek: ca. ${formatCost(total)}` : "";
 }
 
 async function copyText(text, btn) {
   try {
     await navigator.clipboard.writeText(text);
-    const old = btn.textContent;
-    btn.textContent = "Gekopieerd";
-    setTimeout(() => {
-      btn.textContent = old;
-    }, 1400);
+    if (btn.classList.contains("act-btn")) {
+      btn.innerHTML = ICONS.check;
+      btn.classList.add("done");
+      setTimeout(() => {
+        btn.innerHTML = ICONS.copy;
+        btn.classList.remove("done");
+      }, 1400);
+    } else {
+      const old = btn.textContent;
+      btn.textContent = "Gekopieerd";
+      setTimeout(() => {
+        btn.textContent = old;
+      }, 1400);
+    }
   } catch {
-    toast("Kopieren is niet toegestaan door je browser.");
+    toast("Kopiëren is niet toegestaan door je browser.");
   }
 }
 
@@ -654,16 +718,35 @@ function newChat() {
   renderChatList();
   renderMessages();
   updateHeader();
-  ui.input.focus();
+  if (!isMobile()) ui.input.focus();
+}
+
+function startNewChat() {
+  if (controller) return toast("Wacht tot het antwoord klaar is, of klik op stop.");
+  closeNav();
+  // Een ongebruikt leeg gesprek hergebruiken in plaats van stapelen.
+  const current = activeChat();
+  if (current && current.messages.length === 0) {
+    renderMessages();
+    if (!isMobile()) ui.input.focus();
+    return;
+  }
+  newChat();
 }
 
 function selectChat(id) {
   if (controller) return toast("Wacht tot het antwoord klaar is, of klik op stop.");
+  // Een leeg gesprek dat je verlaat, hoeft niet te blijven bestaan.
+  const vorige = activeChat();
+  if (vorige && vorige.id !== id && vorige.messages.length === 0) {
+    chats = chats.filter((c) => c.id !== vorige.id);
+    saveChats();
+  }
   activeId = id;
   renderChatList();
   renderMessages();
   updateHeader();
-  if (window.innerWidth <= 860) ui.sidebar.classList.add("collapsed");
+  closeNav();
 }
 
 function deleteChat(id) {
@@ -694,7 +777,10 @@ function touchChat(chat) {
 function updateHeader() {
   const chat = activeChat();
   ui.chatTitle.textContent = chat?.title ?? "Nieuw gesprek";
-  ui.modelBtnLabel.textContent = modelInfo(currentModel())?.label ?? currentModel();
+  const model = currentModel();
+  ui.modelBtnLabel.textContent = modelInfo(model)?.label ?? model;
+  ui.effortChip.hidden = !supportsEffort(model);
+  ui.effortChipLabel.textContent = EFFORTS.find((e) => e.id === currentEffort())?.label ?? "";
   updateCost();
 }
 
@@ -702,7 +788,7 @@ function updateHeader() {
 
 function startRename() {
   const chat = activeChat();
-  if (!chat) return;
+  if (!chat || chat.messages.length === 0) return;
   ui.chatTitle.contentEditable = "true";
   ui.chatTitle.focus();
   const range = document.createRange();
@@ -714,6 +800,7 @@ function startRename() {
 
 function finishRename() {
   const chat = activeChat();
+  if (ui.chatTitle.contentEditable !== "true") return;
   ui.chatTitle.contentEditable = "false";
   if (!chat) return;
   const name = ui.chatTitle.textContent.trim();
@@ -758,11 +845,12 @@ async function requestAnswer(payload, onEvent) {
   if (!res.ok) {
     // Fouten voor de stream komen terug als gewone JSON.
     const info = await res.json().catch(() => ({}));
-    if (info.abonnementNodig) {
-      await haalAbonnement();
-      throw new Error("Je abonnement is niet (meer) actief.");
-    }
-    throw new Error(info.error || `Serverfout (${res.status}).`);
+    if (info.abonnementNodig || info.limietBereikt) await haalAbonnement();
+    if (info.abonnementNodig) openPlans();
+
+    const err = new Error(info.error || `Serverfout (${res.status}).`);
+    err.upgradeNaar = info.upgradeNaar ?? null;
+    throw err;
   }
 
   const reader = res.body.getReader();
@@ -834,6 +922,8 @@ async function sendMessage(text) {
   updateHeader();
 
   if (ui.welcome.parentElement) ui.welcome.remove();
+  setEmpty(false);
+  ui.messages.querySelector(".msg.last")?.classList.remove("last");
   ui.messages.append(buildMessageEl(chat.messages.at(-1)));
   scrollToBottom();
 
@@ -844,32 +934,20 @@ async function sendMessage(text) {
 async function streamAnswer(chat, { restoreOnFailure = null, wasFirstMessage = false }) {
   const model = currentModel();
 
-  // Skelet voor het antwoord: kop, denkproces (optioneel) en de tekst.
+  // Skelet voor het antwoord: denkproces (optioneel), de tekst en het
+  // pulserende ✦-teken zolang er nog tekst binnenkomt.
   const wrap = document.createElement("div");
   wrap.className = "msg assistant";
-
-  const head = document.createElement("div");
-  head.className = "msg-head";
-  const avatar = document.createElement("span");
-  avatar.className = "msg-avatar";
-  avatar.textContent = "✦";
-  const name = document.createElement("span");
-  name.className = "msg-name";
-  name.textContent = "Assistent";
-  const modelTag = document.createElement("span");
-  modelTag.className = "msg-model";
-  modelTag.textContent = modelInfo(model)?.label ?? model;
-  head.append(avatar, name, modelTag);
 
   const prose = document.createElement("div");
   prose.className = "prose";
 
-  // Drie stipjes tot de eerste tekst binnenkomt.
-  const pending = document.createElement("div");
-  pending.className = "pending";
-  pending.innerHTML = "<span></span><span></span><span></span>";
+  const spark = document.createElement("span");
+  spark.className = "spark";
+  spark.textContent = "✦";
+  spark.setAttribute("aria-label", "Bezig met antwoorden");
 
-  wrap.append(head, pending, prose);
+  wrap.append(prose, spark);
   ui.messages.append(wrap);
   scrollToBottom();
 
@@ -881,6 +959,7 @@ async function streamAnswer(chat, { restoreOnFailure = null, wasFirstMessage = f
   let answeredBy = model;
   let switched = null;
   let failed = null;
+  let upgradeNaar = null;
 
   controller = new AbortController();
   setBusy(true);
@@ -895,45 +974,47 @@ async function streamAnswer(chat, { restoreOnFailure = null, wasFirstMessage = f
         signal: controller.signal,
       },
       (event) => {
+        const volgen = isNearBottom();
         if (event.type === "text") {
           answer += event.text;
-          pending.remove();
           prose.innerHTML = renderMarkdown(answer);
-          prose.classList.add("cursor");
-          scrollToBottom();
         } else if (event.type === "thinking") {
           thinking += event.text;
           if (prefs.showThinking) {
             if (!thinkingEl) {
               thinkingEl = buildThinkingEl("");
               thinkingEl.open = true;
-              wrap.insertBefore(thinkingEl, pending);
+              wrap.insertBefore(thinkingEl, prose);
             }
             thinkingEl.querySelector(".thinking-body").textContent = thinking;
-            scrollToBottom();
           }
         } else if (event.type === "done") {
           usage = event.usage;
           blocks = event.content ?? null;
           answeredBy = event.model ?? model;
           switched = event.switchedModel ?? null;
+          if (event.gebruik) {
+            abonnement.gebruik = event.gebruik;
+            renderAbonnement();
+          }
           if (event.stopReason === "max_tokens") {
             toast("Het antwoord is afgekapt omdat het maximum bereikt was.");
           }
         } else if (event.type === "error") {
           failed = event.message;
         }
+        if (volgen) scrollToBottom();
       },
     );
   } catch (err) {
     if (err.name !== "AbortError") {
       failed = err.message || "Er ging iets mis bij het versturen.";
+      upgradeNaar = err.upgradeNaar ?? null;
     }
   } finally {
     controller = null;
     setBusy(false);
-    pending.remove();
-    prose.classList.remove("cursor");
+    spark.remove();
   }
 
   if (answer.trim() !== "") {
@@ -949,6 +1030,7 @@ async function streamAnswer(chat, { restoreOnFailure = null, wasFirstMessage = f
     });
     touchChat(chat);
     saveChats();
+    ui.messages.querySelector(".msg.last")?.classList.remove("last");
     wrap.replaceWith(buildMessageEl(chat.messages.at(-1), true));
     updateCost();
 
@@ -979,9 +1061,11 @@ async function streamAnswer(chat, { restoreOnFailure = null, wasFirstMessage = f
     }
   }
 
-  if (failed) showNotice(failed, "error");
+  if (failed) {
+    showNotice(failed, "error", upgradeNaar ? { label: "Bekijk abonnementen", run: () => openPlans(upgradeNaar) } : null);
+  }
   scrollToBottom();
-  if (!ui.input.disabled) ui.input.focus();
+  if (!ui.input.disabled && !isMobile()) ui.input.focus();
 }
 
 /** Gooit het laatste antwoord weg en vraagt een nieuw antwoord op. */
@@ -997,11 +1081,21 @@ async function regenerate() {
   saveChats();
 }
 
-function showNotice(message, kind = "error") {
+function showNotice(message, kind = "error", action = null) {
   const box = document.createElement("div");
   box.className = `notice ${kind}`;
   box.textContent = message;
-  ui.messages.append(box);
+  if (action) {
+    const btn = document.createElement("button");
+    btn.className = "notice-btn";
+    btn.type = "button";
+    btn.textContent = action.label;
+    btn.addEventListener("click", action.run);
+    box.append(btn);
+  }
+  // Een melding in een leeg gesprek mag de begroeting niet wegduwen.
+  if (ui.welcome.parentElement) ui.welcome.after(box);
+  else ui.messages.append(box);
 }
 
 function stopStreaming() {
@@ -1014,7 +1108,7 @@ function stopStreaming() {
 
 function autoGrow() {
   ui.input.style.height = "auto";
-  ui.input.style.height = `${Math.min(ui.input.scrollHeight, 240)}px`;
+  ui.input.style.height = `${ui.input.scrollHeight}px`;
 }
 
 ui.input.addEventListener("input", () => {
@@ -1023,7 +1117,8 @@ ui.input.addEventListener("input", () => {
 });
 
 ui.input.addEventListener("keydown", (e) => {
-  if (e.key === "Enter" && !e.shiftKey && !e.isComposing) {
+  // Op een telefoon maakt Enter een nieuwe regel; versturen gaat met de knop.
+  if (e.key === "Enter" && !e.shiftKey && !e.isComposing && !isMobile()) {
     e.preventDefault();
     ui.composer.requestSubmit();
   }
@@ -1033,18 +1128,31 @@ ui.composer.addEventListener("submit", (e) => {
   e.preventDefault();
   const text = ui.input.value.trim();
   if (text === "" || controller) return;
+
+  // Zonder abonnement eerst een abonnement kiezen; de tekst blijft staan.
+  if (abonnement.vereist && !abonnement.actief) {
+    openPlans();
+    return;
+  }
+
   ui.input.value = "";
   ui.sendBtn.disabled = true;
   autoGrow();
   sendMessage(text);
 });
 
+// Klik ergens in het invoervak (niet op een knop): de cursor gaat erin.
+ui.composer.addEventListener("click", (e) => {
+  if (e.target === ui.composer || e.target.classList?.contains("composer-bar")) ui.input.focus();
+});
+
 ui.stopBtn.addEventListener("click", stopStreaming);
 
-for (const btn of document.querySelectorAll(".suggestion")) {
+for (const btn of document.querySelectorAll(".starter")) {
   btn.addEventListener("click", () => {
     ui.input.value = btn.dataset.prompt;
     autoGrow();
+    ui.sendBtn.disabled = false;
     ui.composer.requestSubmit();
   });
 }
@@ -1054,17 +1162,20 @@ for (const btn of document.querySelectorAll(".suggestion")) {
 function renderModelPopover() {
   const selectedModel = currentModel();
   const effortEnabled = supportsEffort(selectedModel);
+  const eigenaar = !abonnement.vereist;
 
   ui.modelOptions.innerHTML = "";
   for (const model of config.models) {
+    const locked = !modelToegestaan(model.id);
     const btn = document.createElement("button");
     btn.type = "button";
-    btn.className = "model-option" + (model.id === selectedModel ? " selected" : "");
+    btn.className =
+      "model-option" + (model.id === selectedModel ? " selected" : "") + (locked ? " locked" : "");
 
     const check = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     check.setAttribute("viewBox", "0 0 24 24");
     check.setAttribute("class", "model-check");
-    check.innerHTML = '<path d="m5 13 4 4L19 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>';
+    check.innerHTML = ICONS.modelCheck;
 
     const body = document.createElement("div");
     body.className = "model-body";
@@ -1086,7 +1197,7 @@ function renderModelPopover() {
       note.textContent = model.note;
       body.append(note);
     }
-    if (model.price) {
+    if (model.price && eigenaar) {
       const price = document.createElement("div");
       price.className = "model-price";
       price.textContent = `$${model.price.input} in / $${model.price.output} uit per miljoen tokens`;
@@ -1094,9 +1205,22 @@ function renderModelPopover() {
     }
 
     btn.append(check, body);
+
+    if (locked) {
+      const nodig = planVoorModel(model.id);
+      const lock = document.createElement("span");
+      lock.className = "lock-tag";
+      lock.textContent = nodig ? nodig.naam : "Upgrade";
+      btn.append(lock);
+    }
+
     btn.addEventListener("click", () => {
+      if (locked) {
+        toggleModelPopover(false);
+        openPlans(planVoorModel(model.id)?.id);
+        return;
+      }
       prefs.model = model.id;
-      if (!supportsEffort(model.id)) prefs.effort = prefs.effort ?? config.defaultEffort;
       savePrefs();
       updateHeader();
       renderModelPopover();
@@ -1106,16 +1230,25 @@ function renderModelPopover() {
 
   ui.effortOptions.innerHTML = "";
   for (const effort of EFFORTS) {
+    const locked = effortEnabled && !effortToegestaan(effort.id);
     const btn = document.createElement("button");
     btn.type = "button";
     btn.className =
-      "effort-btn" + (effortEnabled && effort.id === currentEffort() ? " selected" : "");
+      "effort-btn" +
+      (effortEnabled && effort.id === currentEffort() ? " selected" : "") +
+      (locked ? " locked" : "");
     btn.textContent = effort.label;
     btn.disabled = !effortEnabled;
-    if (!effortEnabled) btn.style.opacity = "0.4";
+    if (locked) btn.title = `Vanaf ${planVoorEffort(effort.id)?.naam ?? "een hoger abonnement"}`;
     btn.addEventListener("click", () => {
+      if (locked) {
+        toggleModelPopover(false);
+        openPlans(planVoorEffort(effort.id)?.id);
+        return;
+      }
       prefs.effort = effort.id;
       savePrefs();
+      updateHeader();
       renderModelPopover();
     });
     ui.effortOptions.append(btn);
@@ -1130,7 +1263,30 @@ function toggleModelPopover(open) {
   const show = open ?? ui.modelPopover.hidden;
   ui.modelPopover.hidden = !show;
   ui.modelBtn.setAttribute("aria-expanded", String(show));
-  if (show) renderModelPopover();
+  if (show) {
+    toggleAccountMenu(false);
+    renderModelPopover();
+    plaatsModelPopover();
+  }
+}
+
+/** Klapt de kiezer open naar de kant met de meeste ruimte (op mobiel is het een paneel). */
+function plaatsModelPopover() {
+  const pop = ui.modelPopover;
+  pop.style.top = pop.style.bottom = pop.style.maxHeight = "";
+  if (isMobile()) return;
+
+  const vak = ui.composer.getBoundingClientRect();
+  const boven = vak.top - 16;
+  const onder = window.innerHeight - vak.bottom - 16;
+  if (onder > boven) {
+    pop.style.top = "calc(100% + 8px)";
+    pop.style.bottom = "auto";
+  } else {
+    pop.style.top = "auto";
+    pop.style.bottom = "calc(100% + 8px)";
+  }
+  pop.style.maxHeight = `${Math.min(560, Math.max(boven, onder) - 8)}px`;
 }
 
 ui.modelBtn.addEventListener("click", (e) => {
@@ -1138,33 +1294,73 @@ ui.modelBtn.addEventListener("click", (e) => {
   toggleModelPopover();
 });
 
-document.addEventListener("click", (e) => {
-  if (ui.modelPopover.hidden) return;
-  if (!ui.modelPopover.contains(e.target) && e.target !== ui.modelBtn) {
-    toggleModelPopover(false);
+ui.effortChip.addEventListener("click", (e) => {
+  e.stopPropagation();
+  toggleModelPopover(true);
+});
+
+/* ---------------------- Zijbalk, account en thema ---------------------- */
+
+function applySidebar() {
+  ui.app.classList.toggle("rail", Boolean(prefs.rail));
+}
+
+function openNav() {
+  ui.app.classList.add("nav-open");
+  ui.scrim.hidden = false;
+}
+
+function closeNav() {
+  ui.app.classList.remove("nav-open");
+  ui.scrim.hidden = true;
+  toggleAccountMenu(false);
+}
+
+el("sidebarToggleBtn").addEventListener("click", () => {
+  prefs.rail = !prefs.rail;
+  applySidebar();
+  savePrefs();
+});
+
+el("sidebarOpenBtn").addEventListener("click", openNav);
+ui.scrim.addEventListener("click", closeNav);
+
+el("newChatBtn").addEventListener("click", startNewChat);
+el("newChatTopBtn").addEventListener("click", startNewChat);
+
+// In de smalle strook klapt zoeken de zijbalk eerst uit.
+ui.searchInput.addEventListener("focus", () => {
+  if (prefs.rail && !isMobile()) {
+    prefs.rail = false;
+    applySidebar();
+    savePrefs();
   }
 });
-
-/* ---------------------- Zijbalk, zoeken en thema ---------------------- */
-
-el("newChatBtn").addEventListener("click", () => {
-  if (controller) return toast("Wacht tot het antwoord klaar is, of klik op stop.");
-  // Een ongebruikt leeg gesprek hergebruiken in plaats van stapelen.
-  const current = activeChat();
-  if (current && current.messages.length === 0) return ui.input.focus();
-  newChat();
-});
-
-el("sidebarOpenBtn").addEventListener("click", () =>
-  ui.sidebar.classList.toggle("collapsed"),
-);
-el("sidebarCloseBtn").addEventListener("click", () =>
-  ui.sidebar.classList.add("collapsed"),
-);
 
 ui.searchInput.addEventListener("input", () => {
   searchTerm = ui.searchInput.value;
   renderChatList();
+});
+
+function toggleAccountMenu(open) {
+  const show = open ?? ui.accountMenu.hidden;
+  ui.accountMenu.hidden = !show;
+  ui.accountBtn.setAttribute("aria-expanded", String(show));
+}
+
+ui.accountBtn.addEventListener("click", (e) => {
+  e.stopPropagation();
+  toggleModelPopover(false);
+  toggleAccountMenu();
+});
+
+document.addEventListener("click", (e) => {
+  if (!ui.modelPopover.hidden && !ui.modelPopover.contains(e.target) && !ui.modelBtn.contains(e.target)) {
+    toggleModelPopover(false);
+  }
+  if (!ui.accountMenu.hidden && !ui.accountMenu.contains(e.target)) {
+    toggleAccountMenu(false);
+  }
 });
 
 function applyTheme() {
@@ -1218,8 +1414,43 @@ async function toonToegangscode() {
   }
 }
 
+function renderAbonnementInInstellingen() {
+  const vereist = abonnement.vereist;
+  el("subSection").hidden = !vereist;
+  el("showCostRow").hidden = vereist;
+  if (!vereist) return;
+
+  const plan = huidigPlan();
+  el("subPlan").textContent = plan ? `${plan.naam} · ${euro(plan.bedrag)} per maand` : "Geen abonnement";
+  el("subMeta").textContent = !plan
+    ? "Kies een abonnement om te kunnen chatten."
+    : abonnement.opgezegd
+      ? `Opgezegd. Je houdt toegang tot ${datum(abonnement.eindigtOp)}.`
+      : abonnement.proef
+        ? `Proefperiode tot ${datum(abonnement.eindigtOp)}.`
+        : abonnement.eindigtOp
+          ? `Wordt verlengd op ${datum(abonnement.eindigtOp)}.`
+          : "";
+  el("changePlanBtn").textContent = plan ? "Wijzigen" : "Kiezen";
+  el("manageSubBtn").hidden = !plan;
+
+  const gebruik = plan ? abonnement.gebruik : null;
+  el("usageBlock").hidden = !gebruik;
+  if (gebruik) {
+    el("usagePct").textContent = `${gebruik.procent}%`;
+    el("usageFill").style.width = `${gebruik.procent}%`;
+    el("usageFill").classList.toggle("high", gebruik.procent >= 90);
+    el("usageReset").textContent = gebruik.resetOp
+      ? `Wordt op ${datum(gebruik.resetOp)} weer aangevuld.`
+      : "";
+  }
+}
+
 function openSettings() {
+  toggleAccountMenu(false);
+  closeNav();
   toonToegangscode();
+  renderAbonnementInInstellingen();
   ui.systemPrompt.value = prefs.system ?? config.defaultSystemPrompt;
   ui.showThinking.checked = prefs.showThinking;
   ui.showCost.checked = prefs.showCost;
@@ -1239,8 +1470,11 @@ ui.settingsModal.addEventListener("click", (e) => {
 
 document.addEventListener("keydown", (e) => {
   if (e.key !== "Escape") return;
-  if (!ui.settingsModal.hidden) closeSettings();
+  if (!ui.payModal.hidden) closePlans();
+  else if (!ui.settingsModal.hidden) closeSettings();
   else if (!ui.modelPopover.hidden) toggleModelPopover(false);
+  else if (!ui.accountMenu.hidden) toggleAccountMenu(false);
+  else if (ui.app.classList.contains("nav-open")) closeNav();
 });
 
 el("resetPromptBtn").addEventListener("click", () => {
@@ -1272,76 +1506,225 @@ el("settingsSaveBtn").addEventListener("click", () => {
   toast("Instellingen opgeslagen.");
 });
 
+el("changePlanBtn").addEventListener("click", () => {
+  closeSettings();
+  openPlans();
+});
+
 /* ---------------------- Abonnement ---------------------- */
 
-let abonnement = { vereist: false, actief: true };
-
-function toonBedrag(centen, valuta) {
-  const teken = valuta === "eur" ? "€" : valuta.toUpperCase() + " ";
-  return `${teken} ${(centen / 100).toFixed(2).replace(".", ",")}`;
-}
-
-const PERIODEN = { day: "per dag", week: "per week", month: "per maand", year: "per jaar" };
-
-/** Haalt op of er een abonnement nodig is, en of de bezoeker er een heeft. */
+/** Haalt op of er een abonnement nodig is, en welk abonnement de bezoeker heeft. */
 async function haalAbonnement() {
   try {
     const res = await fetch("/api/abonnement");
     if (!res.ok) throw new Error(String(res.status));
-    abonnement = await res.json();
+    abonnement = { plannen: [], ...(await res.json()) };
   } catch {
     // Geen server die dit kent (bijvoorbeeld het losse HTML-bestand):
     // dan is er ook niets af te schermen.
-    abonnement = { vereist: false, actief: true };
+    abonnement = { vereist: false, actief: true, plan: null, plannen: [], gebruik: null };
   }
 
-  el("manageSubBtn").hidden = !(abonnement.vereist && abonnement.actief);
-
-  if (abonnement.vereist && !abonnement.actief) toonPaywall();
+  renderAbonnement();
   return abonnement;
 }
 
-function toonPaywall() {
-  const prijs = abonnement.prijs;
-  if (prijs) {
-    ui.planPrice.textContent = toonBedrag(prijs.bedrag, prijs.valuta);
-    ui.planPeriod.textContent =
-      (PERIODEN[prijs.periode] ?? "per maand") +
-      (prijs.proefdagen > 0 ? ` · eerste ${prijs.proefdagen} dagen gratis` : "");
-  } else {
-    ui.planPrice.textContent = "Abonnement";
-    ui.planPeriod.textContent = "";
+/** Werkt alles bij wat van het abonnement afhangt: account, badges, modelkeuze. */
+function renderAbonnement() {
+  const { vereist, actief, email } = abonnement;
+  const plan = huidigPlan();
+  const hoogste = abonnement.plannen?.at(-1);
+  const kanHoger = vereist && (!plan || plan.id !== hoogste?.id);
+
+  // Account onderin de zijbalk
+  const naam = email ? email.split("@")[0] : "Jouw account";
+  el("accountName").textContent = naam;
+  el("accountAvatar").textContent = (email || "J").charAt(0);
+  el("accountPlan").textContent = !vereist
+    ? "Volledige toegang"
+    : plan
+      ? `${plan.naam}-abonnement`
+      : "Geen abonnement";
+  el("menuEmail").hidden = !email;
+  el("menuEmail").textContent = email ?? "";
+  el("plansMenuBtn").hidden = !vereist;
+  el("plansMenuLabel").textContent = !plan
+    ? "Abonnement kiezen"
+    : kanHoger
+      ? "Abonnement upgraden"
+      : "Abonnement wijzigen";
+  el("logoutBtn").hidden = !(vereist && actief);
+
+  // Knop bovenin en badge boven de begroeting
+  ui.upgradeChip.hidden = !kanHoger;
+  ui.upgradeChip.textContent = plan ? "Upgraden" : "Abonneren";
+
+  ui.planBadge.hidden = !vereist;
+  if (vereist) {
+    ui.planBadge.innerHTML = "";
+    ui.planBadge.append(document.createTextNode(plan ? `${plan.naam}-abonnement` : "Geen abonnement"));
+    if (kanHoger) {
+      ui.planBadge.append(document.createTextNode(" · "));
+      const cta = document.createElement("strong");
+      cta.textContent = plan ? "Upgraden" : "Kies een abonnement";
+      ui.planBadge.append(cta);
+    }
   }
 
-  ui.input.disabled = true;
-  ui.sendBtn.disabled = true;
-  ui.input.placeholder = "Neem een abonnement om te chatten";
+  // Waarschuwing als het gebruik bijna op is, zoals bij Claude
+  const gebruik = plan ? abonnement.gebruik : null;
+  const warn = ui.usageWarning;
+  warn.innerHTML = "";
+  warn.hidden = !(gebruik && gebruik.procent >= 80);
+  if (!warn.hidden) {
+    warn.append(
+      document.createTextNode(
+        gebruik.procent >= 100
+          ? `Je limiet voor deze periode is bereikt. Op ${datum(gebruik.resetOp)} wordt die weer aangevuld.`
+          : `Je hebt ${gebruik.procent}% van je gebruik voor deze periode verbruikt.`,
+      ),
+    );
+    if (kanHoger) {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.textContent = "Upgraden";
+      btn.addEventListener("click", () => openPlans());
+      warn.append(btn);
+    }
+  }
+
+  ui.input.placeholder =
+    vereist && !actief ? "Kies een abonnement om te beginnen" : "Waarmee kan ik je helpen?";
+
+  updateHeader();
+  if (!ui.modelPopover.hidden) renderModelPopover();
+}
+
+function renderPlans(focusId) {
+  const plan = huidigPlan();
+  ui.plans.innerHTML = "";
+
+  for (const p of abonnement.plannen ?? []) {
+    const isHuidig = plan?.id === p.id;
+    const card = document.createElement("div");
+    card.className =
+      "plan-card" + (p.aanbevolen ? " featured" : "") + (focusId === p.id && !isHuidig ? " focus" : "");
+
+    if (isHuidig || p.aanbevolen) {
+      const flag = document.createElement("span");
+      flag.className = "plan-flag" + (isHuidig ? " current" : "");
+      flag.textContent = isHuidig ? "Huidig abonnement" : "Populair";
+      card.append(flag);
+    }
+
+    const head = document.createElement("div");
+    const name = document.createElement("div");
+    name.className = "plan-name";
+    name.textContent = p.naam;
+    const tagline = document.createElement("div");
+    tagline.className = "plan-tagline";
+    tagline.textContent = p.tagline;
+    head.append(name, tagline);
+
+    const price = document.createElement("div");
+    price.className = "plan-price";
+    price.textContent = euro(p.bedrag);
+    const per = document.createElement("small");
+    per.textContent = "per maand";
+    price.append(per);
+
+    const list = document.createElement("ul");
+    list.className = "plan-list";
+    for (const k of p.kenmerken) {
+      const li = document.createElement("li");
+      li.textContent = k;
+      list.append(li);
+    }
+
+    const btn = document.createElement("button");
+    btn.type = "button";
+    const hoger = plan && p.bedrag > plan.bedrag;
+    btn.className = "primary-btn wide" + (p.aanbevolen || hoger || focusId === p.id ? " accent" : "");
+    btn.disabled = isHuidig;
+    btn.textContent = isHuidig
+      ? "Je huidige abonnement"
+      : plan
+        ? hoger
+          ? `Upgraden naar ${p.naam}`
+          : `Overstappen naar ${p.naam}`
+        : `Kies ${p.naam}`;
+    btn.addEventListener("click", () => kiesPlan(p, btn));
+
+    card.append(head, price, list, btn);
+    ui.plans.append(card);
+  }
+
+  el("planCode").hidden = Boolean(plan);
+  el("payTitle").textContent = plan ? "Wijzig je abonnement" : "Kies je abonnement";
+}
+
+function openPlans(focusId) {
+  if (!abonnement.vereist) return;
+  toggleAccountMenu(false);
+  toggleModelPopover(false);
+  closeNav();
+  renderPlans(focusId);
   ui.payModal.hidden = false;
 }
 
-function verbergPaywall() {
+function closePlans() {
   ui.payModal.hidden = true;
-  ui.input.disabled = false;
-  ui.input.placeholder = "Stel je vraag…";
-  ui.sendBtn.disabled = ui.input.value.trim() === "";
 }
 
-el("subscribeBtn").addEventListener("click", async (e) => {
-  const knop = e.currentTarget;
+async function kiesPlan(plan, knop) {
+  const huidig = huidigPlan();
+  if (huidig) {
+    const vraag =
+      plan.bedrag > huidig.bedrag
+        ? `Overstappen naar ${plan.naam} (${euro(plan.bedrag)} per maand)? Het verschil voor de rest van deze maand wordt meteen afgeschreven.`
+        : `Overstappen naar ${plan.naam} (${euro(plan.bedrag)} per maand)? Het verschil voor de rest van deze maand krijg je als tegoed terug.`;
+    if (!confirm(vraag)) return;
+  }
+
+  const oud = knop.textContent;
   knop.disabled = true;
   knop.textContent = "Bezig…";
+
   try {
-    const res = await fetch("/api/abonnement/start", { method: "POST" });
+    const res = await fetch("/api/abonnement/start", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ plan: plan.id }),
+    });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || "Kon het afrekenen niet starten.");
-    // Naar de betaalpagina van Stripe.
-    window.location.href = data.url;
+
+    // Nog geen abonnement: door naar de betaalpagina van Stripe.
+    if (data.url) {
+      window.location.href = data.url;
+      return;
+    }
+
+    // Lopend abonnement omgezet: meteen bijwerken.
+    if (data.stand) abonnement = { ...abonnement, ...data.stand };
+    renderAbonnement();
+    closePlans();
+    toast(data.gewijzigd ? `Je abonnement is nu ${plan.naam}.` : "Dit is al je abonnement.");
   } catch (err) {
     toast(err.message);
     knop.disabled = false;
-    knop.textContent = "Abonneren";
+    knop.textContent = oud;
   }
+}
+
+el("payCloseBtn").addEventListener("click", closePlans);
+ui.payModal.addEventListener("click", (e) => {
+  if (e.target === ui.payModal) closePlans();
 });
+
+ui.upgradeChip.addEventListener("click", () => openPlans());
+ui.planBadge.addEventListener("click", () => openPlans());
+el("plansMenuBtn").addEventListener("click", () => openPlans());
 
 el("codeBtn").addEventListener("click", async () => {
   const code = ui.codeInput.value.trim();
@@ -1358,8 +1741,10 @@ el("codeBtn").addEventListener("click", async () => {
 
     await haalAbonnement();
     if (abonnement.actief) {
-      verbergPaywall();
+      closePlans();
       toast("Welkom terug.");
+    } else {
+      toast("Bij deze code hoort geen lopend abonnement.");
     }
   } catch (err) {
     toast(err.message);
@@ -1377,12 +1762,28 @@ el("manageSubBtn").addEventListener("click", async () => {
   }
 });
 
+el("logoutBtn").addEventListener("click", async () => {
+  toggleAccountMenu(false);
+  if (
+    !confirm(
+      "Afmelden op dit apparaat? Om weer in te loggen heb je je toegangscode nodig " +
+        "(te vinden bij Instellingen). Je abonnement zelf blijft gewoon lopen.",
+    )
+  ) {
+    return;
+  }
+  await fetch("/api/abonnement/afmelden", { method: "POST" }).catch(() => {});
+  await haalAbonnement();
+  toast("Je bent afgemeld op dit apparaat.");
+});
+
 /* ---------------------- Opstarten ---------------------- */
 
 /** Blokkeert de app met een uitleg in plaats van stilletjes te falen. */
 function blockWith(title, steps) {
   ui.welcome.hidden = true;
   ui.messages.innerHTML = "";
+  setEmpty(false);
 
   const box = document.createElement("div");
   box.className = "notice error";
@@ -1410,6 +1811,7 @@ function blockWith(title, steps) {
 async function init() {
   loadStorage();
   applyTheme();
+  applySidebar();
 
   // Rechtstreeks geopend bestand (file://): er is dan geen server die de
   // Claude API kan aanroepen, dus chatten kan sowieso niet werken.
@@ -1440,17 +1842,13 @@ async function init() {
   // Een opgeslagen keuze die de server niet meer kent, laten vallen.
   if (!config.models.some((m) => m.id === prefs.model)) prefs.model = null;
 
-  if (chats.length === 0) {
-    newChat();
-  } else {
-    activeId = chats[0].id;
-    renderChatList();
-    renderMessages();
-  }
+  // Altijd beginnen met een nieuw, leeg gesprek, zoals bij Claude. Eerdere
+  // gesprekken staan in de zijbalk.
+  chats = chats.filter((c) => c.messages.length > 0);
+  newChat();
   updateHeader();
 
   ui.sendBtn.disabled = true;
-  if (window.innerWidth <= 860) ui.sidebar.classList.add("collapsed");
 
   await haalAbonnement();
 
@@ -1461,6 +1859,9 @@ async function init() {
   if (params.has("fout")) showNotice(params.get("fout"), "error");
   if (location.search) history.replaceState(null, "", location.pathname);
 
+  // Nog geen abonnement: meteen laten zien wat er te kiezen valt.
+  if (abonnement.vereist && !abonnement.actief && !params.has("afgebroken")) openPlans();
+
   if (!config.hasCredentials) {
     showNotice(
       "Er is nog geen API-sleutel ingesteld op de server. Kopieer .env.example naar .env, " +
@@ -1469,7 +1870,7 @@ async function init() {
     );
   }
 
-  ui.input.focus();
+  if (!isMobile()) ui.input.focus();
 }
 
 init();

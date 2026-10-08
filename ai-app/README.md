@@ -90,6 +90,8 @@ op baseert.
 | Denkproces | Optioneel zie je een samenvatting van hoe het model tot zijn antwoord komt. |
 | Eigen systeemprompt | Bepaal zelf de persoonlijkheid en regels van je assistent. |
 | Licht/donker thema | Met één klik om te schakelen. |
+| Werkt op elk scherm | Op de telefoon schuift de zijbalk in, en openen modelkiezer en vensters als paneel van onderaf. Op desktop klapt de zijbalk in tot een smalle strook. |
+| Abonnementen | Standaard, Medium en Pro via Stripe, met gebruiksmeter en upgraden in de app. Zie hieronder. |
 
 ---
 
@@ -168,64 +170,96 @@ variabelen, gescheiden voor het lichte en het donkere thema.
 
 ## Abonnementen (optioneel)
 
-Wil je dat anderen voor de app betalen, dan kun je er abonnementen op zetten.
-Staat Stripe niet ingesteld, dan is de app gewoon vrij toegankelijk — je hoeft
-dus geen abonnement op je eigen app te nemen.
+Wil je dat anderen voor de app betalen, dan zet je er abonnementen op. Er zijn
+drie abonnementen:
 
-**Dit werkt alleen in de serverversie.** Het losse HTML-bestand kan niet
-controleren of iemand betaald heeft: die controle staat op de server, want in
-de browser zou een bezoeker hem gewoon kunnen uitzetten.
+| Abonnement | Prijs per maand | Modellen | Denkkracht tot | Gebruik |
+|---|---|---|---|---|
+| Standaard | € 8 | Sonnet 5, Haiku 4.5 | Hoog | 1x |
+| Medium | € 15 | + Opus 5 | Extra | ca. 2x |
+| Pro | € 22 | + Fable 5.1 | Max | ca. 3x |
+
+Prijzen zijn inclusief btw. Staat Stripe niet ingesteld, dan is de app gewoon
+vrij toegankelijk, met alle modellen. Zo gebruik je hem zelf zonder een
+abonnement op je eigen app te nemen.
 
 ### Instellen
 
 1. Maak een account op [stripe.com](https://stripe.com).
-2. Maak onder **Producten** een product met een terugkerende prijs,
-   bijvoorbeeld € 9 per maand. Kopieer het prijs-id (begint met `price_`).
-3. Haal je geheime sleutel op bij
+2. Haal je geheime sleutel op bij
    [dashboard.stripe.com/apikeys](https://dashboard.stripe.com/apikeys).
-4. Zet beide in `.env`:
+3. Zet hem in `.env` (of bij je hoster onder de omgevingsvariabelen):
 
 ```
 STRIPE_SECRET_KEY=sk_test_...
-STRIPE_PRICE_ID=price_...
-STRIPE_PROEFDAGEN=0
 BASE_URL=http://localhost:3000
 ```
+
+Meer is niet nodig. **De drie prijzen hoef je niet zelf in Stripe aan te
+maken**: de server doet dat de eerste keer dat iemand een abonnement kiest.
+Je ziet ze daarna in Stripe onder *Productcatalogus* als "Mijn AI Standaard",
+"Mijn AI Medium" en "Mijn AI Pro". Heb je liever eigen prijzen, zet dan
+`STRIPE_PRICE_STANDAARD`, `STRIPE_PRICE_MEDIUM` en `STRIPE_PRICE_PRO`.
+
+4. Zet in Stripe éénmalig de klantportal aan: *Instellingen → Billing →
+   Customer portal → Opslaan*. Daar gaan abonnees heen om op te zeggen, hun
+   kaart te wijzigen of facturen te downloaden.
 
 Begin met de **testsleutel** (`sk_test_`). Alles werkt dan hetzelfde, maar er
 wordt geen echt geld overgemaakt. Testen doe je met kaart
 `4242 4242 4242 4242`, een datum in de toekomst en willekeurige cijfers.
 
+### Wat een abonnee ziet
+
+- Zonder abonnement opent het scherm met de drie abonnementen. Chatten kan
+  pas na het afrekenen.
+- In de modelkiezer staan modellen die niet in het abonnement zitten met een
+  label ("Medium", "Pro"). Erop klikken opent het upgradescherm.
+- Bij Instellingen staat het abonnement, een **gebruiksmeter** (percentage van
+  deze periode) en de datum waarop het gebruik weer wordt aangevuld. Vanaf 80%
+  verschijnt er een waarschuwing boven het invoerveld, zoals bij Claude.
+- **Upgraden of downgraden** gaat direct in de app. Het verschil voor de rest
+  van de maand wordt meteen verrekend: bij een upgrade betaalt de klant
+  bij, bij een downgrade krijgt hij tegoed. Lukt de bijbetaling niet, dan
+  blijft het oude abonnement staan.
+
 ### Hoe het werkt
 
-- Wie niet betaald heeft, krijgt een betaalscherm en kan niet chatten. Het
-  invoerveld staat uit en de server weigert het verzoek ook los daarvan.
-- Na het afrekenen krijgt de bezoeker een cookie met een niet te raden code.
-  Bij elk verzoek zoekt de server die op en vraagt hij (hooguit eens per
-  minuut) aan Stripe of het abonnement nog loopt.
-- **Toegang wordt nooit in de browser bepaald.** De controle gebeurt op de
-  server, bij elk verzoek aan de assistent.
+- **Alles wordt op de server gecontroleerd**, bij elk verzoek: loopt het
+  abonnement, zit het gekozen model erin, en is de limiet nog niet bereikt?
+  Te hoge denkkracht wordt verlaagd tot wat het abonnement toestaat.
+- **Gebruikslimiet.** Elk abonnement heeft een maandbudget aan API-kosten
+  (`budget` in `lib/plannen.js`: $3, $6 en $9). Zo kan één abonnee die de hele
+  maand Fable 5.1 op Max gebruikt nooit meer kosten dan hij betaalt. Het
+  budget zelf ziet de abonnee niet, alleen het percentage. Wie halverwege op
+  stop drukt, betaalt een schatting van wat er al gegenereerd was.
+- **Geen database nodig.** Na het afrekenen krijgt de bezoeker een cookie met
+  een ondertekende toegangscode: zijn Stripe-klantnummer plus een handtekening
+  die alleen de server kan maken. Het verbruik staat in de metadata van de
+  klant bij Stripe. Daardoor werkt het ook op Netlify, en raakt niemand iets
+  kwijt als de server herstart.
 - Dezelfde code staat bij Instellingen als **toegangscode**, zodat iemand op
-  een tweede apparaat naar binnen kan zonder dat jij e-mail hoeft te versturen.
-  Behandel hem als een wachtwoord.
-- Opzeggen, facturen en betaalgegevens wijzigen doet Stripe zelf, via de knop
-  **Abonnement beheren**.
+  een tweede apparaat kan inloggen. Behandel hem als een wachtwoord.
 - Zegt iemand op, dan houdt hij toegang tot het einde van de betaalde periode.
-  Dat is wat hij betaald heeft. Een stopgezet abonnement vervalt binnen een
-  minuut (aan te passen met `ABO_CACHE_MS`).
+
+### Prijzen of limieten aanpassen
+
+Alles staat in `lib/plannen.js`: naam, bedrag, modellen, maximale
+denkkracht, budget en de tekst op de kaartjes. Verander je een bedrag, verhoog
+dan ook `PRIJS_VERSIE`. Een Stripe-prijs is niet te wijzigen, dus de server
+maakt dan een nieuwe aan; lopende abonnementen houden hun oude prijs.
+
+> Ververs je ooit je Stripe-sleutel, dan vervallen alle toegangscodes (ze zijn
+> ermee ondertekend). Abonnees moeten dan opnieuw inloggen. Wil je dat
+> voorkomen, zet dan vooraf een eigen `APP_SECRET`.
 
 ### Voordat je echt geld ontvangt
 
-Stripe vraagt om je ondernemingsnummer (KBO), bankrekening en een
-identiteitsbewijs. Dat is wettelijk verplicht. Daarna zet je de live sleutel
-(`sk_live_...`) in de omgevingsvariabelen van je hoster, en `BASE_URL` op het
-echte adres van de app — anders komt de klant na het betalen op een
-foutpagina terecht.
-
-Abonnees staan in `abonnees.json` naast de app. Draait dit bij een hoster, dan
-kan zo'n bestand bij een herstart verdwijnen; je abonnees raken dan hun
-toegangscode kwijt (hun abonnement bij Stripe blijft gewoon lopen). Wil je dat
-uitsluiten, dan is een database de volgende stap.
+Stripe vraagt om je KvK-nummer, bankrekening en een identiteitsbewijs. Dat is
+wettelijk verplicht. Daarna zet je de live sleutel (`sk_live_...`) in de
+omgevingsvariabelen van je hoster, en `BASE_URL` op het echte adres van de
+app. Op Netlify mag `BASE_URL` leeg blijven: dan wordt het adres van de site
+gebruikt.
 
 ---
 

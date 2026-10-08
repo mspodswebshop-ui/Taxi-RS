@@ -15,24 +15,17 @@ import {
   publicConfig,
   toSSE,
 } from "./lib/chat-core.js";
-import {
-  beheerLink,
-  codeBestaat,
-  heeftStripe,
-  prijsInfo,
-  standVanAbonnement,
-  startAfrekenen,
-  tokenUitVerzoek,
-  vergeetCache,
-  verwerkTerugkeer,
-  wisCookie,
-  zetCookie,
-} from "./lib/abonnement.js";
+import { tokenUitCookies } from "./lib/abonnement.js";
+import { behandelAbonnement, metVerbruik, poortVoorChat } from "./lib/abonnement-routes.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const PORT = Number(process.env.PORT || 3000);
 
 const app = express();
+// Op Render (en andere hosters) staat er een proxy voor de app. Zonder dit
+// lijkt elk verzoek van hetzelfde IP-adres te komen en deelt iedereen
+// dezelfde rate limit.
+if (process.env.NODE_ENV === "production") app.set("trust proxy", 1);
 app.use(express.json({ limit: "8mb" }));
 app.use(express.static(path.join(here, "public")));
 
@@ -72,7 +65,7 @@ app.get("/api/config", (_req, res) => {
   res.json(publicConfig());
 });
 
-app.post("/api/chat", rateLimit, vereistAbonnement, async (req, res) => {
+app.post("/api/chat", rateLimit, async (req, res) => {
   if (!hasCredentials()) {
     return res.status(401).json({
       error:
@@ -88,6 +81,11 @@ app.post("/api/chat", rateLimit, vereistAbonnement, async (req, res) => {
     return res.status(400).json({ error: err.message });
   }
 
+  // Heeft de bezoeker een abonnement dat dit model toestaat, en is zijn
+  // limiet nog niet bereikt? Zonder Stripe-sleutel is de app vrij toegankelijk.
+  const poort = await poortVoorChat(tokenUitCookies(req.headers.cookie), parsed);
+  if (!poort.ok) return res.status(poort.status).json(poort.json);
+
   res.writeHead(200, {
     "Content-Type": "text/event-stream; charset=utf-8",
     "Cache-Control": "no-cache, no-transform",
@@ -100,8 +98,9 @@ app.post("/api/chat", rateLimit, vereistAbonnement, async (req, res) => {
   const controller = new AbortController();
   res.on("close", () => controller.abort());
 
-  for await (const event of chatEvents(parsed, controller.signal)) {
-    res.write(toSSE(event));
+  const events = metVerbruik(chatEvents(parsed, controller.signal), poort.stand, parsed);
+  for await (const event of events) {
+    if (!controller.signal.aborted) res.write(toSSE(event));
   }
   if (!controller.signal.aborted) res.end();
 });
@@ -110,94 +109,23 @@ app.post("/api/chat", rateLimit, vereistAbonnement, async (req, res) => {
 
 // Het adres waarop deze app bereikbaar is. Stripe stuurt de klant hierheen
 // terug, dus dit moet kloppen zodra de app online staat.
-const BASE_URL = process.env.BASE_URL || `http://localhost:${PORT}`;
+const basisUrl = (req) => process.env.BASE_URL || `${req.protocol}://${req.get("host")}`;
 
-/**
- * Laat een verzoek alleen door als er een lopend abonnement bij hoort.
- *
- * Staan er geen Stripe-gegevens ingesteld, dan is de app gewoon vrij
- * toegankelijk. Zo blijft hij bruikbaar voor jezelf, zonder dat je eerst
- * een abonnement op je eigen app moet nemen.
- */
-async function vereistAbonnement(req, res, next) {
-  if (!heeftStripe()) return next();
-
-  const stand = await standVanAbonnement(tokenUitVerzoek(req));
-  if (stand.actief) return next();
-
-  res.status(402).json({
-    error: "Hiervoor heb je een abonnement nodig.",
-    abonnementNodig: true,
+// De logica staat in lib/abonnement-routes.js, zodat de Netlify-versie
+// precies hetzelfde doet.
+app.all(/^\/(api\/)?abonnement(\/.*)?$/, async (req, res) => {
+  const antwoord = await behandelAbonnement({
+    methode: req.method,
+    pad: req.path,
+    token: tokenUitCookies(req.headers.cookie),
+    body: req.body,
+    query: req.query,
+    basisUrl: basisUrl(req),
   });
-}
 
-app.get("/api/abonnement", async (req, res) => {
-  if (!heeftStripe()) {
-    return res.json({ vereist: false, actief: true, prijs: null });
-  }
-
-  const stand = await standVanAbonnement(tokenUitVerzoek(req));
-  res.json({ vereist: true, ...stand, prijs: await prijsInfo() });
-});
-
-app.post("/api/abonnement/start", async (_req, res) => {
-  try {
-    res.json({ url: await startAfrekenen(BASE_URL) });
-  } catch (err) {
-    console.error("Afrekenen starten mislukt:", err);
-    res.status(502).json({ error: err.message });
-  }
-});
-
-// Hier komt de klant terug van de betaalpagina van Stripe.
-app.get("/abonnement/terug", async (req, res) => {
-  try {
-    const token = await verwerkTerugkeer(String(req.query.sessie || ""));
-    zetCookie(res, token);
-    vergeetCache(token);
-    res.redirect("/?welkom=1");
-  } catch (err) {
-    console.error("Terugkeer mislukt:", err);
-    res.redirect("/?fout=" + encodeURIComponent(err.message));
-  }
-});
-
-// Inloggen op een tweede apparaat met de toegangscode.
-app.post("/api/abonnement/code", (req, res) => {
-  const code = String(req.body?.code || "").trim();
-  if (!codeBestaat(code)) {
-    return res.status(404).json({ error: "Deze toegangscode kennen we niet." });
-  }
-  zetCookie(res, code);
-  vergeetCache(code);
-  res.json({ ok: true });
-});
-
-// De eigen toegangscode opvragen, om op een ander apparaat te gebruiken.
-app.get("/api/abonnement/code", async (req, res) => {
-  const token = tokenUitVerzoek(req);
-  const stand = await standVanAbonnement(token);
-  if (!stand.actief) return res.status(403).json({ error: "Geen lopend abonnement." });
-  res.json({ code: token });
-});
-
-// Opzeggen, facturen en betaalgegevens: dat regelt Stripe zelf.
-app.post("/api/abonnement/beheer", async (req, res) => {
-  try {
-    const token = tokenUitVerzoek(req);
-    const stand = await standVanAbonnement(token);
-    if (!stand.actief) return res.status(403).json({ error: "Geen lopend abonnement." });
-    res.json({ url: await beheerLink(token, BASE_URL) });
-  } catch (err) {
-    console.error("Beheerlink mislukt:", err);
-    res.status(502).json({ error: err.message });
-  }
-});
-
-app.post("/api/abonnement/afmelden", (req, res) => {
-  vergeetCache(tokenUitVerzoek(req));
-  wisCookie(res);
-  res.json({ ok: true });
+  if (antwoord.cookie) res.append("Set-Cookie", antwoord.cookie);
+  if (antwoord.redirect) return res.redirect(antwoord.redirect);
+  res.status(antwoord.status).json(antwoord.json);
 });
 
 // Onbekend API-pad: een nette JSON-fout in plaats van een HTML-pagina.

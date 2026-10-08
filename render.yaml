@@ -23,10 +23,9 @@ services:
       # in dit bestand opslaat. Zet je sleutel dus nooit hieronder.
       - key: ANTHROPIC_API_KEY
         sync: false
-      # Alleen nodig als je abonnementen wilt. Laat leeg voor vrije toegang.
+      # Alleen nodig als je abonnementen wilt (Standaard, Medium, Pro). Laat
+      # leeg voor vrije toegang. De prijzen maakt de app zelf aan in Stripe.
       - key: STRIPE_SECRET_KEY
-        sync: false
-      - key: STRIPE_PRICE_ID
         sync: false
       # Het adres dat Render je geeft; Stripe stuurt de klant hierheen terug.
       - key: BASE_URL

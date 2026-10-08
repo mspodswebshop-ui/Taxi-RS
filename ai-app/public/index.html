@@ -2,137 +2,172 @@
 <html lang="nl" data-theme="dark">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content">
   <title>Mijn AI</title>
   <meta name="description" content="Een eigen AI-assistent op basis van de Claude API.">
+  <meta name="theme-color" content="#262624" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#faf9f5" media="(prefers-color-scheme: light)">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23d97757'/%3E%3Ctext x='16' y='23' font-size='19' text-anchor='middle' fill='%23fff'%3E%E2%9C%A6%3C/text%3E%3C/svg%3E">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
 <div class="app" id="app">
+  <div class="scrim" id="scrim" hidden></div>
+
   <!-- ============ Zijbalk ============ -->
-  <aside class="sidebar" id="sidebar">
-    <div class="brand">
-      <span class="brand-mark">✦</span>
-      <span class="brand-name">Mijn AI</span>
-      <button class="icon-btn sidebar-close" id="sidebarCloseBtn" aria-label="Zijbalk sluiten">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+  <aside class="sidebar" id="sidebar" aria-label="Zijbalk">
+    <div class="sidebar-top">
+      <button class="icon-btn" id="sidebarToggleBtn" aria-label="Zijbalk in- of uitklappen" title="Zijbalk in- of uitklappen">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M9 4v16"/></svg>
       </button>
+      <span class="brand-name">Mijn AI</span>
     </div>
 
-    <div class="sidebar-actions">
-      <button class="new-chat" id="newChatBtn">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
-        Nieuw gesprek
+    <div class="sidebar-nav">
+      <button class="nav-item nav-new" id="newChatBtn" title="Nieuw gesprek">
+        <span class="nav-new-icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+        </span>
+        <span class="nav-label">Nieuw gesprek</span>
       </button>
 
-      <div class="search">
+      <label class="nav-item search" title="Zoek in gesprekken">
         <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
         <input type="search" id="searchInput" placeholder="Zoek in gesprekken" aria-label="Zoek in gesprekken">
-      </div>
+      </label>
     </div>
 
+    <div class="recents-head">Recent</div>
     <nav class="chat-list" id="chatList" aria-label="Gesprekken"></nav>
 
     <div class="sidebar-foot">
-      <button class="ghost-btn" id="settingsBtn">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg>
-        Instellingen
+      <button class="account" id="accountBtn" aria-haspopup="true" aria-expanded="false">
+        <span class="account-avatar" id="accountAvatar">J</span>
+        <span class="account-text">
+          <span class="account-name" id="accountName">Jouw account</span>
+          <span class="account-plan" id="accountPlan">Volledige toegang</span>
+        </span>
+        <svg class="account-caret" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 15 5 5 5-5M7 9l5-5 5 5"/></svg>
       </button>
-      <button class="ghost-btn" id="themeBtn">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
-        <span id="themeLabel">Licht thema</span>
-      </button>
+
+      <div class="popover account-menu" id="accountMenu" hidden>
+        <div class="menu-email" id="menuEmail" hidden></div>
+        <button class="menu-item" id="settingsBtn">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+          Instellingen
+        </button>
+        <button class="menu-item" id="themeBtn">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+          <span id="themeLabel">Licht thema</span>
+        </button>
+        <button class="menu-item" id="plansMenuBtn" hidden>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.6 5.6 6.1.7-4.5 4.2 1.2 6L12 16.6 6.6 19.5l1.2-6L3.3 9.3l6.1-.7z"/></svg>
+          <span id="plansMenuLabel">Abonnement upgraden</span>
+        </button>
+        <button class="menu-item" id="logoutBtn" hidden>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+          Afmelden op dit apparaat
+        </button>
+      </div>
     </div>
   </aside>
 
   <!-- ============ Hoofdvenster ============ -->
-  <main class="main">
+  <main class="main empty" id="main">
     <header class="topbar">
-      <button class="icon-btn" id="sidebarOpenBtn" aria-label="Zijbalk openen">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      <button class="icon-btn mobile-only" id="sidebarOpenBtn" aria-label="Menu openen">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h10"/></svg>
       </button>
 
       <h1 class="chat-title" id="chatTitle" title="Klik om de naam aan te passen" tabindex="0">Nieuw gesprek</h1>
 
       <div class="topbar-right">
-        <button class="pill" id="modelBtn" aria-haspopup="true" aria-expanded="false">
-          <span class="pill-dot"></span>
-          <span id="modelBtnLabel">Fable 5.1</span>
-          <svg class="pill-caret" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
-        </button>
+        <button class="upgrade-chip" id="upgradeChip" hidden>Upgraden</button>
         <button class="icon-btn" id="exportBtn" aria-label="Gesprek downloaden" title="Downloaden als markdown">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7 11l5 5 5-5M4 21h16"/></svg>
+        </button>
+        <button class="icon-btn mobile-only" id="newChatTopBtn" aria-label="Nieuw gesprek">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>
         </button>
       </div>
     </header>
 
-    <!-- Modelkiezer -->
-    <div class="popover" id="modelPopover" hidden>
-      <div class="popover-head">Model</div>
-      <div id="modelOptions"></div>
-      <div class="popover-head popover-head-sep">Denkkracht</div>
-      <div class="effort-row" id="effortOptions"></div>
-      <p class="popover-note" id="effortNote"></p>
-    </div>
-
     <div class="messages" id="messages">
       <div class="welcome" id="welcome">
-        <div class="welcome-mark">✦</div>
-        <h2 class="welcome-title" id="welcomeTitle">Goedendag</h2>
-        <p class="welcome-sub">Waar zullen we mee beginnen?</p>
-
-        <div class="suggestions">
-          <button class="suggestion" data-prompt="Leg uit hoe een REST API werkt, met een concreet voorbeeld in JavaScript.">
-            <span class="suggestion-icon">◆</span>
-            <span class="suggestion-text">
-              <strong>Leg iets uit</strong>
-              <span>Hoe werkt een REST API?</span>
-            </span>
-          </button>
-          <button class="suggestion" data-prompt="Schrijf een wervende, warme tekst voor de homepage van een taxibedrijf in Antwerpen. Houd het kort en concreet.">
-            <span class="suggestion-icon">✎</span>
-            <span class="suggestion-text">
-              <strong>Schrijf mee</strong>
-              <span>Tekst voor een homepage</span>
-            </span>
-          </button>
-          <button class="suggestion" data-prompt="Help me een bug te vinden in mijn code. Ik plak hem hierna, stel gerust vragen als iets onduidelijk is.">
-            <span class="suggestion-icon">⌘</span>
-            <span class="suggestion-text">
-              <strong>Debug code</strong>
-              <span>Samen een bug zoeken</span>
-            </span>
-          </button>
-          <button class="suggestion" data-prompt="Maak een realistische weekplanning voor iemand met een fulltime baan die 3x per week wil sporten en 's avonds tijd wil houden voor gezin.">
-            <span class="suggestion-icon">◷</span>
-            <span class="suggestion-text">
-              <strong>Maak een plan</strong>
-              <span>Realistische weekplanning</span>
-            </span>
-          </button>
-        </div>
+        <button class="plan-badge" id="planBadge" hidden></button>
+        <h2 class="welcome-title">
+          <span class="welcome-mark" aria-hidden="true">✦</span>
+          <span id="welcomeTitle">Goedendag</span>
+        </h2>
       </div>
     </div>
 
     <div class="composer-wrap">
+      <div class="usage-warning" id="usageWarning" hidden></div>
+
       <form class="composer" id="composer">
-        <textarea id="input" rows="1" placeholder="Stel je vraag…" autocomplete="off"></textarea>
-        <div class="composer-side">
-          <button type="submit" class="send-btn" id="sendBtn" aria-label="Versturen">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
-          </button>
-          <button type="button" class="stop-btn" id="stopBtn" aria-label="Stoppen" hidden>
-            <span class="stop-square"></span>
-          </button>
+        <textarea id="input" rows="1" placeholder="Waarmee kan ik je helpen?" autocomplete="off" aria-label="Je bericht"></textarea>
+
+        <div class="composer-bar">
+          <div class="composer-left">
+            <button type="button" class="effort-chip" id="effortChip" title="Denkkracht">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3zM9.5 20h5"/></svg>
+              <span id="effortChipLabel">Max</span>
+            </button>
+          </div>
+
+          <div class="composer-right">
+            <button type="button" class="model-btn" id="modelBtn" aria-haspopup="true" aria-expanded="false">
+              <span id="modelBtnLabel">Fable 5.1</span>
+              <svg class="caret" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+            <button type="submit" class="send-btn" id="sendBtn" aria-label="Versturen">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+            </button>
+            <button type="button" class="stop-btn" id="stopBtn" aria-label="Stoppen" hidden>
+              <span class="stop-square"></span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Modelkiezer -->
+        <div class="popover model-popover" id="modelPopover" hidden>
+          <div class="popover-head">Model</div>
+          <div id="modelOptions"></div>
+          <div class="popover-head popover-head-sep">Denkkracht</div>
+          <div class="effort-row" id="effortOptions"></div>
+          <p class="popover-note" id="effortNote"></p>
         </div>
       </form>
 
       <div class="composer-meta">
-        <span id="composerHint">Enter om te versturen · Shift+Enter voor een nieuwe regel</span>
+        <span id="composerHint">AI kan fouten maken. Controleer belangrijke informatie.</span>
         <span id="chatCost" class="cost-total"></span>
       </div>
+    </div>
+
+    <div class="starters" id="starters">
+      <button class="starter" data-prompt="Schrijf een wervende, warme tekst voor de homepage van een taxibedrijf. Houd het kort en concreet.">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>
+        Schrijven
+      </button>
+      <button class="starter" data-prompt="Leg uit hoe een REST API werkt, met een concreet voorbeeld in JavaScript.">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 7l10-4 10 4-10 4z"/><path d="M6 9v5c0 1.7 2.7 3 6 3s6-1.3 6-3V9"/></svg>
+        Leren
+      </button>
+      <button class="starter" data-prompt="Help me een bug te vinden in mijn code. Ik plak hem hierna, stel gerust vragen als iets onduidelijk is.">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 8-5 4 5 4M16 8l5 4-5 4M14 4l-4 16"/></svg>
+        Code
+      </button>
+      <button class="starter" data-prompt="Maak een realistische weekplanning voor iemand met een fulltime baan die 3x per week wil sporten en 's avonds tijd wil houden voor gezin.">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
+        Plannen
+      </button>
+      <button class="starter" data-prompt="Geef me vijf creatieve ideeën om meer klanten te krijgen voor een klein bedrijf, met per idee de eerste stap.">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.7.7 1 1.5 1 2.5h6c0-1 .3-1.8 1-2.5A6 6 0 0 0 12 3z"/></svg>
+        Ideeën
+      </button>
     </div>
   </main>
 </div>
@@ -148,9 +183,40 @@
     </div>
 
     <div class="modal-body">
+      <section class="sub-card" id="subSection" hidden>
+        <div class="sub-row">
+          <div>
+            <div class="sub-label">Abonnement</div>
+            <div class="sub-plan" id="subPlan">—</div>
+            <div class="sub-meta" id="subMeta"></div>
+          </div>
+          <button class="ghost-btn compact" id="changePlanBtn">Wijzigen</button>
+        </div>
+
+        <div class="usage" id="usageBlock" hidden>
+          <div class="usage-top">
+            <span>Gebruik deze periode</span>
+            <span id="usagePct">0%</span>
+          </div>
+          <div class="usage-bar"><div class="usage-fill" id="usageFill"></div></div>
+          <div class="sub-meta" id="usageReset"></div>
+        </div>
+
+        <button class="ghost-btn compact" id="manageSubBtn" hidden>Facturen, betaalgegevens en opzeggen</button>
+      </section>
+
+      <div class="field" id="codeField" hidden>
+        <span class="field-label">Je toegangscode</span>
+        <div class="code-box" id="myCode">…</div>
+        <span class="field-hint">
+          Hiermee log je in op een ander apparaat. Behandel hem als een
+          wachtwoord: wie hem heeft, kan op jouw abonnement chatten.
+        </span>
+      </div>
+
       <div class="field">
-        <span class="field-label">Systeemprompt</span>
-        <textarea id="systemPrompt" rows="8" placeholder="Beschrijf hoe je assistent zich moet gedragen…"></textarea>
+        <span class="field-label">Persoonlijke voorkeuren</span>
+        <textarea id="systemPrompt" rows="7" placeholder="Beschrijf hoe je assistent zich moet gedragen…"></textarea>
         <span class="field-hint">Dit bepaalt de persoonlijkheid, toon en regels van je assistent.</span>
       </div>
 
@@ -162,16 +228,7 @@
         </span>
       </label>
 
-      <div class="field" id="codeField" hidden>
-        <span class="field-label">Je toegangscode</span>
-        <div class="code-box" id="myCode">…</div>
-        <span class="field-hint">
-          Hiermee log je in op een ander apparaat. Behandel hem als een
-          wachtwoord: wie hem heeft, kan op jouw abonnement chatten.
-        </span>
-      </div>
-
-      <label class="check">
+      <label class="check" id="showCostRow">
         <input type="checkbox" id="showCost">
         <span>
           <strong>Toon geschatte kosten</strong>
@@ -182,7 +239,6 @@
 
     <div class="modal-foot">
       <button class="ghost-btn danger" id="clearAllBtn">Alle gesprekken wissen</button>
-      <button class="ghost-btn" id="manageSubBtn" hidden>Abonnement beheren</button>
       <div class="modal-foot-right">
         <button class="ghost-btn" id="resetPromptBtn">Standaard herstellen</button>
         <button class="primary-btn" id="settingsSaveBtn">Opslaan</button>
@@ -192,33 +248,22 @@
 </div>
 
 
-<!-- ============ Abonnement ============ -->
+<!-- ============ Abonnementen ============ -->
 <div class="modal-backdrop" id="payModal" hidden>
-  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="payTitle">
+  <div class="modal modal-wide" role="dialog" aria-modal="true" aria-labelledby="payTitle">
     <div class="modal-head">
-      <h2 id="payTitle">Abonnement</h2>
-      <button class="icon-btn" id="payCloseBtn" aria-label="Sluiten" hidden>
+      <h2 id="payTitle">Kies je abonnement</h2>
+      <button class="icon-btn" id="payCloseBtn" aria-label="Sluiten">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
       </button>
     </div>
 
     <div class="modal-body">
-      <div class="plan">
-        <div class="plan-price" id="planPrice">—</div>
-        <div class="plan-period" id="planPeriod"></div>
-      </div>
-
-      <ul class="plan-list">
-        <li>Onbeperkt chatten met Fable 5.1, het krachtigste model</li>
-        <li>Ook Opus 5, Sonnet 5 en Haiku 4.5</li>
-        <li>Denkproces zichtbaar en instelbare denkkracht</li>
-        <li>Maandelijks opzegbaar, zonder opzegtermijn</li>
-      </ul>
-
-      <button class="primary-btn wide" id="subscribeBtn">Abonneren</button>
+      <p class="plans-sub" id="paySub">Maandelijks opzegbaar, zonder opzegtermijn. Prijzen inclusief btw.</p>
+      <div class="plans" id="plans"></div>
       <p class="plan-note">Betalen gaat veilig via Stripe. Wij zien je kaartgegevens niet.</p>
 
-      <details class="plan-code">
+      <details class="plan-code" id="planCode">
         <summary>Al geabonneerd? Toegangscode invullen</summary>
         <p class="field-hint">
           Bij je abonnement hoort een toegangscode. Daarmee kom je op een ander
