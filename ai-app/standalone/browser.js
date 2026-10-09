@@ -196,7 +196,7 @@ function saveKeyFromScreen() {
   el("keyModal").hidden = true;
   config.hasCredentials = true;
   ui.input.disabled = false;
-  ui.input.placeholder = "Stel je vraag…";
+  ui.input.placeholder = "Waarmee kan ik je helpen?";
   renderMessages();
   toast("Sleutel opgeslagen.");
   ui.input.focus();
