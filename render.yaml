@@ -56,3 +56,34 @@ services:
         sync: false
       - key: NODE_VERSION
         value: "22"
+
+  # Weblity: websites voor klanten, met een eigen beheeromgeving per klant.
+  # Na de eerste deploy: open de Shell van deze service en draai
+  # `npm run db:seed` voor je beheerdersaccount.
+  - type: web
+    name: weblity
+    runtime: node
+    plan: free
+    rootDir: weblity
+    buildCommand: npm install --include=dev && npm run build && npm run db:deploy
+    startCommand: npm start
+    healthCheckPath: /
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: weblity-db
+          property: connectionString
+      # Jouw e-mailadres als beheerder.
+      - key: ADMIN_EMAIL
+        sync: false
+      # Adressen van Weblity zelf, bv. "weblity.onrender.com,weblity.be".
+      # Leeg laten zolang je geen eigen domeinen van klanten gebruikt.
+      - key: PLATFORM_HOSTS
+        sync: false
+      - key: NODE_VERSION
+        value: "22"
+
+databases:
+  - name: weblity-db
+    plan: free
+    databaseName: weblity

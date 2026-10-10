@@ -1,0 +1,106 @@
+// Weblity - databaseschema
+//
+// Eén installatie van Weblity beheert de websites van al je klanten. Elke
+// website (Site) heeft een eigen klantcode. Met die code kan de klant alleen
+// de inhoud van zijn eigen website aanpassen, nooit die van een ander.
+//
+// Van wachtwoorden, klantcodes en sessiesleutels staat alleen een hash in de
+// database. Lekt de database, dan kan niemand er zomaar mee inloggen.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// Jij en eventuele collega's: wie websites aanmaakt en codes uitdeelt.
+model Admin {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String
+  passwordHash String   @map("password_hash")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  sessions Session[]
+
+  @@map("admins")
+}
+
+/// Een website van een klant.
+model Site {
+  id        String  @id @default(cuid())
+  /// Korte naam in het adres, bv. "idriss-bakkerij" → /s/idriss-bakkerij
+  slug      String  @unique
+  name      String
+  /// Welk ontwerp de site gebruikt, zie src/templates.
+  template  String  @default("bakkerij")
+  /// concept: zichtbaar met conceptbalk en niet in Google
+  /// live:    gewone publieke website
+  /// offline: niet bereikbaar
+  status    String  @default("concept")
+  /// Eigen domeinnaam van de klant, bv. "idrissbakkerij.be". Optioneel.
+  domain    String? @unique
+  /// Gegevens van de klant, alleen voor jou (staan niet op de website).
+  ownerName  String? @map("owner_name")
+  ownerEmail String? @map("owner_email")
+  ownerPhone String? @map("owner_phone")
+  notes      String?
+
+  /// SHA-256 van de klantcode. De code zelf is één keer zichtbaar.
+  codeHash       String    @unique @map("code_hash")
+  /// Laatste vier tekens, zodat je de code kunt herkennen zonder hem te kennen.
+  codeHint       String    @map("code_hint")
+  codeCreatedAt  DateTime  @default(now()) @map("code_created_at")
+  codeLastUsedAt DateTime? @map("code_last_used_at")
+
+  /// Alle inhoud van de website (teksten, producten, uren, reviews, kleuren).
+  /// De vorm wordt gecontroleerd in src/lib/content.ts.
+  content   Json
+  /// Gaat met 1 omhoog bij elke opslag van de inhoud. Zo merkt de editor
+  /// het als iemand anders intussen ook iets heeft opgeslagen.
+  contentVersion Int @default(0) @map("content_version")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  sessions Session[]
+  changes  Change[]
+
+  @@map("sites")
+}
+
+/// Een ingelogde browser: een beheerder of een klant.
+model Session {
+  id        String   @id @default(cuid())
+  tokenHash String   @unique @map("token_hash")
+  /// "admin" of "client"
+  kind      String
+  adminId   String?  @map("admin_id")
+  siteId    String?  @map("site_id")
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  admin Admin? @relation(fields: [adminId], references: [id], onDelete: Cascade)
+  site  Site?  @relation(fields: [siteId], references: [id], onDelete: Cascade)
+
+  @@index([expiresAt])
+  @@map("sessions")
+}
+
+/// Logboek: wie paste wanneer iets aan. Handig als een klant vraagt
+/// "wie heeft dit veranderd?".
+model Change {
+  id        String   @id @default(cuid())
+  siteId    String   @map("site_id")
+  /// "client" of "admin"
+  by        String
+  action    String
+  createdAt DateTime @default(now()) @map("created_at")
+
+  site Site @relation(fields: [siteId], references: [id], onDelete: Cascade)
+
+  @@index([siteId, createdAt])
+  @@map("changes")
+}

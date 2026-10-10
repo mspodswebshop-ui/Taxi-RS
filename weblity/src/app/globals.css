@@ -1,0 +1,33 @@
+@import "tailwindcss";
+
+/* Weblity - kleuren en typografie van het beheerplatform. */
+
+@theme {
+  --color-ink-50: #f7f7fa;
+  --color-ink-100: #eeeef3;
+  --color-ink-200: #dcdce6;
+  --color-ink-300: #babacb;
+  --color-ink-400: #8e8ea6;
+  --color-ink-500: #6a6a85;
+  --color-ink-600: #4f4f68;
+  --color-ink-700: #3a3a50;
+  --color-ink-800: #232336;
+  --color-ink-900: #16162a;
+
+  --color-brand-50: #f2efff;
+  --color-brand-100: #e4ddff;
+  --color-brand-200: #cbbdff;
+  --color-brand-400: #9a7bff;
+  --color-brand-500: #7b55ff;
+  --color-brand-600: #6438f0;
+  --color-brand-700: #5129c8;
+
+  --font-sans: "Inter", ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  --font-display: "Fraunces", Georgia, serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+
+body {
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
