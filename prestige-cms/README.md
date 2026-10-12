@@ -22,8 +22,13 @@ Sluit je per ongeluk het venster, dan kan je gewoon verder.
 ## Hoe werkt het?
 
 - De oorspronkelijke website staat in de map [`prestige-taxi`](../prestige-taxi).
-- Alles wat je in het beheer publiceert (pagina's, foto's) wordt bewaard in een
-  **Postgres-database**, of zonder database in de map `data/`.
+- Alle logica zit in `core.js`. Die draait op twee manieren:
+  - op **Netlify** als Netlify Function (`netlify/functions/site.mjs`);
+  - als **gewone Node-server** (`server.js`), bv. op Render of je eigen computer.
+- Alles wat je publiceert (pagina's, foto's) wordt bewaard in:
+  - **Postgres** als `DATABASE_URL` ingesteld is (bv. Neon);
+  - anders op Netlify in **Netlify Blobs** (ingebouwd, niets in te stellen);
+  - anders in de map `data/`.
 - Wat in de opslag staat, gaat voor op het origineel. Met "Terug naar de
   originele website" (bij Instellingen) gooi je alle tekstwijzigingen weg.
 
@@ -68,7 +73,37 @@ npm start
 
 Zonder `DATABASE_URL` komt alles in de map `data/`.
 
-## Online zetten (Render + Neon, gratis te starten)
+## Online zetten op Netlify (aanbevolen)
+
+Niet slepen naar Netlify Drop: dat zet alleen losse pagina's online, zonder
+beheer ("Page not found"). Koppel in plaats daarvan de GitHub-repository:
+
+1. Log in op Netlify met het account waarop de site moet komen.
+2. **Add new project > Import an existing project > GitHub** en kies de
+   repository **Taxi-RS**. (Geef Netlify toegang tot die repository als hij er
+   niet tussen staat.)
+3. Vul in:
+
+   | Veld | Waarde |
+   | --- | --- |
+   | Branch to deploy | `claude/prestige-taxi-website` (of `main` als het daar staat) |
+   | Base directory | `prestige-cms` |
+   | Build command | leeg laten (komt uit `netlify.toml`) |
+   | Publish directory | leeg laten (komt uit `netlify.toml`) |
+
+4. **Deploy**. Klaar: de site staat online en het beheer op `/admin`.
+
+Er hoeft niets ingesteld te worden. Optioneel bij *Site configuration >
+Environment variables*:
+
+| Variabele | Wat |
+| --- | --- |
+| `ADMIN_PASSWORD` | Ander wachtwoord dan het ingebouwde |
+| `DATABASE_URL` | Postgres (bv. Neon) in plaats van Netlify Blobs |
+
+Eigen domein: *Domain management > Add a domain*.
+
+## Online zetten op Render (alternatief)
 
 **1. Database.** Staat al klaar bij [Neon](https://console.neon.tech): project
 **prestige-taxi** (regio Frankfurt), database `prestige_taxi`. Kopieer daar de

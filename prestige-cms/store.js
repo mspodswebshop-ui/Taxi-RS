@@ -5,9 +5,10 @@
  * telefoonnummer en de geüploade foto's) wordt hier bewaard als "bestand":
  * een pad met inhoud en een type.
  *
- * Met DATABASE_URL gaat alles naar Postgres. Dat is nodig op hosting waar de
- * schijf bij elke herstart leeg is (zoals het gratis plan van Render).
- * Zonder DATABASE_URL gaat alles naar de map data/ naast deze server.
+ * Waar het bewaard wordt:
+ * - met DATABASE_URL in Postgres (bv. Neon);
+ * - anders op Netlify in Netlify Blobs (ingebouwd, niets in te stellen);
+ * - anders in de map data/ naast de server.
  */
 
 import fs from "node:fs/promises";
@@ -36,8 +37,39 @@ function checkPath(p) {
   return p;
 }
 
-export async function openStore({ databaseUrl, dataDir }) {
-  return databaseUrl ? openPostgres(databaseUrl) : openFolder(dataDir);
+export async function openStore({ databaseUrl, blobs, dataDir }) {
+  if (databaseUrl) return openPostgres(databaseUrl);
+  if (blobs) return openBlobs(blobs);
+  return openFolder(dataDir);
+}
+
+/** Netlify Blobs: `blobs` is een store uit getStore() van @netlify/blobs. */
+function openBlobs(blobs) {
+  // "strong": na publiceren meteen de nieuwe versie lezen, niet een oude kopie.
+  const strong = { consistency: "strong" };
+  const store = {
+    kind: "netlify-blobs",
+    async get(p) {
+      const r = await blobs.getWithMetadata(checkPath(p), { type: "arrayBuffer", ...strong });
+      if (!r) return null;
+      return { body: Buffer.from(r.data), type: r.metadata?.type || typeFor(p) };
+    },
+    async put(p, body, type = typeFor(p)) {
+      await blobs.set(checkPath(p), body, { metadata: { type } });
+    },
+    async remove(p) {
+      await blobs.delete(checkPath(p));
+    },
+    async list(prefix = "") {
+      const { blobs: items } = await blobs.list({ prefix, ...strong });
+      return items.map((b) => b.key).sort();
+    },
+    async putMany(files) {
+      // Het versiebestand komt als laatste: pas dan "bestaat" de nieuwe publicatie.
+      for (const f of files) await store.put(f.path, f.body, f.type || typeFor(f.path));
+    },
+  };
+  return store;
 }
 
 async function openPostgres(url) {

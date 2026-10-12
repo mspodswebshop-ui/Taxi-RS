@@ -1,0 +1,19 @@
+# Configuratie voor Netlify.
+#
+# Stel bij Netlify de "Base directory" in op prestige-cms. Netlify gebruikt dan
+# dit bestand (en niet het netlify.toml in de hoofdmap, dat bij de AI-app hoort).
+#
+# Er hoeft niets ingesteld te worden: de foto's en teksten gaan naar Netlify
+# Blobs en het wachtwoord zit ingebouwd. Optioneel:
+#   ADMIN_PASSWORD  ander wachtwoord voor /admin
+#   DATABASE_URL    Postgres (bv. Neon) in plaats van Netlify Blobs
+
+[build]
+  command = "npm run build:netlify"
+  publish = "public"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+[functions]
+  node_bundler = "esbuild"
