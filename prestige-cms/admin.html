@@ -667,7 +667,7 @@
       var html = serialize(S.docs[S.current], true);
       html = html.replace(/<script src="assets\/main\.js"><\/script>/, "");
       // Foto's en opmaak komen gewoon van de server.
-      html = html.replace(/<head>/i, '<head><base href="' + location.origin + '/">');
+      html = html.replace(/<head[^>]*>/i, function (m) { return m + '<base href="' + location.origin + '/">'; });
       html = html.replace("</head>", "<style>" + EDIT_CSS + "</style></head>");
       frame.onload = function () {
         setupFrame();
