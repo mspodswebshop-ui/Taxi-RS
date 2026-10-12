@@ -184,7 +184,7 @@ p { margin: 0 0 1em; }
 }
 
 .brand { display: inline-flex; align-items: center; gap: 12px; }
-.brand-mark { width: 38px; height: 38px; flex: none; }
+.brand-mark { width: 56px; height: 38px; flex: none; }
 .brand-name { display: flex; flex-direction: column; line-height: 1.05; }
 .brand-name strong {
   font-family: var(--font-display);
@@ -1210,3 +1210,94 @@ a.contact-card:hover { border-color: rgba(214, 178, 94, 0.45); transform: transl
   .form-card { padding: 22px 18px; }
   .slider-arrow { width: 42px; height: 42px; }
 }
+
+/* ---------- AI-foto's ---------- */
+
+.photo { position: absolute; inset: 0; z-index: 1; overflow: hidden; }
+.photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transform: scale(1.06);
+  transition: opacity 1.2s var(--ease), transform 1.6s var(--ease);
+}
+.photo.loaded img { opacity: 1; transform: none; }
+.photo.failed { display: none; }
+
+/* Hero: foto in een kader met gouden rand; de illustratie blijft als terugval */
+.hero-frame {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  border-radius: 28px;
+  overflow: hidden;
+  border: 1px solid rgba(214, 178, 94, 0.35);
+  background:
+    radial-gradient(70% 60% at 50% 90%, rgba(214, 178, 94, 0.25), transparent 70%),
+    linear-gradient(160deg, #1a1a20, #0d0d10);
+  display: grid;
+  place-items: center;
+  box-shadow: var(--shadow), 0 0 0 8px rgba(214, 178, 94, 0.05);
+}
+.hero-frame > svg { width: 90%; }
+.hero-frame .photo::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 55%, rgba(11, 11, 13, 0.55));
+}
+.hero-visual { max-width: 440px; margin-left: auto; width: 100%; }
+@media (max-width: 960px) { .hero-visual { margin: 0 auto; max-width: 400px; } }
+
+/* Panelen: foto vult het hele vlak, label blijft erboven */
+.visual-panel .tag { z-index: 2; }
+.visual-panel .photo::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(11, 11, 13, 0.35), transparent 35%);
+}
+
+/* Kaarten met een foto bovenaan */
+.card-media {
+  position: relative;
+  margin: -28px -26px 20px;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background: linear-gradient(160deg, #1d1d23, #111114);
+  border-bottom: 1px solid var(--line);
+}
+.card-media .photo img { transition: opacity 1.2s var(--ease), transform 0.8s var(--ease); }
+.card:hover .card-media .photo.loaded img { transform: scale(1.05); }
+.card-media + .icon-box { margin-top: -46px; position: relative; z-index: 2; background: #17171c; }
+.section-light .card-media + .icon-box { background: #fff; }
+@media (max-width: 560px) { .card-media { margin: -22px -20px 18px; } }
+
+/* Paginakop met achtergrondfoto */
+.page-hero.has-photo::before { z-index: -3; }
+.page-hero .photo { z-index: -2; }
+.page-hero .photo.loaded img { opacity: 0.5; }
+.page-hero .photo::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, var(--ink) 25%, rgba(11, 11, 13, 0.55) 70%, rgba(11, 11, 13, 0.3)), linear-gradient(0deg, var(--ink), transparent 40%);
+}
+
+/* Laadt een foto niet, dan verdwijnt het lege fotovak in de kaart */
+.card-media:has(.photo.failed) { display: none; }
+.card-media:has(.photo.failed) + .icon-box { margin-top: 0; }
+
+/* Zachte glans zolang de AI-foto nog wordt gemaakt */
+.card-media::before,
+.hero-frame::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(100deg, transparent 30%, rgba(214, 178, 94, 0.08) 50%, transparent 70%);
+  background-size: 250% 100%;
+  animation: shimmer 2.2s linear infinite;
+}
+.card-media:has(.photo.loaded)::before,
+.hero-frame:has(.photo.loaded)::before { display: none; }
+@keyframes shimmer { from { background-position: 150% 0; } to { background-position: -100% 0; } }

@@ -22,6 +22,21 @@ schuifbalk, reservatieformulier) in `assets/main.js`.
 Het reservatieformulier heeft geen server nodig: het zet de aanvraag klaar in
 WhatsApp of in het e-mailprogramma van de klant.
 
+## Logo en foto's
+
+- Het logo linksboven is het monogram **PTA** (Prestige Taxi Antwerpen).
+- De foto's zijn **AI-foto's** die de browser van de bezoeker ophaalt bij
+  `image.pollinations.ai` (een gratis AI-beeldgenerator). De foto wordt gemaakt
+  op basis van een beschrijving in het Engels; dezelfde beschrijving en hetzelfde
+  `seed`-nummer geven altijd dezelfde foto. De allereerste keer kan het maken een
+  paar seconden duren, daarna komt de foto uit de cache.
+- Laadt een foto niet, dan blijft de gouden illustratie staan en verdwijnt het
+  lege fotovak. De site breekt dus nooit.
+- **Tip:** bevalt een foto, sla hem dan op in `assets/img/` en vervang in de HTML
+  de lange `https://image.pollinations.ai/...`-link door bv. `assets/img/hero.jpg`.
+  Dan ben je niet meer afhankelijk van de generator. Echte foto's van de eigen
+  wagen of chauffeur kunnen er op dezelfde manier in.
+
 ## Nog aan te passen vóór livegang
 
 - **Reviews**: de 8 reviews zijn voorbeeldteksten. Vervang ze door echte reviews
