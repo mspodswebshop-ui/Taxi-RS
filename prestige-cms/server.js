@@ -21,6 +21,10 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 const PORT = Number(process.env.PORT || 5000);
 const SITE_DIR = path.resolve(here, process.env.SITE_DIR || "../prestige-taxi");
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "";
+// Ingebouwd wachtwoord voor /admin, voor als ADMIN_PASSWORD niet ingesteld is.
+// Hier staat alleen een versleutelde versie (scrypt), nooit het wachtwoord zelf.
+// Zet ADMIN_PASSWORD bij de server om een ander wachtwoord te gebruiken.
+const DEFAULT_PASSWORD_HASH = "scrypt:9a9b2badcb66d77ba03c444abdf8ba09:912d5d9cf666018e13f7b0286fe51b5c9281c8125402e4a4a8f0187f150bcace";
 const SESSION_SECRET = process.env.SESSION_SECRET || crypto.randomBytes(32).toString("hex");
 const SESSION_DAYS = 14;
 const COOKIE = "pta_sessie";
@@ -87,6 +91,11 @@ function requireLogin(req, res, next) {
 }
 
 function samePassword(given) {
+  if (!ADMIN_PASSWORD) {
+    const [, salt, hash] = DEFAULT_PASSWORD_HASH.split(":");
+    const a = crypto.scryptSync(String(given), salt, 32);
+    return crypto.timingSafeEqual(a, Buffer.from(hash, "hex"));
+  }
   // Beide eerst hashen, zodat de vergelijking even lang duurt bij elk wachtwoord.
   const a = crypto.createHash("sha256").update(String(given)).digest();
   const b = crypto.createHash("sha256").update(ADMIN_PASSWORD).digest();
@@ -99,9 +108,6 @@ const MAX_ATTEMPTS = 8;
 const LOCK_MS = 15 * 60 * 1000;
 
 app.post("/api/login", express.json({ limit: "10kb" }), (req, res) => {
-  if (!ADMIN_PASSWORD) {
-    return res.status(503).json({ error: "Er is nog geen wachtwoord ingesteld. Zet ADMIN_PASSWORD bij de instellingen van de server." });
-  }
   const ip = req.ip || "onbekend";
   const now = Date.now();
   const a = attempts.get(ip) || { count: 0, until: 0 };
@@ -129,7 +135,7 @@ app.post("/api/logout", (req, res) => {
 });
 
 app.get("/api/me", (req, res) => {
-  res.json({ loggedIn: isLoggedIn(req), passwordSet: Boolean(ADMIN_PASSWORD), storage: store.kind });
+  res.json({ loggedIn: isLoggedIn(req), passwordSet: true, storage: store.kind });
 });
 
 /* ------------------------------ De website ------------------------------ */
@@ -308,6 +314,6 @@ app.listen(PORT, () => {
   console.log(`Prestige Taxi draait op http://localhost:${PORT}`);
   console.log(`Beheer: http://localhost:${PORT}/admin`);
   console.log(`Opslag: ${store.kind === "postgres" ? "Postgres-database" : "map data/"}`);
-  if (!ADMIN_PASSWORD) console.warn("Let op: ADMIN_PASSWORD is niet ingesteld, inloggen op /admin kan nog niet.");
+  if (!ADMIN_PASSWORD) console.log("Wachtwoord: het ingebouwde wachtwoord (zet ADMIN_PASSWORD om een ander te gebruiken).");
   if (!process.env.SESSION_SECRET) console.warn("Tip: zet SESSION_SECRET, anders moet je na elke herstart opnieuw inloggen.");
 });

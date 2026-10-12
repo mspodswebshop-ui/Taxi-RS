@@ -67,7 +67,7 @@ services:
     startCommand: npm start
     healthCheckPath: /api/me
     envVars:
-      # Het wachtwoord om in te loggen op /admin.
+      # Laat leeg voor het ingebouwde wachtwoord, of vul een ander in.
       - key: ADMIN_PASSWORD
         sync: false
       # Postgres-database, bv. gratis bij neon.tech. Zonder database zijn je

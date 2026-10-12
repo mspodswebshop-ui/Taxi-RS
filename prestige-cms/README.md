@@ -29,8 +29,10 @@ Sluit je per ongeluk het venster, dan kan je gewoon verder.
 
 Beveiliging:
 
-- Inloggen met één wachtwoord (`ADMIN_PASSWORD`). Na 8 foute pogingen is
-  inloggen 15 minuten geblokkeerd.
+- Inloggen met één wachtwoord. Er is een wachtwoord ingebouwd (de eigenaar heeft
+  het gekregen); in de code staat alleen een versleutelde versie. Een ander
+  wachtwoord kiezen kan met `ADMIN_PASSWORD`. Na 8 foute pogingen is inloggen
+  15 minuten geblokkeerd.
 - De login is een beveiligde cookie, 14 dagen geldig.
 - Foto's worden gecontroleerd (alleen echte JPG, PNG of WebP, max. 8 MB).
 - Het beheer kan alleen de 5 pagina's en het reservatiescript wijzigen, niets
@@ -48,7 +50,8 @@ npm install
 cp .env.example .env
 ```
 
-Zet in `.env` minstens een wachtwoord:
+Je kunt meteen inloggen met het ingebouwde wachtwoord. Een ander wachtwoord
+kiezen? Zet het in `.env`:
 
 ```
 ADMIN_PASSWORD=kies-een-lang-wachtwoord
@@ -77,7 +80,7 @@ maakt de service `prestige-taxi` aan. Vul bij de omgevingsvariabelen in:
 
 | Variabele | Wat |
 | --- | --- |
-| `ADMIN_PASSWORD` | Het wachtwoord voor `/admin` |
+| `ADMIN_PASSWORD` | Leeg laten voor het ingebouwde wachtwoord, of een ander wachtwoord voor `/admin` |
 | `DATABASE_URL` | De connection string van Neon |
 | `SESSION_SECRET` | Maakt Render zelf aan |
 
