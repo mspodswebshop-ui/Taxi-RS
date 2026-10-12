@@ -70,9 +70,10 @@ Zonder `DATABASE_URL` komt alles in de map `data/`.
 
 ## Online zetten (Render + Neon, gratis te starten)
 
-**1. Database.** Maak een gratis account op [neon.tech](https://neon.tech),
-maak een project en kopieer de *connection string* (begint met
-`postgresql://`).
+**1. Database.** Staat al klaar bij [Neon](https://console.neon.tech): project
+**prestige-taxi** (regio Frankfurt), database `prestige_taxi`. Kopieer daar de
+*connection string* (begint met `postgresql://`) via *Connect*. Zet die nooit in
+de code of in GitHub.
 
 **2. Server.** Maak een account op [render.com](https://render.com), kies
 **New > Blueprint** en wijs deze repository aan. Render leest `render.yaml` en

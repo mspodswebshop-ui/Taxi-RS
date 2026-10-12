@@ -62,6 +62,8 @@ services:
     name: prestige-taxi
     runtime: node
     plan: free
+    # Zelfde regio als de database bij Neon (Frankfurt), voor een snelle site.
+    region: frankfurt
     rootDir: prestige-cms
     buildCommand: npm install
     startCommand: npm start

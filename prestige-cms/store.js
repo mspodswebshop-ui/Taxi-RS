@@ -42,10 +42,16 @@ export async function openStore({ databaseUrl, dataDir }) {
 
 async function openPostgres(url) {
   const local = /@(localhost|127\.0\.0\.1)[:/]/.test(url) || url.includes("host=/");
+  // sslmode en channel_binding uit het adres halen (zoals Neon ze meegeeft):
+  // de versleuteling stellen we hieronder zelf in.
+  const clean = new URL(url);
+  clean.searchParams.delete("sslmode");
+  clean.searchParams.delete("channel_binding");
   const pool = new pg.Pool({
-    connectionString: url,
-    // Neon en de meeste gehoste databases eisen een versleutelde verbinding.
-    ssl: local ? false : { rejectUnauthorized: false },
+    connectionString: clean.toString(),
+    // Neon en de meeste gehoste databases eisen een versleutelde verbinding,
+    // met een geldig certificaat.
+    ssl: local ? false : true,
     max: 5,
   });
   await pool.query(`
