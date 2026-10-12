@@ -22,6 +22,28 @@ schuifbalk, reservatieformulier) in `assets/main.js`.
 Het reservatieformulier heeft geen server nodig: het zet de aanvraag klaar in
 WhatsApp of in het e-mailprogramma van de klant.
 
+## Beheer: teksten en foto's zelf aanpassen
+
+Open `beheer.html`:
+
+- **Staat de site online** (bv. op Netlify)? Ga naar `jouwsite.be/beheer.html`.
+- **Op je computer?** Open `beheer.html` en kies de map van de website.
+
+Daarna:
+
+1. **Tekst wijzigen:** klik op een tekst in het voorbeeld en typ.
+2. **Foto wijzigen:** klik op "Foto wijzigen". Kies een eigen foto (wordt
+   automatisch verkleind) of beschrijf een foto en klik "Maak AI-foto".
+3. **Reviews, prijzen en vragen:** "+ Kopie" maakt er een bij, "Verwijder" haalt
+   er een weg.
+4. **Instellingen:** telefoonnummer en e-mail (wijzigt overal tegelijk, ook de
+   bel- en WhatsApp-knoppen) en de titel en omschrijving voor Google.
+5. **Download zip** en sleep die naar Netlify om de site bij te werken.
+
+Alles wordt tussendoor bewaard in de browser, dus je verliest niets als je het
+venster sluit. De beheerpagina kan zelf niets online aanpassen: pas na het
+uploaden van de zip verandert de echte website.
+
 ## Logo en foto's
 
 - Het logo linksboven is het monogram **PTA** (Prestige Taxi Antwerpen).
