@@ -7,12 +7,17 @@
  */
 
 import fs from "node:fs/promises";
+import { existsSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(here, "..");
-const siteDir = path.resolve(root, process.env.SITE_DIR || "../prestige-taxi");
+// De website staat in de map site/, of (in de repo Taxi-RS) in ../prestige-taxi.
+const siteDir = process.env.SITE_DIR
+  ? path.resolve(root, process.env.SITE_DIR)
+  : [path.join(root, "site"), path.resolve(root, "../prestige-taxi")].find((d) => existsSync(path.join(d, "index.html")));
+if (!siteDir) throw new Error("Website niet gevonden: zet de bestanden in de map site/.");
 
 const PAGES = ["index.html", "diensten.html", "luchthaven.html", "over-ons.html", "contact.html"];
 

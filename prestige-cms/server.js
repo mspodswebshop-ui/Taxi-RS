@@ -10,13 +10,18 @@ import "dotenv/config";
 import http from "node:http";
 import path from "node:path";
 import fs from "node:fs/promises";
+import { existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { createApp } from "./core.js";
 import { openStore } from "./store.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const PORT = Number(process.env.PORT || 5000);
-const SITE_DIR = path.resolve(here, process.env.SITE_DIR || "../prestige-taxi");
+// De website staat in de map site/ naast deze server, of (in de repo Taxi-RS) in ../prestige-taxi.
+const SITE_DIR = process.env.SITE_DIR
+  ? path.resolve(here, process.env.SITE_DIR)
+  : [path.join(here, "site"), path.resolve(here, "../prestige-taxi")].find((d) => existsSync(path.join(d, "index.html"))) ||
+    path.join(here, "site");
 const MAX_BODY = 7 * 1024 * 1024;
 
 const store = await openStore({
