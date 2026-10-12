@@ -1,6 +1,7 @@
 # Prestige Taxi Antwerpen — website
 
 Statische website van 5 pagina's (gewone HTML, CSS en JavaScript, geen build nodig).
+Het CMS in `prestige-cms` gebruikt deze bestanden als basis.
 
 | Pagina | Bestand |
 | --- | --- |
@@ -22,27 +23,14 @@ schuifbalk, reservatieformulier) in `assets/main.js`.
 Het reservatieformulier heeft geen server nodig: het zet de aanvraag klaar in
 WhatsApp of in het e-mailprogramma van de klant.
 
-## Beheer: teksten en foto's zelf aanpassen
+## Beheer (CMS)
 
-Open `beheer.html`:
+Wil je teksten en foto's zelf aanpassen met een login, en dat wijzigingen meteen
+live staan? Gebruik dan het CMS in de map [`prestige-cms`](../prestige-cms). Dat
+toont deze website en voegt er een beheer op `/admin` aan toe.
 
-- **Staat de site online** (bv. op Netlify)? Ga naar `jouwsite.be/beheer.html`.
-- **Op je computer?** Open `beheer.html` en kies de map van de website.
-
-Daarna:
-
-1. **Tekst wijzigen:** klik op een tekst in het voorbeeld en typ.
-2. **Foto wijzigen:** klik op "Foto wijzigen". Kies een eigen foto (wordt
-   automatisch verkleind) of beschrijf een foto en klik "Maak AI-foto".
-3. **Reviews, prijzen en vragen:** "+ Kopie" maakt er een bij, "Verwijder" haalt
-   er een weg.
-4. **Instellingen:** telefoonnummer en e-mail (wijzigt overal tegelijk, ook de
-   bel- en WhatsApp-knoppen) en de titel en omschrijving voor Google.
-5. **Download zip** en sleep die naar Netlify om de site bij te werken.
-
-Alles wordt tussendoor bewaard in de browser, dus je verliest niets als je het
-venster sluit. De beheerpagina kan zelf niets online aanpassen: pas na het
-uploaden van de zip verandert de echte website.
+Deze map kun je ook gewoon als losse, statische website online zetten (zonder
+beheer), bv. door hem naar <https://app.netlify.com/drop> te slepen.
 
 ## Logo en foto's
 

@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
   <style>
-    /* Beheerpagina van Prestige Taxi Antwerpen: teksten en foto's aanpassen en de site als zip downloaden. */
+    /* Beheer (CMS) van Prestige Taxi Antwerpen: inloggen, teksten en foto's aanpassen en publiceren. */
     :root {
       --ink: #0b0b0d;
       --ink-2: #141418;
@@ -249,24 +249,48 @@
       text-align: center;
     }
     .toast.show { opacity: 1; transform: translateX(-50%); }
+
+    a.btn { text-decoration: none; color: inherit; }
+    .login { display: grid; gap: 12px; text-align: left; }
+    .login input {
+      width: 100%;
+      min-height: 46px;
+      padding: 0 14px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: var(--ink);
+      font-size: 16px;
+    }
+    .login input:focus { outline: none; border-color: var(--gold); }
+    .login .btn { min-height: 46px; font-size: 14px; }
+    .error { color: var(--danger); font-size: 13px; min-height: 18px; margin: 0; }
+    .btn-publish[data-dirty="true"] { box-shadow: 0 0 0 3px rgba(214, 178, 94, 0.25); }
+    .btn-publish[data-dirty="false"] { background: var(--ink-3); color: var(--muted); border-color: var(--line); }
+    .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--ink); }
+    .btn-publish[data-dirty="false"] .dot { display: none; }
+    .status.dirty { color: var(--gold-2); }
+    @media (max-width: 720px) { .bar-actions .btn-view { display: none; } }
+
   </style>
 </head>
 <body>
-  <!-- Startscherm: laadt de website, of vraagt om de map te kiezen -->
+  <!-- Inloggen -->
   <section class="start" id="start">
     <div class="start-card">
       <span class="logo">PTA</span>
-      <h1>Beheer van de website</h1>
+      <h1>Beheer</h1>
       <div id="start-loading">
-        <p>De website wordt geladen…</p>
+        <p>Even geduld…</p>
         <div class="spinner"></div>
       </div>
-      <div id="start-pick" hidden>
-        <p>Kies de map van de website (de map met <b>index.html</b> erin) om te beginnen.</p>
-        <label class="btn btn-gold file-pick">Kies de map van de website
-          <input type="file" id="folder-input" webkitdirectory directory multiple>
-        </label>
-        <p style="margin:16px 0 0;font-size:12px">Tip: staat de site online (bv. op Netlify), open dan gewoon <b>jouwsite.be/beheer.html</b>. Dan hoef je niets te kiezen.</p>
+      <form class="login" id="login" hidden>
+        <p style="text-align:center">Log in om de website aan te passen.</p>
+        <input type="password" id="password" placeholder="Wachtwoord" autocomplete="current-password" required>
+        <p class="error" id="login-error" role="alert"></p>
+        <button class="btn btn-gold" type="submit">Inloggen</button>
+      </form>
+      <div id="no-password" hidden>
+        <p>Er is nog geen wachtwoord ingesteld. Zet <b>ADMIN_PASSWORD</b> bij de instellingen van de server en herstart hem.</p>
       </div>
     </div>
   </section>
@@ -281,18 +305,16 @@
           <button type="button" data-dev="desk" class="on">Computer</button>
           <button type="button" data-dev="mob">Gsm</button>
         </div>
+        <a class="btn btn-ghost btn-view" href="/" target="_blank" rel="noopener">Bekijk site</a>
         <button class="btn" type="button" id="btn-settings">Instellingen</button>
-        <button class="btn btn-gold" type="button" id="btn-download">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M4 20h16"/></svg>
-          Download zip
-        </button>
+        <button class="btn btn-gold btn-publish" type="button" id="btn-publish" data-dirty="false"><span class="dot"></span>Publiceren</button>
       </div>
     </header>
     <div class="hint">
       <span class="tip"><b>Tekst:</b> klik erop en typ</span>
       <span class="tip"><b>Foto:</b> klik op "Foto wijzigen"</span>
       <span class="tip"><b>Review, prijs of vraag:</b> "+ Kopie" of "Verwijder"</span>
-      <span class="status" id="status">Alles wordt automatisch bewaard in deze browser</span>
+      <span class="status" id="status"></span>
     </div>
     <main class="stage" id="stage">
       <iframe id="frame" title="Voorbeeld van de pagina"></iframe>
@@ -365,9 +387,16 @@
           </div>
         </div>
         <div class="group">
-          <h3>Opnieuw beginnen</h3>
-          <small style="color:var(--muted)">Gooit alle wijzigingen in deze browser weg en laadt de website opnieuw zoals ze nu online staat.</small>
-          <div><button class="btn btn-danger" type="button" id="btn-reset">Alle wijzigingen wissen</button></div>
+          <h3>Back-up</h3>
+          <small style="color:var(--muted)">Download de hele website als zip, met alle foto's. Handig om te bewaren.</small>
+          <div><button class="btn" type="button" id="btn-backup">Back-up downloaden</button></div>
+        </div>
+        <div class="group">
+          <h3>Account</h3>
+          <div class="row">
+            <button class="btn" type="button" id="btn-logout">Uitloggen</button>
+            <button class="btn btn-danger" type="button" id="btn-reset">Terug naar de originele website</button>
+          </div>
         </div>
       </div>
       <div class="dlg-foot">
@@ -390,8 +419,6 @@
       ["over-ons.html", "Over ons"],
       ["contact.html", "Contact"]
     ];
-    var BASE_FILES = ["assets/style.css", "assets/main.js", "README.md", "beheer.html"];
-    var TEXT_EXT = /\.(html|css|js|md|txt|json|svg)$/i;
     var AI_STYLE = ", photorealistic, cinematic lighting, shallow depth of field, high detail, black and gold color palette, no text, no logo, no watermark";
 
     // Wat je in de pagina's kunt aanklikken om te typen.
@@ -404,16 +431,15 @@
 
     var S = {
       docs: {},        // bestandsnaam -> Document (het model van elke pagina)
-      text: {},        // pad -> tekst (css, js, readme, beheer.html)
-      files: {},       // pad -> Blob (foto's en andere bestanden)
-      urls: {},        // pad -> blob-URL voor het voorbeeld
+      text: {},        // "assets/main.js" -> tekst
+      version: 0,      // versie op de server waarop we verder werken
       current: "index.html",
-      nextId: 1
+      nextId: 1,
+      dirty: false
     };
 
     var $ = function (s) { return document.querySelector(s); };
     var frame = $("#frame");
-
     /* ---------------- Opslag in de browser (IndexedDB) ---------------- */
 
     var store = {
@@ -421,7 +447,7 @@
       open: function () {
         if (store.db) return Promise.resolve(store.db);
         return new Promise(function (res, rej) {
-          var r = indexedDB.open("pta-beheer", 1);
+          var r = indexedDB.open("pta-cms", 1);
           r.onupgradeneeded = function () { r.result.createObjectStore("kv"); };
           r.onsuccess = function () { store.db = r.result; res(r.result); };
           r.onerror = function () { rej(r.error); };
@@ -442,21 +468,47 @@
       del: function (k) { return store.run("readwrite", function (s) { return s.delete(k); }); }
     };
 
+
+    /* ---------------- Server ---------------- */
+
+    function api(method, url, body) {
+      return fetch(url, {
+        method: method,
+        headers: body ? { "Content-Type": "application/json" } : {},
+        body: body ? JSON.stringify(body) : undefined,
+        credentials: "same-origin"
+      }).then(function (r) {
+        return r.json().catch(function () { return {}; }).then(function (data) {
+          if (r.status === 401 && url !== "/api/login") showLogin("Je bent uitgelogd. Log opnieuw in; je wijzigingen zijn bewaard.");
+          if (!r.ok) {
+            var err = new Error(data.error || "Er ging iets mis (" + r.status + ").");
+            err.status = r.status;
+            throw err;
+          }
+          return data;
+        });
+      });
+    }
+
+    /* ---------------- Wijzigingen bijhouden ---------------- */
+
     var saveTimer = null;
     function changed() {
-      setStatus("Bezig met bewaren…", "");
+      S.dirty = true;
+      updatePublish();
       clearTimeout(saveTimer);
       saveTimer = setTimeout(saveDraft, 500);
     }
+    function updatePublish() {
+      $("#btn-publish").setAttribute("data-dirty", String(S.dirty));
+      if (S.dirty) setStatus("Niet gepubliceerd: klik op Publiceren om live te zetten", "dirty");
+    }
+    // Niet-gepubliceerde wijzigingen blijven in de browser bewaard, voor als het venster dichtgaat.
     function saveDraft() {
-      var draft = { version: 1, savedAt: Date.now(), pages: {}, text: S.text, files: {} };
+      if (!S.dirty) return Promise.resolve();
+      var draft = { baseVersion: S.version, savedAt: Date.now(), pages: {}, text: S.text };
       PAGES.forEach(function (p) { draft.pages[p[0]] = serialize(S.docs[p[0]]); });
-      Object.keys(S.files).forEach(function (k) { if (S.files[k].__upload) draft.files[k] = S.files[k]; });
-      return store.set("draft", draft).then(function () {
-        setStatus("✓ Bewaard in deze browser", "saved");
-      }).catch(function () {
-        setStatus("Let op: bewaren in de browser lukt niet. Download tussendoor een zip.", "");
-      });
+      return store.set("draft", draft).catch(function () {});
     }
     function setStatus(msg, cls) {
       var el = $("#status");
@@ -473,87 +525,93 @@
       toastTimer = setTimeout(function () { t.classList.remove("show"); }, 3200);
     }
 
-    /* ---------------- Website laden ---------------- */
 
-    function isLocalRef(v) {
-      return v && !/^(https?:|\/\/|data:|blob:|mailto:|tel:|#|javascript:)/i.test(v) && !/\.html?(#|\?|$)/i.test(v);
-    }
-    function localRefs(doc) {
-      var out = [];
-      doc.querySelectorAll("[src],[href]").forEach(function (el) {
-        ["src", "href"].forEach(function (a) {
-          var v = el.getAttribute(a);
-          if (isLocalRef(v)) out.push(v.split(/[?#]/)[0]);
-        });
-      });
-      return out;
+    /* ---------------- Inloggen en laden ---------------- */
+
+    function showLogin(msg) {
+      $("#app").hidden = true;
+      $("#start").hidden = false;
+      $("#start-loading").hidden = true;
+      $("#login").hidden = false;
+      $("#login-error").textContent = msg || "";
+      $("#password").value = "";
+      $("#password").focus();
     }
 
-    // reader(path) -> Promise<Blob|null>
-    function loadSite(reader) {
-      var docs = {}, text = {}, files = {};
-      return Promise.all(PAGES.map(function (p) {
-        return reader(p[0]).then(function (b) {
-          if (!b) throw new Error("Pagina ontbreekt: " + p[0]);
-          return b.text();
-        }).then(function (html) { docs[p[0]] = html; });
-      })).then(function () {
-        var paths = BASE_FILES.slice();
-        Object.keys(docs).forEach(function (k) {
-          localRefs(new DOMParser().parseFromString(docs[k], "text/html")).forEach(function (r) {
-            if (paths.indexOf(r) < 0) paths.push(r);
-          });
-        });
-        return Promise.all(paths.map(function (path) {
-          return reader(path).then(function (b) {
-            if (!b) return;
-            if (TEXT_EXT.test(path)) return b.text().then(function (t) { text[path] = t; });
-            files[path] = b;
-          });
-        }));
-      }).then(function () {
-        return { pages: docs, text: text, files: files };
-      });
-    }
+    $("#login").addEventListener("submit", function (e) {
+      e.preventDefault();
+      var btn = this.querySelector("button");
+      btn.disabled = true;
+      $("#login-error").textContent = "";
+      api("POST", "/api/login", { password: $("#password").value }).then(function () {
+        $("#login").hidden = true;
+        $("#start-loading").hidden = false;
+        return load();
+      }).catch(function (err) {
+        $("#login-error").textContent = err.message;
+      }).then(function () { btn.disabled = false; });
+    });
 
-    function fetchReader(path) {
-      return fetch(path, { cache: "no-store" }).then(function (r) { return r.ok ? r.blob() : null; }).catch(function () { return null; });
-    }
-
-    function folderReader(fileList) {
-      var map = {};
-      var root = null;
-      Array.prototype.forEach.call(fileList, function (f) {
-        var rel = f.webkitRelativePath || f.name;
-        map[rel] = f;
-        if (/(^|\/)index\.html$/.test(rel) && (root === null || rel.length < root.length + 10)) {
-          root = rel.slice(0, rel.length - "index.html".length);
-        }
-      });
-      return function (path) { return Promise.resolve(map[(root || "") + path] || null); };
-    }
-
-    function start(site) {
-      PAGES.forEach(function (p) { S.docs[p[0]] = parse(site.pages[p[0]]); });
-      S.text = site.text;
-      S.files = site.files;
-      return store.get("draft").catch(function () { return null; }).then(function (draft) {
-        if (draft && draft.pages) {
-          var when = new Date(draft.savedAt).toLocaleString("nl-BE", { dateStyle: "medium", timeStyle: "short" });
-          if (confirm("Je hebt nog wijzigingen van " + when + " in deze browser.\n\nOK = verder werken met die wijzigingen\nAnnuleren = opnieuw beginnen met de website zoals ze nu is")) {
-            PAGES.forEach(function (p) { if (draft.pages[p[0]]) S.docs[p[0]] = parse(draft.pages[p[0]]); });
-            Object.keys(draft.text || {}).forEach(function (k) { S.text[k] = draft.text[k]; });
-            Object.keys(draft.files || {}).forEach(function (k) { S.files[k] = draft.files[k]; S.files[k].__upload = true; });
-          } else {
-            store.del("draft").catch(function () {});
+    function load() {
+      return api("GET", "/api/site").then(function (site) {
+        PAGES.forEach(function (p) { S.docs[p[0]] = parse(site.pages[p[0]]); });
+        S.text = site.text || {};
+        S.version = site.version || 0;
+        S.dirty = false;
+        return store.get("draft").catch(function () { return null; }).then(function (draft) {
+          if (draft && draft.pages) {
+            var when = new Date(draft.savedAt).toLocaleString("nl-BE", { dateStyle: "medium", timeStyle: "short" });
+            var newer = draft.baseVersion !== S.version
+              ? "\n\nLet op: de website is daarna nog opnieuw gepubliceerd. Als je verder werkt, overschrijf je die versie bij het publiceren."
+              : "";
+            if (confirm("Je hebt nog niet-gepubliceerde wijzigingen van " + when + "." + newer + "\n\nOK = verder werken met die wijzigingen\nAnnuleren = weggooien")) {
+              PAGES.forEach(function (p) { if (draft.pages[p[0]]) S.docs[p[0]] = parse(draft.pages[p[0]]); });
+              Object.keys(draft.text || {}).forEach(function (k) { S.text[k] = draft.text[k]; });
+              S.dirty = true;
+            } else {
+              store.del("draft").catch(function () {});
+            }
           }
-        }
-        $("#start").hidden = true;
-        $("#app").hidden = false;
-        buildTabs();
-        render();
+          $("#start").hidden = true;
+          $("#app").hidden = false;
+          if (S.dirty) updatePublish();
+          else setStatus(site.publishedAt ? "Laatst gepubliceerd: " + new Date(site.publishedAt).toLocaleString("nl-BE", { dateStyle: "medium", timeStyle: "short" }) : "Klik op een tekst of foto om te beginnen", "");
+          buildTabs();
+          render();
+        });
       });
     }
+
+    /* ---------------- Publiceren ---------------- */
+
+    $("#btn-publish").onclick = function () {
+      if (!S.dirty) { toast("Er is niets gewijzigd."); return; }
+      var btn = this;
+      btn.disabled = true;
+      setStatus("Bezig met publiceren…", "");
+      var pages = {};
+      PAGES.forEach(function (p) { pages[p[0]] = serialize(S.docs[p[0]]); });
+      api("PUT", "/api/site", { pages: pages, text: S.text, version: S.version }).then(function (r) {
+        S.version = r.version;
+        S.dirty = false;
+        clearTimeout(saveTimer);
+        store.del("draft").catch(function () {});
+        updatePublish();
+        setStatus("✓ Live gezet om " + new Date(r.publishedAt).toLocaleTimeString("nl-BE", { hour: "2-digit", minute: "2-digit" }), "saved");
+        toast("Gepubliceerd! De website is bijgewerkt.");
+      }).catch(function (err) {
+        updatePublish();
+        if (err.status !== 401) alert(err.message);
+      }).then(function () { btn.disabled = false; });
+    };
+
+    window.addEventListener("beforeunload", function (e) {
+      if (!S.dirty) return;
+      saveDraft();
+      e.preventDefault();
+      e.returnValue = "";
+    });
+
 
     /* ---------------- Model ---------------- */
 
@@ -580,13 +638,6 @@
     }
     function model(id) { return S.docs[S.current].querySelector('[data-cms-id="' + id + '"]'); }
 
-    function urlFor(path) {
-      if (!S.urls[path]) {
-        var blob = S.files[path] || new Blob([S.text[path] || ""], { type: /\.css$/.test(path) ? "text/css" : "text/plain" });
-        S.urls[path] = URL.createObjectURL(blob);
-      }
-      return S.urls[path];
-    }
 
     /* ---------------- Voorbeeld met bewerken ---------------- */
 
@@ -615,9 +666,8 @@
       try { if (keepScroll && frame.contentWindow) y = frame.contentWindow.scrollY; } catch (e) {}
       var html = serialize(S.docs[S.current], true);
       html = html.replace(/<script src="assets\/main\.js"><\/script>/, "");
-      Object.keys(S.files).concat(["assets/style.css"]).forEach(function (p) {
-        html = html.split('="' + p + '"').join('="' + urlFor(p) + '"');
-      });
+      // Foto's en opmaak komen gewoon van de server.
+      html = html.replace(/<head>/i, '<head><base href="' + location.origin + '/">');
       html = html.replace("</head>", "<style>" + EDIT_CSS + "</style></head>");
       frame.onload = function () {
         setupFrame();
@@ -800,6 +850,7 @@
       };
     });
 
+
     /* ---------------- Foto's ---------------- */
 
     var ph = { id: null, src: null, blob: null, seed: 0 };
@@ -828,16 +879,17 @@
       box.appendChild(img);
     }
 
+
     function openPhoto(id) {
       var m = model(id);
       if (!m) return;
-      ph = { id: id, src: m.getAttribute("src"), blob: null, seed: 0, path: null };
-      var shown = S.files[ph.src] ? urlFor(ph.src) : ph.src;
-      showPreview(shown);
+      ph = { id: id, src: m.getAttribute("src"), blob: null, seed: 0 };
+      showPreview(ph.src ? new URL(ph.src, location.origin + "/").href : "");
       $("#ph-alt").value = m.getAttribute("alt") || "";
       $("#ph-prompt").value = promptFromUrl(ph.src);
       $("#ph-ai-again").hidden = true;
       $("#ph-file").value = "";
+      $("#ph-ok").disabled = false;
       $("#dlg-photo").showModal();
     }
 
@@ -846,10 +898,8 @@
       if (!f) return;
       $("#ph-msg").textContent = "Foto wordt verkleind…";
       shrink(f, 1600, 0.85).then(function (blob) {
-        var name = "assets/img/foto-" + Date.now().toString(36) + ".jpg";
         ph.blob = blob;
-        ph.path = name;
-        ph.src = name;
+        ph.src = null;
         showPreview(URL.createObjectURL(blob));
         if (!$("#ph-alt").value) $("#ph-alt").value = f.name.replace(/\.[^.]+$/, "").replace(/[-_]+/g, " ");
       }).catch(function () {
@@ -870,19 +920,44 @@
     $("#ph-ai").onclick = makeAi;
     $("#ph-ai-again").onclick = makeAi;
 
+    function blobToBase64(blob) {
+      return new Promise(function (res, rej) {
+        var r = new FileReader();
+        r.onload = function () { res(String(r.result).split(",")[1]); };
+        r.onerror = function () { rej(r.error); };
+        r.readAsDataURL(blob);
+      });
+    }
+
+    // De dialoog sluit pas als de foto op de server staat.
+    $("#ph-ok").addEventListener("click", function (e) {
+      if (!ph.blob) return;
+      e.preventDefault();
+      var btn = this;
+      btn.disabled = true;
+      $("#ph-msg").textContent = "Foto wordt opgeslagen…";
+      blobToBase64(ph.blob).then(function (data) {
+        return api("POST", "/api/media", { data: data, type: "image/jpeg" });
+      }).then(function (r) {
+        ph.blob = null;
+        ph.src = r.path;
+        $("#dlg-photo").close("ok");
+      }).catch(function (err) {
+        if (err.status !== 401) toast(err.message);
+      }).then(function () { btn.disabled = false; });
+    });
+
     $("#dlg-photo").addEventListener("close", function () {
-      if (this.returnValue !== "ok") return;
+      if (this.returnValue !== "ok" || !ph.src) return;
       var m = model(ph.id);
       if (!m) return;
-      if (ph.blob && ph.path) {
-        ph.blob.__upload = true;
-        S.files[ph.path] = ph.blob;
-      }
+      var alt = $("#ph-alt").value.trim();
+      if (m.getAttribute("src") === ph.src && (m.getAttribute("alt") || "") === alt) return;
       m.setAttribute("src", ph.src);
-      m.setAttribute("alt", $("#ph-alt").value.trim());
+      m.setAttribute("alt", alt);
       changed();
       render(true);
-      toast("Foto aangepast");
+      toast("Foto aangepast. Vergeet niet te publiceren.");
     });
 
     function shrink(file, max, quality) {
@@ -902,6 +977,7 @@
         img.src = url;
       });
     }
+
 
     /* ---------------- Instellingen ---------------- */
 
@@ -972,10 +1048,23 @@
       toast("Instellingen opgeslagen");
     });
 
+
     $("#btn-reset").onclick = function () {
-      if (!confirm("Alle wijzigingen in deze browser wissen? Dit kan niet ongedaan gemaakt worden.")) return;
-      store.del("draft").catch(function () {}).then(function () { location.reload(); });
+      if (!confirm("De website terugzetten naar de originele versie? Al je gepubliceerde wijzigingen aan teksten gaan verloren.")) return;
+      api("POST", "/api/reset").then(function () {
+        store.del("draft").catch(function () {});
+        S.dirty = false;
+        location.reload();
+      }).catch(function (err) { if (err.status !== 401) alert(err.message); });
     };
+
+    $("#btn-logout").onclick = function () {
+      saveDraft().then(function () { return api("POST", "/api/logout"); }).then(function () {
+        S.dirty = false;
+        location.reload();
+      });
+    };
+
 
     /* ---------------- Zip maken en downloaden ---------------- */
 
@@ -1046,60 +1135,54 @@
       return new Blob(parts.concat(central, [end.buffer]), { type: "application/zip" });
     }
 
-    $("#btn-download").onclick = function () {
+
+    $("#btn-backup").onclick = function () {
       var btn = this;
       btn.disabled = true;
       var enc = new TextEncoder();
       var entries = [];
-      var allHtml = "";
+      var media = {};
       PAGES.forEach(function (p) {
         var html = serialize(S.docs[p[0]]);
-        allHtml += html;
+        (html.match(/media\/[a-z0-9-]+\.(jpg|png|webp)/gi) || []).forEach(function (m) { media[m] = true; });
         entries.push({ name: p[0], data: enc.encode(html) });
       });
       Object.keys(S.text).forEach(function (k) { entries.push({ name: k, data: enc.encode(S.text[k]) }); });
-      var keys = Object.keys(S.files).filter(function (k) {
-        // Geüploade foto's die nergens meer gebruikt worden, laten we weg.
-        return !S.files[k].__upload || allHtml.indexOf('"' + k + '"') >= 0;
-      });
-      Promise.all(keys.map(function (k) {
-        return S.files[k].arrayBuffer().then(function (buf) { entries.push({ name: k, data: new Uint8Array(buf) }); });
+      var extra = ["assets/style.css"].concat(Object.keys(media));
+      Promise.all(extra.map(function (path) {
+        return fetch("/" + path).then(function (r) {
+          if (!r.ok) throw new Error(path);
+          return r.arrayBuffer();
+        }).then(function (buf) { entries.push({ name: path, data: new Uint8Array(buf) }); });
       })).then(function () {
-        var blob = makeZip(entries);
         var a = document.createElement("a");
-        a.href = URL.createObjectURL(blob);
-        a.download = "prestige-taxi-website.zip";
+        a.href = URL.createObjectURL(makeZip(entries));
+        a.download = "prestige-taxi-backup-" + new Date().toISOString().slice(0, 10) + ".zip";
         document.body.appendChild(a);
         a.click();
         a.remove();
         setTimeout(function () { URL.revokeObjectURL(a.href); }, 5000);
-        toast("Zip gedownload. Sleep hem naar Netlify om de site bij te werken.");
+        toast("Back-up gedownload");
       }).catch(function () {
-        toast("De zip kon niet gemaakt worden. Probeer opnieuw.");
+        toast("De back-up kon niet gemaakt worden. Probeer opnieuw.");
       }).then(function () { btn.disabled = false; });
     };
 
     /* ---------------- Opstarten ---------------- */
 
-    function showPicker() {
+    api("GET", "/api/me").then(function (me) {
+      if (!me.passwordSet) {
+        $("#start-loading").hidden = true;
+        $("#no-password").hidden = false;
+        return;
+      }
+      if (me.loggedIn) return load();
+      showLogin();
+    }).catch(function (err) {
       $("#start-loading").hidden = true;
-      $("#start-pick").hidden = false;
-    }
-    $("#folder-input").addEventListener("change", function () {
-      if (!this.files || !this.files.length) return;
-      $("#start-pick").hidden = true;
-      $("#start-loading").hidden = false;
-      loadSite(folderReader(this.files)).then(start).catch(function (e) {
-        alert("Dit lijkt niet de juiste map. Kies de map waar index.html in staat.\n\n" + e.message);
-        showPicker();
-      });
+      $("#no-password").hidden = false;
+      $("#no-password").querySelector("p").textContent = "De server is niet bereikbaar: " + err.message;
     });
-
-    if (location.protocol === "file:") {
-      showPicker();
-    } else {
-      loadSite(fetchReader).then(start).catch(showPicker);
-    }
   })();
   </script>
 </body>
