@@ -26,6 +26,24 @@ JavaScript, zonder buildstap.
 - **Kleuren en lettertypes** staan bovenaan `assets/style.css`.
 - Kop, menu en voettekst worden door `assets/app.js` op elke pagina gezet.
 
+## Logo
+
+Alle logobestanden staan in `assets/logo/`. De letters zijn omgezet naar vaste vormen, dus het
+logo ziet er overal hetzelfde uit, ook zonder het lettertype.
+
+| Bestand | Gebruik |
+| --- | --- |
+| `dripp-it-logo-donker.png` / `.svg` | Liggend logo voor een donkere achtergrond (transparant) |
+| `dripp-it-logo-licht.png` / `.svg` | Liggend logo voor een lichte achtergrond (transparant) |
+| `dripp-it-logo-*-achtergrond.png` | Liggend logo met eigen achtergrond |
+| `dripp-it-icoon-donker.png` | Vierkant icoon: profielfoto, Stripe-icoon, app-icoon |
+| `dripp-it-icoon.png` / `.svg` | Alleen het merkteken, transparant (ook het icoon in het browsertabblad) |
+| `dripp-it-staand-*.png` | Vierkant met logo en naam, 1080 × 1080, voor Instagram en TikTok |
+| `apple-touch-icon.png` | Icoon als iemand de site op het beginscherm van een iPhone zet |
+
+**In Stripe:** ga naar *Settings → Branding*. Upload `dripp-it-icoon-donker.png` als icoon en
+`dripp-it-logo-licht.png` als logo, en kies als merkkleur goud `#CFAE6E` en als accent `#0D0A0C`.
+
 ## Foto's toevoegen
 
 Tot er foto's zijn, toont de site getekende illustraties. Zo vervang je ze:
