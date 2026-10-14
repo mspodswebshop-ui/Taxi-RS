@@ -1,13 +1,14 @@
 # Dripp It
 
-Luxe webshop-website voor Dripp It. Gewone HTML, CSS en JavaScript, zonder buildstap.
+Luxe webshop voor Dripp It met dames, heren, schoenen en elektronica. Gewone HTML, CSS en
+JavaScript, zonder buildstap.
 
 ## Pagina's
 
 | Bestand | Pagina |
 | --- | --- |
-| `index.html` | Home: hero, uitgelichte stukken, atelier, lookbook, private list |
-| `collectie.html` | Alle stukken, met filter (kleding/accessoires) en sortering |
+| `index.html` | Home: hero, categorieën, nieuw binnen, atelier, lookbook, private list |
+| `collectie.html` | Alle stukken; `collectie.html#dames`, `#heren`, `#schoenen`, `#elektronica` per categorie |
 | `product.html#<id>` | Productpagina, bijvoorbeeld `product.html#molten` |
 | `atelier.html` | Het verhaal: werkwijze, productieproces, anatomie van het logo |
 | `service.html` | Verzending, retour, maattabel, verzorging, veelgestelde vragen |
@@ -16,10 +17,20 @@ Luxe webshop-website voor Dripp It. Gewone HTML, CSS en JavaScript, zonder build
 
 ## Aanpassen
 
-- **Producten, prijzen, e-mailadres, stad en verzendkosten** staan bovenaan `assets/app.js`
-  (`BRAND` en `PRODUCTS`).
+- **Producten, categorieën, prijzen, e-mailadres, stad en verzendkosten** staan bovenaan
+  `assets/app.js` (`BRAND`, `CATS` en `PRODUCTS`).
 - **Kleuren en lettertypes** staan bovenaan `assets/style.css`.
 - Kop, menu en voettekst worden door `assets/app.js` op elke pagina gezet.
+
+## Foto's toevoegen
+
+Tot er foto's zijn, toont de site getekende illustraties. Zo vervang je ze:
+
+1. Zet de foto's in `assets/img/` (staand 4:5, bijvoorbeeld 1200 × 1500 pixels).
+2. Geef het product in `assets/app.js` een lijst `images`:
+   `images: ['assets/img/aurum-1.jpg', 'assets/img/aurum-2.jpg']`.
+   De eerste foto komt op de productkaart, alle foto's in de galerij.
+3. Een categoriefoto zet je bij `CATS`, bijvoorbeeld `img: 'assets/img/cat-dames.jpg'`.
 
 ## Online zetten op Netlify
 
@@ -30,6 +41,6 @@ Luxe webshop-website voor Dripp It. Gewone HTML, CSS en JavaScript, zonder build
 
 ## Nog te doen
 
-- Echte productfoto's, teksten en prijzen invullen (nu voorbeeldinhoud).
+- Echte productfoto's, teksten, prijzen en specificaties invullen (nu voorbeeldinhoud).
 - Een echt e-mailadres invullen in `BRAND.email`.
 - Betalen koppelen (bijvoorbeeld Stripe of Mollie). De knop *Afrekenen* toont nu een melding.

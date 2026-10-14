@@ -15,20 +15,16 @@
 <main data-page="collectie">
   <header class="page-head">
     <div class="wrap">
-      <nav class="crumbs" aria-label="Kruimelpad"><a href="index.html">Home</a><span aria-hidden="true">/</span><span>Collectie</span></nav>
-      <span class="eyebrow">Collectie 01 · Herfst/Winter 2026</span>
-      <h1>Liquid <em>Gold</em></h1>
-      <p>Tien stukken in onyx, champagne, wijnrood en ivoor. Elk ontwerp verschijnt in een genummerde oplage en wordt niet opnieuw gemaakt.</p>
+      <nav class="crumbs" aria-label="Kruimelpad"><a href="index.html">Home</a><span aria-hidden="true">/</span><span id="cat-crumb">Collectie</span></nav>
+      <span class="eyebrow">Shop</span>
+      <h1 id="cat-title">De <em>collectie</em></h1>
+      <p id="cat-intro">Dames- en herenmode, schoenen en elektronica. Alles met de gouden druppel als signatuur.</p>
     </div>
   </header>
   <section class="section-tight" style="padding-top:0">
     <div class="wrap">
       <div class="toolbar">
-        <div class="chips" role="group" aria-label="Filter op categorie">
-          <button class="chip" type="button" data-filter="alles" aria-pressed="true">Alles<sup></sup></button>
-          <button class="chip" type="button" data-filter="kleding" aria-pressed="false">Kleding<sup></sup></button>
-          <button class="chip" type="button" data-filter="accessoires" aria-pressed="false">Accessoires<sup></sup></button>
-        </div>
+        <div class="chips" id="chips" role="group" aria-label="Filter op categorie"></div>
         <div class="sort">
           <span class="count" id="count" aria-live="polite"></span>
           <label class="sr-only" for="sort">Sorteren</label>
@@ -47,8 +43,8 @@
     <div class="wrap split">
       <div class="split-copy">
         <span class="eyebrow">Over de oplage</span>
-        <h2>Elk stuk heeft een <em>nummer</em></h2>
-        <p>Op het binnenlabel staat welk exemplaar je draagt, bijvoorbeeld Nº 037 van 250. Is een ontwerp uitverkocht, dan blijft het dat. Zo houdt elk stuk zijn waarde.</p>
+        <h2>Signatuurstukken hebben een <em>nummer</em></h2>
+        <p>Bij stukken met een nummer staat op het label welk exemplaar je hebt, bijvoorbeeld Nº 037 van 250. Is zo’n ontwerp uitverkocht, dan komt het niet terug. Zo houdt het zijn waarde.</p>
         <a class="link" href="atelier.html">Meer over het atelier <span class="arrow">→</span></a>
       </div>
       <div class="seal" data-seal></div>

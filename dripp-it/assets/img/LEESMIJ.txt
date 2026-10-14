@@ -1,0 +1,4 @@
+Zet hier de productfoto's neer, bijvoorbeeld aurum-1.jpg en aurum-2.jpg.
+Koppel ze daarna in assets/app.js aan een product:  images: ['assets/img/aurum-1.jpg', 'assets/img/aurum-2.jpg']
+Categoriefoto's koppel je via CATS, bijvoorbeeld:  dames: { ..., img: 'assets/img/cat-dames.jpg' }
+Beste formaat: staand 4:5, bijvoorbeeld 1200 × 1500 pixels, als .jpg of .webp.
