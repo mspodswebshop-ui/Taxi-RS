@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Contact · Dripp It</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Neem contact op met Dripp It of plan een bezoek aan de showroom.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..800;1,6..96,400..700&family=Hanken+Grotesk:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<main data-page="contact">
+  <header class="page-head">
+    <div class="wrap">
+      <nav class="crumbs" aria-label="Kruimelpad"><a href="index.html">Home</a><span aria-hidden="true">/</span><span>Contact</span></nav>
+      <span class="eyebrow">Contact</span>
+      <h1>We horen <em>graag</em> van je</h1>
+      <p>Een vraag over je bestelling, een maat of een specifiek nummer? Stuur een bericht. We antwoorden op werkdagen binnen één dag.</p>
+    </div>
+  </header>
+  <div class="wrap contact">
+    <form class="form" name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field" data-form="contact" novalidate>
+      <input type="hidden" name="form-name" value="contact">
+      <p class="hp"><label>Laat dit leeg <input name="bot-field" tabindex="-1" autocomplete="off"></label></p>
+      <div class="field-row">
+        <div class="field"><label for="c-naam">Naam</label><input id="c-naam" name="naam" type="text" autocomplete="name" required></div>
+        <div class="field"><label for="c-email">E-mailadres</label><input id="c-email" name="email" type="email" autocomplete="email" placeholder="naam@voorbeeld.nl" required></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label for="c-onderwerp">Onderwerp</label>
+          <select id="c-onderwerp" name="onderwerp">
+            <option>Vraag over een bestelling</option>
+            <option>Retour of ruilen</option>
+            <option>Maatadvies</option>
+            <option>Een specifiek nummer reserveren</option>
+            <option>Showroombezoek plannen</option>
+            <option>Pers en samenwerking</option>
+            <option>Iets anders</option>
+          </select>
+        </div>
+        <div class="field"><label for="c-order">Bestelnummer (optioneel)</label><input id="c-order" name="bestelnummer" type="text" placeholder="DI-2026-0000"></div>
+      </div>
+      <div class="field"><label for="c-bericht">Bericht</label><textarea id="c-bericht" name="bericht" required></textarea></div>
+      <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap">
+        <button class="btn btn-gold" type="submit">Verstuur bericht</button>
+        <p class="form-msg" role="status" style="flex:1 1 240px"></p>
+      </div>
+    </form>
+    <aside>
+      <div class="info-block">
+        <span class="eyebrow">E-mail</span>
+        <div class="copy-row"><code data-email></code><button class="copy-btn" type="button" data-copy-email>Kopieer</button></div>
+        <p>Voor alle vragen over bestellingen, retouren en maten.</p>
+      </div>
+      <div class="info-block" id="showroom">
+        <span class="eyebrow">Showroom</span>
+        <h3>Amsterdam, <em>op afspraak</em></h3>
+        <p>Pas de hele collectie in alle rust, met koffie of een glas champagne. Kies in het formulier “Showroombezoek plannen” en noem een paar momenten die je uitkomen. Het adres krijg je bij de bevestiging.</p>
+        <dl class="hours">
+          <div><dt>Maandag – woensdag</dt><dd>Gesloten</dd></div>
+          <div><dt>Donderdag – vrijdag</dt><dd>12:00 – 19:00</dd></div>
+          <div><dt>Zaterdag</dt><dd>11:00 – 18:00</dd></div>
+          <div><dt>Zondag</dt><dd>Gesloten</dd></div>
+        </dl>
+      </div>
+      <div class="info-block">
+        <span class="eyebrow">Snel antwoord</span>
+        <p>Veel vragen over verzending, retour en maten staan al op de <a href="service.html">servicepagina</a>.</p>
+      </div>
+    </aside>
+  </div>
+</main>
+<script src="assets/app.js"></script>
+</body>
+</html>

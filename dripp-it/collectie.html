@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Collectie · Dripp It</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Alle stukken uit Collectie 01 Liquid Gold van Dripp It.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..800;1,6..96,400..700&family=Hanken+Grotesk:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<main data-page="collectie">
+  <header class="page-head">
+    <div class="wrap">
+      <nav class="crumbs" aria-label="Kruimelpad"><a href="index.html">Home</a><span aria-hidden="true">/</span><span>Collectie</span></nav>
+      <span class="eyebrow">Collectie 01 · Herfst/Winter 2026</span>
+      <h1>Liquid <em>Gold</em></h1>
+      <p>Tien stukken in onyx, champagne, wijnrood en ivoor. Elk ontwerp verschijnt in een genummerde oplage en wordt niet opnieuw gemaakt.</p>
+    </div>
+  </header>
+  <section class="section-tight" style="padding-top:0">
+    <div class="wrap">
+      <div class="toolbar">
+        <div class="chips" role="group" aria-label="Filter op categorie">
+          <button class="chip" type="button" data-filter="alles" aria-pressed="true">Alles<sup></sup></button>
+          <button class="chip" type="button" data-filter="kleding" aria-pressed="false">Kleding<sup></sup></button>
+          <button class="chip" type="button" data-filter="accessoires" aria-pressed="false">Accessoires<sup></sup></button>
+        </div>
+        <div class="sort">
+          <span class="count" id="count" aria-live="polite"></span>
+          <label class="sr-only" for="sort">Sorteren</label>
+          <select id="sort">
+            <option value="uitgelicht">Uitgelicht</option>
+            <option value="schaars">Bijna uitverkocht</option>
+            <option value="laag">Prijs: laag naar hoog</option>
+            <option value="hoog">Prijs: hoog naar laag</option>
+          </select>
+        </div>
+      </div>
+      <div class="grid" id="grid"></div>
+    </div>
+  </section>
+  <section class="section section-alt">
+    <div class="wrap split">
+      <div class="split-copy">
+        <span class="eyebrow">Over de oplage</span>
+        <h2>Elk stuk heeft een <em>nummer</em></h2>
+        <p>Op het binnenlabel staat welk exemplaar je draagt, bijvoorbeeld Nº 037 van 250. Is een ontwerp uitverkocht, dan blijft het dat. Zo houdt elk stuk zijn waarde.</p>
+        <a class="link" href="atelier.html">Meer over het atelier <span class="arrow">→</span></a>
+      </div>
+      <div class="seal" data-seal></div>
+    </div>
+  </section>
+</main>
+<script src="assets/app.js"></script>
+</body>
+</html>

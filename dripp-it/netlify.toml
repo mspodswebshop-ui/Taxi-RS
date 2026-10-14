@@ -1,0 +1,12 @@
+# Netlify-configuratie voor de Dripp It-website.
+# Zet in Netlify bij "Base directory" de map dripp-it; dan wordt dit bestand gebruikt.
+# Er is geen buildstap: de site bestaat uit gewone HTML, CSS en JS.
+
+[build]
+  publish = "."
+  command = "echo 'Geen buildstap nodig.'"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 404
