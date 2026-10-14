@@ -14,236 +14,21 @@
   const BRAND = {
     name: 'Dripp It',
     email: 'hallo@drippit.nl',
-    city: 'Amsterdam',
-    freeShipFrom: 250,
-    shipping: { NL: 6.95, BE: 9.95, EU: 14.95 }
+    city: 'België',
+    /* Wettelijk verplicht op een Belgische webshop: vul in zodra je ze hebt. */
+    legal: {
+      company: 'Dripp It',
+      enterpriseNumber: '',   /* bijvoorbeeld 'BE 0123.456.789' */
+      address: ''             /* straat, nummer, postcode en gemeente */
+    },
+    vatNote: 'Btw niet van toepassing – bijzondere vrijstellingsregeling kleine ondernemingen'
   };
+  const PAY_METHODS = ['Bancontact', 'Visa', 'Mastercard', 'Apple Pay', 'Google Pay'];
+  const payChips = () => PAY_METHODS.map(m => `<span>${m}</span>`).join('');
 
-  /* ---------- Categorieën ---------- */
-  const CATS = {
-    dames: {
-      name: 'Dames', art: 'aurum', img: '',
-      intro: 'Jurken, blazers, zijde en sieraden. Vrouwelijk, scherp en altijd met een gouden detail.'
-    },
-    heren: {
-      name: 'Heren', art: 'molten', img: '',
-      intro: 'Zware hoodies, bombers en cargo’s in onyx, wijnrood en cognac. Gemaakt om jaren te dragen.'
-    },
-    schoenen: {
-      name: 'Schoenen', art: 'gild-runner', img: '',
-      intro: 'Sneakers, boots, pumps en slides van echt leer, afgewerkt met verguld detail.'
-    },
-    elektronica: {
-      name: 'Elektronica', art: 'halo-anc', img: '',
-      intro: 'Koptelefoons, oordopjes, smartwatches en speakers in onyx en goud. Met 2 jaar garantie.'
-    }
-  };
+  /* ---------- Catalogus (uit assets/catalog.js) ---------- */
+  const { SHOP, CATS, PRODUCTS } = window.DRIPP_CATALOG;
   const CAT_KEYS = Object.keys(CATS);
-
-  /* ---------- Producten ---------- */
-  const DAMES = ['XS', 'S', 'M', 'L'];
-  const HEREN = ['S', 'M', 'L', 'XL'];
-  const PRODUCTS = [
-    /* Dames */
-    {
-      id: 'aurum', name: 'Aurum Jurk', cat: 'dames', price: 389, shape: 'dress',
-      color: '#D8C19A', colorName: 'Champagne', ed: 18, edMax: 150, left: 22, tag: 'Nieuw', featured: 1,
-      sizes: DAMES, note: 'Valt soepel en normaal op maat. Verstelbare bandjes.',
-      material: '100% moerbeizijde, zijden satijn',
-      desc: 'Een slipdress in champagnekleurige zijde die beweegt als vloeibaar goud. Schuin van de draad gesneden, met een kleine gouden druppel op het decolleté.',
-      details: ['Schuin van de draad gesneden', 'Verstelbare bandjes', 'Gouden druppel op het decolleté', 'Midi-lengte, 118 cm in maat S']
-    },
-    {
-      id: 'nocturne', name: 'Nocturne Blazer', cat: 'dames', price: 459, shape: 'blazer',
-      color: '#2A2227', colorName: 'Onyx', ed: 44, edMax: 150, left: 31, tag: 'Signature',
-      sizes: DAMES, note: 'Getailleerd. Neem je normale maat.',
-      material: 'Scheerwol met een voering van zijde',
-      desc: 'Een scherp gesneden blazer in diep onyx, met vergulde knopen en een voering van wijnrode zijde.',
-      details: ['Vergulde knopen met druppelreliëf', 'Wijnrode zijden voering', 'Gepaspelde zakken', 'Lichte schoudervulling']
-    },
-    {
-      id: 'lumen', name: 'Lumen Zijden Top', cat: 'dames', price: 189, shape: 'top',
-      color: '#EDE5D8', colorName: 'Ivoor', left: 48, tag: 'Nieuw',
-      sizes: DAMES, note: 'Valt los. Neem je normale maat.',
-      material: '100% moerbeizijde',
-      desc: 'Een zijden top met fijne bandjes en een V-hals. Mooi onder de Nocturne Blazer of los op een warme avond.',
-      details: ['Fijne verstelbare bandjes', 'Afgewerkt met gouden biesje', 'Licht uitlopend model', 'Gevoerd tot de borst']
-    },
-    {
-      id: 'cascade', name: 'Cascade Plissérok', cat: 'dames', price: 229, shape: 'skirt',
-      color: '#6B2236', colorName: 'Wijnrood', left: 27, tag: 'Collectie 01',
-      sizes: DAMES, note: 'Elastische tailleband. Valt normaal op maat.',
-      material: 'Satijn met vaste plissé',
-      desc: 'Een midirok met scherpe plissé die bij elke stap opengaat. Elastische tailleband met een gouden druppel.',
-      details: ['Plissé die in de was blijft zitten', 'Elastische tailleband', 'Midi-lengte, 80 cm', 'Gouden druppel op de band']
-    },
-    {
-      id: 'vault', name: 'Vault Tote', cat: 'dames', price: 349, shape: 'bag',
-      color: '#4A3A2C', colorName: 'Espresso', ed: 9, edMax: 100, left: 6, tag: 'Laatste stuks', hot: true,
-      sizes: null, note: '38 × 34 × 14 cm. Past een 15-inch laptop.',
-      material: 'Volnerf Italiaans leer, plantaardig gelooid',
-      desc: 'Een gestructureerde tas van volnerf leer met een vergulde sluiting. Het leer kleurt met de jaren donkerder en mooier.',
-      details: ['Vergulde magneetsluiting', 'Binnenvak met rits', 'Handgeschilderde randen', 'Oplage van 100 stuks']
-    },
-    {
-      id: 'droplet', name: 'Droplet Hanger', cat: 'dames', price: 159, shape: 'pendant',
-      color: '#CFAE6E', colorName: 'Verguld zilver', ed: 23, edMax: 100, left: 17, tag: 'Sieraad',
-      sizes: ['45 cm', '55 cm'], sizeLabel: 'Lengte', note: 'Kies de lengte van de ketting.',
-      material: '925 sterling zilver, 18k verguld',
-      desc: 'De druppel uit ons logo als hanger. Massief zilver met een dikke laag 18 karaat goud, aan een fijne venetiaanse ketting.',
-      details: ['925 sterling zilver', '3 micron 18k verguldsel', 'Gegraveerd met jouw nummer', 'Geleverd in een linnen etui']
-    },
-
-    /* Heren */
-    {
-      id: 'molten', name: 'Molten Hoodie', cat: 'heren', price: 289, shape: 'hoodie',
-      color: '#2B2228', colorName: 'Onyx', ed: 37, edMax: 250, left: 41, tag: 'Signature', featured: 2,
-      sizes: HEREN, note: 'Oversized. Neem je normale maat voor een ruime val.',
-      material: '480 g/m² loopback katoen, 100% biologisch',
-      desc: 'Onze signatuur. Een zware, oversized hoodie met dubbellaagse capuchon, vergulde koordeinden en drie gouden druppels die van de zoom lijken te lekken.',
-      details: ['Dubbellaagse capuchon', 'Koordeinden van verguld messing', 'Kangoeroezak met verborgen naden', 'Drie druppels, geborduurd met 24k verguld garen']
-    },
-    {
-      id: 'bordeaux', name: 'Bordeaux Bomber', cat: 'heren', price: 549, shape: 'jacket',
-      color: '#6B2236', colorName: 'Wijnrood', ed: 219, edMax: 250, left: 11, tag: 'Laatste stuks', hot: true,
-      sizes: HEREN, soldOut: ['XL'], note: 'Regular. Valt normaal op maat, iets kort in het lijf.',
-      material: 'Zware duchesse-satijn met gewatteerde voering',
-      desc: 'Een bomber in diep wijnrood satijn met een vergulde rits over de volle lengte. Binnenin een gewatteerde voering met het nummer van jouw exemplaar.',
-      details: ['Vergulde rits', 'Gebreide boorden in onyx', 'Binnenzak met druppelvormige trekker', 'Voering met genummerd label']
-    },
-    {
-      id: 'pour', name: 'Pour Cargo', cat: 'heren', price: 239, shape: 'pants',
-      color: '#3A3236', colorName: 'Antraciet', left: 63, tag: 'Collectie 01',
-      sizes: HEREN, note: 'Wijd met een tapse enkel. Neem je normale maat.',
-      material: '340 g/m² katoenen twill',
-      desc: 'Een wijde cargobroek in zware twill met platte zakken en twee gouden druppels aan de enkels. Strak genoeg voor de avond, ruim genoeg voor de dag.',
-      details: ['Elastische tailleband met koord', 'Platte opgestikte zakken', 'Verstelbare enkels', 'Druppels aan beide pijpen']
-    },
-    {
-      id: 'nectar', name: 'Nectar Overshirt', cat: 'heren', price: 319, shape: 'shirt',
-      color: '#7A4E2D', colorName: 'Cognac', left: 27, tag: 'Collectie 01',
-      sizes: HEREN, note: 'Ruim. Draag hem open als jasje of dicht als overhemd.',
-      material: 'Wol-kasjmier flanel, 80/20',
-      desc: 'Een warm overshirt in cognac flanel met vergulde drukknopen en twee borstzakken. Het jasje voor tussen de seizoenen.',
-      details: ['Vergulde drukknopen', 'Twee borstzakken met klep', 'Afgeronde zoom', 'Gevoerde kraag']
-    },
-    {
-      id: 'drop', name: 'Drop Tee', cat: 'heren', price: 129, shape: 'tee',
-      color: '#D8C19A', colorName: 'Champagne', left: 96, tag: 'Basis',
-      sizes: HEREN, note: 'Relaxed. Valt normaal op maat.',
-      material: '260 g/m² gekamd jersey, 100% katoen',
-      desc: 'Een stevig gebreid T-shirt met dichte ribkraag en één geborduurde druppel op de borst. Het basisstuk onder alles wat je draagt.',
-      details: ['Ribkraag die zijn vorm houdt', 'Gouden druppel op de borst', 'Afgewerkt met zijsplitjes', 'Voorgekrompen, krimpt niet in de was']
-    },
-    {
-      id: 'halo', name: 'Halo Cap', cat: 'heren', price: 89, shape: 'cap',
-      color: '#1F191D', colorName: 'Onyx', left: 88, tag: 'Accessoire',
-      sizes: null, note: 'Verstelbaar met een leren bandje en een gouden gesp.',
-      material: 'Wolmix met vergulde knoop',
-      desc: 'Een cap met zes panelen in onyx wol, met een gouden druppel op de voorkant en een vergulde knoop op de kruin.',
-      details: ['Leren verstelbandje', 'Gesp van verguld messing', 'Gevoerd zweetbandje', 'Geborduurde druppel']
-    },
-
-    /* Schoenen */
-    {
-      id: 'gild-runner', name: 'Gild Runner', cat: 'schoenen', price: 279, shape: 'sneaker',
-      color: '#EFE9DF', colorName: 'Wit leer', left: 64, tag: 'Bestseller', featured: 3,
-      sizes: ['40', '41', '42', '43', '44', '45', '46'], note: 'Valt normaal. Twijfel je, neem dan een halve maat groter.',
-      material: 'Volnerf kalfsleer met verguld hielstuk',
-      desc: 'Een strakke sneaker van wit kalfsleer met een verguld hielstuk en een gouden druppel op de zijkant. Gestikt op een rubberen zool.',
-      details: ['Volnerf kalfsleer', 'Verguld hielstuk', 'Leren binnenzool', 'Gestikte rubberen zool']
-    },
-    {
-      id: 'onyx-chelsea', name: 'Onyx Chelsea Boot', cat: 'schoenen', price: 329, shape: 'boot',
-      color: '#231C21', colorName: 'Onyx', left: 9, tag: 'Bijna op', hot: true,
-      sizes: ['40', '41', '42', '43', '44', '45', '46'], soldOut: ['46'], note: 'Valt normaal op maat.',
-      material: 'Geborsteld kalfsleer, Goodyear-gestikt',
-      desc: 'Een chelsea boot van onyx leer met elastische zijpanden en een gouden lus aan de hiel. Te verzolen, dus gemaakt voor jaren.',
-      details: ['Goodyear-gestikt, te verzolen', 'Elastische zijpanden', 'Gouden treklus', 'Leren zool met rubberen hak']
-    },
-    {
-      id: 'aurelia', name: 'Aurelia Pump', cat: 'schoenen', price: 299, shape: 'heel',
-      color: '#C9B08A', colorName: 'Champagne satijn', left: 19, tag: 'Dames',
-      sizes: ['36', '37', '38', '39', '40', '41'], note: 'Hak van 9 cm. Valt normaal op maat.',
-      material: 'Satijn met een leren binnenzool',
-      desc: 'Een slanke pump in champagnekleurig satijn met een vergulde naaldhak van 9 centimeter.',
-      details: ['Vergulde naaldhak, 9 cm', 'Gevoerd met lamsleer', 'Zachte binnenzool', 'Spitse neus']
-    },
-    {
-      id: 'drip-slide', name: 'Drip Slide', cat: 'schoenen', price: 119, shape: 'slide',
-      color: '#2B2228', colorName: 'Onyx', left: 102, tag: 'Unisex',
-      sizes: ['38', '39', '40', '41', '42', '43', '44', '45', '46'], note: 'Valt normaal. Bij halve maten de grotere nemen.',
-      material: 'Gewatteerd leer op een zool van kurk',
-      desc: 'Een gewatteerde slipper met een brede band van zacht leer en een grote gouden druppel. Voor thuis, het strand en alles ertussen.',
-      details: ['Gewatteerde leren band', 'Voetbed van kurk', 'Rubberen loopzool', 'Gouden druppel op de band']
-    },
-    {
-      id: 'gilded-loafer', name: 'Gilded Loafer', cat: 'schoenen', price: 349, shape: 'loafer',
-      color: '#5E1F30', colorName: 'Bordeaux leer', left: 23, tag: 'Heren',
-      sizes: ['40', '41', '42', '43', '44', '45', '46'], note: 'Valt iets ruim. Twijfel je, neem dan een halve maat kleiner.',
-      material: 'Gepolijst kalfsleer met leren zool',
-      desc: 'Een klassieke loafer in bordeaux leer met een vergulde gesp over de wreef. Net zo goed op sneakersokken als in pak.',
-      details: ['Vergulde gesp over de wreef', 'Leren zool met rubberen inzet', 'Gevoerd met kalfsleer', 'Met de hand gepolijst']
-    },
-    {
-      id: 'riviera', name: 'Riviera Sandaal', cat: 'schoenen', price: 189, shape: 'sandal',
-      color: '#D8C19A', colorName: 'Champagne en goud', left: 31, tag: 'Dames',
-      sizes: ['36', '37', '38', '39', '40', '41'], note: 'Valt normaal op maat. Verstelbaar enkelbandje.',
-      material: 'Gemetalliseerd leer op een leren voetbed',
-      desc: 'Een platte sandaal met dunne gouden bandjes en een gesp om de enkel. Voor zomeravonden en vakanties aan zee.',
-      details: ['Dunne bandjes van gemetalliseerd leer', 'Verstelbare enkelband', 'Zacht leren voetbed', 'Antislip loopzool']
-    },
-
-    /* Elektronica */
-    {
-      id: 'halo-anc', name: 'Halo Koptelefoon', cat: 'elektronica', price: 449, shape: 'headphones',
-      color: '#2B2228', colorName: 'Onyx en goud', left: 35, tag: 'Nieuw', featured: 4,
-      sizes: null, note: 'Inclusief leren opbergetui en USB-C-kabel.',
-      material: 'Aluminium met oorkussens van lamsleer',
-      desc: 'Een draadloze over-ear koptelefoon met actieve ruisonderdrukking, oorkussens van lamsleer en vergulde scharnieren.',
-      details: ['Actieve ruisonderdrukking', 'Tot 40 uur batterij', 'Bluetooth 5.3 met multipoint', 'Snel laden: 10 minuten voor 5 uur']
-    },
-    {
-      id: 'pearl', name: 'Pearl Oordopjes', cat: 'elektronica', price: 229, shape: 'buds',
-      color: '#EDE5D8', colorName: 'Ivoor', left: 54, tag: 'Draadloos',
-      sizes: null, note: 'Inclusief drie maten oordopjes en een USB-C-kabel.',
-      material: 'Keramische afwerking met gouden accenten',
-      desc: 'Kleine draadloze oordopjes in een ivoren case met een gouden scharnier. Ruisonderdrukking voor onderweg, helder geluid voor thuis.',
-      details: ['Ruisonderdrukking', '8 uur luisteren, 32 uur met de case', 'Draadloos opladen', 'Spatwaterdicht (IPX4)']
-    },
-    {
-      id: 'chrono', name: 'Chrono Smartwatch', cat: 'elektronica', price: 399, shape: 'watch',
-      color: '#2B2228', colorName: 'Onyx leer', left: 8, tag: 'Bijna op', hot: true,
-      sizes: null, note: 'Leren band van 22 mm, past polsen van 14 tot 20 cm.',
-      material: 'Geborsteld staal, verguld, met leren band',
-      desc: 'Een smartwatch met een vergulde kast en een band van onyx leer. Meldingen, hartslag en slaap, in een horloge dat eruitziet als een horloge.',
-      details: ['AMOLED-scherm van 1,4 inch', 'Hartslag, slaap en stappen', 'Tot 7 dagen batterij', 'Werkt met iPhone en Android']
-    },
-    {
-      id: 'vault-speaker', name: 'Vault Speaker', cat: 'elektronica', price: 349, shape: 'speaker',
-      color: '#3A3236', colorName: 'Antraciet', left: 41, tag: 'Draagbaar',
-      sizes: null, note: 'Inclusief USB-C-kabel en leren draaglus.',
-      material: 'Geanodiseerd aluminium met stoffen grille',
-      desc: 'Een draagbare speaker met 360° geluid, een gouden band en een leren draaglus. Klein genoeg voor onderweg, groot genoeg voor een feest.',
-      details: ['360° geluid', 'Tot 20 uur batterij', 'Waterdicht (IP67)', 'Koppel twee speakers voor stereo']
-    },
-    {
-      id: 'drip-case', name: 'Drip Telefoonhoes', cat: 'elektronica', price: 69, shape: 'phonecase',
-      color: '#4A3A2C', colorName: 'Espresso leer', left: 140, tag: 'Leer',
-      sizes: ['iPhone 15', 'iPhone 16', 'iPhone 16 Pro'], sizeLabel: 'Model', note: 'Werkt met MagSafe en draadloos opladen.',
-      material: 'Volnerf leer met microvezel binnenkant',
-      desc: 'Een slanke telefoonhoes van volnerf leer met het Dripp It-embleem in goud. Werkt met MagSafe en draadloos opladen.',
-      details: ['Volnerf leer', 'MagSafe-compatibel', 'Verhoogde rand rond de camera', 'Embleem in reliëf met bladgoud']
-    },
-    {
-      id: 'halo-pad', name: 'Halo Oplader', cat: 'elektronica', price: 119, shape: 'charger',
-      color: '#2B2228', colorName: 'Onyx en goud', left: 76, tag: 'Draadloos',
-      sizes: null, note: 'Inclusief USB-C-kabel en snellader van 20 W.',
-      material: 'Aluminium met een bovenkant van leer',
-      desc: 'Een draadloze oplader van aluminium en leer met een gouden ring. Leg je telefoon of oordopjes erop en hij laadt vanzelf.',
-      details: ['Draadloos laden tot 15 W', 'Werkt met MagSafe en Qi2', 'Leren bovenkant met gouden ring', 'Zacht lampje dat ’s nachts uitgaat']
-    }
-  ];
   const byId = id => PRODUCTS.find(p => p.id === id);
   const inCat = key => PRODUCTS.filter(p => p.cat === key);
 
@@ -688,8 +473,8 @@
     return `
 <header class="site-header" id="site-header">
   <div class="announce"><div class="wrap">
-    <span class="ann-long">Gratis verzending in Nederland vanaf <b>${eur(BRAND.freeShipFrom)}</b> · Retour binnen 30 dagen · 2 jaar garantie op elektronica</span>
-    <span class="ann-short">Gratis verzending vanaf <b>${eur(BRAND.freeShipFrom)}</b></span>
+    <span class="ann-long">Gratis verzending in België vanaf <b>${eur(SHOP.freeShipFrom)}</b> · Retour binnen 30 dagen · 2 jaar garantie op elektronica</span>
+    <span class="ann-short">Gratis verzending vanaf <b>${eur(SHOP.freeShipFrom)}</b></span>
   </div></div>
   <div class="nav"><div class="wrap">
     <div class="nav-left">
@@ -729,7 +514,7 @@
     </nav>
     <div class="drawer-foot">
       <a class="btn btn-gold btn-block" href="tas.html">${ICONS.bag}<span>Bekijk je tas (<span class="bag-count">0</span>)</span></a>
-      <p>Gratis verzending vanaf ${eur(BRAND.freeShipFrom)} · Retour binnen 30 dagen</p>
+      <p>Gratis verzending vanaf ${eur(SHOP.freeShipFrom)} · Retour binnen 30 dagen</p>
     </div>
   </div>
 </div>`;
@@ -768,8 +553,8 @@
       </ul></div>
     </div>
     <div class="foot-note">
-      <span>© ${new Date().getFullYear()} ${BRAND.name} · Alle prijzen zijn inclusief btw</span>
-      <span class="pay" aria-label="Betaalmethoden"><span>iDEAL</span><span>Bancontact</span><span>Visa</span><span>Mastercard</span><span>Apple Pay</span></span>
+      <span>© ${new Date().getFullYear()} ${esc([BRAND.legal.company, BRAND.legal.enterpriseNumber && `Ondernemingsnr. ${BRAND.legal.enterpriseNumber}`, BRAND.legal.address].filter(Boolean).join(' · '))}<br>${BRAND.vatNote}</span>
+      <span class="pay" aria-label="Betaalmethoden">${payChips()}</span>
     </div>
   </div>
 </footer>`;
@@ -907,6 +692,96 @@
     });
   }
 
+
+  /* ---------- Afrekenen (Stripe) ---------- */
+  const CO_KEY = 'drippit-checkout-v1';
+  const LAST_KEY = 'drippit-last-order';
+  const LOCK = '<svg class="lock" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5" y="10.5" width="14" height="10" rx="1.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg>';
+
+  const loadScript = src => new Promise((resolve, reject) => {
+    const el = document.createElement('script');
+    el.src = src; el.onload = resolve; el.onerror = reject;
+    document.head.appendChild(el);
+  });
+
+  /* Stripe-betaalvelden in de Dripp It-stijl, in licht en donker */
+  function stripeAppearance() {
+    const cs = getComputedStyle(document.documentElement);
+    const t = n => cs.getPropertyValue(n).trim();
+    const dark = cs.colorScheme.includes('dark');
+    return {
+      theme: dark ? 'night' : 'stripe',
+      labels: 'above',
+      variables: {
+        colorPrimary: t('--gold'),
+        colorBackground: t('--bg'),
+        colorText: t('--fg'),
+        colorTextSecondary: t('--muted'),
+        colorTextPlaceholder: t('--muted'),
+        colorDanger: t('--warn'),
+        fontFamily: '"Hanken Grotesk", "Helvetica Neue", Arial, sans-serif',
+        fontSizeBase: '16px',
+        borderRadius: '0px',
+        spacingUnit: '4px',
+        focusBoxShadow: 'none',
+        focusOutline: 'none'
+      },
+      rules: {
+        '.AccordionItem': { border: `1px solid ${t('--line')}`, boxShadow: 'none', backgroundColor: t('--bg-2'), padding: '18px 20px' },
+        '.AccordionItem--selected': { borderColor: t('--gold') },
+        '.Input': { border: `1px solid ${t('--line-strong')}`, boxShadow: 'none', padding: '13px 14px' },
+        '.Input:focus': { borderColor: t('--gold'), boxShadow: `0 0 0 1px ${t('--gold')}` },
+        '.Input--invalid': { borderColor: t('--warn'), boxShadow: 'none' },
+        '.Label': { fontFamily: '"DM Mono", ui-monospace, monospace', fontSize: '11px', letterSpacing: '0.16em', textTransform: 'uppercase', color: t('--muted') },
+        '.Tab, .Block': { border: `1px solid ${t('--line')}`, boxShadow: 'none' },
+        '.Tab--selected': { borderColor: t('--gold'), boxShadow: `0 0 0 1px ${t('--gold')}` }
+      }
+    };
+  }
+
+  /* Voorbeeld van het betaalscherm zolang Stripe nog niet gekoppeld is.
+     De velden zijn uitgeschakeld: hier kan niemand echte kaartgegevens invullen. */
+  const payMock = () => `
+<p class="mock-note">${dropSvg()}<span><b>Voorbeeld van het betaalscherm.</b> De echte, beveiligde betaalvelden van Stripe verschijnen hier zodra de Stripe-sleutels in Netlify staan.</span></p>
+<div class="pm-list" role="radiogroup" aria-label="Betaalmethode (voorbeeld)">
+  ${[
+    ['bancontact', 'Bancontact', ['Bancontact'], '<p>Je gaat naar Bancontact en betaalt daar met de app of met je kaart. Daarna kom je vanzelf terug op deze site.</p>'],
+    ['card', 'Kaart', ['Visa', 'Mastercard', 'Amex'], `
+      <div class="mock-fields">
+        <div class="field full"><span class="label">Kaartnummer</span><input class="input" disabled placeholder="1234 1234 1234 1234" aria-label="Kaartnummer (voorbeeld)"></div>
+        <div class="field"><span class="label">Vervaldatum</span><input class="input" disabled placeholder="MM / JJ" aria-label="Vervaldatum (voorbeeld)"></div>
+        <div class="field"><span class="label">CVC</span><input class="input" disabled placeholder="123" aria-label="CVC (voorbeeld)"></div>
+      </div>`],
+    ['wallet', 'Apple Pay of Google Pay', ['Apple Pay', 'Google Pay'], '<p>Betaal met Face ID, Touch ID of je vingerafdruk. Je ziet deze optie alleen op een toestel dat het ondersteunt.</p>']
+  ].map(([k, name, badges, body], i) => `
+  <div class="pm${i === 0 ? ' on' : ''}" data-pm="${k}" role="radio" tabindex="0" aria-checked="${i === 0}">
+    <div class="pm-head"><span class="pm-radio" aria-hidden="true"></span><span class="pm-name">${name}</span><span class="pm-badges">${badges.map(b => `<span>${b}</span>`).join('')}</span></div>
+    <div class="pm-body">${body}</div>
+  </div>`).join('')}
+</div>`;
+
+  const orderLines = (lines, compact) => lines.map(l => {
+    const p = byId(l.id);
+    return `
+    <div class="co-line${compact ? ' compact' : ''}">
+      <div class="co-thumb art${p.images?.length ? ' has-img' : ''}">${visual(p)}<span class="co-qty">${l.qty}</span></div>
+      <div class="co-line-info"><b>${esc(p.name)}</b><span>${esc(p.colorName)}${l.size ? ` · ${esc(l.size)}` : ''}</span></div>
+      <span class="co-line-price">${eur(p.price * l.qty)}</span>
+    </div>`;
+  }).join('');
+
+  const totalsFor = lines => {
+    const sub = lines.reduce((n, l) => n + byId(l.id).price * l.qty, 0);
+    const ship = sub >= SHOP.freeShipFrom ? 0 : SHOP.shipping;
+    return { sub, ship, total: sub + ship };
+  };
+  const sumRows = ({ sub, ship, total }) => `
+    <dl class="sum-rows">
+      <div><dt>Subtotaal</dt><dd>${eur(sub, 2)}</dd></div>
+      <div><dt>Verzending</dt><dd>${ship ? eur(ship, 2) : 'Gratis'}</dd></div>
+      <div class="total"><dt>Totaal</dt><dd>${eur(total, 2)}</dd></div>
+    </dl>`;
+
   /* ---------- Pagina's ---------- */
   const pages = {
     home() {
@@ -1031,14 +906,14 @@
   </div>` : `<p class="opt-note">${esc(p.note)}</p>`}
   <button class="btn btn-gold btn-block" type="button" id="add">In je tas · ${eur(p.price)}</button>
   <ul class="perks">
-    <li>${dropSvg()}Gratis verzending in Nederland vanaf ${eur(BRAND.freeShipFrom)}</li>
+    <li>${dropSvg()}Gratis verzending in België vanaf ${eur(SHOP.freeShipFrom)}</li>
     <li>${dropSvg()}Binnen 30 dagen gratis retour</li>
     <li>${dropSvg()}${p.cat === 'elektronica' ? '2 jaar garantie' : 'Geleverd in een linnen doos'}</li>
   </ul>
   <div class="acc">
     <details open><summary>${p.cat === 'elektronica' ? 'Specificaties' : 'Details'}</summary><div class="acc-body"><ul>${p.details.map(d => `<li>${esc(d)}</li>`).join('')}</ul></div></details>
     <details><summary>${p.cat === 'elektronica' ? 'Garantie en onderhoud' : 'Materiaal en verzorging'}</summary><div class="acc-body"><p>${esc(p.material)}.</p><p>${esc(careText(p))}</p><p><a href="service.html#verzorging">Alle verzorgingstips</a></p></div></details>
-    <details><summary>Verzending en retour</summary><div class="acc-body"><p>Besteld voor 15:00 op een werkdag, dan versturen we dezelfde dag. In Nederland bezorgen we binnen 1 tot 2 werkdagen.</p><p>Niet goed? Stuur het binnen 30 dagen ongebruikt terug. <a href="service.html#retour">Zo werkt retourneren</a>.</p></div></details>
+    <details><summary>Verzending en retour</summary><div class="acc-body"><p>Besteld voor 15:00 op een werkdag, dan versturen we dezelfde dag. In België bezorgen we binnen 1 tot 2 werkdagen.</p><p>Niet goed? Stuur het binnen 30 dagen ongebruikt terug. <a href="service.html#retour">Zo werkt retourneren</a>.</p></div></details>
   </div>
 </div>`;
         let size = defSize;
@@ -1084,8 +959,8 @@
           return;
         }
         const sub = bag.subtotal();
-        const ship = sub >= BRAND.freeShipFrom ? 0 : BRAND.shipping.NL;
-        const toGo = Math.max(0, BRAND.freeShipFrom - sub);
+        const ship = sub >= SHOP.freeShipFrom ? 0 : SHOP.shipping;
+        const toGo = Math.max(0, SHOP.freeShipFrom - sub);
         root.innerHTML = `
 <div class="bag-layout">
   <div>
@@ -1118,17 +993,16 @@
     <h2>Overzicht</h2>
     <div class="free-ship">
       <span>${toGo ? `Nog ${eur(toGo)} tot gratis verzending` : 'Je bestelling wordt gratis verzonden'}</span>
-      <div class="bar"><i style="width:${Math.min(100, sub / BRAND.freeShipFrom * 100)}%"></i></div>
+      <div class="bar"><i style="width:${Math.min(100, sub / SHOP.freeShipFrom * 100)}%"></i></div>
     </div>
     <dl class="sum-rows">
       <div><dt>Subtotaal</dt><dd>${eur(sub, 2)}</dd></div>
-      <div><dt>Verzending (NL)</dt><dd>${ship ? eur(ship, 2) : 'Gratis'}</dd></div>
+      <div><dt>Verzending</dt><dd>${ship ? eur(ship, 2) : 'Gratis'}</dd></div>
       <div class="total"><dt>Totaal</dt><dd>${eur(sub + ship, 2)}</dd></div>
     </dl>
-    <p class="muted small">Inclusief btw. Verzendkosten naar België ${eur(BRAND.shipping.BE, 2)}, rest van de EU ${eur(BRAND.shipping.EU, 2)}.</p>
-    <button class="btn btn-gold btn-block" type="button" id="checkout">Afrekenen</button>
-    <p class="form-msg" id="checkout-msg" role="status"></p>
-    <div class="pay"><span>iDEAL</span><span>Bancontact</span><span>Visa</span><span>Mastercard</span><span>Apple Pay</span></div>
+    <p class="muted small">${BRAND.vatNote}. We verzenden voorlopig alleen binnen ${SHOP.countryName}.</p>
+    <a class="btn btn-gold btn-block" href="afrekenen.html">Afrekenen</a>
+    <div class="pay">${payChips()}</div>
   </aside>
 </div>`;
         $$('.line', root).forEach(row => row.addEventListener('click', e => {
@@ -1142,11 +1016,6 @@
           bag.write(all);
           render();
         }));
-        $('#checkout').addEventListener('click', () => {
-          const m = $('#checkout-msg');
-          m.className = 'form-msg err';
-          m.textContent = 'Betalen is nog niet gekoppeld. Koppel een betaalprovider zoals Stripe of Mollie om bestellingen te ontvangen.';
-        });
       };
       render();
     },
@@ -1173,6 +1042,273 @@
         }
         setTimeout(() => { b.textContent = 'Kopieer'; }, 2000);
       }));
+    },
+
+
+    afrekenen() {
+      setCurrent('tas');
+      const root = $('#checkout-root');
+      const lines = bag.read();
+      if (!lines.length) {
+        root.innerHTML = `
+<div class="bag-empty"><div class="empty">
+  ${dropSvg()}
+  <h2>Er valt nog niets <em>af te rekenen</em></h2>
+  <p>Je tas is leeg. Kies eerst iets uit de collectie.</p>
+  <a class="btn btn-gold" href="collectie.html">Naar de collectie</a>
+</div></div>`;
+        return;
+      }
+      const totals = totalsFor(lines);
+      let saved = {};
+      try { saved = JSON.parse(localStorage.getItem(CO_KEY) || '{}') || {}; } catch { saved = {}; }
+      const v = k => esc(saved[k] || '');
+      root.innerHTML = `
+<form class="checkout" id="co-form" novalidate>
+  <div class="co-main">
+    <section class="co-step" aria-labelledby="co-h1">
+      <h2 id="co-h1"><span class="co-num">1</span>Contact</h2>
+      <div class="field-row">
+        <div class="field"><label for="co-email">E-mailadres</label><input id="co-email" name="email" type="email" autocomplete="email" inputmode="email" required value="${v('email')}" placeholder="naam@voorbeeld.be"></div>
+        <div class="field"><label for="co-tel">Telefoon</label><input id="co-tel" name="tel" type="tel" autocomplete="tel" inputmode="tel" required value="${v('tel')}" placeholder="0470 12 34 56"></div>
+      </div>
+      <p class="opt-note">Hier sturen we je bevestiging en de track-and-trace naartoe.</p>
+    </section>
+
+    <section class="co-step" aria-labelledby="co-h2">
+      <h2 id="co-h2"><span class="co-num">2</span>Bezorging</h2>
+      <div class="field-row">
+        <div class="field"><label for="co-first">Voornaam</label><input id="co-first" name="first" autocomplete="given-name" required value="${v('first')}"></div>
+        <div class="field"><label for="co-last">Achternaam</label><input id="co-last" name="last" autocomplete="family-name" required value="${v('last')}"></div>
+      </div>
+      <div class="field"><label for="co-street">Straat en huisnummer</label><input id="co-street" name="street" autocomplete="address-line1" required value="${v('street')}" placeholder="Meirstraat 12, bus 3"></div>
+      <div class="field-row co-postal">
+        <div class="field"><label for="co-zip">Postcode</label><input id="co-zip" name="zip" autocomplete="postal-code" inputmode="numeric" maxlength="4" required value="${v('zip')}" placeholder="2000"></div>
+        <div class="field"><label for="co-city">Gemeente</label><input id="co-city" name="city" autocomplete="address-level2" required value="${v('city')}" placeholder="Antwerpen"></div>
+      </div>
+      <div class="field"><span class="label">Land</span><div class="co-static">${SHOP.countryName}<small>We verzenden voorlopig alleen binnen ${SHOP.countryName}.</small></div></div>
+      <div class="ship-opt">
+        <span class="pm-radio on" aria-hidden="true"></span>
+        <div><b>Thuislevering</b><span>1 tot 2 werkdagen · besteld voor 15:00, dezelfde dag verstuurd</span></div>
+        <strong>${totals.ship ? eur(totals.ship, 2) : 'Gratis'}</strong>
+      </div>
+    </section>
+
+    <section class="co-step" aria-labelledby="co-h3">
+      <h2 id="co-h3"><span class="co-num">3</span>Betaling</h2>
+      <div id="payment-element" class="pay-element" hidden></div>
+      <div id="pay-mock">${payMock()}</div>
+      <label class="check" for="co-terms"><input type="checkbox" id="co-terms" name="terms" required><span>Ik ga akkoord met de <a href="service.html#retour">verzend- en retourvoorwaarden</a> en weet dat ik 30 dagen bedenktijd heb.</span></label>
+      <button class="btn btn-gold btn-block btn-pay" type="submit" id="pay-btn"><span class="pay-label">${LOCK}Betaal ${eur(totals.total, 2)}</span><span class="spinner" aria-hidden="true"></span></button>
+      <p class="form-msg" id="co-msg" role="status" aria-live="polite"></p>
+      <p class="co-secure">${LOCK}<span>Beveiligde verbinding. Je betaalgegevens gaan rechtstreeks naar Stripe en komen nooit bij ons terecht.</span></p>
+    </section>
+  </div>
+
+  <aside class="co-summary" aria-label="Je bestelling">
+    <div class="co-summary-head"><h2>Je bestelling</h2><a href="tas.html">Aanpassen</a></div>
+    <div class="co-lines">${orderLines(lines)}</div>
+    ${sumRows(totals)}
+    <p class="muted small">${BRAND.vatNote}.</p>
+    <ul class="perks">
+      <li>${dropSvg()}Binnen 30 dagen gratis retour</li>
+      <li>${dropSvg()}Geleverd in een linnen doos</li>
+    </ul>
+    <div class="pay">${payChips()}</div>
+  </aside>
+</form>`;
+
+      const form = $('#co-form');
+      const msg = $('#co-msg');
+      const payBtn = $('#pay-btn');
+      const setMsg = (html, cls) => { msg.className = 'form-msg' + (cls ? ' ' + cls : ''); msg.innerHTML = html; };
+      const setLoading = on => { payBtn.disabled = on; payBtn.classList.toggle('loading', on); };
+
+      /* voorbeeld-betaalmethoden aanklikbaar maken */
+      $$('.pm', root).forEach(pm => {
+        const pick = () => $$('.pm', root).forEach(x => { x.classList.toggle('on', x === pm); x.setAttribute('aria-checked', String(x === pm)); });
+        pm.addEventListener('click', pick);
+        pm.addEventListener('keydown', e => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); pick(); } });
+      });
+
+      /* gegevens onthouden in deze browser, voor de volgende keer */
+      const remember = () => {
+        const data = Object.fromEntries(['email', 'tel', 'first', 'last', 'street', 'zip', 'city'].map(k => [k, form.elements[k].value.trim()]));
+        try { localStorage.setItem(CO_KEY, JSON.stringify(data)); } catch { /* geen opslag beschikbaar */ }
+        return data;
+      };
+      form.addEventListener('input', e => e.target.closest('.field')?.classList.remove('invalid'));
+
+      const validate = () => {
+        const checks = {
+          email: x => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(x),
+          tel: x => x.replace(/\D/g, '').length >= 8,
+          first: x => x.length > 0, last: x => x.length > 0, street: x => /\d/.test(x) && x.length > 3,
+          zip: x => /^\d{4}$/.test(x), city: x => x.length > 1
+        };
+        const bad = Object.keys(checks).filter(k => !checks[k](form.elements[k].value.trim()));
+        Object.keys(checks).forEach(k => form.elements[k].closest('.field').classList.toggle('invalid', bad.includes(k)));
+        if (bad.length) {
+          const names = { email: 'je e-mailadres', tel: 'je telefoonnummer', first: 'je voornaam', last: 'je achternaam', street: 'je straat en huisnummer', zip: 'een Belgische postcode van 4 cijfers', city: 'je gemeente' };
+          setMsg(`Vul ${bad.map(k => names[k]).join(', ').replace(/, ([^,]*)$/, ' en $1')} in.`, 'err');
+          form.elements[bad[0]].focus();
+          return false;
+        }
+        if (!form.elements.terms.checked) {
+          setMsg('Vink aan dat je akkoord gaat met de verzend- en retourvoorwaarden.', 'err');
+          form.elements.terms.focus();
+          return false;
+        }
+        return true;
+      };
+
+      /* Stripe koppelen als de betaalfunctie op Netlify klaarstaat */
+      let live = null;
+      (async () => {
+        try {
+          const ctrl = new AbortController();
+          setTimeout(() => ctrl.abort(), 9000);
+          const res = await fetch('/api/checkout', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ items: lines.map(l => ({ id: l.id, size: l.size || '', qty: l.qty })) }),
+            signal: ctrl.signal
+          });
+          const data = await res.json().catch(() => ({}));
+          if (res.status === 400 && data.error) { setMsg(esc(data.error) + ' <a href="tas.html">Naar je tas</a>', 'err'); payBtn.disabled = true; return; }
+          if (!res.ok || !data.clientSecret) return;
+          await loadScript('https://js.stripe.com/v3/');
+          const stripe = window.Stripe(data.publishableKey, { locale: 'nl' });
+          const elements = stripe.elements({
+            clientSecret: data.clientSecret,
+            appearance: stripeAppearance(),
+            fonts: [{ cssSrc: 'https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500&family=DM+Mono&display=swap' }]
+          });
+          const el = $('#payment-element');
+          el.hidden = false;
+          $('#pay-mock').hidden = true;
+          const payment = elements.create('payment', {
+            layout: { type: 'accordion', defaultCollapsed: false, radios: true, spacedAccordionItems: true },
+            paymentMethodOrder: ['bancontact', 'card', 'apple_pay', 'google_pay'],
+            fields: { billingDetails: { name: 'never', email: 'never', phone: 'never', address: 'never' } }
+          });
+          payment.on('loaderror', () => { el.hidden = true; $('#pay-mock').hidden = false; live = null; });
+          payment.mount(el);
+          live = { stripe, elements, data };
+          if (data.amount && Math.abs(data.amount / 100 - totals.total) > 0.001) {
+            $('.pay-label', payBtn).innerHTML = `${LOCK}Betaal ${eur(data.amount / 100, 2)}`;
+          }
+        } catch { /* geen betaalfunctie bereikbaar: het voorbeeld blijft staan */ }
+      })();
+
+      form.addEventListener('submit', async e => {
+        e.preventDefault();
+        setMsg('');
+        if (!validate()) return;
+        const c = remember();
+        if (!live) {
+          setMsg('Dit is nog een voorbeeld: betalen werkt zodra de Stripe-sleutels in Netlify staan. <a href="bedankt.html#voorbeeld">Bekijk hoe de bevestiging eruitziet</a>.', 'err');
+          return;
+        }
+        setLoading(true);
+        const name = `${c.first} ${c.last}`;
+        const address = { line1: c.street, line2: '', city: c.city, postal_code: c.zip, state: '', country: SHOP.country };
+        try {
+          sessionStorage.setItem(LAST_KEY, JSON.stringify({ order: live.data.order, lines, totals, first: c.first, email: c.email }));
+        } catch { /* niet erg: de bedankpagina toont dan een korte versie */ }
+        const { error } = await live.stripe.confirmPayment({
+          elements: live.elements,
+          confirmParams: {
+            return_url: new URL('bedankt.html', location.href).href,
+            receipt_email: c.email,
+            shipping: { name, phone: c.tel, address },
+            payment_method_data: { billing_details: { name, email: c.email, phone: c.tel, address } }
+          }
+        });
+        /* Hier kom je alleen bij een fout; anders stuurt Stripe door naar bedankt.html */
+        setLoading(false);
+        setMsg(esc(error?.message || 'Betalen is niet gelukt. Probeer het opnieuw of kies een andere betaalmethode.'), 'err');
+      });
+    },
+
+    bedankt() {
+      setCurrent('');
+      const root = $('#thanks-root');
+      const params = new URLSearchParams(location.search);
+      const status = params.get('redirect_status');
+      const preview = location.hash === '#voorbeeld' && !status;
+      let info = null;
+      try { info = JSON.parse(sessionStorage.getItem(LAST_KEY) || 'null'); } catch { info = null; }
+
+      if (status === 'succeeded') bag.write([]);
+
+      if (status === 'failed' || status === 'requires_payment_method') {
+        root.innerHTML = `
+<div class="thanks thanks-fail">
+  ${dropSvg('thanks-drop')}
+  <span class="eyebrow">Betaling niet gelukt</span>
+  <h1>Er is <em>niets</em> afgeschreven</h1>
+  <p>De betaling is afgebroken of geweigerd. Je tas staat nog klaar, dus je kunt het meteen opnieuw proberen, eventueel met een andere betaalmethode.</p>
+  <div class="hero-actions"><a class="btn btn-gold" href="afrekenen.html">Probeer opnieuw</a><a class="btn btn-ghost" href="tas.html">Naar je tas</a></div>
+</div>`;
+        return;
+      }
+      if (status === 'processing') {
+        root.innerHTML = `
+<div class="thanks">
+  ${dropSvg('thanks-drop')}
+  <span class="eyebrow">Bijna klaar</span>
+  <h1>Je betaling wordt <em>verwerkt</em></h1>
+  <p>Je bank bevestigt de betaling nog. Zodra dat gebeurt, krijg je een bevestiging per e-mail${info?.email ? ` op <b>${esc(info.email)}</b>` : ''}. Je hoeft niets meer te doen.</p>
+  ${info?.order ? `<p class="order-no"><span>Bestelnummer</span>${esc(info.order)}</p>` : ''}
+  <a class="btn btn-ghost" href="index.html">Terug naar de homepage</a>
+</div>`;
+        return;
+      }
+      if (status !== 'succeeded' && !preview) {
+        root.innerHTML = `
+<div class="thanks">
+  ${dropSvg('thanks-drop')}
+  <h1>Geen bestelling <em>gevonden</em></h1>
+  <p>Deze pagina toont je bevestiging direct na het betalen. Heb je net besteld, kijk dan in je mailbox voor de bevestiging.</p>
+  <div class="hero-actions"><a class="btn btn-gold" href="collectie.html">Naar de collectie</a><a class="btn btn-ghost" href="contact.html">Contact</a></div>
+</div>`;
+        return;
+      }
+
+      if (preview) {
+        const lines = bag.read().length ? bag.read() : [{ id: 'molten', size: 'M', qty: 1 }, { id: 'gild-runner', size: '43', qty: 1 }];
+        info = { order: 'DI-VOORBEELD', lines, totals: totalsFor(lines), first: 'Sarah', email: 'sarah@voorbeeld.be' };
+      }
+      const lines = (info?.lines || []).filter(l => byId(l.id));
+      root.innerHTML = `
+<div class="thanks">
+  ${preview ? '<span class="preview-tag">Voorbeeld</span>' : ''}
+  ${dropSvg('thanks-drop')}
+  <span class="eyebrow">Bestelling geplaatst</span>
+  <h1>Bedankt${info?.first ? `, <em>${esc(info.first)}</em>` : ''}</h1>
+  <p>Je betaling is gelukt. We sturen een bevestiging${info?.email ? ` naar <b>${esc(info.email)}</b>` : ' per e-mail'} en laten weten zodra je pakket onderweg is.</p>
+  ${info?.order ? `<p class="order-no"><span>Bestelnummer</span>${esc(info.order)}</p>` : ''}
+</div>
+${lines.length ? `
+<div class="thanks-grid">
+  <section class="co-summary">
+    <div class="co-summary-head"><h2>Je bestelling</h2></div>
+    <div class="co-lines">${orderLines(lines)}</div>
+    ${sumRows(info.totals || totalsFor(lines))}
+    <p class="muted small">${BRAND.vatNote}.</p>
+  </section>
+  <section class="next">
+    <h2>Wat gebeurt er nu?</h2>
+    <ol>
+      <li><b>Bevestiging</b><span>Je krijgt binnen een paar minuten een e-mail met je bestelling.</span></li>
+      <li><b>Inpakken</b><span>We pakken alles in een linnen doos, op werkdagen dezelfde dag als je voor 15:00 bestelde.</span></li>
+      <li><b>Onderweg</b><span>Je ontvangt een track-and-tracecode zodra het pakket vertrekt.</span></li>
+      <li><b>Bezorgd</b><span>Binnen 1 tot 2 werkdagen bij jou thuis.</span></li>
+    </ol>
+    <div class="hero-actions"><a class="btn btn-gold" href="collectie.html">Verder winkelen</a><a class="btn btn-ghost" href="contact.html">Vraag over je bestelling</a></div>
+  </section>
+</div>` : `<div class="thanks"><a class="btn btn-gold" href="collectie.html">Verder winkelen</a></div>`}`;
     },
 
     atelier() { setCurrent('atelier'); }
