@@ -1,0 +1,7 @@
+# Netlify-instellingen voor de website van Bakkerij Elif.
+# Kies bij het aanmaken van de site als "Base directory": bakkerij-elif
+# Er valt niets te bouwen: de site is gewone HTML, CSS en JS.
+
+[build]
+  publish = "."
+  command = "echo 'Geen buildstap nodig.'"
