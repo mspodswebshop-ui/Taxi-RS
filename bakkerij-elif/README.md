@@ -75,7 +75,7 @@ code is aangeduid.
 
 ## Deelfoto en icoon
 
-- `deelfoto.jpg` (1200 × 630) verschijnt als je de link deelt op WhatsApp,
+- `deelfoto-elif.jpg` (1200 × 630) verschijnt als je de link deelt op WhatsApp,
   Facebook of Instagram.
 - `icon-180.png` is het icoon als iemand de site op het beginscherm van zijn
   telefoon zet.
