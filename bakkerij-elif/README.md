@@ -2,7 +2,7 @@
 
 Een snelle, mobielvriendelijke website voor Bakkerij Elif, Hoogstraat 37,
 2850 Boom, in de kleuren van het uithangbord: neonroze letters op een donkere
-bakstenen gevel, met het witte "ef"-ovaal als logo. Gewone HTML, CSS en JavaScript: er hoeft niets geïnstalleerd of
+bakstenen gevel, met het witte "eb"-ovaal als logo. Gewone HTML, CSS en JavaScript: er hoeft niets geïnstalleerd of
 gebouwd te worden.
 
 ## Pagina's
