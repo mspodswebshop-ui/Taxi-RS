@@ -81,7 +81,7 @@ code is aangeduid.
   telefoon zet.
 
 De deelfoto staat met het volledige adres in de pagina's
-(`https://bakkerij-elif.github.io/`). Verandert het adres, pas dan `og:url`,
+(`https://mspodswebshop-ui.github.io/Taxi-RS/bakkerij-elif/`). Verandert het adres, pas dan `og:url`,
 `og:image` en `canonical` aan in de vijf pagina's.
 
 ## Online zetten
