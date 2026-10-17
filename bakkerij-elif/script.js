@@ -38,13 +38,12 @@ function nuInBoom() {
 function toonUren() {
   const { dag, min } = nuInBoom();
 
-  const tbody = document.querySelector("[data-hours]");
-  tbody.innerHTML = WEEK.map((d) => {
+  const KORT = ["zo", "ma", "di", "wo", "do", "vr", "za"];
+  document.querySelector("[data-hours]").innerHTML = WEEK.map((d) => {
     const u = UREN[d];
-    const tijd = u ? `${u[0]} – ${u[1]}` : "Gesloten";
-    const klasse = d === dag ? ' class="is-today"' : "";
-    const naam = DAGEN[d][0].toUpperCase() + DAGEN[d].slice(1);
-    return `<tr${klasse}><th scope="row">${naam}</th><td>${tijd}</td></tr>`;
+    const klassen = [d === dag && "is-today", !u && "is-closed"].filter(Boolean).join(" ");
+    const tijd = u ? `${u[0]} – ${u[1]}` : "gesloten";
+    return `<li class="${klassen}"><b title="${DAGEN[d]}">${KORT[d]}</b><span>${tijd}</span></li>`;
   }).join("");
 
   const status = document.querySelector("[data-status]");
@@ -122,7 +121,7 @@ function bestelformulier() {
       `• Bestelling: ${form.soort.value}`,
       form.personen.value ? `• Aantal personen: ${form.personen.value}` : null,
       `• Voor: ${leesbareDatum}`,
-      `• ${form.ophalen.value}`,
+      `• ${form.querySelector('[name="ophalen"]:checked').value}`,
       form.wensen.value.trim() ? `• Wensen: ${form.wensen.value.trim()}` : null,
       "",
       `Groetjes, ${form.naam.value.trim()}`,

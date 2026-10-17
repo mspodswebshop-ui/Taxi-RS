@@ -1,7 +1,8 @@
 # Website — Bakkerij Elif (Boom)
 
 Een snelle, mobielvriendelijke website voor Bakkerij Elif, Hoogstraat 37,
-2850 Boom. Gewone HTML, CSS en JavaScript: er hoeft niets geïnstalleerd of
+2850 Boom, in de kleuren van het uithangbord: neonroze letters op een donkere
+bakstenen gevel, met het witte "ef"-ovaal als logo. Gewone HTML, CSS en JavaScript: er hoeft niets geïnstalleerd of
 gebouwd te worden.
 
 ## Wat zit erin
@@ -20,7 +21,7 @@ gebouwd te worden.
 |------------------------|----------------------------------------------------|
 | Openingsuren           | `script.js`, bovenaan in `UREN`, en de `openingHoursSpecification` in `index.html` |
 | Teksten en producten   | `index.html`                                       |
-| Kleuren en lettertypes | `style.css`, bovenaan in `:root`                   |
+| Kleuren en lettertypes | `style.css`, bovenaan in `:root` (roze = `--accent`) |
 | WhatsApp-nummer        | `script.js`, `WHATSAPP`                            |
 
 **Controleer de openingsuren.** Op Google staat alleen dat de zaak om 20:00
@@ -28,7 +29,8 @@ sluit en om 08:00 opengaat. De site gaat daarom uit van elke dag 08:00–20:00.
 Klopt dat niet, pas dan `UREN` aan (een dag op `null` zetten = gesloten).
 
 **Eigen foto's** maken het verschil. Echte foto's van de vitrine, de taarten
-en de Turkse pizza werken beter dan de tekeningen die er nu staan.
+en de Turkse pizza werken beter dan de tekening die er nu staat. Het logo in de
+kopbalk is nagetekend; heb je het logobestand, zet dat er dan in.
 
 ## Online zetten
 
