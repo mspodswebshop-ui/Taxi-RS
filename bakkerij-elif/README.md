@@ -73,6 +73,17 @@ Liever een kant-en-klare widget, zoals Trustindex of Elfsight? Maak daar een
 account, kopieer hun code en plak die in `reviews.html` op de plek die in de
 code is aangeduid.
 
+## Deelfoto en icoon
+
+- `deelfoto.jpg` (1200 × 630) verschijnt als je de link deelt op WhatsApp,
+  Facebook of Instagram.
+- `icon-180.png` is het icoon als iemand de site op het beginscherm van zijn
+  telefoon zet.
+
+De deelfoto staat met het volledige adres in de pagina's
+(`https://bakkerij-elif.github.io/`). Verandert het adres, pas dan `og:url`,
+`og:image` en `canonical` aan in de vijf pagina's.
+
 ## Online zetten
 
 De makkelijkste manier: ga naar [app.netlify.com/drop](https://app.netlify.com/drop)
