@@ -15,6 +15,11 @@ gebouwd te worden.
 | `reviews.html`     | Google-reviews met score, en knoppen om er zelf een te schrijven  |
 | `contact.html`     | Openingsuren, adres, telefoon, WhatsApp en kaart                  |
 
+**Alles in één bestand:** `bakkerij-elif.html` bevat alle pagina's, de opmaak
+en het script. Handig om door te sturen of los te uploaden. Pas je iets aan in
+de pagina's, `style.css` of `script.js`, maak het dan opnieuw met
+`node build-standalone.mjs`.
+
 Alle pagina's delen `style.css` en `script.js`. Het "Nu open / gesloten"-label
 staat onderaan elke pagina en werkt zichzelf elke minuut bij, op Belgische tijd.
 Bovenaan in `index.html` staan ook adres, telefoon en uren in een vorm die
