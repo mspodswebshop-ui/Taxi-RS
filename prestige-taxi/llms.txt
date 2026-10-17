@@ -1,0 +1,41 @@
+# Prestige Taxi Antwerpen
+
+> Premium taxiservice in Antwerpen, 24 uur per dag en 7 dagen per week.
+> Stadsritten, luchthavenvervoer, zakelijk vervoer, huwelijken en events,
+> lange afstand en zorgritten, altijd met een vaste prijs vooraf.
+
+## Contact
+- Telefoon en WhatsApp: 0483 85 13 97 (+32 483 85 13 97)
+- E-mail: hamzazahoume@hotmail.com
+- Reserveren: https://mspodswebshop-ui.github.io/prestige-taxi-antwerpen/contact.html
+- Bereikbaar: 24/7
+
+## Werkgebied
+Antwerpen en de districten Berchem, Borgerhout, Deurne, Ekeren, Hoboken,
+Merksem, Wilrijk en Berendrecht-Zandvliet-Lillo, plus omliggende gemeenten.
+Ritten naar luchthavens in België, Nederland en Duitsland.
+
+## Vaste prijzen luchthavenvervoer (enkele rit vanuit Antwerpen, max. 4 personen)
+- Brussels Airport (Zaventem, BRU): € 85
+- Charleroi Airport (Brussels South, CRL): € 199,95
+- Schiphol (Amsterdam, AMS): € 275
+- Düsseldorf Airport (DUS): € 325
+Andere luchthavens, retourritten of meer dan 4 personen: vaste prijs op aanvraag.
+
+## Diensten
+- Stadsritten in Antwerpen
+- Luchthavenvervoer, met opvolging van de vlucht en hulp met de bagage
+- Zakelijk vervoer, ook op factuur
+- Huwelijken en events
+- Lange afstand, binnen- en buitenland
+- Zorgritten en begeleiding (ziekenhuis, dokter, familie)
+
+## Betalen
+Cash of met de kaart. Factuur op aanvraag.
+
+## Pagina's
+- Home: https://mspodswebshop-ui.github.io/prestige-taxi-antwerpen/
+- Diensten: https://mspodswebshop-ui.github.io/prestige-taxi-antwerpen/diensten.html
+- Luchthavenvervoer en prijzen: https://mspodswebshop-ui.github.io/prestige-taxi-antwerpen/luchthaven.html
+- Over ons: https://mspodswebshop-ui.github.io/prestige-taxi-antwerpen/over-ons.html
+- Contact en reserveren: https://mspodswebshop-ui.github.io/prestige-taxi-antwerpen/contact.html

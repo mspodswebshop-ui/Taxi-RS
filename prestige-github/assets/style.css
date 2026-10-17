@@ -1399,3 +1399,22 @@ a.contact-card:hover { border-color: rgba(214, 178, 94, 0.45); transform: transl
   .price-rows .featured a { position: relative; }
   .price-badge { position: absolute; top: -11px; left: 14px; font-size: 0.62rem; }
 }
+
+/* ---------- SEO: de kleine bovenregel is de H1, de grote zin blijft even groot ---------- */
+h1.eyebrow-title,
+.page-hero h1.eyebrow-title { font-family: var(--font-body); font-size: 0.7rem; line-height: 1.4; margin: 0 0 14px; max-width: none; }
+.display-title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  line-height: 1.12;
+  letter-spacing: -0.01em;
+  font-size: clamp(1.9rem, 4vw, 3.2rem);
+  margin: 0 0 0.5em;
+  color: var(--text);
+}
+.hero .display-title { margin-bottom: 18px; }
+.page-hero .display-title { font-size: clamp(1.8rem, 3.6vw, 2.8rem); max-width: 20ch; }
+@media (max-width: 560px) {
+  .display-title { font-size: 1.85rem; }
+  .page-hero .display-title { font-size: 1.75rem; }
+}
