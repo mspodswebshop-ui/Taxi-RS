@@ -1,0 +1,21 @@
+{
+  "name": "prestige-taxi-cms",
+  "version": "1.0.0",
+  "description": "Website met CMS voor Prestige Taxi Antwerpen",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "build:netlify": "node scripts/bundel-site.mjs"
+  },
+  "license": "ISC",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.12"
+  },
+  "dependencies": {
+    "@netlify/blobs": "^11.1.4",
+    "dotenv": "^17.4.2",
+    "pg": "^8.23.1"
+  }
+}
