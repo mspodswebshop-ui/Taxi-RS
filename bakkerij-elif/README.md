@@ -5,15 +5,20 @@ Een snelle, mobielvriendelijke website voor Bakkerij Elif, Hoogstraat 37,
 bakstenen gevel, met het witte "ef"-ovaal als logo. Gewone HTML, CSS en JavaScript: er hoeft niets geïnstalleerd of
 gebouwd te worden.
 
-## Wat zit erin
+## Pagina's
 
-- **Live "Nu open / gesloten"**: berekend op Belgische tijd uit de openingsuren.
-- **Assortiment**: brood, broodjes, Turkse pizza, taarten, gebak, afhalen en bezorging.
-- **Taart bestellen via WhatsApp**: de klant vult een formulier in en de
-  bestelling komt als kant-en-klaar bericht binnen op 0498 34 19 19.
-- **Openingsuren, kaart, belknop en routeplanner**.
-- **Google-vindbaarheid**: beschrijving, deelafbeelding-tekst en
-  `Bakery`-gegevens (schema.org) zodat Google adres, telefoon en uren snapt.
+| Bestand            | Wat staat erop                                                    |
+|--------------------|-------------------------------------------------------------------|
+| `index.html`       | Home: "Nu open"-label, favorieten, bestel-oproep, Google-reviews  |
+| `assortiment.html` | Het hele menubord                                                 |
+| `bestellen.html`   | Bestelformulier dat een WhatsApp-bericht naar de bakkerij maakt   |
+| `reviews.html`     | Google-reviews met score, en knoppen om er zelf een te schrijven  |
+| `contact.html`     | Openingsuren, adres, telefoon, WhatsApp en kaart                  |
+
+Alle pagina's delen `style.css` en `script.js`. Het "Nu open / gesloten"-label
+staat onderaan elke pagina en werkt zichzelf elke minuut bij, op Belgische tijd.
+Bovenaan in `index.html` staan ook adres, telefoon en uren in een vorm die
+Google begrijpt (schema.org).
 
 ## Aanpassen
 
@@ -23,6 +28,8 @@ gebouwd te worden.
 | Teksten en producten   | `index.html`                                       |
 | Kleuren en lettertypes | `style.css`, bovenaan in `:root` (roze = `--accent`) |
 | WhatsApp-nummer        | `script.js`, `WHATSAPP`                            |
+| Google-reviews         | `script.js`, `GOOGLE` (zie hieronder)              |
+| Menu bovenaan          | in elke `.html`, het blok `<nav class="nav">`      |
 
 **Controleer de openingsuren.** Op Google staat alleen dat de zaak om 20:00
 sluit en om 08:00 opengaat. De site gaat daarom uit van elke dag 08:00–20:00.
@@ -32,10 +39,39 @@ Klopt dat niet, pas dan `UREN` aan (een dag op `null` zetten = gesloten).
 en de Turkse pizza werken beter dan de tekening die er nu staat. Het logo in de
 kopbalk is nagetekend; heb je het logobestand, zet dat er dan in.
 
+## Google-reviews aanzetten
+
+Zonder instellingen toont de site een knop "Bekijk de reviews op Google". Om de
+reviews zelf op de site te tonen heb je een gratis Google-sleutel nodig:
+
+1. Ga naar [console.cloud.google.com](https://console.cloud.google.com) en maak
+   een project aan. Google vraagt om een betaalkaart; een kleine site als deze
+   blijft normaal binnen het gratis gebruik, maar kijk zelf de actuele prijzen na.
+2. Zet bij *API's en services* twee API's aan: **Maps JavaScript API** en
+   **Places API (New)**.
+3. Maak bij *Inloggegevens* een **API-sleutel** aan.
+4. **Beperk de sleutel** (belangrijk, want hij staat zichtbaar in de site):
+   - *Websitebeperkingen*: alleen je eigen domein, bv. `https://bakkerijelif.be/*`
+   - *API-beperkingen*: alleen de twee API's van stap 2.
+5. Plak de sleutel in `script.js` bij `GOOGLE.apiKey`.
+
+De site zoekt de zaak zelf op via het adres. Er bestaan meerdere zaken die
+"Bakkerij Elif" heten; toont de site de verkeerde, vul dan bij `GOOGLE.placeId`
+de Place ID van de zaak in Boom in (op te zoeken met de
+[Place ID Finder](https://developers.google.com/maps/documentation/javascript/examples/places-placeid-finder)).
+
+Goed om te weten: Google geeft maximaal 5 reviews door, en kiest zelf welke.
+Ook minder goede reviews kunnen er dus tussen staan, en de gemiddelde score
+(nu 3,8) staat er altijd bij.
+
+Liever een kant-en-klare widget, zoals Trustindex of Elfsight? Maak daar een
+account, kopieer hun code en plak die in `reviews.html` op de plek die in de
+code is aangeduid.
+
 ## Online zetten
 
 De makkelijkste manier: ga naar [app.netlify.com/drop](https://app.netlify.com/drop)
-en sleep de map `bakkerij-elif` erin. Je krijgt meteen een werkend adres en kunt
+en sleep de hele map `bakkerij-elif` erin (alle pagina's gaan dan mee). Je krijgt meteen een werkend adres en kunt
 daarna een eigen domeinnaam koppelen (bv. `bakkerijelif.be`).
 
 Vanuit deze repository kan ook: maak in Netlify een **nieuwe** site aan op deze
