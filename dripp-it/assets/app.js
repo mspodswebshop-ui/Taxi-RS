@@ -29,6 +29,16 @@
   /* ---------- Catalogus (uit assets/catalog.js) ---------- */
   const { SHOP, CATS, PRODUCTS } = window.DRIPP_CATALOG;
   const CAT_KEYS = Object.keys(CATS);
+  /* Geïmporteerde producten hebben vaak alleen naam, prijs en foto's: vul de rest aan */
+  PRODUCTS.forEach(p => {
+    p.color ??= '#2B2228';
+    p.colorName ??= '';
+    p.tag ??= CATS[p.cat]?.name || '';
+    p.desc ??= '';
+    p.note ??= '';
+    p.material ??= '';
+    p.details ??= [];
+  });
   const byId = id => PRODUCTS.find(p => p.id === id);
   const inCat = key => PRODUCTS.filter(p => p.cat === key);
 
@@ -410,17 +420,24 @@
   }
 
   /* view: 'front' | 'detail' | 'label' */
+  /* Voor een product zonder tekening en (nog) zonder foto */
+  const placeholder = (p, cls = '') => `<svg class="${cls}" viewBox="0 0 200 230" role="img" aria-label="${esc(p.name)}, foto volgt">
+    <use href="#mark" x="70" y="72" width="60" height="60" opacity=".9"/>
+    <text x="100" y="160" text-anchor="middle" font-family="DM Mono, ui-monospace, monospace" font-size="7" letter-spacing="2" fill="#A3959C">FOTO VOLGT</text>
+  </svg>`;
+
   function art(p, view = 'front', cls = '') {
     const s = SHAPES[p.shape];
+    if (!s) return placeholder(p, cls);
     const vb = view === 'detail' ? s.zoom : '0 0 200 230';
     const inner = view === 'label' ? labelArt(p) : garment(p);
-    const label = view === 'label' ? `Binnenlabel ${p.name}, nummer ${pad(p.ed)}` : view === 'detail' ? `Detail van ${p.name}` : `${p.name} in ${p.colorName}`;
+    const label = view === 'label' ? `Binnenlabel ${p.name}, nummer ${pad(p.ed)}` : view === 'detail' ? `Detail van ${p.name}` : `${p.name}${p.colorName ? ` in ${p.colorName}` : ''}`;
     return `<svg class="${cls}" viewBox="${vb}" role="img" aria-label="${esc(label)}">${inner}</svg>`;
   }
 
   /* Foto als die er is, anders de illustratie */
   const visual = (p, i = 0) => p.images?.[i]
-    ? `<img src="${esc(p.images[i])}" alt="${esc(p.name)} in ${esc(p.colorName)}" loading="lazy" decoding="async">`
+    ? `<img src="${esc(p.images[i])}" alt="${esc(p.name)}${p.colorName ? ` in ${esc(p.colorName)}` : ''}${i ? `, foto ${i + 1}` : ''}" loading="lazy" decoding="async">`
     : art(p);
 
   /* ---------- Winkeltas ---------- */
@@ -618,7 +635,7 @@
     return `
 <a class="card" href="product.html#${p.id}">
   <div class="art${p.images?.length ? ' has-img' : ''}">
-    <span class="tag${p.hot ? ' hot' : ''}">${esc(p.tag)}</span>
+    ${p.tag ? `<span class="tag${p.hot ? ' hot' : ''}">${esc(p.tag)}</span>` : ''}
     ${visual(p)}
     ${p.ed ? `<span class="edition">Nº ${pad(p.ed)} / ${p.edMax}</span>` : ''}
     <span class="view">Bekijk</span>
@@ -626,7 +643,7 @@
   <div class="card-body">
     <span class="card-cat">${CATS[p.cat].name}</span>
     <div class="card-row"><h3 class="card-name">${esc(p.name)}</h3><span class="card-price">${eur(p.price)}</span></div>
-    <p class="card-meta"><span class="swatch" style="background:${p.color}"></span>${esc(p.colorName)}</p>
+    ${p.colorName ? `<p class="card-meta"><span class="swatch" style="background:${p.color}"></span>${esc(p.colorName)}</p>` : ''}
   </div>
 </a>`;
   }
@@ -765,7 +782,7 @@
     return `
     <div class="co-line${compact ? ' compact' : ''}">
       <div class="co-thumb art${p.images?.length ? ' has-img' : ''}">${visual(p)}<span class="co-qty">${l.qty}</span></div>
-      <div class="co-line-info"><b>${esc(p.name)}</b><span>${esc(p.colorName)}${l.size ? ` · ${esc(l.size)}` : ''}</span></div>
+      <div class="co-line-info"><b>${esc(p.name)}</b><span>${[p.colorName && esc(p.colorName), l.size && esc(l.size)].filter(Boolean).join(' · ')}</span></div>
       <span class="co-line-price">${eur(p.price * l.qty)}</span>
     </div>`;
   }).join('');
@@ -787,20 +804,31 @@
     home() {
       setCurrent('home');
       const hero = $('#hero-art');
-      if (hero) hero.innerHTML = visual(byId('molten'));
+      const heroP = byId('molten') || PRODUCTS.find(p => p.featured) || PRODUCTS[0];
+      if (hero) {
+        hero.innerHTML = visual(heroP);
+        hero.href = `product.html#${heroP.id}`;
+        hero.setAttribute('aria-label', `${heroP.name} bekijken`);
+        const cap = hero.parentElement.querySelector('.arch-cap');
+        if (cap) cap.innerHTML = `<a href="product.html#${heroP.id}">${esc(heroP.name)}</a><span>${heroP.ed ? `Nº ${pad(heroP.ed)} / ${heroP.edMax}` : eur(heroP.price)}</span>`;
+      }
       const cats = $('#cats');
       if (cats) cats.innerHTML = CAT_KEYS.map(k => {
         const c = CATS[k];
         return `
 <a class="cat" href="collectie.html#${k}">
-  ${c.img ? `<img src="${esc(c.img)}" alt="" loading="lazy">` : art(byId(c.art))}
+  ${c.img ? `<img src="${esc(c.img)}" alt="" loading="lazy">` : visual(byId(c.art) || inCat(k)[0] || { name: c.name })}
   <span class="cat-label"><b>${c.name}</b><span>${inCat(k).length} stuks ${ICONS.arrow}</span></span>
 </a>`;
       }).join('');
       const feat = $('#featured');
-      if (feat) feat.innerHTML = PRODUCTS.filter(p => p.featured).sort((a, b) => a.featured - b.featured).map(card).join('');
+      const featured = PRODUCTS.filter(p => p.featured).sort((a, b) => a.featured - b.featured);
+      if (feat) feat.innerHTML = (featured.length ? featured : CAT_KEYS.map(k => inCat(k)[0]).filter(Boolean)).slice(0, 4).map(card).join('');
       const looks = $('#looks');
-      if (looks) looks.innerHTML = LOOKS.map((l, i) => {
+      /* Het lookbook toont alleen combinaties waarvan alle stukken een tekening hebben */
+      const okLooks = LOOKS.filter(l => [l.main, l.acc, ...l.with].every(id => byId(id) && SHAPES[byId(id).shape]));
+      if (looks && !okLooks.length) looks.closest('section').hidden = true;
+      if (looks) looks.innerHTML = okLooks.map((l, i) => {
         const m = byId(l.main), a = byId(l.acc);
         return `
 <a class="look" href="product.html#${m.id}">
@@ -865,7 +893,7 @@
         const stock = stockText(p);
         const views = p.images?.length
           ? p.images.map((src, i) => ({ html: visual(p, i), thumb: visual(p, i), label: `Foto ${i + 1}` }))
-          : [
+          : !SHAPES[p.shape] ? [{ html: art(p), thumb: art(p), label: 'Foto volgt' }] : [
             { html: art(p), thumb: art(p), label: 'Vooraanzicht' },
             { html: art(p, 'detail'), thumb: art(p, 'detail'), label: 'Detail' },
             ...(p.ed ? [{ html: art(p, 'label'), thumb: art(p, 'label'), label: 'Genummerd label' }] : [])
@@ -884,26 +912,26 @@
 <div class="buybox">
   <nav class="crumbs" aria-label="Kruimelpad"><a href="index.html">Home</a><span aria-hidden="true">/</span><a href="collectie.html#${p.cat}">${cat.name}</a><span aria-hidden="true">/</span><span>${esc(p.name)}</span></nav>
   <div class="buy-head">
-    <span class="eyebrow">${esc(p.tag)} · ${cat.name}</span>
+    <span class="eyebrow">${p.tag && p.tag !== cat.name ? `${esc(p.tag)} · ` : ''}${cat.name}</span>
     <h1>${esc(p.name)}</h1>
     <div class="price-line">
       <span class="price-big">${eur(p.price)}</span>
       <span class="stock${stock.low ? ' low' : ''}">${stock.text}</span>
     </div>
   </div>
-  <p class="pdp-desc">${esc(p.desc)}</p>
-  <div class="opt">
+  ${p.desc ? `<p class="pdp-desc">${esc(p.desc)}</p>` : ''}
+  ${p.colorName ? `<div class="opt">
     <div class="opt-head"><span class="label">Kleur</span><span class="opt-value">${esc(p.colorName)}</span></div>
     <span class="swatch swatch-lg" style="background:${p.color}"></span>
-  </div>
+  </div>` : ''}
   ${sizes.length ? `
   <div class="opt">
     <div class="opt-head"><span class="label">${p.sizeLabel || 'Maat'}</span>${isClothing(p) || p.cat === 'schoenen' ? '<a href="service.html#maten">Maattabel</a>' : ''}</div>
     <div class="size-row" role="group" aria-label="Kies ${(p.sizeLabel || 'maat').toLowerCase()}">
       ${sizes.map(s => `<button class="size" type="button" data-size="${esc(s)}" aria-pressed="${s === defSize}"${sold.includes(s) ? ' disabled title="Uitverkocht"' : ''}>${esc(s)}</button>`).join('')}
     </div>
-    <p class="opt-note">${esc(p.note)}</p>
-  </div>` : `<p class="opt-note">${esc(p.note)}</p>`}
+    ${p.note ? `<p class="opt-note">${esc(p.note)}</p>` : ''}
+  </div>` : p.note ? `<p class="opt-note">${esc(p.note)}</p>` : ''}
   <button class="btn btn-gold btn-block" type="button" id="add">In je tas · ${eur(p.price)}</button>
   <ul class="perks">
     <li>${dropSvg()}Gratis verzending in België vanaf ${eur(SHOP.freeShipFrom)}</li>
@@ -911,8 +939,8 @@
     <li>${dropSvg()}${p.cat === 'elektronica' ? '2 jaar garantie' : 'Geleverd in een linnen doos'}</li>
   </ul>
   <div class="acc">
-    <details open><summary>${p.cat === 'elektronica' ? 'Specificaties' : 'Details'}</summary><div class="acc-body"><ul>${p.details.map(d => `<li>${esc(d)}</li>`).join('')}</ul></div></details>
-    <details><summary>${p.cat === 'elektronica' ? 'Garantie en onderhoud' : 'Materiaal en verzorging'}</summary><div class="acc-body"><p>${esc(p.material)}.</p><p>${esc(careText(p))}</p><p><a href="service.html#verzorging">Alle verzorgingstips</a></p></div></details>
+    ${p.details.length ? `<details open><summary>${p.cat === 'elektronica' ? 'Specificaties' : 'Details'}</summary><div class="acc-body"><ul>${p.details.map(d => `<li>${esc(d)}</li>`).join('')}</ul></div></details>` : ''}
+    <details><summary>${p.cat === 'elektronica' ? 'Garantie en onderhoud' : 'Materiaal en verzorging'}</summary><div class="acc-body">${p.material ? `<p>${esc(p.material)}.</p>` : ''}<p>${esc(careText(p))}</p><p><a href="service.html#verzorging">Alle verzorgingstips</a></p></div></details>
     <details><summary>Verzending en retour</summary><div class="acc-body"><p>Besteld voor 15:00 op een werkdag, dan versturen we dezelfde dag. In België bezorgen we binnen 1 tot 2 werkdagen.</p><p>Niet goed? Stuur het binnen 30 dagen ongebruikt terug. <a href="service.html#retour">Zo werkt retourneren</a>.</p></div></details>
   </div>
 </div>`;
@@ -973,7 +1001,7 @@
         <a class="art${p.images?.length ? ' has-img' : ''}" href="product.html#${p.id}" aria-label="${esc(p.name)}">${visual(p)}</a>
         <div class="line-info">
           <a href="product.html#${p.id}">${esc(p.name)}</a>
-          <span class="muted">${esc(p.colorName)}${l.size ? ` · ${p.sizeLabel || 'Maat'} ${esc(l.size)}` : ''}</span>
+          <span class="muted">${[p.colorName && esc(p.colorName), l.size && `${p.sizeLabel || 'Maat'} ${esc(l.size)}`].filter(Boolean).join(' · ')}</span>
           <span class="muted">${eur(p.price)} per stuk</span>
         </div>
         <div class="line-end">
