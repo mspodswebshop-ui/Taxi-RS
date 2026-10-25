@@ -1323,6 +1323,9 @@ ${lines.length ? `
   $$('[data-email]').forEach(el => { el.textContent = BRAND.email; });
   $$('[data-copy-email]').forEach(el => { el.dataset.copy = BRAND.email; });
 
+  /* Tekeningen en logo ook beschikbaar voor andere pagina's (zoals de marketingstudio) */
+  window.DrippArt = { art, seal, markSvg, dropSvg, byId, PRODUCTS, CATS };
+
   wireHeader();
   updateCount(false);
   window.addEventListener('storage', e => { if (e.key === KEY) updateCount(false); });

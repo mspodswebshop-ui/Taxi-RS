@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<title>Dripp It studio</title>
+<!-- Maakt de social-media-afbeeldingen en de frames van de reclamevideo.
+     Gebruik: studio.html#post-1 … #post-5, #story-1, #story-2 of #video (met window.renderAt(t)).
+     render.js zet alles om naar PNG en MP4. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..800;1,6..96,400..700&family=Hanken+Grotesk:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../../dripp-it/assets/style.css">
+<style>
+  .site-header, .header-space, .site-footer, .drawer, .toast { display: none !important; }
+  html, body { margin: 0; padding: 0; overflow: hidden; background: #000; }
+  :root { padding: 0 !important; }
+
+  .stage { position: relative; overflow: hidden; background: var(--bg); color: var(--fg); }
+  .stage.post { width: 1080px; height: 1350px; }
+  .stage.story { width: 1080px; height: 1920px; }
+  .abs { position: absolute; }
+  .center-x { left: 0; right: 0; text-align: center; }
+  .glow { position: absolute; border-radius: 50%; pointer-events: none;
+    background: radial-gradient(closest-side, color-mix(in srgb, var(--wine) 60%, transparent), transparent 72%); }
+  .glow.gold { background: radial-gradient(closest-side, color-mix(in srgb, var(--gold) 16%, transparent), transparent 72%); }
+  .frame { position: absolute; inset: 36px; border: 1px solid color-mix(in srgb, var(--gold) 38%, transparent); pointer-events: none; }
+  .story .frame { inset: 44px; }
+
+  .eb { font-family: var(--mono); letter-spacing: .32em; text-transform: uppercase; color: var(--gold); font-size: 22px; }
+  .serif { font-family: var(--display); font-weight: 500; line-height: .92; letter-spacing: -.01em; }
+  .serif em { font-weight: 400; }
+  .muted { color: var(--muted); }
+  .mono { font-family: var(--mono); letter-spacing: .14em; text-transform: uppercase; }
+
+  .arch2 {
+    position: absolute; border-radius: 999px 999px 6px 6px; overflow: hidden; border: 1px solid var(--line);
+    background: radial-gradient(70% 50% at 50% 42%, var(--sheen), transparent 72%), var(--panel);
+    display: grid; place-items: center;
+  }
+  .arch2::after { content: ""; position: absolute; inset: 16px; border-radius: inherit; border: 1.5px solid color-mix(in srgb, var(--gold) 55%, transparent); }
+  .arch2 > svg { width: 74%; height: auto; margin-top: 14%; }
+  .wm { display: inline-flex; align-items: center; gap: 22px; }
+  .wm span { font-family: var(--display); letter-spacing: .16em; }
+  .wm em { color: var(--gold); letter-spacing: .04em; }
+  .rule-g { height: 1px; background: linear-gradient(90deg, transparent, var(--gold), transparent); }
+  .dot { display: inline-block; width: 10px; height: 15px; margin: 0 18px; vertical-align: middle; }
+</style>
+</head>
+<body>
+<main data-page="studio"><div id="root"></div></main>
+<script src="../../dripp-it/assets/catalog.js"></script>
+<script src="../../dripp-it/assets/app.js"></script>
+<script>
+(() => {
+  const A = window.DrippArt;
+  const P = id => A.byId(id);
+  const root = document.getElementById('root');
+  const mark = (size) => `<svg style="width:${size}px;height:${size}px" aria-hidden="true"><use href="#mark"/></svg>`;
+  const drop = (w) => `<svg viewBox="0 0 20 30" style="width:${w}px;height:${w * 1.5}px" aria-hidden="true"><use href="#drop"/></svg>`;
+  const wordmark = (size) => `<span class="wm">${mark(size * 1.5)}<span style="font-size:${size}px">DRIPP <em>It</em></span></span>`;
+  const sep = `<svg viewBox="0 0 20 30" width="12" height="18" style="width:12px;height:18px;display:inline-block;vertical-align:-2px;margin:0 18px" aria-hidden="true"><use href="#drop"/></svg>`;
+  const cats = ['Dames', 'Heren', 'Schoenen', 'Elektronica'];
+
+  const SCENES = {
+    /* 1. Teaser: binnenkort */
+    'post-1': () => `
+<div class="stage post">
+  <div class="glow" style="width:1500px;height:1500px;left:-210px;top:-420px"></div>
+  <div class="frame"></div>
+  <div class="abs center-x eb" style="top:96px">Maison Dripp It</div>
+  <div class="abs" style="left:230px;top:200px;width:620px;height:620px">${A.seal()}</div>
+  <div class="abs center-x serif" style="top:880px;font-size:168px"><em class="gold-text">Binnenkort.</em></div>
+  <div class="abs rule-g" style="left:240px;right:240px;top:1112px"></div>
+  <div class="abs center-x mono muted" style="top:1150px;font-size:24px">Dames${sep}Heren${sep}Schoenen${sep}Elektronica</div>
+</div>`,
+
+    /* 2. Signatuurstuk */
+    'post-2': () => `
+<div class="stage post">
+  <div class="glow" style="width:1300px;height:1300px;left:120px;top:-380px"></div>
+  <div class="frame"></div>
+  <div class="abs eb" style="left:96px;top:96px">Collectie 01 · Signature</div>
+  <div class="abs mono muted" style="right:96px;top:98px;font-size:20px">Nº 037 / 250</div>
+  <div class="arch2" style="left:250px;top:180px;width:580px;height:780px">${A.art(P('molten'))}</div>
+  <div class="abs center-x serif" style="top:1010px;font-size:112px">Molten <em class="gold-text">Hoodie</em></div>
+  <div class="abs center-x muted" style="top:1150px;font-size:30px;font-family:var(--body)">480 g/m² loopback katoen · drie druppels in 24k verguld garen</div>
+  <div class="abs center-x" style="top:1222px">${wordmark(30)}</div>
+</div>`,
+
+    /* 3. Vier categorieën */
+    'post-3': () => `
+<div class="stage post">
+  <div class="glow" style="width:1400px;height:1100px;left:-160px;top:-460px"></div>
+  <div class="frame"></div>
+  <div class="abs center-x eb" style="top:96px">Binnenkort bij Dripp It</div>
+  <div class="abs center-x serif" style="top:150px;font-size:88px;line-height:1">Vier werelden,<br><em class="gold-text">één druppel</em></div>
+  ${[['dames', 'aurum'], ['heren', 'molten'], ['schoenen', 'gild-runner'], ['elektronica', 'halo-anc']].map(([k, id], i) => {
+    const x = 120 + (i % 2) * 432, y = 380 + Math.floor(i / 2) * 470;
+    return `<div class="arch2 cat-tile" style="left:${x}px;top:${y}px;width:408px;height:440px">
+      ${A.art(P(id)).replace('<svg ', '<svg style="width:56%;height:auto;margin:0;position:absolute;left:22%;top:13%" ')}
+      <div style="position:absolute;left:0;right:0;bottom:0;padding:70px 0 34px;text-align:center;font-family:var(--display);font-size:46px;background:linear-gradient(transparent,var(--panel) 55%)">${A.CATS[k].name}</div>
+    </div>`;
+  }).join('')}
+</div>`,
+
+    /* 4. Genummerd */
+    'post-4': () => `
+<div class="stage post">
+  <div class="glow" style="width:1200px;height:1200px;left:300px;top:-300px"></div>
+  <div class="glow gold" style="width:900px;height:900px;left:-200px;top:700px"></div>
+  <div class="frame"></div>
+  <div class="abs eb" style="left:96px;top:96px">Signatuurstukken</div>
+  <div class="abs" style="left:96px;top:170px;width:520px;height:600px;background:var(--panel);display:grid;place-items:center">
+    ${A.art(P('molten'), 'label').replace('<svg ', '<svg style="width:96%;height:auto" ')}
+  </div>
+  <div class="abs serif" style="left:96px;top:830px;font-size:200px">1 van 250.</div>
+  <div class="abs serif" style="left:96px;top:1030px;font-size:104px"><em class="gold-text">Daarna is het op.</em></div>
+  <div class="abs muted" style="left:96px;right:96px;top:1180px;font-size:30px;line-height:1.4">Elk signatuurstuk heeft een eigen nummer op het label. Geen tweede oplage.</div>
+</div>`,
+
+    /* 5. Voor haar (licht) */
+    'post-5': () => `
+<div class="stage post">
+  <div class="glow gold" style="width:1400px;height:1400px;left:-160px;top:-300px"></div>
+  <div class="frame"></div>
+  <div class="arch2" style="left:96px;top:96px;width:520px;height:760px">${A.art(P('aurum'))}</div>
+  <div class="abs eb" style="left:676px;top:150px">Voor haar</div>
+  <div class="abs serif" style="left:676px;top:210px;font-size:120px;line-height:.95">Avond<br><em class="gold-text">goud</em></div>
+  <div class="abs muted" style="left:676px;right:96px;top:500px;font-size:30px;line-height:1.45">Zijde die beweegt als vloeibaar goud. Een jurk, een hanger, een pump.</div>
+  <div class="abs" style="left:676px;top:700px;display:flex;gap:18px">
+    ${['droplet', 'aurelia'].map(id => `<div style="width:160px;height:190px;background:var(--panel);display:grid;place-items:center">${A.art(P(id)).replace('<svg ', '<svg style="width:84%;height:auto" ')}</div>`).join('')}
+  </div>
+  <div class="abs rule-g" style="left:96px;right:96px;top:960px"></div>
+  <div class="abs serif" style="left:96px;top:1010px;font-size:80px">Dames · <em class="gold-text">binnenkort</em></div>
+  <div class="abs" style="left:96px;top:1200px">${wordmark(30)}</div>
+</div>`,
+
+    /* Story 1: meldingen aan */
+    'story-1': () => `
+<div class="stage story">
+  <div class="glow" style="width:1800px;height:1800px;left:-360px;top:-500px"></div>
+  <div class="glow gold" style="width:1200px;height:1200px;left:-60px;top:1100px"></div>
+  <div class="frame"></div>
+  <div class="abs center-x eb" style="top:200px">Maison Dripp It</div>
+  <div class="abs" style="left:190px;top:330px;width:700px;height:700px">${A.seal()}</div>
+  <div class="abs center-x serif" style="top:1120px;font-size:190px"><em class="gold-text">Binnenkort.</em></div>
+  <div class="abs center-x" style="top:1380px;font-size:40px;font-family:var(--body);line-height:1.4">Luxe mode, schoenen<br>en elektronica met gouden details.</div>
+  <div class="abs" style="left:240px;right:240px;top:1580px;padding:30px 0;border:1.5px solid var(--gold);text-align:center;font-family:var(--mono);font-size:30px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold)">Zet je meldingen aan</div>
+</div>`,
+
+    /* Story 2: categorieën onder elkaar */
+    'story-2': () => `
+<div class="stage story">
+  <div class="glow" style="width:1600px;height:1600px;left:-260px;top:-600px"></div>
+  <div class="frame"></div>
+  <div class="abs center-x" style="top:150px">${wordmark(46)}</div>
+  <div class="abs center-x serif" style="top:330px;font-size:120px">Wat er <em class="gold-text">komt</em></div>
+  ${[['dames', 'aurum', 'Jurken, blazers, zijde en sieraden'], ['heren', 'molten', 'Hoodies, bombers en cargo’s'], ['schoenen', 'gild-runner', 'Sneakers, boots, pumps en slides'], ['elektronica', 'halo-anc', 'Koptelefoons, smartwatches en speakers']].map(([k, id, line], i) => `
+  <div class="abs" style="left:110px;right:110px;top:${560 + i * 300}px;height:260px;display:flex;align-items:center;gap:44px;border-top:1px solid var(--line)">
+    <div style="width:200px;height:230px;flex:none;background:var(--panel);display:grid;place-items:center">${A.art(P(id)).replace('<svg ', '<svg style="width:86%;height:auto" ')}</div>
+    <div><div class="serif" style="font-size:86px">${A.CATS[k].name}</div><div class="muted" style="font-size:32px;margin-top:14px;font-family:var(--body)">${line}</div></div>
+  </div>`).join('')}
+  <div class="abs center-x mono" style="top:1790px;font-size:24px;color:var(--gold)">Binnenkort</div>
+</div>`,
+
+    /* Video: alle elementen staan klaar, renderAt(t) zet ze op hun plaats */
+    'video': () => `
+<div class="stage story" id="v">
+  <div class="glow" id="v-glow" style="width:1900px;height:1900px;left:-410px;top:-300px"></div>
+  <div class="glow gold" id="v-glow2" style="width:1200px;height:1200px;left:-60px;top:1100px;opacity:0"></div>
+  <div class="frame" id="v-frame"></div>
+
+  <!-- 1. druppel valt, logo verschijnt -->
+  <div class="abs" id="v-drop" style="left:510px;top:0">${drop(60)}</div>
+  <div class="abs" id="v-ring" style="left:240px;top:420px;width:600px;height:600px;border-radius:50%;border:2px solid var(--gold)"></div>
+  <div class="abs" id="v-mark" style="left:290px;top:470px">${mark(500)}</div>
+  <div class="abs center-x" id="v-word" style="top:1060px;font-family:var(--display);font-size:120px;white-space:nowrap">DRIPP <em style="color:var(--gold)">It</em></div>
+  <div class="abs center-x eb" id="v-eb" style="top:1250px;font-size:26px">Maison · België</div>
+
+  <!-- 2. slogan -->
+  <div class="abs center-x serif" id="v-l1" style="top:700px;font-size:190px">Luxe</div>
+  <div class="abs center-x serif" id="v-l2" style="top:890px;font-size:150px"><em class="gold-text">die je draagt.</em></div>
+
+  <!-- 3. producten -->
+  <div class="arch2" id="v-arch" style="left:170px;top:300px;width:740px;height:1000px"></div>
+  ${['aurum', 'molten', 'gild-runner', 'halo-anc'].map((id, i) => `
+  <div class="abs" id="v-p${i}" style="left:170px;top:300px;width:740px;height:1000px;display:grid;place-items:center">
+    ${A.art(P(id)).replace('<svg ', '<svg style="width:72%;height:auto;margin-top:16%" ')}
+  </div>
+  <div class="abs center-x" id="v-c${i}" style="top:1370px">
+    <div class="eb" style="font-size:26px">${A.CATS[P(id).cat].name}</div>
+    <div class="serif" style="font-size:110px;margin-top:22px">${P(id).name}</div>
+  </div>`).join('')}
+
+  <!-- 4. categorieën -->
+  ${cats.map((c, i) => `<div class="abs center-x serif" id="v-k${i}" style="top:${560 + i * 210}px;font-size:150px">${i % 2 ? `<em class="gold-text">${c}</em>` : c}</div>`).join('')}
+
+  <!-- 5. binnenkort -->
+  <div class="abs" id="v-mark2" style="left:390px;top:440px">${mark(300)}</div>
+  <div class="abs center-x serif" id="v-soon" style="top:860px;font-size:168px"><em class="gold-text">Binnenkort.</em></div>
+  <div class="abs center-x" id="v-follow" style="top:1120px;font-size:44px;font-family:var(--body)">Volg ons voor de lancering</div>
+  <div class="abs center-x mono muted" id="v-cats" style="top:1220px;font-size:26px">Dames${sep}Heren${sep}Schoenen${sep}Elektronica</div>
+</div>`
+  };
+
+  const scene = location.hash.slice(1) || 'post-1';
+  if (scene === 'post-5') document.documentElement.setAttribute('data-theme', 'light');
+  else document.documentElement.setAttribute('data-theme', 'dark');
+  root.innerHTML = SCENES[scene]();
+
+  /* ---------- tijdlijn van de video ---------- */
+  const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+  const seg = (t, a, b) => clamp((t - a) / (b - a));
+  const eo = x => 1 - Math.pow(1 - x, 3);              // ease-out
+  const ei = x => x * x * x;                             // ease-in
+  const eio = x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+  const $ = id => document.getElementById(id);
+  const set = (id, o, tr = '', extra = {}) => { const el = $(id); if (!el) return; el.style.opacity = o; el.style.transform = tr; Object.assign(el.style, extra); };
+  /* zichtbaarheid: in tussen a en a+inD, uit tussen b-outD en b */
+  const vis = (t, a, b, inD = .4, outD = .4) => Math.min(eo(seg(t, a, a + inD)), 1 - seg(t, b - outD, b));
+
+  window.DURATION = 15;
+  window.renderAt = t => {
+    if (scene !== 'video') return;
+    /* achtergrond beweegt traag */
+    set('v-glow', .9, `translate(${Math.sin(t / 3) * 60}px, ${t * 18}px) scale(${1 + t * .01})`);
+    set('v-glow2', clamp(seg(t, 10, 13)) * .9);
+    set('v-frame', eo(seg(t, .2, 1.2)));
+
+    /* 1. druppel valt (0,2–1,0 s), raakt het midden, logo verschijnt */
+    const fall = ei(seg(t, .2, 1.0));
+    set('v-drop', t < 1.02 ? 1 : 0, `translateY(${-120 + fall * 800}px) scaleY(${1 + fall * .25})`);
+    const hit = seg(t, 1.0, 1.9);
+    set('v-ring', t < 1 ? 0 : (1 - hit) * .9, `scale(${.15 + eo(hit) * 1.05})`);
+    const s1 = 1 - seg(t, 3.0, 3.45);
+    set('v-mark', eo(seg(t, 1.0, 1.6)) * s1, `scale(${.7 + eo(seg(t, 1.0, 1.7)) * .3}) translateY(${-eo(seg(t, 3.0, 3.45)) * 40}px)`);
+    const w = eo(seg(t, 1.5, 2.3));
+    set('v-word', w * s1, '', { letterSpacing: `${.6 - w * .44}em` });
+    set('v-eb', eo(seg(t, 2.0, 2.5)) * s1);
+
+    /* 2. slogan (3,3–5,7 s) */
+    set('v-l1', vis(t, 3.35, 5.7, .5), `translateY(${(1 - eo(seg(t, 3.35, 3.9))) * 60}px)`);
+    set('v-l2', vis(t, 3.7, 5.7, .5), `translateY(${(1 - eo(seg(t, 3.7, 4.3))) * 60}px)`);
+
+    /* 3. producten (5,6–10,5 s), elk 1,2 s */
+    set('v-arch', vis(t, 5.6, 10.5, .35, .35), `scale(${.96 + eo(seg(t, 5.6, 6.0)) * .04})`);
+    for (let i = 0; i < 4; i++) {
+      const a = 5.7 + i * 1.2, b = a + 1.2;
+      const inP = eo(seg(t, a, a + .35)), outP = eio(seg(t, b - .25, b + .05));
+      const last = i === 3;
+      const o = last ? Math.min(inP, 1 - seg(t, 10.2, 10.5)) : Math.min(inP, 1 - outP);
+      const x = (1 - inP) * 160 - (last ? 0 : outP * 160);
+      set(`v-p${i}`, o, `translateX(${x}px) translateY(${Math.sin((t - a) * 3) * 6}px)`);
+      set(`v-c${i}`, o, `translateY(${(1 - inP) * 30}px)`);
+    }
+
+    /* 4. categorieën (10,5–12,8 s) */
+    for (let i = 0; i < 4; i++) {
+      const a = 10.55 + i * .16;
+      set(`v-k${i}`, vis(t, a, 12.8, .45, .35), `translateY(${(1 - eo(seg(t, a, a + .5))) * 70}px)`);
+    }
+
+    /* 5. binnenkort (12,8–15 s) */
+    set('v-mark2', eo(seg(t, 12.8, 13.4)), `scale(${.8 + eo(seg(t, 12.8, 13.5)) * .2})`);
+    set('v-soon', eo(seg(t, 13.0, 13.6)), `translateY(${(1 - eo(seg(t, 13.0, 13.7))) * 50}px)`, { letterSpacing: `${.08 - eo(seg(t, 13.0, 14.2)) * .08}em` });
+    set('v-follow', eo(seg(t, 13.5, 14.0)));
+    set('v-cats', eo(seg(t, 13.8, 14.3)));
+  };
+  window.renderAt(0);
+  window.studioReady = true;
+})();
+</script>
+</body>
+</html>
