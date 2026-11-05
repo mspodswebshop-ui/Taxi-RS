@@ -24,7 +24,7 @@
     .e-line { position: absolute; left: 0; right: 0; bottom: -2px; height: 4px; background: var(--ink); transform-origin: 0% 50%; }
     .e-name { font-size: 42px; font-weight: 700; }
     .e-price { font-family: var(--font-display); font-size: 60px; letter-spacing: -0.02em; }
-    #e-btn { position: absolute; left: 140px; top: 1040px; width: 800px; height: 180px; }
+    #e-btn { position: absolute; left: 140px; top: 1010px; width: 800px; height: 180px; }
     #e-btn-face {
       position: absolute; inset: 0; background: var(--wa); border: 6px solid var(--ink); border-radius: 28px;
       box-shadow: 14px 14px 0 var(--ink); text-align: center; padding-top: 14px;
@@ -32,6 +32,8 @@
     #e-btn-1 { font-size: 38px; font-weight: 700; line-height: 1.2; }
     #e-btn-2 { font-family: var(--font-display); font-size: 76px; line-height: 1.1; letter-spacing: -0.01em; }
     #e-board > .e-row { opacity: 0; }
+    #e-snap { position: absolute; left: 250px; top: 1236px; width: 580px; height: 78px; }
+    #e-snap-face { position: absolute; inset: 0; background: var(--paper); border: 5px solid var(--ink); border-radius: 20px; box-shadow: 8px 8px 0 var(--ink); text-align: center; font-size: 38px; font-weight: 700; line-height: 68px; }
     #e-cursor { position: absolute; left: 0; top: 0; width: 70px; height: 70px; z-index: 20; }
     #e-cursor svg { width: 70px; height: 70px; display: block; }
   </style>
@@ -47,7 +49,8 @@
       {"id":"naam4","type":"string","label":"Niveau 4","default":"Grote webshop"},
       {"id":"prijs4","type":"string","label":"Prijs 4","default":"€300"},
       {"id":"cta","type":"string","label":"Knoptekst","default":"Stuur een WhatsApp"},
-      {"id":"telefoon","type":"string","label":"WhatsApp-nummer","default":"0469 22 60 35"}
+      {"id":"telefoon","type":"string","label":"WhatsApp-nummer","default":"0469 22 60 35"},
+      {"id":"snap","type":"string","label":"Snapchat","default":"Snapchat: shabbb2850"}
     ]'>
     <div id="e-bg"></div>
 
@@ -70,6 +73,10 @@
         <div id="e-btn-1" data-var-text="cta">Stuur een WhatsApp</div>
         <div id="e-btn-2" data-var-text="telefoon">0469 22 60 35</div>
       </div>
+    </div>
+
+    <div id="e-snap" class="clip" data-start="0" data-duration="5.2" data-track-index="5">
+      <div id="e-snap-face" data-var-text="snap">Snapchat: shabbb2850</div>
     </div>
 
     <div id="e-cursor" data-layout-ignore>
@@ -95,12 +102,14 @@
       // WhatsApp button pops in
       tl.fromTo("#e-btn-face", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.5, ease: "back.out(1.7)" }, 1.75);
 
+      tl.fromTo("#e-snap-face", { opacity: 0, filter: "blur(8px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.25, ease: "power4.out" }, 2.1);
+
       // cursor presses it
-      tl.fromTo("#e-cursor", { x: 1180, y: 1700 }, { x: 600, y: 1150, duration: 0.7, ease: "power3.out" }, 2.3);
+      tl.fromTo("#e-cursor", { x: 1180, y: 1700 }, { x: 600, y: 1120, duration: 0.7, ease: "power3.out" }, 2.3);
       tl.to("#e-cursor", { scale: 0.82, duration: 0.08, yoyo: true, repeat: 1, transformOrigin: "10% 6%" }, 3.05);
       tl.to("#e-btn-face", { x: 10, y: 10, boxShadow: "4px 4px 0 #141414", duration: 0.08, ease: "power2.out" }, 3.08);
       tl.to("#e-btn-face", { x: 0, y: 0, boxShadow: "14px 14px 0 #141414", duration: 0.2, ease: "power2.out" }, 3.25);
-      tl.to("#e-cursor", { x: 760, y: 1290, duration: 0.5, ease: "power2.out" }, 3.5);
+      tl.to("#e-cursor", { x: 900, y: 1380, duration: 0.5, ease: "power2.out" }, 3.5);
 
       window.__timelines = window.__timelines || {};
       window.__timelines["einde"] = tl;
