@@ -12,8 +12,12 @@
 - Snapshots bekeken op 0, 0.8, 2.6, 3.3, 4.5, 6.3, 8.45, 9.7, 11.8, 12.5, 13.6, 15.3, 17.5, 19.3, 20.2, 20.9, 21.6, 24.5 s.
 
 ## Bewust behouden waarschuwingen
-- `film_silent`: geleverd zonder geluid. In deze omgeving is geen muziekbron bereikbaar (HeyGen geblokkeerd, geen lokaal muziekmodel). Op TikTok/Instagram kan je zelf een trending geluid toevoegen bij het posten.
 - `composition_file_too_large` / `timeline_track_too_dense`: de hoofdscène is bewust één doorlopende shot (de site groeit in één venster).
 
 ## Zwakste punt
 - Onder 1330 px is de grond leeg (bewust: daar liggen de knoppen en het bijschrift van de app). Met meer tijd: decoratieve stickers in die zone.
+
+## Geluid (toegevoegd)
+- Voice-over: Piper TTS, Vlaamse stem "rdh" (dataset dutch-vl-tts, CC0), 6 zinnen in assets/audio/stem-*.wav, genormaliseerd naar -16 LUFS.
+- Muziek: eigen compositie (C-G-Am-F, ~121 BPM) gerenderd met de GeneralUser GS soundfont (licentie: vrij te gebruiken, ook commercieel). Drop op 2 s, opbouw + riser naar de eindkaart op 19.8 s. Ducking naar 0.35 onder de stem.
+- Gemeten op de render: -15.0 LUFS, piek -2.8 dBFS, geluid aanwezig over de hele film. Niet beluisterd: alleen gemeten.
