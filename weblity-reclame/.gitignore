@@ -2,3 +2,4 @@
 work-*/
 *.mp4
 node_modules/
+.*.hf-transaction-*/
