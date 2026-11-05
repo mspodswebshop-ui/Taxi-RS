@@ -1,0 +1,4 @@
+.hyperframes/
+work-*/
+*.mp4
+node_modules/

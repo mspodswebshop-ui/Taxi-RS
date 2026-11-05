@@ -1,0 +1,465 @@
+<template>
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      font-family: var(--font-ui);
+      color: var(--ink);
+    }
+    #g-bg { position: absolute; inset: 0; background: var(--lime); }
+
+    /* titles */
+    #g-hook { position: absolute; left: 70px; top: 190px; width: 940px; }
+    #g-hook-txt { font-family: var(--font-display); font-size: 128px; line-height: 0.98; letter-spacing: -0.02em; }
+    .g-title { position: absolute; left: 70px; top: 196px; width: 940px; }
+    .g-name { font-family: var(--font-display); font-size: 92px; line-height: 1; letter-spacing: -0.02em; white-space: nowrap; }
+    #g-t3 .g-name { font-size: 80px; }
+    .g-sub { margin-top: 18px; font-size: 40px; font-weight: 700; line-height: 1.1; }
+
+    /* price sticker */
+    #g-tag { position: absolute; left: 708px; top: 360px; width: 312px; height: 158px; }
+    #g-tag-inner {
+      width: 100%; height: 100%;
+      background: var(--ink); color: var(--paper);
+      border: 6px solid var(--paper); border-radius: 22px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    #g-tag-window { height: 120px; overflow: hidden; }
+    .g-price { height: 120px; line-height: 120px; font-family: var(--font-display); font-size: 96px; text-align: center; letter-spacing: -0.02em; }
+
+    /* browser */
+    #g-browser { position: absolute; left: 70px; top: 470px; width: 940px; height: 860px; }
+    #g-win {
+      position: relative; width: 100%; height: 100%;
+      background: var(--paper); border: 6px solid var(--ink); border-radius: 28px;
+      box-shadow: 16px 16px 0 var(--ink); overflow: hidden;
+    }
+    #g-bar { position: absolute; left: 0; top: 0; right: 0; height: 76px; border-bottom: 6px solid var(--ink); background: #F1EDE2; }
+    .g-dot { position: absolute; top: 26px; width: 20px; height: 20px; border-radius: 50%; border: 3px solid var(--ink); }
+    #g-url {
+      position: absolute; left: 116px; top: 12px; width: 500px; height: 46px;
+      background: var(--paper); border: 4px solid var(--ink); border-radius: 12px;
+      font-size: 28px; font-weight: 600; line-height: 38px; padding-left: 18px; white-space: nowrap;
+    }
+    #g-caret { display: inline-block; width: 3px; height: 30px; background: var(--ink); vertical-align: -5px; margin-left: 2px; }
+
+    #g-nav {
+      position: absolute; left: 0; right: 0; top: 70px; height: 90px; padding: 0 36px;
+      display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 3px solid #E7E2D6; background: var(--paper); z-index: 2;
+    }
+    #g-logo { font-family: var(--font-display); font-size: 34px; }
+    #g-links { display: flex; align-items: center; gap: 30px; font-size: 28px; font-weight: 600; }
+    #g-cart { position: relative; width: 52px; height: 52px; }
+    #g-cart svg { width: 52px; height: 52px; }
+    #g-badge {
+      position: absolute; right: -16px; top: -14px; width: 40px; height: 40px; border-radius: 50%;
+      background: #FF4D2E; color: var(--paper); border: 3px solid var(--ink);
+      font-size: 28px; font-weight: 700; line-height: 34px; text-align: center;
+    }
+    .g-bn { position: absolute; left: 0; right: 0; top: 0; }
+
+    #g-view { position: absolute; left: 0; right: 0; top: 160px; bottom: 0; overflow: hidden; }
+    #g-page { position: absolute; left: 0; top: 0; width: 928px; }
+    .g-sec { position: relative; height: 682px; padding: 20px 36px; overflow: hidden; }
+    .g-fl { display: block; }
+    .g-h { font-family: var(--font-display); font-size: 40px; line-height: 1; }
+
+    /* S1 website */
+    #g-hero { position: absolute; left: 36px; top: 20px; width: 856px; height: 290px; border-radius: 18px; border: 4px solid var(--ink); background: #FFE6B0; overflow: hidden; }
+    #g-hero .g-fl { position: absolute; }
+    #g-head { position: absolute; left: 36px; top: 338px; font-family: var(--font-display); font-size: 48px; white-space: nowrap; }
+    #g-copy { position: absolute; left: 36px; top: 412px; font-size: 30px; font-weight: 400; }
+    #g-cta { position: absolute; left: 36px; top: 482px; width: 230px; height: 76px; background: var(--ink); color: var(--paper); border-radius: 14px; font-size: 30px; font-weight: 700; line-height: 76px; text-align: center; }
+
+    /* S2 webshop */
+    #g-shop-h { position: absolute; left: 36px; top: 20px; }
+    .g-card { position: absolute; width: 413px; height: 280px; border: 4px solid var(--ink); border-radius: 18px; background: #fff; overflow: hidden; }
+    .g-card-img { height: 146px; border-bottom: 4px solid var(--ink); display: flex; align-items: center; justify-content: center; }
+    .g-card-img .g-fl { width: 136px; height: 136px; }
+    .g-card-name { position: absolute; left: 18px; top: 156px; font-size: 28px; font-weight: 700; white-space: nowrap; }
+    .g-card-price { position: absolute; left: 18px; top: 212px; font-size: 28px; font-weight: 600; }
+    .g-buy { position: absolute; right: 14px; top: 200px; width: 184px; height: 56px; border-radius: 12px; background: var(--ink); color: var(--paper); font-size: 28px; font-weight: 700; line-height: 56px; text-align: center; overflow: hidden; }
+    .g-buy-ok { position: absolute; inset: 0; background: #1FA463; color: var(--paper); }
+
+    /* S3 booking */
+    #g-book-h { position: absolute; left: 36px; top: 20px; }
+    #g-cal { position: absolute; left: 36px; top: 80px; width: 520px; height: 560px; border: 4px solid var(--ink); border-radius: 18px; background: #fff; }
+    #g-cal-m { position: absolute; left: 22px; top: 16px; font-size: 30px; font-weight: 700; }
+    .g-wd { position: absolute; top: 70px; width: 68px; text-align: center; font-size: 28px; font-weight: 700; color: #6B665C; }
+    .g-day { position: absolute; width: 64px; height: 64px; border-radius: 12px; text-align: center; line-height: 64px; font-size: 28px; font-weight: 600; }
+    #g-day-sel { position: absolute; left: 364px; top: 264px; width: 64px; height: 64px; border-radius: 12px; background: var(--ink); color: var(--paper); text-align: center; line-height: 64px; font-size: 28px; font-weight: 700; }
+    #g-pick { position: absolute; left: 586px; top: 84px; font-size: 28px; font-weight: 700; }
+    .g-slot { position: absolute; left: 586px; width: 306px; height: 80px; border: 4px solid var(--ink); border-radius: 14px; background: #fff; font-size: 30px; font-weight: 700; line-height: 72px; text-align: center; overflow: hidden; }
+    .g-slot-on { position: absolute; inset: 0; background: var(--ink); color: var(--paper); }
+    #g-toast { position: absolute; left: 586px; top: 528px; width: 306px; height: 112px; border-radius: 16px; background: #1FA463; color: var(--paper); border: 4px solid var(--ink); padding: 14px 20px; }
+    #g-toast b { display: block; font-size: 32px; line-height: 1.1; }
+    #g-toast span { display: block; font-size: 28px; font-weight: 600; margin-top: 6px; }
+
+    /* S4 big shop */
+    #g-search { position: absolute; left: 36px; top: 20px; width: 856px; height: 70px; border: 4px solid var(--ink); border-radius: 14px; background: #fff; font-size: 30px; font-weight: 600; line-height: 62px; padding-left: 70px; }
+    #g-search svg { position: absolute; left: 18px; top: 14px; width: 34px; height: 34px; }
+    #g-ph { position: absolute; left: 70px; top: 0; color: #6E695F; }
+    #g-q { position: absolute; left: 70px; top: 0; }
+    #g-tabs { position: absolute; left: 36px; top: 108px; display: flex; gap: 34px; font-size: 28px; font-weight: 700; }
+    #g-tabs span:first-child { border-bottom: 5px solid var(--ink); padding-bottom: 4px; }
+    #g-gridwin { position: absolute; left: 36px; top: 170px; width: 856px; height: 512px; overflow: hidden; }
+    #g-grid { position: absolute; left: 0; top: 0; width: 856px; display: grid; grid-template-columns: repeat(4, 196px); gap: 24px; }
+    .g-tile { width: 196px; height: 196px; border: 4px solid var(--ink); border-radius: 16px; display: flex; align-items: center; justify-content: center; }
+    .g-tile .g-fl { width: 140px; height: 140px; }
+
+    /* initial hidden states (frame 0) */
+    #g-nav, .g-url-ch, #g-tag, #g-badge, .g-bn, .g-buy-ok, #g-pick, .g-slot, #g-day-sel, #g-toast, .g-slot-on, .g-qc, #g-s2, #g-s3, #g-s4 { opacity: 0; }
+
+    /* cursor */
+    #g-cursor { position: absolute; left: 0; top: 0; width: 70px; height: 70px; z-index: 20; }
+    #g-cursor svg { width: 70px; height: 70px; display: block; }
+  </style>
+
+  <div id="root" data-composition-id="groei" data-width="1080" data-height="1920"
+    data-composition-variables='[
+      {"id":"naam1","type":"string","label":"Niveau 1","default":"Website"},
+      {"id":"sub1","type":"string","label":"Uitleg 1","default":"Je zaak op elke gsm"},
+      {"id":"prijs1","type":"string","label":"Prijs 1","default":"€150"},
+      {"id":"naam2","type":"string","label":"Niveau 2","default":"Webshop"},
+      {"id":"sub2","type":"string","label":"Uitleg 2","default":"Verkoop ook online"},
+      {"id":"prijs2","type":"string","label":"Prijs 2","default":"€200"},
+      {"id":"naam3","type":"string","label":"Niveau 3","default":"Boekingssysteem"},
+      {"id":"sub3","type":"string","label":"Uitleg 3","default":"Klanten boeken zelf"},
+      {"id":"prijs3","type":"string","label":"Prijs 3","default":"€200"},
+      {"id":"naam4","type":"string","label":"Niveau 4","default":"Grote webshop"},
+      {"id":"sub4","type":"string","label":"Uitleg 4","default":"Veel producten? Geen probleem"},
+      {"id":"prijs4","type":"string","label":"Prijs 4","default":"€300"}
+    ]'>
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+      <defs>
+        <g id="g-flower">
+          <path d="M50 52 C50 70 50 82 50 98" stroke="#2E8B57" stroke-width="6" fill="none"/>
+          <ellipse cx="62" cy="80" rx="12" ry="6" fill="#3FA66B" transform="rotate(-30 62 80)"/>
+          <circle cx="50" cy="22" r="14" fill="currentColor"/>
+          <circle cx="69" cy="33" r="14" fill="currentColor"/>
+          <circle cx="69" cy="53" r="14" fill="currentColor"/>
+          <circle cx="50" cy="62" r="14" fill="currentColor"/>
+          <circle cx="31" cy="53" r="14" fill="currentColor"/>
+          <circle cx="31" cy="33" r="14" fill="currentColor"/>
+          <circle cx="50" cy="42" r="11" fill="#FFD23F" stroke="#141414" stroke-width="3"/>
+        </g>
+      </defs>
+    </svg>
+
+    <div id="g-bg"></div>
+
+    <!-- hook: on screen from frame 0 -->
+    <div id="g-hook" class="clip" data-start="0" data-duration="2.1" data-track-index="2">
+      <h1 id="g-hook-txt"><span class="g-hw">Jouw zaak</span><br /><span class="g-hw">online?</span></h1>
+    </div>
+
+    <!-- tier titles -->
+    <div id="g-t1" class="clip g-title" data-start="2" data-duration="4.15" data-track-index="2">
+      <div class="g-in"><h2 class="g-name" data-var-text="naam1">Website</h2><p class="g-sub" data-var-text="sub1">Je zaak op elke gsm</p></div>
+    </div>
+    <div id="g-t2" class="clip g-title" data-start="6.15" data-duration="4.4" data-track-index="2">
+      <div class="g-in"><h2 class="g-name" data-var-text="naam2">Webshop</h2><p class="g-sub" data-var-text="sub2">Verkoop ook online</p></div>
+    </div>
+    <div id="g-t3" class="clip g-title" data-start="10.55" data-duration="3.8" data-track-index="2">
+      <div class="g-in"><h2 class="g-name" data-var-text="naam3">Boekingssysteem</h2><p class="g-sub" data-var-text="sub3">Klanten boeken zelf</p></div>
+    </div>
+    <div id="g-t4" class="clip g-title" data-start="14.35" data-duration="4.95" data-track-index="2">
+      <div class="g-in"><h2 class="g-name" data-var-text="naam4">Grote webshop</h2><p class="g-sub" data-var-text="sub4">Veel producten? Geen probleem</p></div>
+    </div>
+
+    <!-- browser -->
+    <div id="g-browser">
+      <div id="g-win">
+        <div id="g-bar">
+          <div class="g-dot" style="left:24px;background:#FF5F57"></div>
+          <div class="g-dot" style="left:54px;background:#FEBC2E"></div>
+          <div class="g-dot" style="left:84px;background:#28C840"></div>
+          <div id="g-url"><span class="g-url-ch">b</span><span class="g-url-ch">l</span><span class="g-url-ch">o</span><span class="g-url-ch">e</span><span class="g-url-ch">m</span><span class="g-url-ch">e</span><span class="g-url-ch">n</span><span class="g-url-ch">l</span><span class="g-url-ch">i</span><span class="g-url-ch">e</span><span class="g-url-ch">s</span><span class="g-url-ch">.</span><span class="g-url-ch">b</span><span class="g-url-ch">e</span><span id="g-caret"></span></div>
+        </div>
+        <div id="g-nav">
+          <div id="g-logo">Bloemen Lies</div>
+          <div id="g-links">
+            <span>Shop</span><span>Boeken</span><span>Contact</span>
+            <div id="g-cart">
+              <svg viewBox="0 0 52 52"><path d="M4 8h8l6 26h24l5-18H15" fill="none" stroke="#141414" stroke-width="4.5" stroke-linejoin="round" stroke-linecap="round"/><circle cx="21" cy="42" r="4" fill="#141414"/><circle cx="38" cy="42" r="4" fill="#141414"/></svg>
+              <div id="g-badge"><span class="g-bn" id="g-bn1">1</span><span class="g-bn" id="g-bn2">2</span></div>
+            </div>
+          </div>
+        </div>
+        <div id="g-view" data-layout-allow-overflow>
+          <div id="g-page">
+            <!-- S1 website -->
+            <section class="g-sec" id="g-s1">
+              <div id="g-hero">
+                <svg class="g-fl" viewBox="0 0 100 100" style="color:#FF4F8B;left:40px;top:70px;width:230px;height:230px"><use href="#g-flower"/></svg>
+                <svg class="g-fl" viewBox="0 0 100 100" style="color:#E8402F;left:230px;top:30px;width:270px;height:270px"><use href="#g-flower"/></svg>
+                <svg class="g-fl" viewBox="0 0 100 100" style="color:#FF8A3D;left:460px;top:80px;width:220px;height:220px"><use href="#g-flower"/></svg>
+                <svg class="g-fl" viewBox="0 0 100 100" style="color:#C2185B;left:640px;top:40px;width:250px;height:250px"><use href="#g-flower"/></svg>
+              </div>
+              <div id="g-head">Verse bloemen, elke dag</div>
+              <div id="g-copy">Boeketten op maat, voor elk moment.</div>
+              <div id="g-cta">Contact</div>
+            </section>
+            <!-- S2 webshop -->
+            <section class="g-sec" id="g-s2">
+              <div class="g-h" id="g-shop-h">Shop</div>
+              <div class="g-card" id="g-c1" style="left:36px;top:80px">
+                <div class="g-card-img" style="background:#FFE1EC"><svg class="g-fl" viewBox="0 0 100 100" style="color:#FF4F8B"><use href="#g-flower"/></svg></div>
+                <div class="g-card-name">Boeket Lente</div><div class="g-card-price">€24,95</div>
+                <div class="g-buy" id="g-buy1">In mandje<div class="g-buy-ok" id="g-ok1">✓ Erin</div></div>
+              </div>
+              <div class="g-card" id="g-c2" style="left:479px;top:80px">
+                <div class="g-card-img" style="background:#FFE6B0"><svg class="g-fl" viewBox="0 0 100 100" style="color:#E8402F"><use href="#g-flower"/></svg></div>
+                <div class="g-card-name">Rode rozen</div><div class="g-card-price">€19,95</div>
+                <div class="g-buy" id="g-buy2">In mandje<div class="g-buy-ok" id="g-ok2">✓ Erin</div></div>
+              </div>
+              <div class="g-card" id="g-c3" style="left:36px;top:380px">
+                <div class="g-card-img" style="background:#E3F4D6"><svg class="g-fl" viewBox="0 0 100 100" style="color:#FF8A3D"><use href="#g-flower"/></svg></div>
+                <div class="g-card-name">Tulpen mix</div><div class="g-card-price">€14,95</div>
+                <div class="g-buy">In mandje</div>
+              </div>
+              <div class="g-card" id="g-c4" style="left:479px;top:380px">
+                <div class="g-card-img" style="background:#FFF3B8"><svg class="g-fl" viewBox="0 0 100 100" style="color:#FFC21A"><use href="#g-flower"/></svg></div>
+                <div class="g-card-name">Zonnebloemen</div><div class="g-card-price">€17,50</div>
+                <div class="g-buy">In mandje</div>
+              </div>
+            </section>
+            <!-- S3 booking -->
+            <section class="g-sec" id="g-s3">
+              <div class="g-h" id="g-book-h">Maak een afspraak</div>
+              <div id="g-cal">
+                <div id="g-cal-m">November 2026</div>
+                <div class="g-wd" style="left:22px">M</div><div class="g-wd" style="left:90px">D</div>
+                <div class="g-wd" style="left:158px">W</div><div class="g-wd" style="left:226px">D</div>
+                <div class="g-wd" style="left:294px">V</div><div class="g-wd" style="left:362px">Z</div>
+                <div class="g-wd" style="left:430px">Z</div>
+              <div class="g-day" style="left:432px;top:120px">1</div>
+              <div class="g-day" style="left:24px;top:192px">2</div>
+              <div class="g-day" style="left:92px;top:192px">3</div>
+              <div class="g-day" style="left:160px;top:192px">4</div>
+              <div class="g-day" style="left:228px;top:192px">5</div>
+              <div class="g-day" style="left:296px;top:192px">6</div>
+              <div class="g-day" style="left:364px;top:192px">7</div>
+              <div class="g-day" style="left:432px;top:192px">8</div>
+              <div class="g-day" style="left:24px;top:264px">9</div>
+              <div class="g-day" style="left:92px;top:264px">10</div>
+              <div class="g-day" style="left:160px;top:264px">11</div>
+              <div class="g-day" style="left:228px;top:264px">12</div>
+              <div class="g-day" style="left:296px;top:264px">13</div>
+              <div class="g-day" id="g-day14" style="left:364px;top:264px">14</div>
+              <div class="g-day" style="left:432px;top:264px">15</div>
+              <div class="g-day" style="left:24px;top:336px">16</div>
+              <div class="g-day" style="left:92px;top:336px">17</div>
+              <div class="g-day" style="left:160px;top:336px">18</div>
+              <div class="g-day" style="left:228px;top:336px">19</div>
+              <div class="g-day" style="left:296px;top:336px">20</div>
+              <div class="g-day" style="left:364px;top:336px">21</div>
+              <div class="g-day" style="left:432px;top:336px">22</div>
+              <div class="g-day" style="left:24px;top:408px">23</div>
+              <div class="g-day" style="left:92px;top:408px">24</div>
+              <div class="g-day" style="left:160px;top:408px">25</div>
+              <div class="g-day" style="left:228px;top:408px">26</div>
+              <div class="g-day" style="left:296px;top:408px">27</div>
+              <div class="g-day" style="left:364px;top:408px">28</div>
+              <div class="g-day" style="left:432px;top:408px">29</div>
+              <div class="g-day" style="left:24px;top:480px">30</div>
+                <div id="g-day-sel">14</div>
+              </div>
+              <div id="g-pick">Kies een uur</div>
+              <div class="g-slot" id="g-sl1" style="top:136px">09:00</div>
+              <div class="g-slot" id="g-sl2" style="top:232px">10:30<div class="g-slot-on" id="g-sl2on">10:30</div></div>
+              <div class="g-slot" id="g-sl3" style="top:328px">13:00</div>
+              <div class="g-slot" id="g-sl4" style="top:424px">15:30</div>
+              <div id="g-toast" data-layout-allow-overlap><b>✓ Geboekt</b><span>za 14 nov, 10:30</span></div>
+            </section>
+            <!-- S4 big shop -->
+            <section class="g-sec" id="g-s4">
+              <div id="g-search">
+                <svg viewBox="0 0 34 34"><circle cx="14" cy="14" r="10" fill="none" stroke="#141414" stroke-width="4"/><path d="M22 22l9 9" stroke="#141414" stroke-width="4" stroke-linecap="round"/></svg>
+                <span id="g-ph">Zoek een product…</span>
+                <span id="g-q"><span class="g-qc">r</span><span class="g-qc">o</span><span class="g-qc">z</span><span class="g-qc">e</span><span class="g-qc">n</span></span>
+              </div>
+              <div id="g-tabs"><span>Boeketten</span><span>Planten</span><span>Potten</span><span>Cadeaus</span></div>
+              <div id="g-gridwin">
+                <div id="g-grid">
+            <div class="g-tile" style="background:#FFE1EC"><svg class="g-fl" viewBox="0 0 100 100" style="color:#FF4F8B"><use href="#g-flower"/></svg></div>
+            <div class="g-tile" style="background:#FBE0D4"><svg class="g-fl" viewBox="0 0 100 100" style="color:#FFC21A"><use href="#g-flower"/></svg></div>
+            <div class="g-tile" style="background:#E2ECFF"><svg class="g-fl" viewBox="0 0 100 100" style="color:#FF6F61"><use href="#g-flower"/></svg></div>
+            <div class="g-tile" style="background:#FFF3B8"><svg class="g-fl" viewBox="0 0 100 100" style="color:#E8402F"><use href="#g-flower"/></svg></div>
+            <div class="g-tile" style="background:#E3F4D6"><svg class="g-fl" viewBox="0 0 100 100" style="color:#6C63FF"><use href="#g-flower"/></svg></div>
+            <div class="g-tile" style="background:#FFE6B0"><svg class="g-fl" viewBox="0 0 100 100" style="color:#F06292"><use href="#g-flower"/></svg></div>
+            <div class="g-tile" style="background:#FFE1EC"><svg class="g-fl" viewBox="0 0 100 100" style="color:#FF8A3D"><use href="#g-flower"/></svg></div>
+            <div class="g-tile" style="background:#FBE0D4"><svg class="g-fl" viewBox="0 0 100 100" style="color:#C2185B"><use href="#g-flower"/></svg></div>
+            <div class="g-tile" style="background:#E2ECFF"><svg class="g-fl" viewBox="0 0 100 100" style="color:#FF4F8B"><use href="#g-flower"/></svg></div>
+            <div class="g-tile" style="background:#FFF3B8"><svg class="g-fl" viewBox="0 0 100 100" style="color:#FFC21A"><use href="#g-flower"/></svg></div>
+            <div class="g-tile" style="background:#E3F4D6"><svg class="g-fl" viewBox="0 0 100 100" style="color:#FF6F61"><use href="#g-flower"/></svg></div>
+            <div class="g-tile" style="background:#FFE6B0"><svg class="g-fl" viewBox="0 0 100 100" style="color:#E8402F"><use href="#g-flower"/></svg></div>
+            <div class="g-tile" style="background:#FFE1EC"><svg class="g-fl" viewBox="0 0 100 100" style="color:#6C63FF"><use href="#g-flower"/></svg></div>
+            <div class="g-tile" style="background:#FBE0D4"><svg class="g-fl" viewBox="0 0 100 100" style="color:#F06292"><use href="#g-flower"/></svg></div>
+            <div class="g-tile" style="background:#E2ECFF"><svg class="g-fl" viewBox="0 0 100 100" style="color:#FF8A3D"><use href="#g-flower"/></svg></div>
+            <div class="g-tile" style="background:#FFF3B8"><svg class="g-fl" viewBox="0 0 100 100" style="color:#C2185B"><use href="#g-flower"/></svg></div>
+            <div class="g-tile" style="background:#E3F4D6"><svg class="g-fl" viewBox="0 0 100 100" style="color:#FF4F8B"><use href="#g-flower"/></svg></div>
+            <div class="g-tile" style="background:#FFE6B0"><svg class="g-fl" viewBox="0 0 100 100" style="color:#FFC21A"><use href="#g-flower"/></svg></div>
+            <div class="g-tile" style="background:#FFE1EC"><svg class="g-fl" viewBox="0 0 100 100" style="color:#FF6F61"><use href="#g-flower"/></svg></div>
+            <div class="g-tile" style="background:#FBE0D4"><svg class="g-fl" viewBox="0 0 100 100" style="color:#E8402F"><use href="#g-flower"/></svg></div>
+            <div class="g-tile" style="background:#E2ECFF"><svg class="g-fl" viewBox="0 0 100 100" style="color:#6C63FF"><use href="#g-flower"/></svg></div>
+            <div class="g-tile" style="background:#FFF3B8"><svg class="g-fl" viewBox="0 0 100 100" style="color:#F06292"><use href="#g-flower"/></svg></div>
+            <div class="g-tile" style="background:#E3F4D6"><svg class="g-fl" viewBox="0 0 100 100" style="color:#FF8A3D"><use href="#g-flower"/></svg></div>
+            <div class="g-tile" style="background:#FFE6B0"><svg class="g-fl" viewBox="0 0 100 100" style="color:#C2185B"><use href="#g-flower"/></svg></div>
+            <div class="g-tile" style="background:#FFE1EC"><svg class="g-fl" viewBox="0 0 100 100" style="color:#FF4F8B"><use href="#g-flower"/></svg></div>
+            <div class="g-tile" style="background:#FBE0D4"><svg class="g-fl" viewBox="0 0 100 100" style="color:#FFC21A"><use href="#g-flower"/></svg></div>
+            <div class="g-tile" style="background:#E2ECFF"><svg class="g-fl" viewBox="0 0 100 100" style="color:#FF6F61"><use href="#g-flower"/></svg></div>
+            <div class="g-tile" style="background:#FFF3B8"><svg class="g-fl" viewBox="0 0 100 100" style="color:#E8402F"><use href="#g-flower"/></svg></div>
+            <div class="g-tile" style="background:#E3F4D6"><svg class="g-fl" viewBox="0 0 100 100" style="color:#6C63FF"><use href="#g-flower"/></svg></div>
+            <div class="g-tile" style="background:#FFE6B0"><svg class="g-fl" viewBox="0 0 100 100" style="color:#F06292"><use href="#g-flower"/></svg></div>
+            <div class="g-tile" style="background:#FFE1EC"><svg class="g-fl" viewBox="0 0 100 100" style="color:#FF8A3D"><use href="#g-flower"/></svg></div>
+            <div class="g-tile" style="background:#FBE0D4"><svg class="g-fl" viewBox="0 0 100 100" style="color:#C2185B"><use href="#g-flower"/></svg></div>
+            <div class="g-tile" style="background:#E2ECFF"><svg class="g-fl" viewBox="0 0 100 100" style="color:#FF4F8B"><use href="#g-flower"/></svg></div>
+            <div class="g-tile" style="background:#FFF3B8"><svg class="g-fl" viewBox="0 0 100 100" style="color:#FFC21A"><use href="#g-flower"/></svg></div>
+            <div class="g-tile" style="background:#E3F4D6"><svg class="g-fl" viewBox="0 0 100 100" style="color:#FF6F61"><use href="#g-flower"/></svg></div>
+            <div class="g-tile" style="background:#FFE6B0"><svg class="g-fl" viewBox="0 0 100 100" style="color:#E8402F"><use href="#g-flower"/></svg></div>
+            <div class="g-tile" style="background:#FFE1EC"><svg class="g-fl" viewBox="0 0 100 100" style="color:#6C63FF"><use href="#g-flower"/></svg></div>
+            <div class="g-tile" style="background:#FBE0D4"><svg class="g-fl" viewBox="0 0 100 100" style="color:#F06292"><use href="#g-flower"/></svg></div>
+            <div class="g-tile" style="background:#E2ECFF"><svg class="g-fl" viewBox="0 0 100 100" style="color:#FF8A3D"><use href="#g-flower"/></svg></div>
+            <div class="g-tile" style="background:#FFF3B8"><svg class="g-fl" viewBox="0 0 100 100" style="color:#C2185B"><use href="#g-flower"/></svg></div>
+            <div class="g-tile" style="background:#E3F4D6"><svg class="g-fl" viewBox="0 0 100 100" style="color:#FF4F8B"><use href="#g-flower"/></svg></div>
+            <div class="g-tile" style="background:#FFE6B0"><svg class="g-fl" viewBox="0 0 100 100" style="color:#FFC21A"><use href="#g-flower"/></svg></div>
+            <div class="g-tile" style="background:#FFE1EC"><svg class="g-fl" viewBox="0 0 100 100" style="color:#FF6F61"><use href="#g-flower"/></svg></div>
+            <div class="g-tile" style="background:#FBE0D4"><svg class="g-fl" viewBox="0 0 100 100" style="color:#E8402F"><use href="#g-flower"/></svg></div>
+            <div class="g-tile" style="background:#E2ECFF"><svg class="g-fl" viewBox="0 0 100 100" style="color:#6C63FF"><use href="#g-flower"/></svg></div>
+            <div class="g-tile" style="background:#FFF3B8"><svg class="g-fl" viewBox="0 0 100 100" style="color:#F06292"><use href="#g-flower"/></svg></div>
+            <div class="g-tile" style="background:#E3F4D6"><svg class="g-fl" viewBox="0 0 100 100" style="color:#FF8A3D"><use href="#g-flower"/></svg></div>
+            <div class="g-tile" style="background:#FFE6B0"><svg class="g-fl" viewBox="0 0 100 100" style="color:#C2185B"><use href="#g-flower"/></svg></div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- price sticker -->
+    <div id="g-tag" data-layout-allow-overlap>
+      <div id="g-tag-inner">
+        <div id="g-tag-window" data-layout-ignore>
+          <div id="g-tag-col">
+            <div class="g-price" data-var-text="prijs1">€150</div>
+            <div class="g-price" data-var-text="prijs2">€200</div>
+            <div class="g-price" data-var-text="prijs3">€200</div>
+            <div class="g-price" data-var-text="prijs4">€300</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- cursor -->
+    <div id="g-cursor" data-layout-ignore>
+      <svg viewBox="0 0 70 70"><path d="M6 4 L6 58 L20 45 L30 66 L40 61 L30 41 L50 41 Z" fill="#141414" stroke="#FFFDF7" stroke-width="4" stroke-linejoin="round"/></svg>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      const S = 682; // section height
+      const ROW = 120; // price roll step
+
+      // ---------- frame 0 state (hook) ----------
+
+      // URL types 0.5 - 1.4
+      tl.to(".g-url-ch", { opacity: 1, duration: 0.01, stagger: 0.065 }, 0.5);
+
+      // hook leaves word by word
+      tl.to(".g-hw", { opacity: 0, filter: "blur(10px)", duration: 0.18, ease: "power2.in", stagger: 0.07 }, 1.75);
+
+      // ---------- tier 1: website ----------
+      tl.fromTo("#g-t1 .g-name", { opacity: 0, filter: "blur(10px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.2, ease: "power4.out" }, 2.1);
+      tl.fromTo("#g-t1 .g-sub", { opacity: 0, filter: "blur(8px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.2, ease: "power4.out" }, 2.35);
+      tl.to("#g-caret", { opacity: 0, duration: 0.01 }, 2.0);
+      tl.to("#g-nav", { opacity: 1, duration: 0.2, ease: "power2.out" }, 2.05);
+      tl.fromTo("#g-hero", { clipPath: "inset(100% 0% 0% 0% round 18px)" }, { clipPath: "inset(0% 0% 0% 0% round 18px)", duration: 0.55, ease: "expo.out" }, 2.15);
+      tl.fromTo("#g-hero .g-fl", { scale: 0.6, transformOrigin: "50% 100%" }, { scale: 1, duration: 0.6, ease: "back.out(1.6)", stagger: 0.07 }, 2.3);
+      tl.fromTo("#g-head", { opacity: 0, filter: "blur(8px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.18, ease: "power4.out" }, 2.55);
+      tl.fromTo("#g-copy", { opacity: 0 }, { opacity: 1, duration: 0.2 }, 2.75);
+      tl.fromTo("#g-cta", { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 0.45, ease: "back.out(1.8)" }, 2.9);
+
+      // price sticker slams in
+      tl.fromTo("#g-tag", { opacity: 0, scale: 2.2, rotation: -18 }, { opacity: 1, scale: 1, rotation: -6, duration: 0.45, ease: "back.out(1.6)" }, 3.15);
+      // CTA turns green (keeps the website beat alive)
+      tl.to("#g-cta", { backgroundColor: "#1FA463", duration: 0.25, ease: "power2.inOut" }, 4.6);
+
+      // ---------- tier 2: webshop (6.0) ----------
+      tl.to("#g-page", { y: -S, duration: 0.6, ease: "power2.inOut" }, 6.0);
+      tl.to("#g-s2", { opacity: 1, duration: 0.01 }, 5.99);
+      tl.to("#g-s1", { opacity: 0, duration: 0.01 }, 6.62);
+      tl.to("#g-bg", { backgroundColor: "#FF8A3D", duration: 0.45, ease: "power2.inOut" }, 6.0);
+      tl.to("#g-t1 .g-in", { opacity: 0, filter: "blur(8px)", duration: 0.14, ease: "power2.in" }, 5.98);
+      tl.fromTo("#g-t2 .g-name", { opacity: 0, x: 120, filter: "blur(12px)" }, { opacity: 1, x: 0, filter: "blur(0px)", duration: 0.35, ease: "expo.out" }, 6.2);
+      tl.fromTo("#g-t2 .g-sub", { opacity: 0, filter: "blur(8px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.2, ease: "power4.out" }, 6.45);
+      tl.fromTo(".g-card", { opacity: 0, scale: 0.85, filter: "blur(6px)" }, { opacity: 1, scale: 1, filter: "blur(0px)", duration: 0.4, ease: "expo.out", stagger: 0.08 }, 6.4);
+      tl.fromTo("#g-tag-col", { y: 0 }, { y: -ROW, duration: 0.5, ease: "power3.inOut" }, 6.6);
+      tl.fromTo("#g-tag-inner", { scale: 1 }, { scale: 1.12, duration: 0.12, ease: "power2.out", yoyo: true, repeat: 1 }, 7.05);
+
+      // cursor adds two bouquets
+      tl.fromTo("#g-cursor", { x: 1180, y: 2000 }, { x: 409, y: 950, duration: 0.7, ease: "power3.out" }, 7.6);
+      tl.to("#g-cursor", { scale: 0.82, duration: 0.07, yoyo: true, repeat: 1, transformOrigin: "10% 6%" }, 8.35);
+      tl.to("#g-ok1", { opacity: 1, duration: 0.08 }, 8.4);
+      tl.fromTo("#g-badge", { opacity: 0, scale: 0.3 }, { opacity: 1, scale: 1, duration: 0.35, ease: "back.out(2)" }, 8.45);
+      tl.to("#g-bn1", { opacity: 1, duration: 0.01 }, 8.45);
+      tl.to("#g-cursor", { x: 852, y: 950, duration: 0.55, ease: "power3.inOut" }, 8.85);
+      tl.to("#g-cursor", { scale: 0.82, duration: 0.07, yoyo: true, repeat: 1, transformOrigin: "10% 6%" }, 9.45);
+      tl.to("#g-ok2", { opacity: 1, duration: 0.08 }, 9.5);
+      tl.to("#g-bn1", { opacity: 0, duration: 0.01 }, 9.55);
+      tl.to("#g-bn2", { opacity: 1, duration: 0.01 }, 9.55);
+      tl.to("#g-badge", { scale: 1.3, duration: 0.12, yoyo: true, repeat: 1, ease: "power2.out" }, 9.55);
+
+      // ---------- tier 3: booking (10.4) ----------
+      tl.to("#g-page", { y: -2 * S, duration: 0.6, ease: "power2.inOut" }, 10.4);
+      tl.to("#g-s3", { opacity: 1, duration: 0.01 }, 10.39);
+      tl.to("#g-s2", { opacity: 0, duration: 0.01 }, 11.02);
+      tl.to("#g-bg", { backgroundColor: "#FFA8D2", duration: 0.45, ease: "power2.inOut" }, 10.4);
+      tl.to("#g-t2 .g-in", { opacity: 0, filter: "blur(8px)", duration: 0.14, ease: "power2.in" }, 10.38);
+      tl.fromTo("#g-t3 .g-name", { opacity: 0, color: "#FFFDF7" }, { opacity: 1, color: "#141414", duration: 0.3, ease: "power2.out" }, 10.6);
+      tl.fromTo("#g-t3 .g-sub", { opacity: 0, filter: "blur(8px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.2, ease: "power4.out" }, 10.85);
+      tl.fromTo("#g-cal", { clipPath: "inset(0% 0% 100% 0% round 18px)" }, { clipPath: "inset(0% 0% 0% 0% round 18px)", duration: 0.5, ease: "expo.out" }, 10.75);
+      tl.fromTo("#g-tag-col", { y: -ROW }, { y: -2 * ROW, duration: 0.5, ease: "power3.inOut", immediateRender: false }, 10.9);
+      tl.to("#g-tag-inner", { scale: 1.12, duration: 0.12, ease: "power2.out", yoyo: true, repeat: 1 }, 11.35);
+
+      tl.to("#g-cursor", { x: 506, y: 1016, duration: 0.65, ease: "power3.inOut" }, 11.0);
+      tl.to("#g-cursor", { scale: 0.82, duration: 0.07, yoyo: true, repeat: 1, transformOrigin: "10% 6%" }, 11.7);
+      tl.fromTo("#g-day-sel", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.3, ease: "back.out(2)", immediateRender: false }, 11.75);
+      tl.to("#g-pick", { opacity: 1, duration: 0.15 }, 11.85);
+      tl.fromTo(".g-slot", { opacity: 0, x: 40 }, { opacity: 1, x: 0, duration: 0.35, ease: "expo.out", stagger: 0.06, immediateRender: false }, 11.9);
+      tl.to("#g-cursor", { x: 809, y: 910, duration: 0.5, ease: "power3.inOut" }, 12.3);
+      tl.to("#g-cursor", { scale: 0.82, duration: 0.07, yoyo: true, repeat: 1, transformOrigin: "10% 6%" }, 12.85);
+      tl.to("#g-sl2on", { opacity: 1, duration: 0.08 }, 12.9);
+      tl.fromTo("#g-toast", { opacity: 0, scale: 0.8, filter: "blur(6px)" }, { opacity: 1, scale: 1, filter: "blur(0px)", duration: 0.4, ease: "back.out(1.7)", immediateRender: false }, 13.1);
+      tl.to("#g-cursor", { x: 1180, y: 1500, duration: 0.6, ease: "power3.in" }, 13.5);
+
+      // ---------- tier 4: big shop (14.2) ----------
+      tl.to("#g-page", { y: -3 * S, duration: 0.6, ease: "power2.inOut" }, 14.2);
+      tl.to("#g-s4", { opacity: 1, duration: 0.01 }, 14.19);
+      tl.to("#g-s3", { opacity: 0, duration: 0.01 }, 14.82);
+      tl.to("#g-bg", { backgroundColor: "#7FD8FF", duration: 0.45, ease: "power2.inOut" }, 14.2);
+      tl.to("#g-t3 .g-in", { opacity: 0, filter: "blur(8px)", duration: 0.14, ease: "power2.in" }, 14.18);
+      tl.fromTo("#g-t4 .g-name", { opacity: 0, filter: "blur(10px)", scale: 1.15, transformOrigin: "0% 50%" }, { opacity: 1, filter: "blur(0px)", scale: 1, duration: 0.3, ease: "expo.out" }, 14.4);
+      tl.fromTo("#g-t4 .g-sub", { opacity: 0, filter: "blur(8px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.2, ease: "power4.out" }, 14.65);
+      tl.fromTo("#g-tag-col", { y: -2 * ROW }, { y: -3 * ROW, duration: 0.5, ease: "power3.inOut", immediateRender: false }, 14.6);
+      tl.to("#g-tag-inner", { scale: 1.12, duration: 0.12, ease: "power2.out", yoyo: true, repeat: 1 }, 15.05);
+      tl.to("#g-ph", { opacity: 0, duration: 0.01 }, 15.7);
+      tl.to(".g-qc", { opacity: 1, duration: 0.01, stagger: 0.08 }, 15.7);
+      tl.fromTo("#g-grid", { y: 0 }, { y: -2120, duration: 2.9, ease: "power2.inOut" }, 16.0);
+
+      // ---------- exit (19.0) ----------
+      tl.to(["#g-t4 .g-in"], { opacity: 0, filter: "blur(8px)", duration: 0.18, ease: "power2.in" }, 19.0);
+      tl.to("#g-browser", { scale: 0.5, y: -260, opacity: 0, filter: "blur(6px)", duration: 0.6, ease: "power3.in" }, 19.0);
+      tl.to("#g-tag", { scale: 0.3, rotation: 20, y: -200, opacity: 0, duration: 0.5, ease: "power3.in" }, 19.05);
+      tl.to("#g-bg", { backgroundColor: "#D9F24A", duration: 0.45, ease: "power2.inOut" }, 19.15);
+
+      window.__timelines = window.__timelines || {};
+      window.__timelines["groei"] = tl;
+    })();
+  </script>
+</template>
