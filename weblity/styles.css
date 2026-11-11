@@ -849,6 +849,7 @@ section[id] { scroll-margin-top: 90px; }
 .templates { overflow: hidden; }
 .tpl-rows { display: grid; gap: 18px; }
 .tpl-rows .marquee__group { gap: 18px; padding-right: 18px; }
+.templates__cta { margin-top: clamp(34px, 5vw, 56px); text-align: center; }
 .tpl { width: clamp(220px, 26vw, 310px); flex: none; transition: transform 0.6s var(--ease); }
 .tpl:hover { transform: translateY(-8px) scale(1.02); }
 .tpl__page { aspect-ratio: 16 / 11; border-radius: 16px; overflow: hidden; padding: 7%; display: flex; flex-direction: column; gap: 8%; background: var(--bg); color: var(--ink); border: 1px solid var(--line-2); box-shadow: 0 24px 50px -30px #000; }

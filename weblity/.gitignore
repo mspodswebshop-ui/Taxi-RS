@@ -1,4 +1,6 @@
-# Wordt gebouwd met: node build-standalone.mjs
+# Worden gebouwd met: node build-standalone.mjs
 weblity.html
+weblity-bouwer.html
+weblity-beheer.html
 
 .DS_Store

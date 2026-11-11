@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kies je template — Weblity</title>
+  <meta name="description" content="Kies een template, vul je eigen naam, teksten en kleur in en zie meteen hoe je website eruitziet. Tevreden? Vraag hem aan.">
+  <meta name="theme-color" content="#07080d">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="bouwer.css">
+</head>
+<body class="bouwer" data-step="kies" data-view="bewerk">
+
+  <!-- Onderdelen met data-only="klant" ziet alleen de klant; data-only="beheer"
+       alleen de beheerversie (zie README.md). -->
+  <header class="bar">
+    <a class="logo" href="index.html" aria-label="Weblity, naar de startpagina">
+      <span class="logo__mark"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M7 10.5l4.2 11 4.8-9 4.8 9 4.2-11" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      <span class="logo__word">Weblity</span>
+    </a>
+    <span class="bar__tag" data-only="beheer">Beheer</span>
+
+    <ol class="steps" aria-label="Stappen">
+      <li data-for="kies"><span>1</span>Template</li>
+      <li data-for="maak"><span>2</span>Jouw inhoud</li>
+      <li data-for="klaar" data-only="klant"><span>3</span>Aanvragen</li>
+      <li data-for="klaar" data-only="beheer"><span>3</span>Downloaden</li>
+    </ol>
+
+    <div class="bar__acts">
+      <button class="btn btn--ghost btn--sm" type="button" id="laad" data-only="beheer">Ontwerp laden</button>
+      <button class="btn btn--sm" type="button" id="download" data-only="beheer" data-needs="maak">Download website</button>
+      <button class="btn btn--sm" type="button" id="vraagAan" data-only="klant" data-needs="maak">Vraag deze website aan</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- ============ Stap 1: template kiezen ============ -->
+    <section class="kies" id="kies">
+      <div class="kies__head">
+        <p class="eyebrow">Stap 1</p>
+        <h1>Kies je template</h1>
+        <p class="lead">Elk template is een volledige website. Kies wat het best bij je zaak past; in de volgende stap zet je er je eigen naam, teksten en kleur in.</p>
+      </div>
+      <div class="gal" id="gal"></div>
+    </section>
+
+    <!-- ============ Stap 2: inhoud invullen, met live voorbeeld ============ -->
+    <section class="maak" id="maak" hidden>
+      <aside class="paneel" id="paneel" aria-label="Inhoud van je website">
+        <div class="groep">
+          <div class="groep__kop">
+            <h2>Template</h2>
+            <button class="link" type="button" id="andere">Alle templates bekijken</button>
+          </div>
+          <div class="tplkeuze" id="tplkeuze" role="group" aria-label="Template"></div>
+        </div>
+
+        <details class="groep" open>
+          <summary><h2>Je zaak</h2></summary>
+          <label class="veld">Naam van je zaak<input type="text" data-k="naam" autocomplete="organization"></label>
+          <label class="veld">Grote zin bovenaan<input type="text" data-k="slogan"></label>
+          <label class="veld">Korte uitleg<textarea rows="3" data-k="intro"></textarea></label>
+          <label class="veld">Tekst op de knop<input type="text" data-k="knop"></label>
+        </details>
+
+        <details class="groep" open>
+          <summary><h2>Je aanbod</h2></summary>
+          <label class="veld">Titel van dit blok<input type="text" data-k="itemsTitel"></label>
+          <div class="items" id="items"></div>
+          <button class="btn btn--ghost btn--sm" type="button" id="itemErbij">+ Regel toevoegen</button>
+        </details>
+
+        <details class="groep">
+          <summary><h2>Over ons en openingsuren</h2></summary>
+          <label class="veld">Over ons<textarea rows="5" data-k="over"></textarea></label>
+          <label class="veld">Openingsuren <small>één regel per dag of periode</small><textarea rows="4" data-k="uren"></textarea></label>
+        </details>
+
+        <details class="groep">
+          <summary><h2>Contact</h2></summary>
+          <label class="veld">Telefoon <small>met landcode, bv. +32 …</small><input type="tel" data-k="tel" autocomplete="tel"></label>
+          <label class="veld">E-mailadres<input type="email" data-k="mail" autocomplete="email"></label>
+          <label class="veld">Adres<input type="text" data-k="adres" autocomplete="street-address"></label>
+        </details>
+
+        <details class="groep" open>
+          <summary><h2>Stijl</h2></summary>
+          <div class="veld">
+            <span id="kleurLabel">Hoofdkleur</span>
+            <div class="kleuren" id="kleuren" role="group" aria-labelledby="kleurLabel"></div>
+          </div>
+          <div class="veld">
+            <span>Foto bovenaan <small>optioneel</small></span>
+            <div class="foto">
+              <label class="btn btn--ghost btn--sm">Kies een foto<input type="file" id="foto" accept="image/jpeg,image/png,image/webp" hidden></label>
+              <button class="link" type="button" id="fotoWeg" hidden>Foto verwijderen</button>
+            </div>
+            <small data-only="klant">Je foto zie je hier in het voorbeeld. Bij je aanvraag stuur je hem apart naar ons door.</small>
+          </div>
+          <label class="vink" data-only="beheer"><input type="checkbox" id="credit" checked>"Gemaakt met Weblity" onderaan tonen</label>
+        </details>
+
+        <button class="link link--stil" type="button" id="opnieuw">Alles wissen en opnieuw beginnen</button>
+      </aside>
+
+      <div class="voorbeeld">
+        <div class="voorbeeld__bar">
+          <div class="schakel" role="group" aria-label="Schermgrootte">
+            <button type="button" data-scherm="breed" aria-pressed="true">Computer</button>
+            <button type="button" data-scherm="smal" aria-pressed="false">Telefoon</button>
+          </div>
+          <span class="voorbeeld__hint">Zo ziet je bezoeker het</span>
+        </div>
+        <div class="podium" id="podium">
+          <iframe id="frame" title="Voorbeeld van je website" sandbox="allow-same-origin"></iframe>
+        </div>
+      </div>
+
+      <!-- Op een telefoon wissel je tussen invullen en bekijken. -->
+      <div class="wissel" role="group" aria-label="Weergave">
+        <button type="button" data-view="bewerk" aria-pressed="true">Invullen</button>
+        <button type="button" data-view="voorbeeld" aria-pressed="false">Voorbeeld</button>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============ Stap 3: aanvragen (alleen klant) ============ -->
+  <dialog class="venster" id="aanvraag" aria-labelledby="aanvraagTitel">
+    <!-- Netlify Forms vangt dit formulier op; zie README.md. -->
+    <form id="aanvraagForm" name="website-aanvraag" method="POST" data-netlify="true" netlify-honeypot="bot-field">
+      <input type="hidden" name="form-name" value="website-aanvraag">
+      <input type="hidden" name="template" id="a-template">
+      <input type="hidden" name="ontwerp" id="a-ontwerp">
+      <p class="form__trap"><label>Niet invullen: <input name="bot-field" tabindex="-1" autocomplete="off"></label></p>
+
+      <button class="venster__sluit" type="button" data-sluit aria-label="Sluiten">×</button>
+      <p class="eyebrow">Stap 3</p>
+      <h2 id="aanvraagTitel">Vraag je website aan</h2>
+      <p class="lead">Wij krijgen je ontwerp zoals je het nu ziet, zetten het online en nemen contact met je op.</p>
+
+      <div class="venster__grid">
+        <label class="veld">Je naam<input name="naam" type="text" autocomplete="name" required></label>
+        <label class="veld">E-mailadres<input name="email" type="email" autocomplete="email" required></label>
+        <label class="veld">Telefoon<input name="telefoon" type="tel" autocomplete="tel"></label>
+        <label class="veld">Plan
+          <select name="plan">
+            <option>Start</option>
+            <option selected>Pro</option>
+            <option>Business</option>
+          </select>
+        </label>
+        <label class="veld veld--breed">Wil je nog iets kwijt? <small>optioneel</small><textarea name="bericht" rows="3"></textarea></label>
+      </div>
+
+      <button class="btn btn--lg" type="submit" id="aanvraagKnop">Verstuur mijn aanvraag</button>
+      <p class="venster__klein">We gebruiken je gegevens alleen om je over je website te contacteren.</p>
+
+      <div class="melding melding--fout" id="aanvraagFout" role="alert" hidden>
+        <p>Versturen is niet gelukt. Stuur je aanvraag via WhatsApp, dan komt je ontwerp ook bij ons terecht.</p>
+        <a class="btn btn--wa" target="_blank" rel="noopener" data-wa>Verstuur via WhatsApp</a>
+      </div>
+    </form>
+
+    <div class="klaar" id="aanvraagKlaar" role="status" hidden>
+      <svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="28" pathLength="1"/><path d="M20 33l8.5 8.5L45 24" pathLength="1"/></svg>
+      <h2>Je aanvraag is verstuurd.</h2>
+      <p>Bedankt! We nemen contact met je op. Heb je foto's of een logo? Stuur ze ons gerust al door.</p>
+      <a class="btn btn--wa" target="_blank" rel="noopener" data-wa>Stuur foto's via WhatsApp</a>
+      <button class="link" type="button" data-sluit>Terug naar mijn ontwerp</button>
+    </div>
+  </dialog>
+
+  <p class="toast" id="toast" role="status" hidden></p>
+
+  <script src="templates.js"></script>
+  <script src="bouwer.js"></script>
+</body>
+</html>
