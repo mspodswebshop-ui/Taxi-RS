@@ -1,0 +1,13 @@
+{
+  "extraKnownMarketplaces": {
+    "claude-commerce-agents": {
+      "source": {
+        "source": "github",
+        "repo": "anthropics/commerce-agents"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "commerce-builder@claude-commerce-agents": true
+  }
+}
