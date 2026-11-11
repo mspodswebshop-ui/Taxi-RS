@@ -14,7 +14,7 @@ je de site online zet:
 
 | Wat | Waar in `index.html` |
 |---|---|
-| Plannen en prijzen (€0, €12, €29 per maand; €10 en €24 bij jaarbetaling) | het blok `id="prijzen"` |
+| Plannen en prijzen (€6, €12, €29 per maand; €5, €10 en €24 bij jaarbetaling) | het blok `id="prijzen"` |
 | Wat elk plan bevat, en de antwoorden op de vragen | de blokken `id="prijzen"` en `id="faq"` |
 | Telefoon- en WhatsApp-nummer (nu +32 484 90 81 95) | het blok `id="toegang"` |
 
