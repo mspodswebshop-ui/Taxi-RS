@@ -33,6 +33,21 @@ python3 -m http.server 4173
 Dubbelklikken op `index.html` werkt ook, maar het formulier versturen kan dan
 niet.
 
+## De hele site als één bestand
+
+```bash
+cd weblity
+node build-standalone.mjs
+```
+
+Dat maakt `weblity.html`: stijl, script, lettertypes en icoon in één bestand.
+Je kunt het doorsturen en met een dubbelklik openen, zonder map of server
+eromheen. Het formulier versturen werkt daarin niet; de bezoeker krijgt de
+melding om via WhatsApp te schrijven.
+
+Na een wijziging in `index.html`, `styles.css` of `app.js` bouw je het
+bestand opnieuw.
+
 ## Online zetten met Netlify
 
 1. Maak in Netlify een **nieuwe site** van deze repository.

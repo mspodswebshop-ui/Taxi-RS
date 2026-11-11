@@ -1,0 +1,4 @@
+# Wordt gebouwd met: node build-standalone.mjs
+weblity.html
+
+.DS_Store
