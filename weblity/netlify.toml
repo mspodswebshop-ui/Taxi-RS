@@ -1,0 +1,23 @@
+# Configuratie voor Netlify — de Weblity-site.
+#
+# Dit is een aparte Netlify-site naast de AI-app. Kies bij het aanmaken in
+# Netlify als "Base directory" de map `weblity`; dan leest Netlify dit bestand
+# in plaats van de netlify.toml in de hoofdmap.
+#
+# Er is geen buildstap: de site is gewone HTML, CSS en JavaScript.
+
+[build]
+  publish = "."
+  command = "echo 'Geen buildstap nodig.'"
+
+# Lettertypes veranderen nooit van inhoud: laat browsers ze lang bewaren.
+[[headers]]
+  for = "/fonts/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"

@@ -1,0 +1,570 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Weblity — Bouw je website zonder code</title>
+  <meta name="description" content="Weblity is de websitebouwer waarmee je sleept, typt en publiceert. Kies een template, maak het van jou en zet je site online op je eigen domein.">
+  <meta name="theme-color" content="#07080d">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Weblity — Bouw je website zonder code">
+  <meta property="og:description" content="Sleep, typ en publiceer. Je eigen website of webshop, zonder één regel code.">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="fonts/bricolage-grotesque-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="styles.css">
+  <!-- Zonder JavaScript blijft alles gewoon zichtbaar: de begintoestand van de
+       animaties geldt alleen als deze class er staat. -->
+  <script>
+    document.documentElement.classList.add("js");
+    // Vangnet: start app.js om welke reden ook niet, toon dan alles gewoon.
+    setTimeout(function () {
+      if (!window.WEBLITY_READY) document.documentElement.classList.remove("js");
+    }, 4000);
+  </script>
+</head>
+<body>
+  <a class="skip" href="#main">Naar de inhoud</a>
+
+  <!-- Iconen: één keer gedefinieerd, overal hergebruikt met <use>. -->
+  <svg class="sprite" aria-hidden="true" focusable="false">
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 11V8a3.5 3.5 0 017 0v3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9L12 3zM19 16l.8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8L19 16z" fill="currentColor"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-phone" viewBox="0 0 24 24"><path d="M6.5 3.5h3l1.5 4-2 1.5a12 12 0 006 6l1.5-2 4 1.5v3a2 2 0 01-2.2 2A17 17 0 014.500 5.7a2 2 0 012-2.200z" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/></symbol>
+    <symbol id="i-whatsapp" viewBox="0 0 24 24"><path d="M12 3a9 9 0 00-7.700 13.600L3 21l4.600-1.200A9 9 0 1012 3z" fill="none" stroke="currentColor" stroke-width="1.900" stroke-linejoin="round"/><path d="M9 8.500c-.300 1 .200 2.500 1.700 4s3 2 4 1.700l.800-1.200-1.700-1-.800.700c-.700-.300-1.700-1.300-2-2l.700-.800-1-1.700-1.700.300z" fill="currentColor"/></symbol>
+    <symbol id="i-cursor" viewBox="0 0 24 24"><path d="M5 3l14 7.500-6.200 1.700L10.500 19 5 3z" fill="#fff" stroke="#0b0c12" stroke-width="1.500" stroke-linejoin="round"/></symbol>
+    <symbol id="i-b-head" viewBox="0 0 24 24"><path d="M6 5v14M18 5v14M6 12h12" fill="none" stroke="currentColor" stroke-width="2.200" stroke-linecap="round"/></symbol>
+    <symbol id="i-b-img" viewBox="0 0 24 24"><rect x="3.500" y="5" width="17" height="14" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="9" cy="10" r="1.600" fill="currentColor"/><path d="M4.500 17l5-4.500 3.500 3 2.500-2 4 3.500" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+    <symbol id="i-b-text" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h10" fill="none" stroke="currentColor" stroke-width="2.200" stroke-linecap="round"/></symbol>
+    <symbol id="i-b-btn" viewBox="0 0 24 24"><rect x="3" y="7.500" width="18" height="9" rx="4.500" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9 12h6" stroke="currentColor" stroke-width="2.200" stroke-linecap="round"/></symbol>
+    <symbol id="i-grip" viewBox="0 0 24 24"><g fill="currentColor"><circle cx="9" cy="6" r="1.600"/><circle cx="15" cy="6" r="1.600"/><circle cx="9" cy="12" r="1.600"/><circle cx="15" cy="12" r="1.600"/><circle cx="9" cy="18" r="1.600"/><circle cx="15" cy="18" r="1.600"/></g></symbol>
+  </svg>
+
+  <div class="progress" aria-hidden="true"><i id="progress"></i></div>
+  <div class="grain" aria-hidden="true"></div>
+
+  <!-- ============ Navigatie ============ -->
+  <header class="nav" id="nav">
+    <div class="nav__inner">
+      <a class="logo" href="#top" aria-label="Weblity, terug naar boven">
+        <span class="logo__mark">
+          <svg viewBox="0 0 32 32" aria-hidden="true"><path class="logo__w" pathLength="1" d="M7 10.500l4.200 11 4.800-9 4.800 9 4.200-11" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        <span class="logo__word">Weblity</span>
+      </a>
+      <nav class="nav__links" id="navLinks" aria-label="Hoofdmenu">
+        <a href="#functies">Functies</a>
+        <a href="#werkwijze">Zo werkt het</a>
+        <a href="#templates">Templates</a>
+        <a href="#prijzen">Prijzen</a>
+        <a href="#faq">Vragen</a>
+      </nav>
+      <a class="btn btn--sm nav__cta" href="#toegang" data-magnetic>Vroege toegang</a>
+      <button class="nav__toggle" id="navToggle" type="button" aria-expanded="false" aria-controls="navLinks" aria-label="Menu openen">
+        <span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <main id="main">
+
+    <!-- ============ Hero ============ -->
+    <section class="hero" id="top">
+      <div class="hero__bg" aria-hidden="true">
+        <div class="aurora"><i></i><i></i><i></i></div>
+        <div class="gridlines"></div>
+        <div class="hero__spot"></div>
+      </div>
+
+      <div class="wrap hero__content">
+        <a class="pill" href="#toegang" data-reveal>
+          <span class="pill__dot"></span>
+          Vroege toegang is geopend
+          <svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg>
+        </a>
+
+        <h1 class="hero__title">
+          <span class="line" data-split>Bouw je eigen</span>
+          <span class="line">
+            <span class="sr-only">website</span>
+            <span class="rotator" id="rotator" aria-hidden="true"><span class="rotator__word grad">website</span></span>
+          </span>
+          <span class="line" data-split style="--base:4">zonder één regel code.</span>
+        </h1>
+
+        <p class="hero__lead" data-reveal style="--d:5">
+          Weblity is de websitebouwer waarmee je sleept, typt en publiceert.
+          Kies een template, maak het van jou en zet je site online op je eigen domein.
+        </p>
+
+        <div class="hero__cta" data-reveal style="--d:6">
+          <a class="btn btn--lg" href="#toegang" data-magnetic>
+            <span>Vraag vroege toegang aan</span>
+            <svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg>
+          </a>
+          <a class="btn btn--ghost btn--lg" href="#werkwijze">Bekijk hoe het werkt</a>
+        </div>
+
+        <ul class="hero__notes" data-reveal style="--d:7">
+          <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg>Geen technische kennis nodig</li>
+          <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg>Werkt op elk scherm</li>
+          <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg>Je eigen domeinnaam</li>
+        </ul>
+      </div>
+
+      <!-- De bouwer die zichzelf bedient: app.js speelt hier een tijdlijn af. -->
+      <div class="wrap mock-wrap" data-reveal style="--d:8">
+        <div class="mock" id="mock" aria-hidden="true">
+          <div class="mock__glow"></div>
+          <div class="mock__inner">
+            <div class="mock__bar">
+              <span class="mock__dots"><i></i><i></i><i></i></span>
+              <div class="mock__url" id="mockUrlBox">
+                <svg class="ico"><use href="#i-lock"/></svg>
+                <span id="mockUrl">concept · nog niet online</span>
+              </div>
+              <span class="mock__publish" id="mockPublish"><i class="mock__spin"></i><span id="mockPublishLabel">Publiceer</span></span>
+            </div>
+
+            <div class="mock__body">
+              <aside class="mock__side">
+                <p class="mock__label">Blokken</p>
+                <div class="blk" data-blk="kop"><svg class="ico"><use href="#i-b-head"/></svg><span>Kop</span></div>
+                <div class="blk" data-blk="foto"><svg class="ico"><use href="#i-b-img"/></svg><span>Afbeelding</span></div>
+                <div class="blk" data-blk="tekst"><svg class="ico"><use href="#i-b-text"/></svg><span>Tekst</span></div>
+                <div class="blk" data-blk="knop"><svg class="ico"><use href="#i-b-btn"/></svg><span>Knop</span></div>
+                <p class="mock__label mock__label--gap">Stijl</p>
+                <div class="swatches">
+                  <i data-swatch="0" class="on"></i><i data-swatch="1"></i><i data-swatch="2"></i>
+                </div>
+              </aside>
+
+              <div class="mock__canvas" id="mockCanvas">
+                <div class="drop" id="mockDrop">
+                  <svg class="ico"><use href="#i-plus"/></svg>Sleep hier een blok
+                </div>
+
+                <div class="site" id="mockSite" data-theme="0">
+                  <div class="site__nav piece" data-piece="kop">
+                    <b class="site__logo"></b>
+                    <span class="sk"></span><span class="sk"></span><span class="sk"></span>
+                  </div>
+                  <div class="site__main">
+                    <div class="site__copy">
+                      <span class="site__tag piece" data-piece="kop">Bakkerij De Korst</span>
+                      <p class="site__title piece" data-piece="kop"><span id="mockTitle"></span><i class="caret"></i></p>
+                      <div class="site__text piece" data-piece="tekst">
+                        <span class="sk"></span><span class="sk"></span><span class="sk" style="--w:62%"></span>
+                      </div>
+                      <span class="site__btn piece" data-piece="knop">Bestel online</span>
+                    </div>
+                    <div class="site__img piece" data-piece="foto"><i></i><i></i><i></i></div>
+                  </div>
+                  <div class="site__cards piece" data-piece="tekst"><i></i><i></i><i></i></div>
+                  <div class="site__shine"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="mock__ghost" id="mockGhost"></div>
+            <div class="mock__cursor" id="mockCursor"><svg class="ico"><use href="#i-cursor"/></svg></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ Lopende band ============ -->
+    <div class="ticker" aria-hidden="true" data-live>
+      <div class="marquee" data-marquee>
+        <div class="marquee__group">
+          <span>Slepen</span><b></b><span class="out">Typen</span><b></b><span>Publiceren</span><b></b>
+          <span class="out">Geen code</span><b></b><span>Eigen domein</span><b></b><span class="out">Mobielvriendelijk</span><b></b>
+          <span>AI-teksten</span><b></b><span class="out">Webshop</span><b></b>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ Functies ============ -->
+    <section class="section" id="functies">
+      <div class="wrap">
+        <header class="head">
+          <p class="eyebrow" data-reveal>Functies</p>
+          <h2 data-split>Alles wat je nodig hebt. <em class="grad">Niets wat je moet leren.</em></h2>
+          <p class="lead" data-reveal style="--d:2">Weblity doet het technische werk. Jij kiest hoe het eruitziet en wat erop staat.</p>
+        </header>
+
+        <div class="bento" id="bento">
+          <article class="card card--7" data-reveal data-live>
+            <div class="viz viz-sort" aria-hidden="true">
+              <div class="sort__item"><svg class="ico"><use href="#i-grip"/></svg><span>Kop</span><i class="sk"></i></div>
+              <div class="sort__item sort__item--a"><svg class="ico"><use href="#i-grip"/></svg><span>Afbeelding</span><i class="sk"></i></div>
+              <div class="sort__item sort__item--b"><svg class="ico"><use href="#i-grip"/></svg><span>Tekst</span><i class="sk"></i></div>
+              <svg class="ico sort__cursor"><use href="#i-cursor"/></svg>
+            </div>
+            <h3>Slepen en neerzetten</h3>
+            <p>Pak een blok, zet het waar je het wilt. Wat je ziet is wat je bezoeker ziet — geen instellingen achter drie menu's.</p>
+          </article>
+
+          <article class="card card--5" data-reveal data-live style="--d:1">
+            <div class="viz viz-resp" aria-hidden="true">
+              <div class="resp__device">
+                <div class="resp__bar"><i></i><i></i><i></i></div>
+                <div class="resp__page">
+                  <b class="resp__hero"></b>
+                  <div class="resp__grid"><i></i><i></i><i></i></div>
+                </div>
+              </div>
+              <span class="resp__size"></span>
+            </div>
+            <h3>Altijd mobielvriendelijk</h3>
+            <p>Elke pagina past zich vanzelf aan: telefoon, tablet of breed scherm.</p>
+          </article>
+
+          <article class="card card--5" data-reveal data-live>
+            <div class="viz viz-ai" aria-hidden="true">
+              <div class="ai__prompt"><svg class="ico"><use href="#i-spark"/></svg><span id="aiPrompt">Schrijf een welkomsttekst voor mijn kapsalon</span></div>
+              <p class="ai__out"><span id="aiOut"></span><i class="caret"></i></p>
+            </div>
+            <h3>AI schrijft mee</h3>
+            <p>Geen inspiratie? Zeg waar je zaak over gaat en krijg een eerste tekst die je zelf bijschaaft.</p>
+          </article>
+
+          <article class="card card--7" data-reveal data-live style="--d:1">
+            <div class="viz viz-style" id="styleViz" data-theme="0" aria-hidden="true">
+              <div class="style__card">
+                <b>Aa</b>
+                <span class="sk"></span><span class="sk" style="--w:70%"></span>
+                <em>Knop</em>
+              </div>
+              <div class="style__dots"><i></i><i></i><i></i><i></i></div>
+            </div>
+            <h3>Jouw stijl in één klik</h3>
+            <p>Kleuren, lettertypes en hoeken veranderen in één keer over je hele site. Zo blijft alles bij elkaar passen.</p>
+          </article>
+
+          <article class="card card--6" data-reveal data-live>
+            <div class="viz viz-domain" aria-hidden="true">
+              <div class="domain__bar">
+                <svg class="ico"><use href="#i-lock"/></svg>
+                <span class="domain__proto">https://</span><span class="domain__name">jouwdomein.be</span>
+              </div>
+              <div class="domain__status"><span class="pulse"></span>Online · beveiligde verbinding</div>
+            </div>
+            <h3>Eigen domein, hosting inbegrepen</h3>
+            <p>Koppel je domeinnaam en je site staat online, met een beveiligde verbinding. Geen aparte hostingpartij nodig.</p>
+          </article>
+
+          <article class="card card--6" data-reveal data-live style="--d:1">
+            <span class="chip chip--soon">Binnenkort</span>
+            <div class="viz viz-pay" aria-hidden="true">
+              <div class="pay__row"><span>Totaal</span><b>€ 24,50</b></div>
+              <div class="pay__btn">
+                <span class="pay__label">Betaal met Bancontact</span>
+                <span class="pay__ok"><svg class="ico"><use href="#i-check"/></svg>Betaald</span>
+              </div>
+            </div>
+            <h3>Verkopen met Paylity</h3>
+            <p>Voeg producten toe en laat klanten afrekenen via Paylity, met Bancontact of kaart.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ Zo werkt het ============ -->
+    <section class="section how" id="werkwijze">
+      <div class="wrap">
+        <header class="head">
+          <p class="eyebrow" data-reveal>Zo werkt het</p>
+          <h2 data-split>Van idee tot online <em class="grad">in drie stappen.</em></h2>
+        </header>
+
+        <div class="how__grid" id="howGrid">
+          <div class="how__rail" aria-hidden="true"><i id="howRail"></i></div>
+
+          <div class="how__text" data-step="1">
+            <span class="how__num">01</span>
+            <h3>Kies een template</h3>
+            <p>Begin met een ontwerp dat bij je zaak past. Elk template is een volledige site: startpagina, over ons, contact.</p>
+          </div>
+          <div class="how__visual" data-step="1" data-live aria-hidden="true">
+            <div class="hv hv-pick">
+              <div class="hv-pick__grid">
+                <i></i><i></i><i></i><i></i><i></i><i></i>
+                <span class="hv-pick__ring"></span>
+              </div>
+              <div class="hv__caption"><span class="pulse"></span>Template gekozen</div>
+            </div>
+          </div>
+
+          <div class="how__text" data-step="2">
+            <span class="how__num">02</span>
+            <h3>Maak het van jou</h3>
+            <p>Klik op een tekst om hem te veranderen. Sleep je eigen foto's erin. Pas kleuren aan tot het klopt.</p>
+          </div>
+          <div class="how__visual" data-step="2" data-live aria-hidden="true">
+            <div class="hv hv-edit">
+              <div class="hv-edit__page">
+                <b class="hv-edit__title"></b>
+                <span class="sk"></span><span class="sk" style="--w:72%"></span>
+                <em class="hv-edit__btn">Reserveer</em>
+              </div>
+              <div class="hv-edit__panel">
+                <label>Hoeken<span class="slider slider--a"><i></i></span></label>
+                <label>Grootte<span class="slider slider--b"><i></i></span></label>
+                <label>Kleur<span class="hv-edit__dots"><i></i><i></i><i></i></span></label>
+              </div>
+            </div>
+          </div>
+
+          <div class="how__text" data-step="3">
+            <span class="how__num">03</span>
+            <h3>Publiceer</h3>
+            <p>Eén knop en je site staat online. Later iets aanpassen? Dat doe je zelf, wanneer je wilt.</p>
+          </div>
+          <div class="how__visual" data-step="3" data-live aria-hidden="true">
+            <div class="hv hv-live">
+              <div class="hv-live__orb"><span></span><span></span><span></span><b>Live</b></div>
+              <ul class="hv-live__list">
+                <li><svg class="ico"><use href="#i-check"/></svg>Domein gekoppeld</li>
+                <li><svg class="ico"><use href="#i-check"/></svg>Beveiligde verbinding</li>
+                <li><svg class="ico"><use href="#i-check"/></svg>Online</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ Templates ============ -->
+    <section class="section templates" id="templates">
+      <div class="wrap">
+        <header class="head head--center">
+          <p class="eyebrow" data-reveal>Templates</p>
+          <h2 data-split>Een startpunt <em class="grad">voor elke zaak.</em></h2>
+          <p class="lead" data-reveal style="--d:2">Restaurant, kapsalon, webshop of vereniging: je begint nooit met een lege pagina.</p>
+        </header>
+      </div>
+      <!-- De kaartjes worden door app.js getekend. -->
+      <div class="tpl-rows" id="tplRows" aria-hidden="true" data-live></div>
+    </section>
+
+    <!-- ============ Cijfers ============ -->
+    <section class="stats">
+      <div class="wrap stats__grid">
+        <div class="stat" data-reveal>
+          <b><span data-count="0" data-from="100">0</span></b>
+          <p>regels code die je moet schrijven</p>
+        </div>
+        <div class="stat" data-reveal style="--d:1">
+          <b><span data-count="3" data-from="0">3</span></b>
+          <p>stappen van idee tot online</p>
+        </div>
+        <div class="stat" data-reveal style="--d:2">
+          <b><span data-count="1" data-from="9">1</span></b>
+          <p>plek voor je site, je domein en je teksten</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ Prijzen ============ -->
+    <section class="section" id="prijzen">
+      <div class="wrap">
+        <header class="head head--center">
+          <p class="eyebrow" data-reveal>Prijzen</p>
+          <h2 data-split>Begin gratis. <em class="grad">Groei wanneer je wilt.</em></h2>
+        </header>
+
+        <div class="billing" data-reveal role="group" aria-label="Betaalperiode">
+          <button type="button" class="on" data-period="maand" aria-pressed="true">Per maand</button>
+          <button type="button" data-period="jaar" aria-pressed="false">Per jaar <span class="chip">−17%</span></button>
+          <i class="billing__thumb" aria-hidden="true"></i>
+        </div>
+
+        <div class="plans">
+          <article class="plan" data-reveal>
+            <h3>Start</h3>
+            <p class="plan__for">Om het uit te proberen</p>
+            <p class="plan__price"><span class="plan__cur">€</span><span class="plan__num" data-maand="0" data-jaar="0">0</span><span class="plan__per">/maand</span></p>
+            <ul>
+              <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg>1 website</li>
+              <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg>Adres op een Weblity-subdomein</li>
+              <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg>Alle basisblokken en templates</li>
+              <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg>Weblity-vermelding onderaan</li>
+            </ul>
+            <a class="btn btn--ghost" href="#toegang" data-plan="Start">Kies Start</a>
+          </article>
+
+          <article class="plan plan--hot" data-reveal style="--d:1">
+            <span class="plan__badge">Aanrader</span>
+            <h3>Pro</h3>
+            <p class="plan__for">Voor zelfstandigen en kleine zaken</p>
+            <p class="plan__price"><span class="plan__cur">€</span><span class="plan__num" data-maand="12" data-jaar="10">12</span><span class="plan__per">/maand</span></p>
+            <ul>
+              <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg>Je eigen domeinnaam</li>
+              <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg>Onbeperkt pagina's</li>
+              <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg>AI-tekstassistent</li>
+              <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg>Contactformulieren</li>
+              <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg>Geen Weblity-vermelding</li>
+            </ul>
+            <a class="btn" href="#toegang" data-plan="Pro" data-magnetic>Kies Pro</a>
+          </article>
+
+          <article class="plan" data-reveal style="--d:2">
+            <h3>Business</h3>
+            <p class="plan__for">Voor wie online verkoopt</p>
+            <p class="plan__price"><span class="plan__cur">€</span><span class="plan__num" data-maand="29" data-jaar="24">29</span><span class="plan__per">/maand</span></p>
+            <ul>
+              <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg>Alles van Pro</li>
+              <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg>Webshop met producten en winkelwagen</li>
+              <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg>Betalingen via Paylity</li>
+              <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg>Meerdere beheerders</li>
+            </ul>
+            <a class="btn btn--ghost" href="#toegang" data-plan="Business">Kies Business</a>
+          </article>
+        </div>
+
+        <p class="plans__note" data-reveal>Prijzen exclusief btw. Weblity is in vroege toegang: plannen en prijzen kunnen nog wijzigen voor de lancering.</p>
+      </div>
+    </section>
+
+    <!-- ============ Vragen ============ -->
+    <section class="section" id="faq">
+      <div class="wrap faq">
+        <header class="head">
+          <p class="eyebrow" data-reveal>Vragen</p>
+          <h2 data-split>Goed om <em class="grad">te weten.</em></h2>
+          <p class="lead" data-reveal style="--d:2">Staat je vraag er niet bij? Stuur ons een bericht, we antwoorden persoonlijk.</p>
+        </header>
+
+        <div class="faq__list" data-reveal>
+          <div class="faq__item">
+            <h3><button type="button" class="faq__q" aria-expanded="false" aria-controls="faq1" id="faq1b">Heb ik technische kennis nodig?<span class="faq__icon" aria-hidden="true"></span></button></h3>
+            <div class="faq__a" id="faq1" role="region" aria-labelledby="faq1b"><div><p>Nee. Als je een tekst kunt typen en een foto kunt verslepen, kun je met Weblity een site maken. Code schrijven hoeft nergens.</p></div></div>
+          </div>
+          <div class="faq__item">
+            <h3><button type="button" class="faq__q" aria-expanded="false" aria-controls="faq2" id="faq2b">Wanneer kan ik beginnen?<span class="faq__icon" aria-hidden="true"></span></button></h3>
+            <div class="faq__a" id="faq2" role="region" aria-labelledby="faq2b"><div><p>Weblity is nog in ontwikkeling en we laten mensen in groepen toe. Zet je op de lijst voor vroege toegang, dan hoor je van ons zodra er een plek voor je is.</p></div></div>
+          </div>
+          <div class="faq__item">
+            <h3><button type="button" class="faq__q" aria-expanded="false" aria-controls="faq3" id="faq3b">Kan ik mijn eigen domeinnaam gebruiken?<span class="faq__icon" aria-hidden="true"></span></button></h3>
+            <div class="faq__a" id="faq3" role="region" aria-labelledby="faq3b"><div><p>Ja, vanaf het Pro-plan koppel je je eigen domeinnaam. Met het Start-plan krijgt je site een adres op een Weblity-subdomein.</p></div></div>
+          </div>
+          <div class="faq__item">
+            <h3><button type="button" class="faq__q" aria-expanded="false" aria-controls="faq4" id="faq4b">Kan ik er ook een webshop mee maken?<span class="faq__icon" aria-hidden="true"></span></button></h3>
+            <div class="faq__a" id="faq4" role="region" aria-labelledby="faq4b"><div><p>Dat komt eraan. Het Business-plan krijgt producten, een winkelwagen en betalingen via Paylity. Zin om mee te testen? Vermeld het in je aanvraag.</p></div></div>
+          </div>
+          <div class="faq__item">
+            <h3><button type="button" class="faq__q" aria-expanded="false" aria-controls="faq5" id="faq5b">Ziet mijn site er ook goed uit op een telefoon?<span class="faq__icon" aria-hidden="true"></span></button></h3>
+            <div class="faq__a" id="faq5" role="region" aria-labelledby="faq5b"><div><p>Ja. Elk template en elk blok past zich aan de schermbreedte aan. Je kunt in de bouwer zelf bekijken hoe je pagina er op een telefoon uitziet.</p></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ Vroege toegang / contact ============ -->
+    <section class="section cta" id="toegang">
+      <div class="wrap">
+        <div class="cta__box" data-reveal>
+          <div class="cta__glow" aria-hidden="true"></div>
+
+          <div class="cta__copy">
+            <p class="eyebrow">Vroege toegang</p>
+            <h2>Bouw als een van de eersten met Weblity.</h2>
+            <p class="lead">Laat je gegevens achter en vertel wat je wilt maken. Je hoort van ons zodra je kunt starten.</p>
+
+            <div class="cta__alt">
+              <a class="btn btn--wa" href="https://wa.me/32484908195?text=Hallo%20Weblity%2C%20ik%20wil%20graag%20vroege%20toegang." target="_blank" rel="noopener">
+                <svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg>WhatsApp
+              </a>
+              <a class="btn btn--ghost" href="tel:+32484908195">
+                <svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg>+32 484 90 81 95
+              </a>
+            </div>
+          </div>
+
+          <!-- Netlify Forms vangt dit formulier op; zie README.md. -->
+          <form class="form" id="form" name="vroege-toegang" method="POST" action="/bedankt.html" data-netlify="true" netlify-honeypot="bot-field">
+            <input type="hidden" name="form-name" value="vroege-toegang">
+            <p class="form__trap"><label>Niet invullen: <input name="bot-field" tabindex="-1" autocomplete="off"></label></p>
+
+            <div class="field">
+              <label for="f-naam">Naam</label>
+              <input id="f-naam" name="naam" type="text" autocomplete="name" required>
+            </div>
+            <div class="field">
+              <label for="f-email">E-mailadres</label>
+              <input id="f-email" name="email" type="email" autocomplete="email" required>
+            </div>
+            <div class="field">
+              <label for="f-soort">Wat wil je bouwen?</label>
+              <select id="f-soort" name="soort">
+                <option>Een bedrijfswebsite</option>
+                <option>Een webshop</option>
+                <option>Een portfolio</option>
+                <option>Een landingspagina</option>
+                <option>Iets anders</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="f-plan">Plan</label>
+              <select id="f-plan" name="plan">
+                <option>Weet ik nog niet</option>
+                <option>Start</option>
+                <option>Pro</option>
+                <option>Business</option>
+              </select>
+            </div>
+            <div class="field field--full">
+              <label for="f-bericht">Bericht <span>(optioneel)</span></label>
+              <textarea id="f-bericht" name="bericht" rows="3"></textarea>
+            </div>
+
+            <button class="btn btn--lg form__submit" type="submit" data-magnetic>
+              <span class="form__submit-label">Zet me op de lijst</span>
+              <svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg>
+            </button>
+            <p class="form__legal">We gebruiken je gegevens alleen om je over Weblity te contacteren.</p>
+            <p class="form__error" id="formError" role="alert" hidden>
+              Versturen is niet gelukt. Probeer het opnieuw of stuur ons een bericht via WhatsApp.
+            </p>
+
+            <div class="form__done" id="formDone" role="status" hidden>
+              <svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="28" pathLength="1"/><path d="M20 33l8.500 8.500L45 24" pathLength="1"/></svg>
+              <h3>Je staat op de lijst.</h3>
+              <p>Bedankt! We nemen contact met je op zodra je kunt starten.</p>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============ Voettekst ============ -->
+  <footer class="footer">
+    <div class="wrap footer__top">
+      <a class="logo" href="#top" aria-label="Weblity, terug naar boven">
+        <span class="logo__mark"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M7 10.500l4.200 11 4.800-9 4.800 9 4.200-11" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span class="logo__word">Weblity</span>
+      </a>
+      <nav class="footer__links" aria-label="Voettekst">
+        <a href="#functies">Functies</a>
+        <a href="#werkwijze">Zo werkt het</a>
+        <a href="#templates">Templates</a>
+        <a href="#prijzen">Prijzen</a>
+        <a href="#faq">Vragen</a>
+        <a href="#toegang">Vroege toegang</a>
+      </nav>
+    </div>
+    <div class="footer__word" aria-hidden="true" data-live><span>Weblity</span></div>
+    <div class="wrap footer__bottom">
+      <p>© <span id="year">2026</span> Weblity. Alle rechten voorbehouden.</p>
+      <p>Websites bouwen, zonder code.</p>
+    </div>
+  </footer>
+
+  <script src="app.js" defer></script>
+</body>
+</html>

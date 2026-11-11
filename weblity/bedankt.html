@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bedankt — Weblity</title>
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#07080d">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .thanks { min-height: 100vh; min-height: 100dvh; display: grid; place-content: center; justify-items: center; gap: 18px; padding: 24px; text-align: center; }
+    .thanks svg { width: 96px; height: 96px; fill: none; stroke: var(--mint); stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round; }
+    .thanks circle, .thanks path { stroke-dasharray: 1; stroke-dashoffset: 1; animation: draw 0.8s 0.2s var(--ease) forwards; }
+    .thanks path { animation-delay: 0.8s; animation-duration: 0.5s; }
+    .thanks h1 { font-family: var(--display); font-size: clamp(2.2rem, 7vw, 4rem); letter-spacing: -0.04em; line-height: 1; }
+    .thanks p { color: var(--muted); max-width: 36ch; }
+    @media (prefers-reduced-motion: reduce) { .thanks circle, .thanks path { stroke-dashoffset: 0; } }
+  </style>
+</head>
+<body>
+  <main class="thanks">
+    <svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="28" pathLength="1"/><path d="M20 33l8.5 8.5L45 24" pathLength="1"/></svg>
+    <h1>Je staat op de lijst.</h1>
+    <p>Bedankt! We nemen contact met je op zodra je met Weblity kunt starten.</p>
+    <a class="btn btn--ghost" href="/">Terug naar de site</a>
+  </main>
+</body>
+</html>

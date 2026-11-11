@@ -1,0 +1,9 @@
+Beide lettertypes vallen onder de SIL Open Font License 1.1 (OFL-1.1) en
+mogen vrij gebruikt en meegeleverd worden.
+
+- Bricolage Grotesque  - https://github.com/ateliertriay/bricolage
+- Inter                - https://github.com/rsms/inter
+
+De bestanden komen uit de Fontsource-pakketten (versie 5.3.0) en staan hier
+lokaal, zodat de site geen lettertypes bij een externe dienst ophaalt.
+Licentietekst: https://openfontlicense.org
