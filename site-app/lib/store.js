@@ -8,6 +8,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import crypto from "node:crypto";
+import * as mirror from "./mirror.js";
 
 export const DATA_DIR = path.resolve(process.env.DATA_DIR || "data");
 const DB_FILE = path.join(DATA_DIR, "db.json");
@@ -25,11 +26,63 @@ try {
   if (err.code !== "ENOENT") throw err;
 }
 
+/* --------------------- Kopie in de database (optioneel) ------------------- */
+
+// Schrijfacties naar de database gaan één voor één, in volgorde. Een verzoek
+// wacht met antwoorden tot zijn acties klaar zijn (zie flush), zodat "opgeslagen"
+// ook echt betekent dat het een herstart overleeft.
+let tail = Promise.resolve();
+let failed = null;
+
+function queue(job) {
+  if (!mirror.enabled) return;
+  tail = tail.then(job).catch((err) => {
+    console.error("Opslaan in de database mislukt:", err.message);
+    failed = err;
+  });
+}
+
+export async function flush() {
+  await tail;
+  if (failed) {
+    failed = null;
+    throw new Error("Opslaan is niet gelukt. Probeer het opnieuw.");
+  }
+}
+
+/** Eén bestand (pad binnen de sitesmap) ook in de database zetten. */
+export const mirrorFile = (key) => queue(() => mirror.put(key, fs.readFileSync(path.join(SITES_DIR, key))));
+/** Een hele map gelijk trekken: nieuwe bestanden erbij, verdwenen eruit. */
+export const mirrorDir = (prefix) => queue(() => mirror.syncDir(SITES_DIR, prefix));
+
+if (mirror.enabled) {
+  await mirror.init();
+  db = { ...db, ...((await mirror.loadState()) || {}) };
+}
+
+// Sites waarvan de bestanden op deze schijf staan. Na een herstart is dit leeg
+// en haalt ensureLocal ze bij het eerste bezoek terug uit de database.
+const onDisk = new Map();
+
+export function ensureLocal(site) {
+  if (!mirror.enabled) return Promise.resolve();
+  if (!onDisk.has(site.id)) {
+    const job = mirror.restore(SITES_DIR, `${site.id}/`).catch((err) => {
+      onDisk.delete(site.id); // volgende bezoek opnieuw proberen
+      throw err;
+    });
+    onDisk.set(site.id, job);
+  }
+  return onDisk.get(site.id);
+}
+
 /** Schrijft eerst naar een tijdelijk bestand, zodat een crash niets sloopt. */
 export function save() {
   const tmp = `${DB_FILE}.${process.pid}.tmp`;
   fs.writeFileSync(tmp, JSON.stringify(db, null, 2));
   fs.renameSync(tmp, DB_FILE);
+  const copy = structuredClone(db);
+  queue(() => mirror.saveState(copy));
 }
 
 export const id = (bytes = 8) => crypto.randomBytes(bytes).toString("hex");
@@ -94,6 +147,7 @@ export const siteByDomain = (host) => db.sites.find((s) => s.domains.some((d) =>
 
 export function addSite(site) {
   db.sites.push(site);
+  onDisk.set(site.id, Promise.resolve()); // nieuw: er valt niets terug te halen
   save();
 }
 
@@ -101,6 +155,7 @@ export function removeSite(siteId) {
   db.sites = db.sites.filter((s) => s.id !== siteId);
   save();
   fs.rmSync(path.join(SITES_DIR, siteId), { recursive: true, force: true });
+  queue(() => mirror.removePrefix(`${siteId}/`));
 }
 
 /** De map met de bestanden die nu online staan (of null zonder upload). */

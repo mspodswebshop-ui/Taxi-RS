@@ -138,10 +138,13 @@ function siteFromSubdomain(host) {
 }
 
 // Kiest op de hostnaam: is dit een site van een klant, of het dashboard?
-app.use((req, res, next) => {
+app.use(async (req, res, next) => {
   const host = (req.hostname || "").toLowerCase();
   const site = store.siteByDomain(host) || siteFromSubdomain(host);
-  if (site) return serveSite(req, res, site, req.path);
+  if (site) {
+    await store.ensureLocal(site);
+    return serveSite(req, res, site, req.path);
+  }
   if (BASE_DOMAIN && host.endsWith(`.${BASE_DOMAIN}`) && host !== `www.${BASE_DOMAIN}`) {
     return res.status(404).send(page("Site niet gevonden", "Op dit adres staat geen website."));
   }
@@ -149,12 +152,13 @@ app.use((req, res, next) => {
 });
 
 if (PATH_MODE) {
-  app.use((req, res, next) => {
+  app.use(async (req, res, next) => {
     const match = req.path.match(/^\/s\/([a-z0-9-]+)(\/.*)?$/);
     if (match) {
       const site = store.siteBySlug(match[1]);
       if (!site) return res.status(404).send(page("Site niet gevonden", "Op dit adres staat geen website."));
       if (!match[2]) return res.redirect(301, `/s/${match[1]}/`);
+      await store.ensureLocal(site);
       return serveSite(req, res, site, match[2]);
     }
     // Een site verwijst vaak naar "/style.css". In deze modus staat de site in
@@ -179,6 +183,16 @@ app.use(express.static(path.join(here, "public"), { extensions: ["html"] }));
 const api = express.Router();
 app.use("/api", api);
 api.use(express.json({ limit: "6mb" }));
+
+// Pas antwoorden als alles wat dit verzoek veranderde ook echt bewaard is.
+api.use((req, res, next) => {
+  const json = res.json.bind(res);
+  res.json = (body) => {
+    store.flush().then(() => json(body), next);
+    return res;
+  };
+  next();
+});
 
 const COOKIE = "zl_session";
 const readCookie = (req) =>
@@ -293,9 +307,10 @@ function slugFrom(name) {
 }
 
 /** Haalt de site uit het adres en controleert dat hij van deze gebruiker is. */
-api.param("id", (req, res, next, siteId) => {
+api.param("id", async (req, res, next, siteId) => {
   const site = store.siteById(siteId);
   if (!site || site.userId !== req.user.id) return res.status(404).json({ error: "Site niet gevonden." });
+  await store.ensureLocal(site);
   req.site = site;
   next();
 });
@@ -434,7 +449,7 @@ api.put("/sites/:id/page", (req, res) => {
   if (!found) return res.status(404).json({ error: "Deze pagina bestaat niet." });
   if (typeof html !== "string" || !html.trim()) return res.status(400).json({ error: "Lege pagina, niet opgeslagen." });
   deploy.keepVersion(req.site, found.clean, found.full);
-  fs.writeFileSync(found.full, html);
+  deploy.writeLive(req.site, found.clean, html);
   res.json({ ok: true, versions: deploy.listVersions(req.site, found.clean) });
 });
 
@@ -449,7 +464,7 @@ api.post("/sites/:id/restore", (req, res) => {
   if (!old) return res.status(404).json({ error: "Deze versie bestaat niet meer." });
   const html = fs.readFileSync(old);
   deploy.keepVersion(req.site, found.clean, found.full);
-  fs.writeFileSync(found.full, html);
+  deploy.writeLive(req.site, found.clean, html);
   res.json({ ok: true });
 });
 
@@ -462,8 +477,7 @@ api.post("/sites/:id/asset", upload.single("file"), (req, res) => {
     if (!req.file || !IMAGE_TYPES.has(ext)) throw new Error("Kies een afbeelding (png, jpg, gif, webp, svg of avif).");
     if (req.file.size > 15 * 1024 * 1024) throw new Error("De afbeelding is groter dan 15 MB.");
     const name = `${store.id(6)}${ext}`;
-    fs.mkdirSync(path.join(root, "zetlive-uploads"), { recursive: true });
-    fs.copyFileSync(req.file.path, path.join(root, "zetlive-uploads", name));
+    deploy.writeLive(req.site, `zetlive-uploads/${name}`, fs.readFileSync(req.file.path));
     res.json({ url: `/zetlive-uploads/${name}` });
   } catch (err) {
     res.status(400).json({ error: err.message });

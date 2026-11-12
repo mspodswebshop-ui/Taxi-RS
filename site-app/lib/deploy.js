@@ -10,9 +10,10 @@
 import fs from "node:fs";
 import path from "node:path";
 import AdmZip from "adm-zip";
-import { SITES_DIR, id, save } from "./store.js";
+import { SITES_DIR, id, save, mirrorDir, mirrorFile } from "./store.js";
 
-export const MAX_SITE_BYTES = Number(process.env.MAX_SITE_MB || 200) * 1024 * 1024;
+// Met een database als opslag (gratis Neon: 0,5 GB in totaal) is de grens lager.
+export const MAX_SITE_BYTES = Number(process.env.MAX_SITE_MB || (process.env.DATABASE_URL ? 40 : 200)) * 1024 * 1024;
 const MAX_FILES = 5000;
 const KEEP_DEPLOYS = 5;
 const KEEP_VERSIONS = 20;
@@ -78,6 +79,7 @@ function publish(site, entries) {
     fs.rmSync(path.join(SITES_DIR, site.id, "deploys", old.id), { recursive: true, force: true });
   }
   save();
+  mirrorDir(`${site.id}/deploys`);
   return site.deploys[0];
 }
 
@@ -136,6 +138,16 @@ export function keepVersion(site, pagePath, file) {
   for (const old of fs.readdirSync(dir).sort().reverse().slice(KEEP_VERSIONS)) {
     fs.rmSync(path.join(dir, old));
   }
+  mirrorDir(`${site.id}/versions/${encodeURIComponent(pagePath)}`);
+}
+
+/** Schrijft een bestand in de online versie van een site. */
+export function writeLive(site, rel, data) {
+  const key = `${site.id}/deploys/${site.current}/${rel}`;
+  const full = path.join(SITES_DIR, key);
+  fs.mkdirSync(path.dirname(full), { recursive: true });
+  fs.writeFileSync(full, data);
+  mirrorFile(key);
 }
 
 export function listVersions(site, pagePath) {

@@ -1,0 +1,28 @@
+# Zetlive op Render (https://render.com), gratis.
+#
+# Gebruik: kies in Render "New > Blueprint", wijs deze repository aan en vul bij
+# "Blueprint Path" in: site-app/render.yaml
+# Render vraagt daarna om DATABASE_URL: de verbindingsregel van je Neon-database.
+#
+# De gratis schijf van Render wordt bij elke herstart gewist. Daarom bewaart
+# Zetlive alles in de database; zonder DATABASE_URL raak je websites kwijt.
+
+services:
+  - type: web
+    name: zetlive
+    runtime: node
+    plan: free
+    region: frankfurt
+    rootDir: site-app
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/me
+    envVars:
+      # sync: false betekent dat Render deze waarde aan jou vraagt en hem niet
+      # in dit bestand opslaat. Zet de verbindingsregel dus nooit hieronder.
+      - key: DATABASE_URL
+        sync: false
+      - key: NODE_ENV
+        value: production
+      - key: NODE_VERSION
+        value: "22"

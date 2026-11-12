@@ -33,20 +33,34 @@ Zonder `BASE_DOMAIN` staan sites op `/s/<naam>/`. Wil je lokaal al echte
 subdomeinen, start dan met `BASE_DOMAIN=localhost npm start`; sites staan dan op
 `http://<naam>.localhost:4100`.
 
-## Echt online zetten
+## Online zetten op Render (gratis)
 
-Je hebt een server nodig die blijft draaien en een schijf die blijft bestaan
-(bijvoorbeeld een VPS). Gratis hosting zonder vaste schijf is niet geschikt: na
-een herstart zijn alle websites weg.
+1. Maak een Postgres-database, bijvoorbeeld gratis bij [Neon](https://neon.tech),
+   en kopieer de verbindingsregel (begint met `postgresql://`).
+2. Kies in Render **New > Blueprint**, wijs deze repository aan en vul bij
+   **Blueprint Path** in: `site-app/render.yaml`.
+3. Plak de verbindingsregel bij `DATABASE_URL`.
 
-1. Kies een domein voor het platform, bijvoorbeeld `zetlive.nl`.
-2. Zet in de DNS een `A`-record voor `zetlive.nl` **en** voor `*.zetlive.nl` naar
-   het IP-adres van je server.
-3. Kopieer `.env.example` naar `.env` en vul `BASE_DOMAIN=zetlive.nl` in.
-4. Start de app (`npm start`) en start Caddy met de meegeleverde `Caddyfile`.
-   Caddy regelt HTTPS, ook automatisch voor elk domein dat een klant koppelt.
+Met `DATABASE_URL` bewaart Zetlive alles in de database, omdat Render de schijf
+bij elke herstart wist. Beperkingen van de gratis variant:
 
-Maak regelmatig een back-up van de map `data/`: daar staat alles in.
+- Sites staan op `jouwapp.onrender.com/s/<naam>/`, niet op een eigen subdomein.
+- Na 15 minuten zonder bezoek valt de app in slaap; het eerste bezoek daarna
+  duurt ongeveer een minuut.
+- Een website mag maximaal 40 MB zijn (in te stellen met `MAX_SITE_MB`).
+- Een eigen domein van een klant voeg je ook in Render toe (Settings > Custom
+  Domains). Daarna herkent Zetlive het en toont de juiste site.
+
+## Online zetten op een eigen server
+
+Hier werkt alles automatisch: elke site op `<naam>.jouwdomein.nl` en HTTPS voor
+elk domein dat een klant koppelt.
+
+1. Zet in de DNS een `A`-record voor `jouwdomein.nl` **en** voor
+   `*.jouwdomein.nl` naar het IP-adres van je server (Ubuntu of Debian).
+2. Draai op de server, als root: `bash install.sh jouwdomein.nl`
+
+Maak regelmatig een back-up van `/var/lib/zetlive`: daar staat alles in.
 
 ## Goed om te weten
 
@@ -66,6 +80,7 @@ Maak regelmatig een back-up van de map `data/`: daar staat alles in.
 | `server.js` | Dashboard, API en het uitserveren van de websites |
 | `lib/store.js` | Accounts, sessies en sites (één JSON-bestand) |
 | `lib/deploy.js` | Uploads uitpakken, bestanden en paginaversies |
+| `lib/mirror.js` | Kopie van alles in Postgres, voor hosting zonder vaste schijf |
 | `public/inject.js` | De editor die in de pagina van de klant draait |
 | `public/editor.js` | Het editorscherm met het zijpaneel |
 | `public/app.js` | Het dashboard |
