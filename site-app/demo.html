@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zetlive – demo van de editor</title>
+<style>
+:root {
+  --bg: #f5f6f8; --card: #fff; --line: #e3e6ec; --text: #1a2030; --muted: #667085;
+  --accent: #4f46e5; --accent-dark: #4338ca; --ok: #12805c; --warn: #b54708; --danger: #c0362c;
+  --radius: 10px;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; }
+body { font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; background: var(--bg); color: var(--text); }
+a { color: var(--accent); }
+h1 { font-size: 24px; margin: 0 0 4px; } h2 { font-size: 16px; margin: 0 0 12px; }
+.muted { color: var(--muted); } .small { font-size: 13px; }
+[hidden] { display: none !important; }
+
+button, .btn {
+  font: inherit; font-weight: 600; border: 1px solid var(--line); background: #fff; color: var(--text);
+  padding: 8px 14px; border-radius: 8px; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;
+}
+button:hover, .btn:hover { background: #f3f4f7; }
+button:disabled { opacity: .5; cursor: default; }
+.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+.primary:hover { background: var(--accent-dark); }
+.danger { color: var(--danger); } .link { border: 0; background: none; padding: 0; color: var(--accent); font-weight: 500; }
+input[type=text], input[type=email], input[type=password], input[type=number], select {
+  font: inherit; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; background: #fff; color: var(--text); width: 100%;
+}
+input:focus, select:focus, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+label { display: block; font-weight: 600; font-size: 13px; margin: 12px 0 4px; }
+
+.top { background: #fff; border-bottom: 1px solid var(--line); padding: 12px 24px; display: flex; align-items: center; gap: 16px; }
+.logo { font-weight: 800; font-size: 18px; color: var(--text); text-decoration: none; letter-spacing: -.3px; }
+.logo span { color: var(--accent); }
+.spacer { flex: 1; }
+main { max-width: 960px; margin: 0 auto; padding: 32px 24px 80px; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; margin-bottom: 16px; }
+.row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.row > input { flex: 1; min-width: 180px; }
+.error { color: var(--danger); font-size: 14px; margin-top: 10px; min-height: 20px; }
+
+.auth { max-width: 400px; margin: 8vh auto; }
+.auth h1 { font-size: 28px; } .auth button.primary { width: 100%; justify-content: center; margin-top: 18px; }
+
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 16px; }
+.site { display: block; color: inherit; text-decoration: none; margin: 0; transition: border-color .15s, box-shadow .15s; }
+.site:hover { border-color: var(--accent); box-shadow: 0 4px 14px rgba(79, 70, 229, .12); }
+.site strong { display: block; font-size: 16px; } .site .url { color: var(--muted); font-size: 13px; word-break: break-all; }
+.pill { display: inline-block; font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 99px; background: #eef0f4; color: var(--muted); }
+.pill.ok { background: #e3f6ee; color: var(--ok); } .pill.warn { background: #fdf0df; color: var(--warn); }
+
+.drop { border: 2px dashed #c5cad6; border-radius: var(--radius); padding: 30px 20px; text-align: center; transition: .15s; }
+.drop.over { border-color: var(--accent); background: #eeedff; }
+.bar { height: 6px; background: #e8eaf0; border-radius: 99px; overflow: hidden; margin-top: 14px; }
+.bar i { display: block; height: 100%; width: 0; background: var(--accent); transition: width .2s; }
+
+table { width: 100%; border-collapse: collapse; } td { padding: 8px 0; border-top: 1px solid var(--line); vertical-align: middle; }
+tr:first-child td { border-top: 0; } td:last-child { text-align: right; white-space: nowrap; }
+code { background: #eef0f4; padding: 2px 6px; border-radius: 5px; font-size: 13px; }
+.dns { background: #f7f8fa; border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; margin-top: 12px; font-size: 14px; }
+
+/* ------------------------------- Editor ------------------------------- */
+.editor { display: grid; grid-template-rows: auto 1fr; height: 100vh; }
+.bar-top { background: #fff; border-bottom: 1px solid var(--line); padding: 8px 14px; display: flex; align-items: center; gap: 10px; }
+.bar-top select { width: auto; max-width: 220px; }
+.work { display: grid; grid-template-columns: 1fr 300px; min-height: 0; }
+.stage { background: #dfe2e8; display: flex; justify-content: center; padding: 16px; min-width: 0; overflow: auto; }
+.stage iframe { border: 0; background: #fff; width: 100%; height: 100%; border-radius: 6px; box-shadow: 0 2px 16px rgba(0,0,0,.12); transition: width .2s; }
+.panel { background: #fff; border-left: 1px solid var(--line); padding: 16px; overflow-y: auto; }
+.panel h2 { margin-bottom: 2px; } .panel section { border-top: 1px solid var(--line); margin-top: 14px; padding-top: 2px; }
+.field { display: flex; align-items: center; gap: 8px; }
+.field input[type=color] { width: 40px; height: 34px; padding: 2px; border: 1px solid var(--line); border-radius: 8px; background: #fff; cursor: pointer; }
+.field input[type=number] { width: 84px; }
+.seg { display: inline-flex; } .seg button { border-radius: 0; margin-left: -1px; padding: 6px 11px; }
+.seg button:first-child { border-radius: 8px 0 0 8px; margin: 0; } .seg button:last-child { border-radius: 0 8px 8px 0; }
+.seg button.on, button.on { background: #e9e8ff; border-color: var(--accent); color: var(--accent); position: relative; z-index: 1; }
+.check { display: flex; align-items: center; gap: 8px; font-weight: 500; }
+.status { font-size: 13px; color: var(--muted); } .status.dirty { color: var(--warn); } .status.ok { color: var(--ok); }
+.toast { position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%); background: #1a2030; color: #fff; padding: 10px 18px; border-radius: 8px; font-size: 14px; z-index: 50; }
+.toast a { color: #b9b5ff; }
+@media (max-width: 800px) { .work { grid-template-columns: 1fr; grid-template-rows: 1fr 45vh; } .panel { border-left: 0; border-top: 1px solid var(--line); } }
+
+</style>
+</head>
+<body>
+<div class="editor">
+  <div class="bar-top">
+    <span class="logo">zet<span>live</span></span>
+    <span class="pill warn">Demo</span>
+    <div class="seg" id="devices">
+      <button data-w="100%" class="on">Computer</button>
+      <button data-w="768px">Tablet</button>
+      <button data-w="390px">Telefoon</button>
+    </div>
+    <button id="undo" disabled title="Ongedaan maken (Ctrl+Z)">↶</button>
+    <button id="redo" disabled title="Opnieuw (Ctrl+Shift+Z)">↷</button>
+    <div class="spacer"></div>
+    <span class="status" id="status"></span>
+    <button id="open">Eigen HTML-bestand openen</button>
+    <input type="file" id="file" accept=".html,.htm" hidden>
+    <button class="primary" id="publish">Download HTML</button>
+  </div>
+  <div class="work">
+    <div class="stage"><iframe id="frame" title="Je website" sandbox="allow-scripts"></iframe></div>
+    <aside class="panel" id="panel"></aside>
+  </div>
+</div>
+<script>
+const INJECT = "/**\n * Dit script draait IN de pagina van de klant, wanneer die in de editor\n * geopend is. Het maakt elementen aanklikbaar en tekst typbaar, en praat met\n * het dashboard eromheen via postMessage.\n *\n * Alles wat de editor zelf toevoegt krijgt het kenmerk data-zetlive, zodat het\n * bij het opslaan weer netjes verwijderd kan worden.\n */\n(() => {\n  // Alleen actief als de pagina in het editorvenster zit, niet los geopend.\n  if (window.parent === window) return;\n  document.currentScript?.remove();\n\n  const send = (type, data = {}) => window.parent.postMessage({ zetlive: true, type, ...data }, \"*\");\n\n  /* ------------------------------ Kaders ------------------------------ */\n\n  const layer = document.createElement(\"div\");\n  layer.setAttribute(\"data-zetlive\", \"\");\n  layer.innerHTML = `<style>\n    [data-zetlive] .zl-box{position:fixed;pointer-events:none;z-index:2147483646;box-sizing:border-box;display:none}\n    [data-zetlive] .zl-hover{border:1px dashed #4f46e5}\n    [data-zetlive] .zl-select{border:2px solid #4f46e5}\n    [data-zetlive] .zl-tag{position:absolute;left:-2px;bottom:100%;background:#4f46e5;color:#fff;\n      font:600 11px/1 system-ui,sans-serif;padding:4px 6px;border-radius:4px 4px 0 0;white-space:nowrap}\n    [data-zl-edit]{outline:none!important;cursor:text!important}\n    html{cursor:default}\n  <\/style><div class=\"zl-box zl-hover\"><\/div><div class=\"zl-box zl-select\"><span class=\"zl-tag\"><\/span><\/div>`;\n  document.documentElement.appendChild(layer);\n  const hoverBox = layer.querySelector(\".zl-hover\");\n  const selectBox = layer.querySelector(\".zl-select\");\n  const tagLabel = layer.querySelector(\".zl-tag\");\n\n  let selected = null;\n  let hovered = null;\n\n  function place(box, el) {\n    if (!el || !el.isConnected) return (box.style.display = \"none\");\n    const r = el.getBoundingClientRect();\n    Object.assign(box.style, { display: \"block\", left: `${r.left}px`, top: `${r.top}px`, width: `${r.width}px`, height: `${r.height}px` });\n  }\n  function redraw() {\n    place(selectBox, selected);\n    place(hoverBox, hovered && hovered !== selected ? hovered : null);\n  }\n  addEventListener(\"scroll\", redraw, true);\n  addEventListener(\"resize\", redraw);\n  setInterval(redraw, 300); // afbeeldingen die laat laden verschuiven de pagina\n\n  /* --------------------------- Wat is dit element? ---------------------- */\n\n  const NAMES = {\n    H1: \"Kop\", H2: \"Kop\", H3: \"Kop\", H4: \"Kop\", H5: \"Kop\", H6: \"Kop\", P: \"Tekst\", A: \"Link\", BUTTON: \"Knop\",\n    IMG: \"Afbeelding\", LI: \"Lijstpunt\", SPAN: \"Tekst\", SECTION: \"Sectie\", HEADER: \"Kop van de pagina\",\n    FOOTER: \"Voettekst\", NAV: \"Menu\", DIV: \"Blok\", BODY: \"Hele pagina\", UL: \"Lijst\", OL: \"Lijst\", LABEL: \"Label\",\n  };\n  const NO_TEXT = new Set([\"IMG\", \"VIDEO\", \"AUDIO\", \"IFRAME\", \"INPUT\", \"TEXTAREA\", \"SELECT\", \"SVG\", \"CANVAS\", \"HR\", \"BR\", \"BODY\", \"HTML\"]);\n\n  const looksLikeButton = (el) => el.tagName === \"BUTTON\" || (el.tagName === \"A\" && /\\b(btn|button|knop|cta)\\b/i.test(el.className));\n  const nameOf = (el) => (looksLikeButton(el) ? \"Knop\" : NAMES[el.tagName.toUpperCase()] || el.tagName.toLowerCase());\n\n  /** Tekst is te typen als het element zelf (niet alleen een kind) tekst bevat. */\n  const hasOwnText = (el) =>\n    !NO_TEXT.has(el.tagName.toUpperCase()) && !el.closest(\"svg\") &&\n    [...el.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim());\n\n  function toHex(color) {\n    const m = color.match(/rgba?\\((\\d+),\\s*(\\d+),\\s*(\\d+)(?:,\\s*([\\d.]+))?/);\n    if (!m || m[4] === \"0\") return \"\";\n    return \"#\" + m.slice(1, 4).map((n) => Number(n).toString(16).padStart(2, \"0\")).join(\"\");\n  }\n\n  function describe(el) {\n    const cs = getComputedStyle(el);\n    const link = el.closest(\"a\");\n    return {\n      name: nameOf(el),\n      tag: el.tagName.toLowerCase(),\n      editable: hasOwnText(el),\n      canParent: Boolean(el.parentElement && el.parentElement !== document.documentElement),\n      canRemove: el !== document.body,\n      image: el.tagName === \"IMG\" ? { src: el.getAttribute(\"src\") || \"\", alt: el.getAttribute(\"alt\") || \"\" } : null,\n      link: link ? { href: link.getAttribute(\"href\") || \"\", newTab: link.target === \"_blank\" } : null,\n      style: {\n        color: toHex(cs.color),\n        backgroundColor: toHex(cs.backgroundColor),\n        fontSize: Math.round(parseFloat(cs.fontSize)),\n        bold: Number(cs.fontWeight) >= 600,\n        italic: cs.fontStyle === \"italic\",\n        underline: cs.textDecorationLine.includes(\"underline\"),\n        textAlign: cs.textAlign.replace(\"start\", \"left\").replace(\"end\", \"right\"),\n        borderRadius: Math.round(parseFloat(cs.borderTopLeftRadius)) || 0,\n        paddingY: Math.round(parseFloat(cs.paddingTop)) || 0,\n        paddingX: Math.round(parseFloat(cs.paddingLeft)) || 0,\n      },\n    };\n  }\n\n  /* ------------------------------ Selecteren --------------------------- */\n\n  function deselect(tell = true) {\n    if (selected) {\n      selected.removeAttribute(\"data-zl-edit\");\n      selected.removeAttribute(\"contenteditable\");\n      selected.removeAttribute(\"spellcheck\");\n    }\n    selected = null;\n    redraw();\n    if (tell) send(\"deselect\");\n  }\n\n  function select(el, point) {\n    if (el === selected) return;\n    deselect(false);\n    selected = el;\n    if (hasOwnText(el)) {\n      el.setAttribute(\"data-zl-edit\", \"\");\n      el.setAttribute(\"contenteditable\", \"true\");\n      el.setAttribute(\"spellcheck\", \"false\");\n      el.focus({ preventScroll: true });\n      // De cursor neerzetten waar geklikt is, zodat je meteen kunt typen.\n      const range = point && document.caretRangeFromPoint?.(point.x, point.y);\n      if (range && el.contains(range.startContainer)) {\n        const sel = getSelection();\n        sel.removeAllRanges();\n        sel.addRange(range);\n      }\n    }\n    tagLabel.textContent = nameOf(el);\n    redraw();\n    send(\"select\", { info: describe(el) });\n  }\n\n  const isOurs = (el) => !(el instanceof Element) || el.closest(\"[data-zetlive]\") || el === document.documentElement;\n\n  addEventListener(\"mousemove\", (e) => {\n    hovered = isOurs(e.target) ? null : e.target;\n    redraw();\n  }, true);\n  addEventListener(\"mouseleave\", () => { hovered = null; redraw(); }, true);\n\n  addEventListener(\"click\", (e) => {\n    // Links en knoppen doen in de editor niets: klikken is selecteren.\n    e.preventDefault();\n    e.stopPropagation();\n    if (isOurs(e.target)) return;\n    if (selected && selected.hasAttribute(\"data-zl-edit\") && selected.contains(e.target)) return;\n    select(e.target, { x: e.clientX, y: e.clientY });\n  }, true);\n  for (const type of [\"submit\", \"auxclick\", \"dragstart\"]) addEventListener(type, (e) => e.preventDefault(), true);\n\n  /* --------------------------- Ongedaan maken -------------------------- */\n\n  /** De inhoud van de pagina, zonder de sporen van de editor. */\n  function cleanBody() {\n    const el = selected;\n    const marked = el?.hasAttribute(\"data-zl-edit\");\n    if (marked) for (const a of [\"data-zl-edit\", \"contenteditable\", \"spellcheck\"]) el.removeAttribute(a);\n    const html = document.body.innerHTML;\n    if (marked) {\n      el.setAttribute(\"data-zl-edit\", \"\");\n      el.setAttribute(\"contenteditable\", \"true\");\n      el.setAttribute(\"spellcheck\", \"false\");\n    }\n    return html;\n  }\n\n  let last = cleanBody();\n  let bodyStyle = document.body.getAttribute(\"style\");\n  const undoStack = [];\n  const redoStack = [];\n  let typing = null;\n\n  const state = () => ({ html: cleanBody(), style: document.body.getAttribute(\"style\") });\n  const tellHistory = () => send(\"history\", { canUndo: undoStack.length > 0, canRedo: redoStack.length > 0 });\n\n  /** Leg vast dat er iets veranderd is. */\n  function commit() {\n    clearTimeout(typing);\n    typing = null;\n    const now = state();\n    if (now.html === last && now.style === bodyStyle) return;\n    undoStack.push({ html: last, style: bodyStyle });\n    if (undoStack.length > 100) undoStack.shift();\n    redoStack.length = 0;\n    last = now.html;\n    bodyStyle = now.style;\n    send(\"dirty\");\n    tellHistory();\n    redraw();\n  }\n\n  function restore(from, to) {\n    if (typing) commit();\n    if (!from.length) return;\n    to.push({ html: last, style: bodyStyle });\n    const prev = from.pop();\n    deselect();\n    document.body.innerHTML = prev.html;\n    if (prev.style === null) document.body.removeAttribute(\"style\");\n    else document.body.setAttribute(\"style\", prev.style);\n    last = prev.html;\n    bodyStyle = prev.style;\n    send(\"dirty\");\n    tellHistory();\n  }\n\n  addEventListener(\"input\", () => {\n    send(\"dirty\");\n    redraw();\n    clearTimeout(typing);\n    typing = setTimeout(commit, 600);\n  }, true);\n\n  addEventListener(\"keydown\", (e) => {\n    const mod = e.ctrlKey || e.metaKey;\n    if (mod && e.key.toLowerCase() === \"z\") {\n      e.preventDefault();\n      restore(e.shiftKey ? redoStack : undoStack, e.shiftKey ? undoStack : redoStack);\n    } else if (mod && e.key.toLowerCase() === \"y\") {\n      e.preventDefault();\n      restore(redoStack, undoStack);\n    } else if (mod && e.key.toLowerCase() === \"s\") {\n      e.preventDefault();\n      send(\"save\");\n    } else if (e.key === \"Escape\") {\n      deselect();\n    } else if (e.key === \"Enter\" && selected?.hasAttribute(\"data-zl-edit\")) {\n      // Een nieuwe regel, geen nieuw blok: zo blijft de opmaak van de site heel.\n      e.preventDefault();\n      document.execCommand(\"insertLineBreak\");\n    }\n  }, true);\n\n  // Plakken zonder opmaak, anders komt er vreemde HTML van elders mee.\n  addEventListener(\"paste\", (e) => {\n    e.preventDefault();\n    document.execCommand(\"insertText\", false, e.clipboardData?.getData(\"text/plain\") || \"\");\n  }, true);\n\n  /* ---------------------- Opdrachten van het dashboard ------------------ */\n\n  function fullHtml() {\n    if (typing) commit();\n    const el = selected;\n    deselect(false);\n    const copy = document.documentElement.cloneNode(true);\n    copy.querySelectorAll(\"[data-zetlive]\").forEach((n) => n.remove());\n    if (el?.isConnected) select(el);\n    const dt = document.doctype;\n    const doctype = dt\n      ? `<!DOCTYPE ${dt.name}${dt.publicId ? ` PUBLIC \"${dt.publicId}\"` : \"\"}${dt.systemId ? ` \"${dt.systemId}\"` : \"\"}>\\n`\n      : \"\";\n    return doctype + copy.outerHTML + \"\\n\";\n  }\n\n  const commands = {\n    style({ prop, value }) {\n      if (!selected) return;\n      if (value === \"\" || value == null) selected.style.removeProperty(prop);\n      else selected.style.setProperty(prop, value);\n      if (!selected.getAttribute(\"style\")) selected.removeAttribute(\"style\");\n    },\n    link({ href, newTab }) {\n      const a = selected?.closest(\"a\");\n      if (!a) return;\n      if (href !== undefined) a.setAttribute(\"href\", href);\n      if (newTab !== undefined) {\n        if (newTab) { a.target = \"_blank\"; a.rel = \"noopener\"; }\n        else { a.removeAttribute(\"target\"); a.removeAttribute(\"rel\"); }\n      }\n    },\n    image({ src, alt }) {\n      if (selected?.tagName !== \"IMG\") return;\n      if (src !== undefined) {\n        selected.setAttribute(\"src\", src);\n        selected.removeAttribute(\"srcset\"); // anders blijft de oude afbeelding staan\n      }\n      if (alt !== undefined) selected.setAttribute(\"alt\", alt);\n    },\n    parent() {\n      if (selected?.parentElement && selected.parentElement !== document.documentElement) select(selected.parentElement);\n    },\n    duplicate() {\n      if (!selected || selected === document.body) return;\n      const el = selected;\n      deselect(false);\n      const copy = el.cloneNode(true);\n      copy.removeAttribute(\"id\");\n      el.after(copy);\n      select(copy);\n    },\n    remove() {\n      if (!selected || selected === document.body) return;\n      const el = selected;\n      deselect();\n      el.remove();\n    },\n    deselect: () => deselect(),\n    undo: () => restore(undoStack, redoStack),\n    redo: () => restore(redoStack, undoStack),\n    getHtml: ({ requestId }) => send(\"html\", { requestId, html: fullHtml() }),\n  };\n\n  const SILENT = new Set([\"parent\", \"deselect\", \"undo\", \"redo\", \"getHtml\"]);\n\n  addEventListener(\"message\", (e) => {\n    if (e.source !== window.parent || !e.data?.zetlive) return;\n    const run = commands[e.data.cmd];\n    if (!run) return;\n    run(e.data);\n    if (SILENT.has(e.data.cmd)) return;\n    commit();\n    if (selected) send(\"select\", { info: describe(selected) });\n  });\n\n  send(\"ready\", { title: document.title });\n})();\n";
+const SAMPLE = "<!DOCTYPE html>\n<html lang=\"nl\">\n<head>\n  <meta charset=\"utf-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n  <title>Mijn bedrijf<\/title>\n  <style>\n* { box-sizing: border-box; }\nbody { margin: 0; font-family: system-ui, -apple-system, \"Segoe UI\", sans-serif; color: #1f2430; line-height: 1.6; }\n.nav { display: flex; justify-content: space-between; align-items: center; padding: 18px 6vw; border-bottom: 1px solid #eceef2; }\n.brand { font-size: 20px; }\n.nav a { margin-left: 22px; color: #1f2430; text-decoration: none; }\n.hero { padding: 90px 6vw; text-align: center; background: #f3f5ff; }\n.hero h1 { font-size: 44px; margin: 0 0 12px; }\n.hero p { font-size: 19px; color: #555d6e; margin: 0 0 28px; }\n.btn { display: inline-block; background: #2f5bea; color: #fff; padding: 13px 26px; border-radius: 8px; text-decoration: none; font-weight: 600; }\n.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 24px; padding: 60px 6vw; }\n.cards article { border: 1px solid #eceef2; border-radius: 12px; padding: 24px; }\n.cards h2 { margin: 0 0 8px; }\nfooter { padding: 28px 6vw; text-align: center; color: #7a8294; border-top: 1px solid #eceef2; }\n<\/style>\n<\/head>\n<body>\n  <header class=\"nav\">\n    <strong class=\"brand\">Mijn bedrijf<\/strong>\n    <nav><a href=\"index.html\">Home<\/a><a href=\"contact.html\">Contact<\/a><\/nav>\n  <\/header>\n  <section class=\"hero\">\n    <h1>Welkom bij mijn bedrijf<\/h1>\n    <p>Klik op deze tekst om hem te veranderen. Zo simpel is het.<\/p>\n    <a class=\"btn\" href=\"contact.html\">Neem contact op<\/a>\n  <\/section>\n  <section class=\"cards\">\n    <article><h2>Snel<\/h2><p>Vertel hier wat je klanten van je kunnen verwachten.<\/p><\/article>\n    <article><h2>Betrouwbaar<\/h2><p>Elke tekst, knop en kleur op deze pagina kun je aanpassen.<\/p><\/article>\n    <article><h2>Persoonlijk<\/h2><p>Verwijder een blok of dupliceer het als je er meer nodig hebt.<\/p><\/article>\n  <\/section>\n  <footer>© Mijn bedrijf<\/footer>\n<\/body>\n<\/html>\n";
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+const frame = $("frame");
+const panel = $("panel");
+const siteId = "demo";
+let info = null;
+let fileName = "index.html";
+
+const tell = (cmd, data = {}) => frame.contentWindow.postMessage({ zetlive: true, cmd, ...data }, "*");
+
+function toast(html, ms = 4000) {
+  document.querySelector(".toast")?.remove();
+  const el = Object.assign(document.createElement("div"), { className: "toast", innerHTML: html });
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), ms);
+}
+
+// In de demo is er geen server: een gekozen afbeelding gaat in de pagina zelf.
+async function api(method, url, body) {
+  const file = body.get("file");
+  const data = await new Promise((ok, fail) => {
+    const reader = new FileReader();
+    reader.onload = () => ok(reader.result);
+    reader.onerror = fail;
+    reader.readAsDataURL(file);
+  });
+  return { url: data };
+}
+
+function drawPanel() {
+  if (!info) {
+    panel.innerHTML = `
+      <h2>Klik op iets om het aan te passen</h2>
+      <p class="muted">Klik op een tekst en begin te typen. Klik op een knop, afbeelding of blok om kleuren,
+      grootte en links te veranderen.</p>
+      <p class="muted small">Klaar? Druk op <strong>Publiceren</strong> en je wijziging staat direct online.</p>`;
+    return;
+  }
+  const s = info.style;
+  const color = (label, prop, value) => `
+    <label>${label}</label>
+    <div class="field">
+      <input type="color" data-style="${prop}" value="${value || "#ffffff"}">
+      <span class="muted small">${value || "geen"}</span>
+      <button class="link small" data-clear="${prop}">Herstel</button>
+    </div>`;
+  const number = (label, prop, value, max) => `
+    <label>${label}</label>
+    <div class="field"><input type="number" min="0" max="${max}" data-px="${prop}" value="${value}"><span class="muted small">pixels</span></div>`;
+
+  panel.innerHTML = `
+    <h2>${esc(info.name)}</h2>
+    <p class="muted small" style="margin:0">${info.editable ? "Typ direct in de pagina om de tekst te veranderen." : "Dit onderdeel heeft geen eigen tekst."}</p>
+
+    ${info.image ? `<section>
+      <label>Afbeelding</label>
+      <button id="pickImage">Andere afbeelding kiezen</button>
+      <input type="file" id="imageFile" accept="image/*" hidden>
+      <label for="alt">Beschrijving (voor zoekmachines en blinden)</label>
+      <input type="text" id="alt" value="${esc(info.image.alt)}">
+    </section>` : ""}
+
+    ${info.link ? `<section>
+      <label for="href">Link gaat naar</label>
+      <input type="text" id="href" value="${esc(info.link.href)}" placeholder="https://… of contact.html">
+      <label class="check"><input type="checkbox" id="newTab" ${info.link.newTab ? "checked" : ""}> Openen in nieuw tabblad</label>
+    </section>` : ""}
+
+    <section>
+      ${color("Tekstkleur", "color", s.color)}
+      ${color("Achtergrondkleur", "background-color", s.backgroundColor)}
+    </section>
+
+    <section>
+      ${number("Lettergrootte", "font-size", s.fontSize, 300)}
+      <label>Opmaak</label>
+      <div class="row">
+        <div class="seg">
+          <button data-toggle="bold" class="${s.bold ? "on" : ""}" title="Vet"><b>B</b></button>
+          <button data-toggle="italic" class="${s.italic ? "on" : ""}" title="Cursief"><i>I</i></button>
+          <button data-toggle="underline" class="${s.underline ? "on" : ""}" title="Onderstreept"><u>U</u></button>
+        </div>
+        <div class="seg">
+          ${[["left", "Links"], ["center", "Midden"], ["right", "Rechts"]]
+            .map(([v, t]) => `<button data-align="${v}" class="${s.textAlign === v ? "on" : ""}">${t}</button>`)
+            .join("")}
+        </div>
+      </div>
+    </section>
+
+    <section>
+      ${number("Ronde hoeken", "border-radius", s.borderRadius, 500)}
+      ${number("Ruimte boven en onder", "padding-block", s.paddingY, 500)}
+      ${number("Ruimte links en rechts", "padding-inline", s.paddingX, 500)}
+    </section>
+
+    <section>
+      <label>Onderdeel</label>
+      <div class="row">
+        ${info.canParent ? '<button data-cmd="parent" title="Selecteer het blok eromheen">↑ Blok eromheen</button>' : ""}
+        ${info.canRemove ? '<button data-cmd="duplicate">Dupliceren</button><button data-cmd="remove" class="danger">Verwijderen</button>' : ""}
+      </div>
+    </section>`;
+
+  const style = (prop, value) => tell("style", { prop, value });
+  panel.querySelectorAll("[data-style]").forEach((el) => (el.oninput = () => style(el.dataset.style, el.value)));
+  // Tijdens het slepen in de kleurkiezer het paneel niet opnieuw opbouwen.
+  panel.querySelectorAll("[data-clear]").forEach((el) => (el.onclick = () => style(el.dataset.clear, "")));
+  panel.querySelectorAll("[data-px]").forEach((el) => (el.onchange = () => style(el.dataset.px, el.value === "" ? "" : `${el.value}px`)));
+  panel.querySelectorAll("[data-align]").forEach((el) => (el.onclick = () => style("text-align", el.dataset.align)));
+  panel.querySelectorAll("[data-cmd]").forEach((el) => (el.onclick = () => tell(el.dataset.cmd)));
+  panel.querySelectorAll("[data-toggle]").forEach((el) => (el.onclick = () => {
+    const on = !el.classList.contains("on");
+    if (el.dataset.toggle === "bold") style("font-weight", on ? "700" : "400");
+    if (el.dataset.toggle === "italic") style("font-style", on ? "italic" : "normal");
+    if (el.dataset.toggle === "underline") style("text-decoration", on ? "underline" : "none");
+  }));
+
+  if (info.link) {
+    $("href").onchange = () => tell("link", { href: $("href").value.trim() });
+    $("newTab").onchange = () => tell("link", { newTab: $("newTab").checked });
+  }
+  if (info.image) {
+    $("alt").onchange = () => tell("image", { alt: $("alt").value });
+    $("pickImage").onclick = () => $("imageFile").click();
+    $("imageFile").onchange = async () => {
+      const file = $("imageFile").files[0];
+      if (!file) return;
+      const form = new FormData();
+      form.append("file", file);
+      try {
+        const { url } = await api("POST", `/sites/${siteId}/asset`, form);
+        tell("image", { src: url });
+      } catch (err) {
+        toast(esc(err.message));
+      }
+    };
+  }
+}
+
+
+
+function load(html) {
+  info = null;
+  drawPanel();
+  $("undo").disabled = $("redo").disabled = true;
+  $("status").textContent = "";
+  const tag = "<script data-zetlive>" + INJECT + "<\/script>";
+  const at = html.toLowerCase().lastIndexOf("</body>");
+  frame.srcdoc = at === -1 ? html + tag : html.slice(0, at) + tag + html.slice(at);
+}
+
+const waiting = new Map();
+addEventListener("message", (e) => {
+  if (e.source !== frame.contentWindow || !e.data?.zetlive) return;
+  const msg = e.data;
+  if (msg.type === "select") {
+    const busy = panel.contains(document.activeElement) && document.activeElement.matches("input[type=color]");
+    info = msg.info;
+    if (!busy) drawPanel();
+  } else if (msg.type === "deselect") {
+    info = null;
+    drawPanel();
+  } else if (msg.type === "dirty") {
+    $("status").textContent = "Gewijzigd";
+    $("status").className = "status dirty";
+  } else if (msg.type === "history") {
+    $("undo").disabled = !msg.canUndo;
+    $("redo").disabled = !msg.canRedo;
+  } else if (msg.type === "save") {
+    download();
+  } else if (msg.type === "html") {
+    waiting.get(msg.requestId)?.(msg.html);
+    waiting.delete(msg.requestId);
+  }
+});
+
+async function download() {
+  const html = await new Promise((resolve) => {
+    const requestId = Math.random().toString(36).slice(2);
+    waiting.set(requestId, resolve);
+    tell("getHtml", { requestId });
+  });
+  const link = Object.assign(document.createElement("a"), {
+    href: URL.createObjectURL(new Blob([html], { type: "text/html" })),
+    download: fileName,
+  });
+  link.click();
+  toast("De aangepaste pagina is gedownload. In de echte app staat hij met deze knop direct online.");
+}
+
+$("publish").onclick = download;
+$("undo").onclick = () => tell("undo");
+$("redo").onclick = () => tell("redo");
+$("open").onclick = () => $("file").click();
+$("file").onchange = async () => {
+  const file = $("file").files[0];
+  if (!file) return;
+  fileName = file.name;
+  load(await file.text());
+  toast("Geopend. Losse bestanden zoals stylesheets en afbeeldingen laden in deze demo niet mee.", 6000);
+};
+$("devices").onclick = (e) => {
+  const button = e.target.closest("button");
+  if (!button) return;
+  $("devices").querySelectorAll("button").forEach((b) => b.classList.toggle("on", b === button));
+  frame.style.width = button.dataset.w;
+};
+
+load(SAMPLE);
+</script>
+</body>
+</html>
