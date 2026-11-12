@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bewerken – Zetlive</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="editor">
+    <div class="bar-top">
+      <a class="btn" id="back" href="/">← Terug</a>
+      <select id="pages" title="Pagina"></select>
+      <div class="seg" id="devices">
+        <button data-w="100%" class="on" title="Computer">Computer</button>
+        <button data-w="768px" title="Tablet">Tablet</button>
+        <button data-w="390px" title="Telefoon">Telefoon</button>
+      </div>
+      <button id="undo" disabled title="Ongedaan maken (Ctrl+Z)">↶</button>
+      <button id="redo" disabled title="Opnieuw (Ctrl+Shift+Z)">↷</button>
+      <div class="spacer"></div>
+      <span class="status" id="status"></span>
+      <select id="versions" title="Eerdere versies van deze pagina"></select>
+      <a class="btn" id="view" target="_blank" rel="noopener">Bekijk site ↗</a>
+      <button class="primary" id="publish" disabled>Publiceren</button>
+    </div>
+    <div class="work">
+      <div class="stage"><iframe id="frame" title="Je website"></iframe></div>
+      <aside class="panel" id="panel"></aside>
+    </div>
+  </div>
+  <script src="/editor.js" type="module"></script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+# Caddy zet HTTPS voor het platform én voor elk domein dat een klant koppelt.
+# Vervang zetlive.nl door je eigen BASE_DOMAIN en start met: caddy run
+#
+# Caddy vraagt pas een certificaat aan als Zetlive het domein kent. Zonder die
+# controle zou iedereen certificaten kunnen laten aanvragen via jouw server.
+
+{
+	on_demand_tls {
+		ask http://localhost:4100/__zetlive/domain-check
+	}
+}
+
+# Het dashboard, de sites op <naam>.zetlive.nl en alle gekoppelde domeinen.
+https:// {
+	tls {
+		on_demand
+	}
+	reverse_proxy localhost:4100
+}
