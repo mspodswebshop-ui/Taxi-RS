@@ -8,6 +8,7 @@
 // Instellingen staan in omgevingsvariabelen, zie README.md.
 
 import crypto from 'node:crypto';
+import https from 'node:https';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import express from 'express';
@@ -158,22 +159,40 @@ function alleenBeheerder(req, res, next) {
 }
 
 // ---------- Melding naar je gsm (ntfy) ----------
+// Eén poging over IPv4 of IPv6. Geeft de statuscode terug, of gooit een fout.
+function ntfyVerzoek(methode, pad, body, family) {
+  return new Promise((klaar, mis) => {
+    const req = https.request({
+      host: 'ntfy.sh', path: pad, method: methode, family, timeout: 8000,
+      headers: body ? { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(body) } : {},
+    }, res => { res.resume(); res.on('end', () => klaar(res.statusCode)); });
+    req.on('timeout', () => req.destroy(new Error('geen antwoord binnen 8 seconden')));
+    req.on('error', mis);
+    req.end(body);
+  });
+}
+
+// Sommige hosts kunnen ntfy maar langs één van beide netwerken bereiken;
+// daarom proberen we eerst IPv4 en daarna IPv6.
+async function ntfy(methode, pad, body) {
+  let laatste;
+  for (const family of [4, 6]) {
+    try { return await ntfyVerzoek(methode, pad, body, family); }
+    catch (err) { laatste = err; console.error(`ntfy via IPv${family} mislukt: ${err.code || ''} ${err.message}`); }
+  }
+  throw laatste;
+}
+
 async function stuurMelding(titel, bericht) {
   if (!NTFY_TOPIC) return false;
   try {
-    const r = await fetch('https://ntfy.sh', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        topic: NTFY_TOPIC, title: titel, message: bericht, priority: 4, tags: ['calendar'],
-        ...(RENDER_EXTERNAL_URL ? { click: RENDER_EXTERNAL_URL } : {}),
-      }),
-      signal: AbortSignal.timeout(8000),
-    });
-    if (!r.ok) console.error('Melding mislukt:', r.status);
-    return r.ok;
-  } catch (err) {
-    console.error('Melding mislukt:', err.message);
+    const status = await ntfy('POST', '/', JSON.stringify({
+      topic: NTFY_TOPIC, title: titel, message: bericht, priority: 4, tags: ['calendar'],
+      ...(RENDER_EXTERNAL_URL ? { click: RENDER_EXTERNAL_URL } : {}),
+    }));
+    if (status >= 300) console.error('Melding geweigerd door ntfy, status', status);
+    return status < 300;
+  } catch {
     return false;
   }
 }
@@ -324,3 +343,11 @@ app.use((err, req, res, next) => {
 
 await maakTabellen();
 app.listen(PORT, () => console.log(`Weblity-beheer draait op poort ${PORT}`));
+
+// Bij het opstarten even nagaan of ntfy bereikbaar is, zodat een probleem
+// meteen in het logboek staat en niet pas bij de eerste boeking.
+if (NTFY_TOPIC) {
+  ntfy('GET', '/v1/health').then(
+    status => console.log('ntfy bereikbaar, status', status),
+    () => console.error('ntfy is niet bereikbaar vanaf deze server; meldingen zullen mislukken.'));
+}
