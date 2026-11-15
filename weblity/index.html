@@ -1,509 +1,148 @@
 <!DOCTYPE html>
-<html lang="nl">
+<html lang="nl" class="geen-js">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Weblity — Websites die aanvoelen als cinema</title>
-<meta name="description" content="Weblity bouwt websites en webapps, beeld voor beeld. Bekijk Paylity en Mijn AI.">
-<meta name="theme-color" content="#07070a">
-<!-- Afbeelding bij het delen van de link (WhatsApp, Facebook, iMessage...).
-     Verandert het adres van de site, pas dan de drie adressen hieronder aan. -->
+<title>Weblity — Websites die blijven hangen</title>
+<meta name="description" content="Weblity bouwt websites, webshops en webapps die snel laden, strak ogen en klanten opleveren. Boek een gratis gesprek.">
+<meta name="theme-color" content="#08080b">
+<link rel="canonical" href="https://weblity.onrender.com/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Weblity">
-<meta property="og:title" content="Weblity — Websites die aanvoelen als cinema">
-<meta property="og:description" content="Wij bouwen websites en webapps. Beeld voor beeld.">
-<meta property="og:image" content="https://weblity.onrender.com/og-image.png">
+<meta property="og:title" content="Weblity — Websites die blijven hangen">
+<meta property="og:description" content="Weblity bouwt websites, webshops en webapps die snel laden, strak ogen en klanten opleveren. Boek een gratis gesprek.">
 <meta property="og:url" content="https://weblity.onrender.com/">
-<link rel="canonical" href="https://weblity.onrender.com/">
+<meta property="og:image" content="https://weblity.onrender.com/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="favicon.ico" sizes="48x48">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2307070a'/%3E%3Cpath d='M12 20l9 26 11-18 11 18 9-26' fill='none' stroke='%23e8b45a' stroke-width='6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
-
-<style>
-/* =====================================================================
-   Weblity — één bestand, geen buildstap.
-   Opbouw: de pagina is een film. Elke <section data-scene> is een scène.
-   Scènes met [data-pin] blijven "hangen" terwijl je scrolt; JavaScript
-   zet daar de variabele --p (0 → 1) op, en de CSS doet de rest.
-   ===================================================================== */
-
-:root {
-  --bg: #07070a;
-  --bg-2: #0e0e13;
-  --ink: #f2ede4;
-  --ink-soft: #b9b2a6;
-  --ink-dim: #6f6a62;
-  --gold: #e8b45a;
-  --red: #e5484d;
-  --line: rgba(242, 237, 228, 0.14);
-  --bar: 46px;
-  --serif: "Instrument Serif", "Iowan Old Style", "Palatino Linotype", Georgia, serif;
-  --sans: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-}
-
-* { box-sizing: border-box; }
-html { background: var(--bg); color-scheme: dark; }
-body {
-  margin: 0;
-  background: var(--bg);
-  color: var(--ink);
-  font-family: var(--sans);
-  -webkit-font-smoothing: antialiased;
-  overflow-x: clip;
-}
-body.is-locked { overflow: hidden; }
-a { color: inherit; }
-::selection { background: var(--gold); color: #111; }
-
-/* ---------- Filmlaag: korrel, vignet, krassen ---------- */
-.grain, .vignette, .scratch { position: fixed; inset: 0; pointer-events: none; z-index: 40; }
-.grain {
-  inset: -50%;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  opacity: .11;
-  animation: grain .9s steps(8) infinite;
-}
-@keyframes grain {
-  0% { transform: translate(0, 0); } 12% { transform: translate(-4%, 3%); }
-  25% { transform: translate(3%, -5%); } 37% { transform: translate(-6%, -2%); }
-  50% { transform: translate(5%, 4%); } 62% { transform: translate(-2%, 6%); }
-  75% { transform: translate(6%, -3%); } 87% { transform: translate(-5%, -6%); }
-  100% { transform: translate(0, 0); }
-}
-.vignette { background: radial-gradient(ellipse at center, transparent 45%, rgba(0, 0, 0, .62) 100%); }
-.scratch::before, .scratch::after {
-  content: ""; position: absolute; top: 0; bottom: 0; width: 1px;
-  background: linear-gradient(transparent, rgba(255, 255, 255, .22), transparent);
-  opacity: 0; animation: scratch 7s infinite;
-}
-.scratch::before { left: 23%; }
-.scratch::after { left: 71%; animation-delay: 3.4s; animation-duration: 9s; }
-@keyframes scratch {
-  0%, 91%, 100% { opacity: 0; transform: translateX(0); }
-  92% { opacity: 1; } 94% { opacity: .3; transform: translateX(14px); } 96% { opacity: .8; transform: translateX(-6px); }
-}
-
-/* ---------- Letterbox met tijdcode ---------- */
-.bar {
-  position: fixed; left: 0; right: 0; height: var(--bar); z-index: 50;
-  background: #000; display: flex; align-items: center; justify-content: space-between;
-  padding: 0 clamp(16px, 3vw, 36px);
-  font: 500 11px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-soft);
-}
-.bar--top { top: 0; }
-.bar--bottom { bottom: 0; }
-.brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--ink); font-weight: 700; }
-.rec { display: inline-flex; align-items: center; gap: 6px; color: var(--red); }
-.rec i { width: 7px; height: 7px; border-radius: 50%; background: var(--red); animation: blink 1.2s steps(2) infinite; }
-@keyframes blink { 50% { opacity: 0; } }
-.tc { font-variant-numeric: tabular-nums; color: var(--ink); }
-.scene-label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.scene-label.is-cut { animation: cut .35s steps(3); }
-@keyframes cut { 0% { opacity: 0; transform: translateY(4px); } 50% { opacity: .4; } 100% { opacity: 1; transform: none; } }
-.reel { position: absolute; left: 0; top: 0; height: 2px; width: 100%; background: var(--gold); transform-origin: left; transform: scaleX(var(--reel, 0)); }
-.bar nav { display: flex; gap: clamp(12px, 2vw, 26px); }
-.bar nav a { text-decoration: none; color: var(--ink-soft); transition: color .2s; }
-.bar nav a:hover { color: var(--gold); }
-
-/* ---------- Voorfilm (aftelling) ---------- */
-.leader {
-  position: fixed; inset: 0; z-index: 100; display: grid; place-items: center;
-  background: #0b0a08; cursor: pointer;
-}
-.leader__half { position: absolute; left: 0; right: 0; height: 50.5%; background: #000; transition: transform .9s cubic-bezier(.77, 0, .18, 1); }
-.leader__half--t { top: 0; transform-origin: top; }
-.leader__half--b { bottom: 0; transform-origin: bottom; }
-.leader__dial {
-  position: relative; z-index: 2; width: min(46vmin, 300px); aspect-ratio: 1; border-radius: 50%;
-  display: grid; place-items: center; border: 2px solid rgba(242, 237, 228, .5);
-  background: conic-gradient(rgba(242, 237, 228, .16) var(--sweep, 0deg), transparent 0);
-  transition: opacity .25s;
-}
-.leader__dial::before, .leader__dial::after { content: ""; position: absolute; background: rgba(242, 237, 228, .35); }
-.leader__dial::before { width: 140%; height: 1px; }
-.leader__dial::after { height: 140%; width: 1px; }
-.leader__num { font: 400 min(30vmin, 190px)/1 var(--serif); position: relative; z-index: 1; }
-.leader__hint { position: absolute; bottom: 9vh; z-index: 2; font: 11px var(--mono); letter-spacing: .2em; text-transform: uppercase; color: var(--ink-dim); }
-.leader.is-flash { animation: flash .18s; }
-@keyframes flash { 0% { background: #fff; } 100% { background: #0b0a08; } }
-.leader.is-open { pointer-events: none; background: transparent; }
-.leader.is-open .leader__dial, .leader.is-open .leader__hint { opacity: 0; }
-.leader.is-open .leader__half { transform: scaleY(0); }
-
-/* ---------- Algemeen ---------- */
-section { position: relative; }
-.wrap { width: min(1180px, 100% - 2 * clamp(20px, 5vw, 56px)); margin-inline: auto; }
-.kicker { font: 500 11px/1 var(--mono); letter-spacing: .22em; text-transform: uppercase; color: var(--gold); }
-.pin { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; display: grid; place-items: center; padding: var(--bar) 0; }
-
-/* ---------- Scène 01: titel ---------- */
-.hero { height: 100vh; height: 100svh; min-height: 560px; display: grid; place-items: center; overflow: hidden; }
-.hero canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
-.hero__inner { position: relative; text-align: center; padding: var(--bar) 20px; transform: translate3d(calc(var(--mx, 0) * -14px), calc(var(--my, 0) * -10px), 0); }
-.hero__pre { opacity: 0; transition: opacity 1s .2s; }
-.hero h1 {
-  margin: .12em 0 0; font: 400 clamp(84px, 22vw, 300px)/.86 var(--serif); letter-spacing: -.035em;
-  display: flex; justify-content: center;
-}
-.hero h1 span { display: inline-block; opacity: 0; transform: translateY(.5em) rotate(6deg); filter: blur(14px); }
-.is-playing .hero h1 span {
-  animation: letter 1.25s cubic-bezier(.2, .8, .2, 1) forwards; animation-delay: calc(.25s + var(--i) * .075s);
-}
-@keyframes letter { to { opacity: 1; transform: none; filter: blur(0); } }
-.hero h1 em { color: var(--gold); font-style: italic; }
-.hero__tag { margin: 22px auto 0; max-width: 30ch; font: italic 400 clamp(21px, 3.1vw, 36px)/1.2 var(--serif); color: var(--ink-soft); opacity: 0; transform: translateY(14px); transition: opacity 1.1s 1.1s, transform 1.1s 1.1s; }
-.is-playing .hero__pre, .is-playing .hero__tag { opacity: 1; transform: none; }
-.subtitle {
-  position: absolute; left: 50%; bottom: calc(var(--bar) + 6vh); transform: translateX(-50%);
-  width: max-content; max-width: calc(100% - 40px); text-align: center;
-  font: 500 clamp(14px, 1.6vw, 18px)/1.45 var(--sans); color: #fff; text-shadow: 0 1px 3px #000, 0 0 14px rgba(0, 0, 0, .8);
-  text-wrap: balance; opacity: 0; transition: opacity .8s 1.9s;
-}
-.is-playing .subtitle { opacity: 1; }
-.scrollcue { display: block; margin: 14px auto 0; width: 1px; height: 38px; background: linear-gradient(var(--gold), transparent); animation: cue 1.8s infinite; transform-origin: top; }
-@keyframes cue { 0% { transform: scaleY(0); } 50% { transform: scaleY(1); } 100% { transform: scaleY(1); opacity: 0; } }
-
-/* ---------- Scène 02: manifest ---------- */
-.manifest { height: 230vh; }
-.manifest p { margin: 18px 0 0; font: 400 clamp(34px, 6.2vw, 92px)/1.04 var(--serif); letter-spacing: -.02em; max-width: 17ch; }
-.manifest .w { color: rgba(242, 237, 228, .13); transition: color .35s; }
-.manifest .w.on { color: var(--ink); }
-.manifest .w.on.gold { color: var(--gold); font-style: italic; }
-
-/* ---------- Scènes 03 & 04: projecten ---------- */
-.shot { height: 340vh; --e: clamp(0, (var(--p, 0) - .18) / .4, 1); }
-.shot .pin { background: radial-gradient(ellipse 70% 60% at var(--glow-x, 70%) 50%, var(--glow), transparent 70%); }
-.shot--paylity { --glow: rgba(74, 125, 255, .17); --accent: #6f9dff; }
-.shot--ai { --glow: rgba(196, 95, 60, .2); --glow-x: 30%; --accent: #e58a66; }
-
-/* Klapbord */
-.slate {
-  position: absolute; z-index: 3; width: min(430px, 82vw);
-  opacity: calc(1 - clamp(0, (var(--p, 0) - .15) / .07, 1));
-  transform: scale(calc(1 + clamp(0, (var(--p, 0) - .12) / .1, 1) * .25)) rotate(-2deg);
-  font-family: var(--mono); pointer-events: none;
-}
-.slate__arm, .slate__base {
-  height: 30px; border-radius: 4px;
-  background: repeating-linear-gradient(-55deg, #f2ede4 0 26px, #111 26px 52px);
-}
-.slate__arm { transform-origin: 8px 100%; transform: rotate(calc(-24deg * (1 - clamp(0, var(--p, 0) / .09, 1)))); margin-bottom: 3px; }
-.slate__body { margin-top: 3px; background: #111216; border: 2px solid #f2ede4; border-radius: 4px 4px 8px 8px; padding: 14px 16px 18px; }
-.slate__row { display: grid; grid-template-columns: repeat(3, 1fr); border-bottom: 1px solid rgba(242, 237, 228, .35); }
-.slate__row div { padding: 7px 8px; border-right: 1px solid rgba(242, 237, 228, .35); }
-.slate__row div:last-child { border-right: 0; }
-.slate small { display: block; font-size: 9px; letter-spacing: .18em; color: var(--ink-dim); text-transform: uppercase; }
-.slate b { font-size: 18px; font-weight: 600; }
-.slate__title { margin-top: 12px; font: 400 44px/1 var(--serif); }
-
-.stage {
-  width: min(1180px, 100% - 2 * clamp(20px, 5vw, 56px));
-  display: grid; grid-template-columns: minmax(0, .82fr) minmax(0, 1.18fr); gap: clamp(24px, 5vw, 72px); align-items: center;
-  opacity: clamp(0, (var(--p, 0) - .17) / .08, 1);
-}
-.shot--ai .stage { grid-template-columns: minmax(0, 1.18fr) minmax(0, .82fr); }
-.shot--ai .copy { order: 2; }
-.copy > * {
-  opacity: clamp(0, (var(--p, 0) - .24 - var(--i) * .05) / .08, 1);
-  transform: translateY(calc((1 - clamp(0, (var(--p, 0) - .24 - var(--i) * .05) / .08, 1)) * 26px));
-}
-.copy h2 { margin: 14px 0 0; font: 400 clamp(52px, 8vw, 118px)/.9 var(--serif); letter-spacing: -.03em; }
-.copy h2 em { color: var(--accent); }
-.copy .lead { margin: 18px 0 0; font: italic 400 clamp(20px, 2.3vw, 29px)/1.2 var(--serif); color: var(--ink); }
-.copy p { margin: 14px 0 0; font-size: clamp(14px, 1.2vw, 16.5px); line-height: 1.6; color: var(--ink-soft); max-width: 46ch; }
-.tags { display: flex; flex-wrap: wrap; gap: 7px; margin: 20px 0 0; padding: 0; list-style: none; }
-.tags li { font: 500 10.5px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; padding: 7px 10px; border: 1px solid var(--line); border-radius: 99px; color: var(--ink-soft); }
-
-/* Schermen */
-.mock-wrap { perspective: 1400px; container-type: inline-size; }
-.mock {
-  font-size: 1.72cqw; aspect-ratio: 16 / 10.4; border-radius: 1.1em; overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, .13);
-  box-shadow: 0 3em 7em -1.5em rgba(0, 0, 0, .9), 0 0 0 .5em rgba(255, 255, 255, .03);
-  transform: rotateY(calc(var(--tilt, -20deg) * (1 - var(--e)))) rotateX(calc(11deg * (1 - var(--e)))) scale(calc(.74 + .26 * var(--e)));
-  display: flex; flex-direction: column; will-change: transform;
-}
-.shot--ai .mock { --tilt: 20deg; }
-.mock__bar { display: flex; align-items: center; gap: .45em; padding: .7em 1em; font-family: var(--mono); font-size: .78em; }
-.mock__bar i { width: .8em; height: .8em; border-radius: 50%; background: currentColor; opacity: .28; }
-.mock__bar span { margin-left: 1em; opacity: .6; }
-.mock__body { flex: 1; display: flex; min-height: 0; }
-
-/* Paylity */
-.pay { background: #0c0f16; color: #eceef2; }
-.pay .mock__bar { background: #141822; }
-.pay aside { width: 21%; background: #10131b; border-right: 1px solid #1f2431; padding: 1.1em .9em; display: flex; flex-direction: column; gap: .35em; }
-.pay aside strong { font-size: 1.15em; margin-bottom: .8em; display: flex; align-items: center; gap: .45em; }
-.pay aside strong::before { content: ""; width: 1.05em; height: 1.05em; border-radius: .3em; background: #4a7dff; }
-.pay aside span { padding: .5em .65em; border-radius: .45em; color: #8a93a6; font-size: .86em; }
-.pay aside span.on { background: rgba(74, 125, 255, .16); color: #bcd3ff; }
-.pay main { flex: 1; padding: 1.2em 1.4em; display: flex; flex-direction: column; gap: 1em; min-width: 0; }
-.pay header { display: flex; justify-content: space-between; align-items: center; }
-.pay header b { font-size: 1.25em; }
-.badge { font: 700 .68em var(--mono); letter-spacing: .12em; padding: .45em .7em; border-radius: 99px; background: rgba(251, 191, 36, .14); color: #fcd34d; border: 1px solid rgba(251, 191, 36, .35); }
-.cards { display: grid; grid-template-columns: 1.3fr 1fr 1fr; gap: .8em; }
-.card { background: #141822; border: 1px solid #1f2431; border-radius: .75em; padding: .85em 1em; }
-.card small { color: #8a93a6; font-size: .74em; display: block; }
-.card b { font-size: 1.55em; font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
-.chart { flex: 1; display: flex; align-items: flex-end; gap: 3%; background: #141822; border: 1px solid #1f2431; border-radius: .75em; padding: 1em 1.2em .9em; min-height: 0; }
-.chart i {
-  flex: 1; border-radius: .3em .3em 0 0; background: linear-gradient(#6f9dff, #2f5fe8);
-  height: calc(var(--h) * clamp(0, (var(--p, 0) - .42 - var(--n) * .028) / .16, 1));
-}
-.chart i:last-child { background: linear-gradient(#bcd3ff, #4a7dff); }
-.rows { display: grid; gap: .4em; font-size: .82em; }
-.rows div { display: grid; grid-template-columns: 1fr auto auto; gap: 1em; align-items: center; padding: .55em .9em; background: #141822; border-radius: .55em; opacity: clamp(0, (var(--p, 0) - .62 - var(--n) * .05) / .06, 1); }
-.rows span { color: #8a93a6; }
-.pill { font-size: .82em; padding: .25em .65em; border-radius: 99px; background: rgba(52, 211, 153, .14); color: #6ee7b7; }
-.pill--wait { background: rgba(251, 191, 36, .14); color: #fcd34d; }
-
-/* Mijn AI */
-.ai { background: #faf9f7; color: #1c1917; }
-.ai .mock__bar { background: #ece9e2; color: #57534e; }
-.ai aside { width: 25%; background: #f2f0eb; border-right: 1px solid #e2ded6; padding: 1.1em .85em; display: flex; flex-direction: column; gap: .3em; }
-.ai aside strong { font-size: 1.1em; margin-bottom: .7em; }
-.ai aside strong::before { content: "✦ "; color: #c45f3c; }
-.ai aside span { padding: .5em .65em; border-radius: .5em; font-size: .82em; color: #57534e; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.ai aside span.on { background: rgba(28, 25, 23, .085); color: #1c1917; }
-.ai main { flex: 1; display: flex; flex-direction: column; padding: 1.2em 1.6em 1.1em; gap: .9em; min-width: 0; }
-.ai .chip { align-self: flex-start; font: 600 .72em var(--mono); padding: .45em .8em; border-radius: 99px; border: 1px solid #d3cec4; color: #57534e; }
-.ai .me { align-self: flex-end; max-width: 78%; background: #ebe8e1; padding: .7em 1em; border-radius: 1.1em 1.1em .3em 1.1em; font-size: .95em; opacity: clamp(0, (var(--p, 0) - .36) / .05, 1); }
-.ai .bot { flex: 1; font-size: .95em; line-height: 1.55; min-height: 0; overflow: hidden; white-space: pre-line; }
-.ai .bot::after { content: ""; display: inline-block; width: .5em; height: 1em; background: #c45f3c; vertical-align: -.15em; margin-left: .1em; animation: blink .9s steps(2) infinite; }
-.ai .bot.done::after { display: none; }
-.ai .input { border: 1px solid #d3cec4; border-radius: .9em; background: #fff; padding: .75em 1em; color: #8a837c; font-size: .88em; display: flex; justify-content: space-between; box-shadow: 0 .2em 1em rgba(28, 25, 23, .08); }
-.ai .input b { color: #fff; background: #c45f3c; border-radius: .5em; padding: 0 .55em; }
-
-/* ---------- Scène 05: filmstrook ---------- */
-.process { height: 320vh; }
-.process .pin { place-items: center start; }
-.process__head { position: absolute; top: calc(var(--bar) + 5vh); left: clamp(20px, 5vw, 56px); z-index: 2; }
-.process__head h2 { margin: 10px 0 0; font: 400 clamp(34px, 5vw, 68px)/1 var(--serif); letter-spacing: -.02em; }
-.strip {
-  display: flex; gap: 18px; padding: 34px clamp(20px, 5vw, 56px); margin-top: 9vh; will-change: transform;
-  background:
-    radial-gradient(circle, var(--bg) 0 5px, transparent 5.5px) 0 5px / 30px 22px repeat-x,
-    radial-gradient(circle, var(--bg) 0 5px, transparent 5.5px) 0 calc(100% - 5px) / 30px 22px repeat-x,
-    #1a1814;
-  width: max-content;
-}
-.frame {
-  width: min(74vw, 520px); height: min(50vh, 390px); border-radius: 6px; padding: clamp(20px, 3vw, 34px);
-  background: linear-gradient(160deg, #15151b, #0b0b0f); border: 1px solid var(--line);
-  display: flex; flex-direction: column; justify-content: space-between;
-}
-.frame__no { font: 400 clamp(64px, 9vw, 120px)/.8 var(--serif); color: var(--gold); font-style: italic; }
-.frame h3 { margin: 0; font: 400 clamp(28px, 3.4vw, 44px)/1 var(--serif); }
-.frame p { margin: 10px 0 0; color: var(--ink-soft); font-size: clamp(14px, 1.2vw, 16px); line-height: 1.55; }
-
-/* ---------- Scène 06: aftiteling ---------- */
-.credits { padding: 22vh 20px calc(var(--bar) + 16vh); text-align: center; }
-.credits dl { margin: 0 auto; display: grid; gap: 40px; }
-.credits dt { font: 500 11px var(--mono); letter-spacing: .24em; text-transform: uppercase; color: var(--ink-dim); }
-.credits dd { margin: 8px 0 0; font: 400 clamp(26px, 4vw, 44px)/1.1 var(--serif); }
-.reveal { opacity: 0; transform: translateY(34px); filter: blur(6px); transition: opacity 1s, transform 1s, filter 1s; }
-.reveal.in { opacity: 1; transform: none; filter: none; }
-.end { margin-top: 20vh; }
-.end h2 { margin: 16px 0 0; font: 400 clamp(46px, 9vw, 132px)/.92 var(--serif); letter-spacing: -.03em; }
-.end h2 em { color: var(--gold); }
-.btn {
-  display: inline-flex; align-items: center; gap: 10px; margin-top: 34px; padding: 17px 30px; border-radius: 99px;
-  background: var(--ink); color: #0b0b0f; text-decoration: none; font-weight: 650; font-size: 16px;
-  transition: transform .25s, background .25s;
-}
-.btn:hover { transform: scale(1.05); background: var(--gold); }
-.replay { display: block; margin: 26px auto 0; background: none; border: 0; cursor: pointer; color: var(--ink-dim); font: 11px var(--mono); letter-spacing: .2em; text-transform: uppercase; }
-.replay:hover { color: var(--gold); }
-.fin { margin-top: 16vh; font: italic 400 22px var(--serif); color: var(--ink-dim); }
-
-/* ---------- Smal scherm ---------- */
-@media (max-width: 820px) {
-  :root { --bar: 38px; }
-  .bar nav, .rec { display: none; }
-  .stage, .shot--ai .stage { grid-template-columns: 1fr; gap: 20px; align-content: center; }
-  .shot--ai .copy { order: 0; }
-  .copy p:not(.lead) { display: none; }
-  .copy .lead { margin-top: 10px; }
-  .tags { margin-top: 12px; }
-  .tags li:nth-child(n+4) { display: none; }
-  .mock { font-size: 2.05cqw; }
-  .shot .pin { background: radial-gradient(ellipse 100% 50% at 50% 70%, var(--glow), transparent 70%); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .grain, .scratch::before, .scratch::after, .scrollcue, .rec i { animation: none; }
-  .is-playing .hero h1 span { animation-duration: .01s; animation-delay: 0s; }
-  .reveal { transition: none; }
-}
-</style>
+<link rel="stylesheet" href="styles.css">
 </head>
+<body>
+<div class="korrel" aria-hidden="true"></div>
+<div class="voortgang" aria-hidden="true"></div>
 
-<body class="is-locked">
-
-<!-- Voorfilm: 3 · 2 · 1 -->
-<div class="leader" id="leader" aria-hidden="true">
-  <div class="leader__half leader__half--t"></div>
-  <div class="leader__half leader__half--b"></div>
-  <div class="leader__dial"><span class="leader__num" id="leaderNum">3</span></div>
-  <span class="leader__hint">Klik om over te slaan</span>
-</div>
-
-<div class="grain" aria-hidden="true"></div>
-<div class="vignette" aria-hidden="true"></div>
-<div class="scratch" aria-hidden="true"></div>
-
-<header class="bar bar--top">
-  <a class="brand" href="#top">Weblity <span class="rec"><i></i>Rec</span></a>
-  <nav aria-label="Hoofdmenu">
-    <a href="#paylity">Paylity</a>
-    <a href="#mijn-ai">Mijn AI</a>
-    <a href="#werkwijze">Werkwijze</a>
-    <a href="#contact">Contact</a>
-  </nav>
-  <span class="tc" id="timecode" aria-hidden="true">00:00:00:00</span>
+<header class="kop">
+  <div class="wrap kop__in">
+    <a class="logo" href="index.html" aria-label="Weblity, naar de startpagina">Web<em>lity</em></a>
+    <nav class="menu" id="menu" aria-label="Hoofdmenu">
+      <a href="index.html" style="--n:0" aria-current="page">Home</a><a href="diensten.html" style="--n:1">Diensten</a><a href="projecten.html" style="--n:2">Projecten</a><a href="werkwijze.html" style="--n:3">Werkwijze</a>
+      <a class="knop knop--goud" href="boeken.html">Boek een gesprek</a>
+    </nav>
+    <button class="menuknop" type="button" aria-label="Menu openen" aria-expanded="false" aria-controls="menu"><span></span><span></span></button>
+  </div>
 </header>
 
-<footer class="bar bar--bottom" aria-hidden="true">
-  <span class="reel"></span>
-  <span class="scene-label" id="sceneLabel">Scène 01 — Titel</span>
-  <span>2.39 : 1 · 24 fps</span>
-</footer>
+<main>
 
-<main id="top">
-
-  <!-- SCÈNE 01 -->
-  <section class="hero" data-scene="01" data-title="Titel">
-    <canvas id="beam" aria-hidden="true"></canvas>
-    <div class="hero__inner">
-      <div class="kicker hero__pre">Een Weblity-productie</div>
-      <h1 aria-label="Weblity">
-        <span style="--i:0">W</span><span style="--i:1">e</span><span style="--i:2">b</span><em><span style="--i:3">l</span><span style="--i:4">i</span><span style="--i:5">t</span><span style="--i:6">y</span></em>
-      </h1>
-      <p class="hero__tag">Websites die aanvoelen als cinema.</p>
+  <section class="held">
+    <canvas aria-hidden="true"></canvas>
+    <div class="wrap held__in">
+      <div class="kicker">Webdesign &amp; development</div>
+      <h1 aria-label="Websites die blijven hangen."><span class="w"><span style="--i:0">Websites</span></span> <span class="w"><span style="--i:1">die</span></span> <span class="w"><em><span style="--i:2">blijven</span></em></span> <span class="w"><em><span style="--i:3">hangen.</span></em></span></h1>
+      <p class="intro">Weblity bouwt websites, webshops en webapps die snel laden, strak ogen en klanten opleveren. Boek een gratis gesprek en ontdek wat er voor jouw zaak mogelijk is.</p>
+      <div class="knoppen">
+        <a class="knop knop--goud knop--groot" href="boeken.html">Boek een gratis gesprek <span class="pijl" aria-hidden="true">→</span></a>
+        <a class="knop knop--groot" href="projecten.html">Bekijk projecten</a>
+      </div>
     </div>
-    <div class="subtitle">
-      — Wij bouwen websites en webapps. Beeld voor beeld.
-      <span class="scrollcue"></span>
+    <div class="band" aria-hidden="true">
+      <div class="band__rij"><span>Websites</span><span>Webshops</span><span>Webapps</span><span>AI-toepassingen</span><span>Betaalsystemen</span><span>Dashboards</span><span>Boekingssystemen</span><span>Websites</span><span>Webshops</span><span>Webapps</span><span>AI-toepassingen</span><span>Betaalsystemen</span><span>Dashboards</span><span>Boekingssystemen</span></div>
     </div>
   </section>
 
-  <!-- SCÈNE 02 -->
-  <section class="manifest" data-scene="02" data-title="Het idee" data-pin>
-    <div class="pin">
-      <div class="wrap">
-        <div class="kicker">Scène 02 — Het idee</div>
-        <p id="manifest">Een goede website is geen pagina. Het is een *film:* elk beeld klopt, elke beweging heeft een reden, en het einde *blijft* *hangen.*</p>
+  <section class="sectie">
+    <div class="wrap">
+      <div class="sectie__kop">
+        <div class="kicker" data-reveal>Diensten</div>
+        <h2 data-reveal>Alles wat je online <em>nodig hebt.</em></h2>
+      </div>
+      <div class="kaarten">
+        <a class="kaart" href="diensten.html#web" data-reveal>
+          <div class="kaart__icoon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2.500"/><path d="M3 9h18M7 6.500h.01M10 6.500h.01"/></svg></div>
+          <h3>Websites</h3>
+          <p>Een site die je zaak in één oogopslag uitlegt en bezoekers laat bellen, boeken of kopen.</p>
+          <span class="link">Meer weten <span class="pijl" aria-hidden="true">→</span></span>
+        </a><a class="kaart" href="diensten.html#shop" data-reveal>
+          <div class="kaart__icoon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 8h14l-1 12H6L5 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg></div>
+          <h3>Webshops & betalingen</h3>
+          <p>Verkoop online zonder gedoe: van productpagina tot betaling.</p>
+          <span class="link">Meer weten <span class="pijl" aria-hidden="true">→</span></span>
+        </a><a class="kaart" href="diensten.html#app" data-reveal>
+          <div class="kaart__icoon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19V5M4 19h16M8 16v-5M12 16V8M16 16v-3M20 16V6"/></svg></div>
+          <h3>Webapps & dashboards</h3>
+          <p>Software op maat, gewoon in de browser.</p>
+          <span class="link">Meer weten <span class="pijl" aria-hidden="true">→</span></span>
+        </a><a class="kaart" href="diensten.html#ai" data-reveal>
+          <div class="kaart__icoon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.800 5.200L19 10l-5.200 1.800L12 17l-1.800-5.200L5 10l5.200-1.800L12 3zM19 16l.7 2.300L22 19l-2.300.7L19 22l-.7-2.300L16 19l2.300-.7L19 16z"/></svg></div>
+          <h3>AI-toepassingen</h3>
+          <p>Een eigen assistent die je klanten of je team verder helpt.</p>
+          <span class="link">Meer weten <span class="pijl" aria-hidden="true">→</span></span>
+        </a>
       </div>
     </div>
   </section>
 
-  <!-- SCÈNE 03 — Paylity -->
-  <section class="shot shot--paylity" id="paylity" data-scene="03" data-title="Paylity" data-pin>
-    <div class="pin">
-      <div class="slate" aria-hidden="true">
-        <div class="slate__arm"></div>
-        <div class="slate__base"></div>
-        <div class="slate__body">
-          <div class="slate__row">
-            <div><small>Scène</small><b>03</b></div>
-            <div><small>Take</small><b>1</b></div>
-            <div><small>Rol</small><b>A</b></div>
-          </div>
-          <small style="margin-top:10px">Productie · Weblity</small>
-          <div class="slate__title">Paylity</div>
-        </div>
+  <section class="sectie">
+    <div class="wrap">
+      <div class="sectie__kop">
+        <div class="kicker" data-reveal>Projecten</div>
+        <h2 data-reveal>Gebouwd, <em>niet beloofd.</em></h2>
       </div>
-
-      <div class="stage">
-        <div class="copy">
-          <div class="kicker" style="--i:0">Project 01 · Betaalplatform</div>
-          <h2 style="--i:1">Pay<em>lity</em></h2>
-          <p class="lead" style="--i:2">Payments made simple.</p>
-          <p style="--i:3">Een betaalplatform voor webshops: betaallinks in seconden, een checkout met Bancontact en kaart, één helder dashboard, een REST API en ondertekende webhooks. Met een AI-assistent die je in gewone taal vertelt wat er vandaag binnenkwam.</p>
-          <ul class="tags" style="--i:4">
-            <li>Next.js</li><li>PostgreSQL</li><li>REST API</li><li>Webhooks</li><li>AI-assistent</li><li>v1 · testomgeving</li>
-          </ul>
+      <div class="duo">
+        <div class="duo__tekst">
+          <div class="kicker" data-reveal>Betaalplatform</div>
+          <h2 data-reveal>Pay<em style="color:#6f9dff">lity</em></h2>
+          <p class="lead" data-reveal>Payments made simple.</p>
+          <p data-reveal>Betaallinks, een checkout met Bancontact en kaart, een dashboard en een API voor webshops.</p>
+          <a class="link" href="projecten.html#paylity" data-reveal>Bekijk het project <span class="pijl" aria-hidden="true">→</span></a>
         </div>
-
-        <div class="mock-wrap" aria-hidden="true">
-          <div class="mock pay">
-            <div class="mock__bar"><i></i><i></i><i></i><span>paylity / dashboard</span></div>
-            <div class="mock__body">
-              <aside>
-                <strong>Paylity</strong>
-                <span class="on">Overzicht</span><span>Betalingen</span><span>Betaallinks</span><span>Klanten</span><span>Facturen</span><span>Analytics</span>
-              </aside>
+        <div class="scherm-wrap gloed" aria-hidden="true">
+          <div class="scherm pay">
+            <div class="scherm__balk"><i></i><i></i><i></i><span>paylity / dashboard</span></div>
+            <div class="scherm__in">
+              <aside><strong>Paylity</strong><span class="aan">Overzicht</span><span>Betalingen</span><span>Betaallinks</span><span>Klanten</span><span>Facturen</span><span>Analytics</span></aside>
               <main>
                 <header><b>Overzicht</b><span class="badge">TEST MODE</span></header>
-                <div class="cards">
-                  <div class="card"><small>Omzet vandaag</small><b id="payTotal">€ 0,00</b></div>
-                  <div class="card"><small>Geslaagd</small><b id="payOk">0</b></div>
-                  <div class="card"><small>Slagingskans</small><b id="payRate">0%</b></div>
+                <div class="tegels">
+                  <div class="tegel"><small>Omzet vandaag</small><b data-tel="1284.5" data-soort="euro">€ 0,00</b></div>
+                  <div class="tegel"><small>Geslaagd</small><b data-tel="37">0</b></div>
+                  <div class="tegel"><small>Slagingskans</small><b data-tel="96" data-soort="procent">0%</b></div>
                 </div>
-                <div class="chart">
-                  <i style="--h:38%;--n:0"></i><i style="--h:55%;--n:1"></i><i style="--h:44%;--n:2"></i><i style="--h:70%;--n:3"></i><i style="--h:62%;--n:4"></i><i style="--h:84%;--n:5"></i><i style="--h:100%;--n:6"></i>
-                </div>
-                <div class="rows">
-                  <div style="--n:0"><b>Bestelling #1042</b><span>Bancontact</span><span class="pill">betaald</span></div>
-                  <div style="--n:1"><b>Betaallink · Workshop</b><span>Kaart</span><span class="pill pill--wait">in afwachting</span></div>
+                <div class="grafiek"><i style="--h:38%;--n:0"></i><i style="--h:55%;--n:1"></i><i style="--h:44%;--n:2"></i><i style="--h:70%;--n:3"></i><i style="--h:62%;--n:4"></i><i style="--h:84%;--n:5"></i><i style="--h:100%;--n:6"></i></div>
+                <div class="regels">
+                  <div style="--n:0"><b>Bestelling #1042</b><span>Bancontact</span><span class="pil">betaald</span></div>
+                  <div style="--n:1"><b>Betaallink · Workshop</b><span>Kaart</span><span class="pil pil--wacht">in afwachting</span></div>
                 </div>
               </main>
             </div>
           </div>
         </div>
       </div>
-    </div>
-  </section>
-
-  <!-- SCÈNE 04 — Mijn AI -->
-  <section class="shot shot--ai" id="mijn-ai" data-scene="04" data-title="Mijn AI" data-pin>
-    <div class="pin">
-      <div class="slate" aria-hidden="true">
-        <div class="slate__arm"></div>
-        <div class="slate__base"></div>
-        <div class="slate__body">
-          <div class="slate__row">
-            <div><small>Scène</small><b>04</b></div>
-            <div><small>Take</small><b>1</b></div>
-            <div><small>Rol</small><b>B</b></div>
-          </div>
-          <small style="margin-top:10px">Productie · Weblity</small>
-          <div class="slate__title">Mijn AI</div>
+      <div class="duo duo--om">
+        <div class="duo__tekst">
+          <div class="kicker" data-reveal>AI-chatapp</div>
+          <h2 data-reveal>Mijn <em style="color:#e58a66">AI</em></h2>
+          <p class="lead" data-reveal>Je eigen assistent, onder je eigen naam.</p>
+          <p data-reveal>Een volledige chat-app op de Claude API, met live antwoorden, meerdere gesprekken en abonnementen.</p>
+          <a class="link" href="projecten.html#mijn-ai" data-reveal>Bekijk het project <span class="pijl" aria-hidden="true">→</span></a>
         </div>
-      </div>
-
-      <div class="stage">
-        <div class="copy">
-          <div class="kicker" style="--i:0">Project 02 · AI-chatapp</div>
-          <h2 style="--i:1">Mijn <em>AI</em></h2>
-          <p class="lead" style="--i:2">Je eigen assistent, onder je eigen naam.</p>
-          <p style="--i:3">Een volledige chat-app op de Claude API: antwoorden die live binnenstromen, meerdere gesprekken, een modelkiezer, licht en donker thema en een instelbare persoonlijkheid. Abonnementen lopen via Stripe. De API-sleutel blijft op de server en komt nooit in de browser.</p>
-          <ul class="tags" style="--i:4">
-            <li>Claude API</li><li>Fable 5</li><li>Streaming</li><li>Node.js</li><li>Stripe</li><li>Netlify · Render</li>
-          </ul>
-        </div>
-
-        <div class="mock-wrap" aria-hidden="true">
-          <div class="mock ai">
-            <div class="mock__bar"><i></i><i></i><i></i><span>mijn ai</span></div>
-            <div class="mock__body">
-              <aside>
-                <strong>Mijn AI</strong>
-                <span class="on">Welkomstmail klanten</span><span>Ideeën voor de zomeractie</span><span>Offerte nalezen</span><span>Planning volgende week</span>
-              </aside>
+        <div class="scherm-wrap gloed" style="--gloed:rgba(196,95,60,.24)" aria-hidden="true">
+          <div class="scherm ai">
+            <div class="scherm__balk"><i></i><i></i><i></i><span>mijn ai</span></div>
+            <div class="scherm__in">
+              <aside><strong>Mijn AI</strong><span class="aan">Welkomstmail klanten</span><span>Ideeën voor de zomeractie</span><span>Offerte nalezen</span><span>Planning volgende week</span></aside>
               <main>
                 <span class="chip">Fable 5 · denkkracht max</span>
-                <div class="me">Schrijf een korte welkomstmail voor nieuwe klanten.</div>
-                <div class="bot" id="aiText"></div>
-                <div class="input"><span>Stel een vraag…</span><b>↑</b></div>
+                <div class="ik">Schrijf een korte welkomstmail voor nieuwe klanten.</div>
+                <div class="bot" data-typ="Hallo en welkom!\n\nFijn dat je voor ons gekozen hebt. Vanaf vandaag staan we voor je klaar: heb je een vraag, dan krijg je snel antwoord van een echt mens.\n\nTot snel,\nhet team"></div>
+                <div class="invoer"><span>Stel een vraag…</span><b>↑</b></div>
               </main>
             </div>
           </div>
@@ -512,225 +151,60 @@ section { position: relative; }
     </div>
   </section>
 
-  <!-- SCÈNE 05 — Werkwijze -->
-  <section class="process" id="werkwijze" data-scene="05" data-title="Werkwijze" data-pin>
-    <div class="pin">
-      <div class="process__head">
-        <div class="kicker">Scène 05 — Werkwijze</div>
-        <h2>Van script tot première.</h2>
+  <section class="sectie">
+    <div class="wrap">
+      <div class="sectie__kop">
+        <div class="kicker" data-reveal>Werkwijze</div>
+        <h2 data-reveal>Vier stappen, <em>geen verrassingen.</em></h2>
       </div>
-      <div class="strip" id="strip">
-        <article class="frame"><div class="frame__no">01</div><div><h3>Script</h3><p>We luisteren eerst. Wat moet je site doen, voor wie, en wat moet de bezoeker onthouden als hij weer weg is?</p></div></article>
-        <article class="frame"><div class="frame__no">02</div><div><h3>Storyboard</h3><p>Het ontwerp, scherm voor scherm. Je ziet het verhaal voordat er één regel code geschreven is.</p></div></article>
-        <article class="frame"><div class="frame__no">03</div><div><h3>Opname</h3><p>We bouwen. Snel, toegankelijk en strak op elk scherm, met animaties die iets vertellen in plaats van afleiden.</p></div></article>
-        <article class="frame"><div class="frame__no">04</div><div><h3>Première</h3><p>Live. En daarna blijven we in de zaal: meten, bijsturen en verder bouwen aan het vervolg.</p></div></article>
+      <div class="kaarten">
+        <div class="kaart" data-reveal><span class="kaart__nr">01</span><h3>Kennismaken</h3><p>Je boekt een gratis gesprek. We luisteren: wat doet je zaak, wie wil je bereiken en wat moet de site opleveren?</p></div><div class="kaart" data-reveal><span class="kaart__nr">02</span><h3>Ontwerp</h3><p>Je krijgt een voorstel te zien, scherm voor scherm. Je weet hoe het eruit zal zien voordat er gebouwd wordt.</p></div><div class="kaart" data-reveal><span class="kaart__nr">03</span><h3>Bouwen</h3><p>We bouwen de site: snel, toegankelijk en strak op elk scherm. Je kijkt tussendoor mee en stuurt bij.</p></div><div class="kaart" data-reveal><span class="kaart__nr">04</span><h3>Live</h3><p>De site gaat online op je eigen domeinnaam. Daarna blijven we bereikbaar voor aanpassingen en uitbreidingen.</p></div>
       </div>
+      <p style="margin-top:28px" data-reveal><a class="link" href="werkwijze.html">Zo werken we <span class="pijl" aria-hidden="true">→</span></a></p>
     </div>
   </section>
 
-  <!-- SCÈNE 06 — Aftiteling -->
-  <section class="credits" id="contact" data-scene="06" data-title="Aftiteling">
-    <dl>
-      <div class="reveal"><dt>Regie &amp; productie</dt><dd>Weblity</dd></div>
-      <div class="reveal"><dt>In de hoofdrollen</dt><dd>Paylity · Mijn AI</dd></div>
-      <div class="reveal"><dt>Scenario</dt><dd>Jouw idee</dd></div>
-      <div class="reveal"><dt>Gemaakt met</dt><dd>Claude Fable 5</dd></div>
-    </dl>
-
-    <div class="end reveal">
-      <div class="kicker">Het vervolg</div>
-      <h2>Jouw project<br>in de <em>hoofdrol?</em></h2>
-      <!-- Vul hier je eigen e-mailadres in, tussen "mailto:" en "?". -->
-      <a class="btn" href="mailto:?subject=Nieuw%20project%20voor%20Weblity">Start je project →</a>
-      <button class="replay" type="button" id="replay">↺ Opnieuw afspelen</button>
+  <section class="oproep">
+    <div class="wrap">
+      <div class="kicker" data-reveal>Gratis kennismaking</div>
+      <h2 data-reveal>Klaar voor een site<br>die <em>blijft hangen?</em></h2>
+      <p data-reveal>Kies zelf een moment. Het gesprek is gratis en verplicht je tot niets.</p>
+      <div class="knoppen" data-reveal>
+        <a class="knop knop--goud knop--groot" href="boeken.html">Boek een gratis gesprek <span class="pijl" aria-hidden="true">→</span></a>
+        <a class="knop knop--wa knop--groot" href="https://wa.me/32469226035?text=Dag%20Weblity%2C%20ik%20heb%20een%20vraag%20over%20een%20website." target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 0 0-7.8 13.5L3 21l4.6-1.2A9 9 0 1 0 12 3z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 8.5c-.3 1 .2 2.6 1.700 4.100s3.100 2 4.100 1.700l.7-1.400-1.800-1-.8.8c-.6-.2-1.900-1.500-2.100-2.100l.8-.8-1-1.800L9 8.500z" fill="currentColor"/></svg> WhatsApp</a>
+      </div>
     </div>
-
-    <p class="fin reveal">— Einde —</p>
   </section>
 
 </main>
 
-<script>
-(() => {
-  'use strict';
-  const $ = (s, r = document) => r.querySelector(s);
-  const $$ = (s, r = document) => [...r.querySelectorAll(s)];
-  const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
-  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const root = document.documentElement;
+<footer class="voet">
+  <div class="wrap">
+    <div class="voet__in">
+      <div>
+        <a class="logo" href="index.html">Web<em>lity</em></a>
+        <p style="margin-top:12px;max-width:34ch">Websites, webshops en webapps die snel laden, strak ogen en klanten opleveren.</p>
+      </div>
+      <div>
+        <h4>Pagina's</h4>
+        <ul><li><a href="index.html">Home</a></li><li><a href="diensten.html">Diensten</a></li><li><a href="projecten.html">Projecten</a></li><li><a href="werkwijze.html">Werkwijze</a></li><li><a href="boeken.html">Boeken</a></li></ul>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <ul>
+          <li><a href="tel:+32469226035">0469 22 60 35</a></li>
+          <li><a href="https://wa.me/32469226035?text=Dag%20Weblity%2C%20ik%20heb%20een%20vraag%20over%20een%20website." target="_blank" rel="noopener">WhatsApp</a></li>
+          <li><a href="boeken.html">Boek een gesprek</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="voet__onder"><span>© <span id="jaar">2026</span> Weblity</span><span>Gemaakt met Claude Fable 5</span></div>
+  </div>
+</footer>
 
-  /* ---------- Voorfilm ---------- */
-  const leader = $('#leader'), leaderNum = $('#leaderNum'), dial = $('.leader__dial');
-  let leaderDone = false;
-  function openCurtain() {
-    if (leaderDone) return;
-    leaderDone = true;
-    leader.classList.add('is-flash');
-    setTimeout(() => {
-      leader.classList.add('is-open');
-      document.body.classList.remove('is-locked');
-      document.body.classList.add('is-playing');
-      setTimeout(() => leader.remove(), 1000);
-    }, 160);
-  }
-  function runLeader() {
-    if (reduced) return openCurtain();
-    const start = performance.now(), per = 620;
-    (function tick(now) {
-      if (leaderDone) return;
-      const t = now - start, n = 3 - Math.floor(t / per);
-      if (n < 1) return openCurtain();
-      leaderNum.textContent = n;
-      dial.style.setProperty('--sweep', ((t % per) / per) * 360 + 'deg');
-      requestAnimationFrame(tick);
-    })(start);
-    // Vangnet: ook als de tab op de achtergrond staat gaat het doek open.
-    setTimeout(openCurtain, per * 3 + 400);
-  }
-  leader.addEventListener('click', openCurtain);
-  addEventListener('keydown', openCurtain, { once: true });
-  runLeader();
+<a class="wa-zweef" href="https://wa.me/32469226035?text=Dag%20Weblity%2C%20ik%20heb%20een%20vraag%20over%20een%20website." target="_blank" rel="noopener" aria-label="Stuur ons een bericht via WhatsApp"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 0 0-7.8 13.5L3 21l4.6-1.2A9 9 0 1 0 12 3z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 8.5c-.3 1 .2 2.6 1.700 4.100s3.100 2 4.100 1.700l.7-1.400-1.800-1-.8.8c-.6-.2-1.900-1.500-2.100-2.100l.8-.8-1-1.800L9 8.500z" fill="currentColor"/></svg></a>
 
-  /* ---------- Manifest: woorden opsplitsen ---------- */
-  const manifest = $('#manifest');
-  manifest.innerHTML = manifest.textContent.trim().split(/\s+/).map(w => {
-    const gold = /^\*.*\*$/.test(w);
-    return `<span class="w${gold ? ' gold' : ''}">${w.replace(/\*/g, '')}</span>`;
-  }).join(' ');
-  const words = $$('.w', manifest);
+<script src="main.js"></script>
 
-  /* ---------- Inhoud die met het scrollen meeloopt ---------- */
-  const euro = new Intl.NumberFormat('nl-BE', { style: 'currency', currency: 'EUR' });
-  const payTotal = $('#payTotal'), payOk = $('#payOk'), payRate = $('#payRate');
-  const aiText = $('#aiText');
-  const aiFull = 'Hallo en welkom!\n\nFijn dat je voor ons gekozen hebt. Vanaf vandaag staan we voor je klaar: heb je een vraag, dan krijg je binnen één werkdag antwoord van een echt mens.\n\nTot snel,\nhet team';
-  const strip = $('#strip');
-
-  const onProgress = {
-    manifest(p) {
-      const n = Math.round(clamp((p - .05) / .8) * words.length);
-      words.forEach((w, i) => w.classList.toggle('on', i < n));
-    },
-    paylity(p) {
-      const k = clamp((p - .42) / .3), e = 1 - Math.pow(1 - k, 3);
-      payTotal.textContent = euro.format(1284.5 * e);
-      payOk.textContent = Math.round(37 * e);
-      payRate.textContent = Math.round(96 * e) + '%';
-    },
-    'mijn-ai'(p) {
-      const k = clamp((p - .42) / .4);
-      aiText.textContent = aiFull.slice(0, Math.round(k * aiFull.length));
-      aiText.classList.toggle('done', k >= 1);
-    },
-    werkwijze(p) {
-      const max = Math.max(0, strip.scrollWidth - innerWidth);
-      strip.style.transform = `translate3d(${-clamp((p - .08) / .84) * max}px,0,0)`;
-    },
-  };
-
-  const pins = $$('[data-pin]');
-  const scenes = $$('[data-scene]');
-  const timecode = $('#timecode'), sceneLabel = $('#sceneLabel');
-  const RUNTIME = 150 * 24; // 2 min 30 aan "film", in beeldjes
-  let currentScene = '';
-
-  function update() {
-    const vh = innerHeight;
-    const total = clamp(scrollY / Math.max(1, root.scrollHeight - vh));
-    root.style.setProperty('--reel', total.toFixed(4));
-
-    // Tijdcode HH:MM:SS:FF
-    const f = Math.round(total * RUNTIME), pad = n => String(n).padStart(2, '0');
-    timecode.textContent = `00:${pad(Math.floor(f / 1440))}:${pad(Math.floor(f / 24) % 60)}:${pad(f % 24)}`;
-
-    for (const el of pins) {
-      const r = el.getBoundingClientRect();
-      if (r.bottom < -vh || r.top > vh * 2) continue;
-      const p = clamp(-r.top / Math.max(1, r.height - vh));
-      el.style.setProperty('--p', p.toFixed(4));
-      const fn = onProgress[el.id || el.className.split(' ')[0]];
-      if (fn) fn(p);
-    }
-
-    for (const s of scenes) {
-      const r = s.getBoundingClientRect();
-      if (r.top <= vh / 2 && r.bottom > vh / 2) {
-        if (s.dataset.scene !== currentScene) {
-          currentScene = s.dataset.scene;
-          sceneLabel.textContent = `Scène ${currentScene} — ${s.dataset.title}`;
-          sceneLabel.classList.remove('is-cut');
-          void sceneLabel.offsetWidth;
-          sceneLabel.classList.add('is-cut');
-        }
-        break;
-      }
-    }
-  }
-  let queued = false;
-  const request = () => { if (!queued) { queued = true; requestAnimationFrame(() => { queued = false; update(); }); } };
-  addEventListener('scroll', request, { passive: true });
-  addEventListener('resize', request);
-  update();
-
-  /* ---------- Aftiteling ---------- */
-  const io = new IntersectionObserver(es => es.forEach(e => {
-    if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
-  }), { threshold: .25 });
-  $$('.reveal').forEach(el => io.observe(el));
-
-  $('#replay').addEventListener('click', () => scrollTo({ top: 0, behavior: reduced ? 'auto' : 'smooth' }));
-
-  /* ---------- Projectorstraal met stof (scène 01) ---------- */
-  const hero = $('.hero'), canvas = $('#beam'), ctx = canvas.getContext('2d');
-  let W = 0, H = 0, dpr = 1, heroVisible = true, dust = [];
-  function size() {
-    dpr = Math.min(devicePixelRatio || 1, 2);
-    W = hero.clientWidth; H = hero.clientHeight;
-    canvas.width = W * dpr; canvas.height = H * dpr;
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    dust = Array.from({ length: Math.round(Math.min(110, W / 11)) }, () => ({
-      x: Math.random() * W, y: Math.random() * H, r: Math.random() * 1.6 + .3,
-      vx: (Math.random() - .5) * .22, vy: -Math.random() * .2 - .03, ph: Math.random() * 6.28,
-    }));
-  }
-  function draw(t) {
-    if (heroVisible) {
-      ctx.clearRect(0, 0, W, H);
-      // De straal komt van rechtsboven, net als in een zaal.
-      const ox = W * 1.04, oy = -H * .08, flick = .9 + Math.sin(t / 90) * .04 + Math.sin(t / 37) * .03;
-      const g = ctx.createRadialGradient(ox, oy, 0, ox, oy, Math.hypot(W, H) * 1.05);
-      g.addColorStop(0, `rgba(255,226,170,${.34 * flick})`);
-      g.addColorStop(.5, `rgba(232,180,90,${.09 * flick})`);
-      g.addColorStop(1, 'rgba(232,180,90,0)');
-      ctx.fillStyle = g;
-      ctx.beginPath(); ctx.moveTo(ox, oy); ctx.lineTo(-W * .1, H * .34); ctx.lineTo(W * .32, H * 1.15); ctx.closePath(); ctx.fill();
-
-      for (const d of dust) {
-        d.x += d.vx; d.y += d.vy;
-        if (d.y < -5) { d.y = H + 5; d.x = Math.random() * W; }
-        if (d.x < -5) d.x = W + 5; else if (d.x > W + 5) d.x = -5;
-        // Stof licht alleen op binnen de straal.
-        const a = Math.atan2(d.y - oy, ox - d.x), inBeam = clamp(1 - Math.abs(a - .62) / .42);
-        const tw = .55 + Math.sin(t / 600 + d.ph) * .45;
-        ctx.fillStyle = `rgba(255,236,200,${(.05 + inBeam * .6) * tw})`;
-        ctx.beginPath(); ctx.arc(d.x, d.y, d.r, 0, 6.283); ctx.fill();
-      }
-    }
-    if (!reduced) requestAnimationFrame(draw);
-  }
-  new IntersectionObserver(([e]) => { heroVisible = e.isIntersecting; }).observe(hero);
-  addEventListener('resize', size);
-  size();
-  requestAnimationFrame(draw);
-
-  // De titel beweegt een fractie mee met de muis, alsof de camera ademt.
-  if (!reduced && matchMedia('(pointer: fine)').matches) {
-    hero.addEventListener('pointermove', e => {
-      root.style.setProperty('--mx', (e.clientX / innerWidth - .5).toFixed(3));
-      root.style.setProperty('--my', (e.clientY / innerHeight - .5).toFixed(3));
-    });
-  }
-})();
-</script>
 </body>
 </html>

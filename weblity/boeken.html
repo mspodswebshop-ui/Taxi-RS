@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="nl" class="geen-js">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Boek een gratis gesprek — Weblity</title>
+<meta name="description" content="Kies zelf een dag en uur voor een gratis kennismakingsgesprek met Weblity. Of boek via WhatsApp of telefoon.">
+<meta name="theme-color" content="#08080b">
+<link rel="canonical" href="https://weblity.onrender.com/boeken.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Weblity">
+<meta property="og:title" content="Boek een gratis gesprek — Weblity">
+<meta property="og:description" content="Kies zelf een dag en uur voor een gratis kennismakingsgesprek met Weblity. Of boek via WhatsApp of telefoon.">
+<meta property="og:url" content="https://weblity.onrender.com/boeken.html">
+<meta property="og:image" content="https://weblity.onrender.com/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="favicon.ico" sizes="48x48">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="korrel" aria-hidden="true"></div>
+<div class="voortgang" aria-hidden="true"></div>
+
+<header class="kop">
+  <div class="wrap kop__in">
+    <a class="logo" href="index.html" aria-label="Weblity, naar de startpagina">Web<em>lity</em></a>
+    <nav class="menu" id="menu" aria-label="Hoofdmenu">
+      <a href="index.html" style="--n:0">Home</a><a href="diensten.html" style="--n:1">Diensten</a><a href="projecten.html" style="--n:2">Projecten</a><a href="werkwijze.html" style="--n:3">Werkwijze</a>
+      <a class="knop knop--goud" href="boeken.html">Boek een gesprek</a>
+    </nav>
+    <button class="menuknop" type="button" aria-label="Menu openen" aria-expanded="false" aria-controls="menu"><span></span><span></span></button>
+  </div>
+</header>
+
+<main>
+
+  <section class="paginakop" style="padding-bottom:30px">
+    <div class="wrap">
+      <div class="kicker" style="--i:0">Gratis kennismaking</div>
+      <h1 style="--i:1">Boek je <em>gesprek.</em></h1>
+      <p class="intro" style="--i:2">Kies waarover je wilt praten en wanneer het past. Liever meteen iemand spreken? WhatsApp of bel <a href="tel:+32469226035" style="color:var(--inkt)">0469 22 60 35</a>.</p>
+    </div>
+  </section>
+
+  <div class="wrap">
+    <form class="boek" id="boek" novalidate>
+      <div id="boekForm-wrap">
+        <p class="laden" id="agendaStatus" role="status">Agenda laden…</p>
+        <div id="stappen" hidden>
+          <section class="boek__stap">
+            <h2><i>1</i> Waarover gaat het?</h2>
+            <div class="keuzes" id="diensten" role="group" aria-label="Dienst"></div>
+          </section>
+          <section class="boek__stap">
+            <h2><i>2</i> Welke dag?</h2>
+            <div class="dagen" id="dagen" role="group" aria-label="Dag"></div>
+          </section>
+          <section class="boek__stap">
+            <h2><i>3</i> Welk uur?</h2>
+            <p class="hint" id="urenHint">Kies eerst een dag.</p>
+            <div class="keuzes" id="uren" role="group" aria-label="Uur"></div>
+          </section>
+        </div>
+        <section class="boek__stap">
+          <h2><i>4</i> Jouw gegevens</h2>
+          <div class="velden">
+            <div class="veld"><label for="naam">Naam</label><input id="naam" name="naam" autocomplete="name" required minlength="2" maxlength="80"></div>
+            <div class="veld"><label for="telefoon">Telefoon of WhatsApp</label><input id="telefoon" name="telefoon" type="tel" autocomplete="tel" inputmode="tel" required maxlength="30" placeholder="0470 12 34 56"></div>
+            <div class="veld veld--breed"><label for="email">E-mail <span>(mag, hoeft niet)</span></label><input id="email" name="email" type="email" autocomplete="email" maxlength="120"></div>
+            <div class="veld veld--breed"><label for="bericht">Vertel kort wat je zoekt <span>(mag, hoeft niet)</span></label><textarea id="bericht" name="bericht" maxlength="1500"></textarea></div>
+            <div class="val" aria-hidden="true"><label for="website">Laat dit veld leeg</label><input id="website" name="website" tabindex="-1" autocomplete="off"></div>
+          </div>
+          <p class="kleingedrukt">We gebruiken je gegevens alleen om dit gesprek te regelen en geven ze aan niemand door. Wil je dat we ze wissen? Laat het ons weten.</p>
+        </section>
+      </div>
+
+      <aside class="overzicht" aria-label="Je boeking">
+        <h3>Je boeking</h3>
+        <dl>
+          <div><dt>Waarover</dt><dd id="ovDienst" class="leeg">nog kiezen</dd></div>
+          <div><dt>Dag</dt><dd id="ovDag" class="leeg">nog kiezen</dd></div>
+          <div><dt>Uur</dt><dd id="ovUur" class="leeg">nog kiezen</dd></div>
+          <div><dt>Prijs</dt><dd>Gratis</dd></div>
+        </dl>
+        <button class="knop knop--goud" id="verstuur" type="submit" disabled>Bevestig mijn boeking</button>
+        <p class="fout" id="fout" role="alert" style="margin:0"></p>
+        <div class="of">of</div>
+        <a class="knop knop--wa" id="whatsapp" href="https://wa.me/32469226035" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 0 0-7.8 13.5L3 21l4.6-1.2A9 9 0 1 0 12 3z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 8.5c-.3 1 .2 2.6 1.700 4.100s3.100 2 4.100 1.700l.7-1.400-1.800-1-.8.8c-.6-.2-1.900-1.500-2.100-2.100l.8-.8-1-1.800L9 8.500z" fill="currentColor"/></svg> Boek via WhatsApp</a>
+        <a class="knop" href="tel:+32469226035"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l2 5-2.500 1.500a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg> Bel 0469 22 60 35</a>
+      </aside>
+    </form>
+
+    <section class="gelukt" id="gelukt" hidden aria-live="polite">
+      <svg viewBox="0 0 96 96" aria-hidden="true"><circle cx="48" cy="48" r="46"/><path d="M30 49l12 12 24-26"/></svg>
+      <h2>Geboekt, <em id="geluktNaam"></em>!</h2>
+      <p>Je gesprek staat ingepland op <b id="geluktTekst"></b>. We bevestigen het moment via WhatsApp of telefoon.</p>
+      <div class="knoppen" style="justify-content:center">
+        <a class="knop knop--goud" href="index.html">Terug naar de site</a>
+        <a class="knop knop--wa" href="https://wa.me/32469226035?text=Dag%20Weblity%2C%20ik%20heb%20een%20vraag%20over%20een%20website." target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 0 0-7.8 13.5L3 21l4.6-1.2A9 9 0 1 0 12 3z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 8.5c-.3 1 .2 2.6 1.700 4.100s3.100 2 4.100 1.700l.7-1.400-1.800-1-.8.8c-.6-.2-1.900-1.500-2.100-2.100l.8-.8-1-1.800L9 8.500z" fill="currentColor"/></svg> Nog een vraag?</a>
+      </div>
+    </section>
+  </div>
+
+</main>
+
+<footer class="voet">
+  <div class="wrap">
+    <div class="voet__in">
+      <div>
+        <a class="logo" href="index.html">Web<em>lity</em></a>
+        <p style="margin-top:12px;max-width:34ch">Websites, webshops en webapps die snel laden, strak ogen en klanten opleveren.</p>
+      </div>
+      <div>
+        <h4>Pagina's</h4>
+        <ul><li><a href="index.html">Home</a></li><li><a href="diensten.html">Diensten</a></li><li><a href="projecten.html">Projecten</a></li><li><a href="werkwijze.html">Werkwijze</a></li><li><a href="boeken.html">Boeken</a></li></ul>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <ul>
+          <li><a href="tel:+32469226035">0469 22 60 35</a></li>
+          <li><a href="https://wa.me/32469226035?text=Dag%20Weblity%2C%20ik%20heb%20een%20vraag%20over%20een%20website." target="_blank" rel="noopener">WhatsApp</a></li>
+          <li><a href="boeken.html">Boek een gesprek</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="voet__onder"><span>© <span id="jaar">2026</span> Weblity</span><span>Gemaakt met Claude Fable 5</span></div>
+  </div>
+</footer>
+
+<a class="wa-zweef" href="https://wa.me/32469226035?text=Dag%20Weblity%2C%20ik%20heb%20een%20vraag%20over%20een%20website." target="_blank" rel="noopener" aria-label="Stuur ons een bericht via WhatsApp"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 0 0-7.8 13.5L3 21l4.6-1.2A9 9 0 1 0 12 3z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 8.5c-.3 1 .2 2.6 1.700 4.100s3.100 2 4.100 1.700l.7-1.400-1.800-1-.8.8c-.6-.2-1.900-1.500-2.100-2.100l.8-.8-1-1.800L9 8.500z" fill="currentColor"/></svg></a>
+
+<script src="main.js"></script>
+<script src="boeken.js"></script>
+</body>
+</html>

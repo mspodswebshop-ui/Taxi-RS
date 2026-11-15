@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#0b0b0f">
+<title>Weblity · Boekingen</title>
+<link rel="icon" href="icon.svg">
+<link rel="stylesheet" href="beheer.css">
+</head>
+<body>
+
+<!-- Inloggen -->
+<main class="login" id="login" hidden>
+  <form class="login__kaart" id="loginForm">
+    <div class="logo">Web<em>lity</em></div>
+    <h1>Boekingen</h1>
+    <p>Log in om te zien wie er geboekt heeft.</p>
+    <label for="wachtwoord">Wachtwoord</label>
+    <input id="wachtwoord" type="password" autocomplete="current-password" required autofocus>
+    <p class="fout" id="loginFout" role="alert"></p>
+    <button class="knop knop--goud" type="submit">Inloggen</button>
+  </form>
+</main>
+
+<!-- Beheerscherm -->
+<div class="app" id="app" hidden>
+  <header class="kop">
+    <div class="logo">Web<em>lity</em> <span>boekingen</span></div>
+    <div class="kop__rechts">
+      <span class="live" id="live" title="Wordt automatisch ververst"><i></i>live</span>
+      <button class="knop knop--stil" id="uitloggen" type="button">Uitloggen</button>
+    </div>
+  </header>
+
+  <section class="cijfers" aria-label="Overzicht">
+    <div class="cijfer cijfer--goud"><b id="nNieuw">0</b><span>nieuw</span></div>
+    <div class="cijfer"><b id="nVandaag">0</b><span>vandaag</span></div>
+    <div class="cijfer"><b id="nKomend">0</b><span>komend</span></div>
+    <div class="cijfer"><b id="nTotaal">0</b><span>totaal</span></div>
+  </section>
+
+  <details class="meldingen" id="meldingen">
+    <summary>Meldingen op je gsm <span class="pil" id="meldStatus"></span></summary>
+    <div class="meldingen__inhoud">
+      <ol id="meldUitleg">
+        <li>Installeer de gratis app <b>ntfy</b> (App Store of Google Play).</li>
+        <li>Open de app, tik op <b>+</b> en vul dit kanaal in: <code id="kanaal"></code> <button class="knop knop--mini" id="kopieer" type="button">Kopieer</button></li>
+        <li>Klaar. Bij elke nieuwe boeking krijg je meteen een melding.</li>
+      </ol>
+      <p class="klein">Houd de naam van het kanaal voor jezelf: wie hem kent, kan de meldingen meelezen. Er staat alleen een naam, dienst en tijdstip in, nooit een telefoonnummer of e-mailadres.</p>
+      <div class="rij">
+        <button class="knop" id="testmelding" type="button">Stuur een testmelding</button>
+        <button class="knop" id="browsermelding" type="button">Ook melden in deze browser</button>
+      </div>
+      <p class="klein" id="meldResultaat" role="status"></p>
+    </div>
+  </details>
+
+  <nav class="filters" id="filters" aria-label="Filter">
+    <button type="button" data-filter="komend" class="aan">Komend</button>
+    <button type="button" data-filter="nieuw">Nieuw</button>
+    <button type="button" data-filter="bevestigd">Bevestigd</button>
+    <button type="button" data-filter="afgerond">Afgerond</button>
+    <button type="button" data-filter="geannuleerd">Geannuleerd</button>
+    <button type="button" data-filter="alle">Alle</button>
+  </nav>
+
+  <input class="zoek" id="zoek" type="search" placeholder="Zoek op naam, telefoon of e-mail" aria-label="Zoeken">
+
+  <main class="lijst" id="lijst" aria-live="polite"></main>
+  <p class="leeg" id="leeg" hidden>Hier staat nog niets.</p>
+</div>
+
+<div class="toast" id="toast" role="status"></div>
+
+<template id="kaart">
+  <article class="kaart">
+    <div class="kaart__tijd"><b class="js-dag"></b><span class="js-datum"></span><strong class="js-uur"></strong></div>
+    <div class="kaart__midden">
+      <div class="kaart__kop"><h2 class="js-naam"></h2><span class="pil js-status"></span></div>
+      <div class="kaart__dienst js-dienst"></div>
+      <p class="kaart__bericht js-bericht"></p>
+      <div class="kaart__contact">
+        <a class="js-bel"></a>
+        <a class="js-mail"></a>
+      </div>
+      <div class="kaart__meta js-meta"></div>
+      <div class="kaart__acties">
+        <button class="knop knop--goud js-bevestig" type="button">Bevestigen</button>
+        <a class="knop knop--groen js-whatsapp" target="_blank" rel="noopener">WhatsApp</a>
+        <button class="knop js-afrond" type="button">Afgerond</button>
+        <button class="knop js-annuleer" type="button">Annuleren</button>
+        <button class="knop js-herstel" type="button">Terugzetten</button>
+        <button class="knop knop--rood js-verwijder" type="button">Verwijderen</button>
+      </div>
+    </div>
+  </article>
+</template>
+
+<script src="beheer.js"></script>
+</body>
+</html>
