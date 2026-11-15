@@ -58,7 +58,6 @@
       vandaag = data.vandaag;
       boekingen = data.boekingen;
       $('live').classList.remove('uit');
-      toonMeldingen(data);
 
       const ids = new Set(boekingen.map(b => b.id));
       if (bekend) {
@@ -69,9 +68,6 @@
           const b = nieuw[0];
           const tekst = nieuw.length === 1 ? `Nieuwe boeking: ${b.naam}` : `${nieuw.length} nieuwe boekingen`;
           toast(tekst);
-          if ('Notification' in window && Notification.permission === 'granted' && document.hidden) {
-            new Notification('Weblity', { body: tekst, icon: 'icon.svg' });
-          }
         }
       }
       bekend = ids;
@@ -205,30 +201,78 @@
   });
   $('zoek').addEventListener('input', e => { zoekterm = e.target.value.trim(); teken(); });
 
-  // ---------- Meldingen ----------
-  function toonMeldingen(data) {
-    $('meldStatus').textContent = data.meldingen ? 'aan' : 'niet ingesteld';
-    $('meldStatus').className = 'pil ' + (data.meldingen ? 'pil--bevestigd' : 'pil--geannuleerd');
-    $('kanaal').textContent = data.kanaal || '(nog geen kanaal ingesteld)';
-    $('testmelding').hidden = !data.meldingen;
-    $('kopieer').hidden = !data.meldingen;
-    $('browsermelding').hidden = !('Notification' in window) || Notification.permission === 'granted';
+  // ---------- Meldingen op dit toestel ----------
+  const kanPush = 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
+  const isIphone = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const alsApp = matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+  let werker = null;
+
+  const naarBytes = sleutel => {
+    const b64 = (sleutel + '='.repeat((4 - sleutel.length % 4) % 4)).replace(/-/g, '+').replace(/_/g, '/');
+    return Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+  };
+
+  async function toonMeldingen() {
+    const toon = (id, aan) => { $(id).hidden = !aan; };
+    let aan = false;
+    if (kanPush) {
+      try {
+        werker = werker || await navigator.serviceWorker.register('sw.js');
+        aan = Notification.permission === 'granted' && Boolean(await werker.pushManager.getSubscription());
+      } catch { /* geen service worker mogelijk */ }
+    }
+    toon('meldIphone', !kanPush && isIphone && !alsApp);
+    toon('meldNiet', !kanPush && !(isIphone && !alsApp));
+    toon('meldUitleg', kanPush && !aan);
+    toon('meldAan', kanPush && !aan);
+    toon('testmelding', aan);
+    toon('meldUit', aan);
+    $('meldStatus').textContent = aan ? 'aan' : 'uit';
+    $('meldStatus').className = 'pil ' + (aan ? 'pil--bevestigd' : 'pil--geannuleerd');
+    // Staan de meldingen nog uit, dan klapt de uitleg vanzelf open.
+    if (!aan && !toonMeldingen.gezien) $('meldingen').open = true;
+    toonMeldingen.gezien = true;
   }
-  $('kopieer').addEventListener('click', async () => {
-    try { await navigator.clipboard.writeText($('kanaal').textContent); toast('Gekopieerd.'); }
-    catch { toast('Kopiëren lukte niet. Selecteer de tekst zelf.'); }
+
+  $('meldAan').addEventListener('click', async () => {
+    const uit = $('meldResultaat');
+    uit.textContent = 'Bezig…';
+    try {
+      if (await Notification.requestPermission() !== 'granted') {
+        uit.textContent = 'Meldingen zijn geweigerd. Zet ze aan in de instellingen van je toestel bij Weblity en probeer opnieuw.';
+        return;
+      }
+      const { sleutel } = await api('/api/beheer/push');
+      if (!sleutel) throw new Error('Meldingen zijn op de server nog niet ingesteld.');
+      werker = werker || await navigator.serviceWorker.register('sw.js');
+      await navigator.serviceWorker.ready;
+      const abonnement = await werker.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: naarBytes(sleutel) });
+      await api('/api/beheer/push', { method: 'POST', body: { abonnement: abonnement.toJSON() } });
+      uit.textContent = 'Meldingen staan aan op dit toestel. Stuur een testmelding om het te proberen.';
+    } catch (err) {
+      uit.textContent = 'Aanzetten lukte niet: ' + err.message;
+    }
+    toonMeldingen();
   });
+
+  $('meldUit').addEventListener('click', async () => {
+    try {
+      const abonnement = await werker.pushManager.getSubscription();
+      if (abonnement) {
+        await api('/api/beheer/push', { method: 'DELETE', body: { endpoint: abonnement.endpoint } });
+        await abonnement.unsubscribe();
+      }
+      $('meldResultaat').textContent = 'Meldingen staan uit op dit toestel.';
+    } catch (err) { $('meldResultaat').textContent = err.message; }
+    toonMeldingen();
+  });
+
   $('testmelding').addEventListener('click', async () => {
     $('meldResultaat').textContent = 'Bezig…';
-    try { await api('/api/beheer/testmelding', { method: 'POST' }); $('meldResultaat').textContent = 'Verstuurd. Zie je niets op je gsm, controleer dan het kanaal in de ntfy-app.'; }
-    catch (err) { $('meldResultaat').textContent = err.message; }
-  });
-  $('browsermelding').addEventListener('click', async () => {
-    const antwoord = await Notification.requestPermission();
-    $('meldResultaat').textContent = antwoord === 'granted'
-      ? 'Deze browser meldt nu ook nieuwe boekingen, zolang dit scherm openstaat.'
-      : 'Meldingen zijn geblokkeerd in deze browser.';
-    $('browsermelding').hidden = antwoord === 'granted';
+    try {
+      const r = await api('/api/beheer/testmelding', { method: 'POST' });
+      $('meldResultaat').textContent = `Verstuurd naar ${r.toestellen} ${r.toestellen === 1 ? 'toestel' : 'toestellen'}. De melding verschijnt binnen enkele seconden.`;
+    } catch (err) { $('meldResultaat').textContent = err.message; }
   });
 
   // ---------- Start ----------
@@ -236,6 +280,7 @@
     $('login').hidden = true;
     $('app').hidden = false;
     laad();
+    toonMeldingen();
     clearInterval(timer);
     timer = setInterval(() => { if (!document.hidden) laad(); }, VERVERS_MS);
   }

@@ -8,8 +8,10 @@ Deze map is het stuk erachter:
 - het **beheerscherm**: op hetzelfde adres log je in en zie je wie er geboekt
   heeft. Je kan er bevestigen, annuleren, de klant bellen of een WhatsApp sturen.
 
-Bij elke nieuwe boeking gaat er een pushmelding naar je gsm via de gratis app
-[ntfy](https://ntfy.sh).
+Bij elke nieuwe boeking gaat er een pushmelding naar elk toestel waarop je de
+meldingen hebt aangezet. Dat doe je in het beheerscherm zelf, onder "Meldingen
+op dit toestel". Op een iPhone moet je het beheerscherm eerst op je beginscherm
+zetten (deelknop > Zet op beginscherm); pas dan laat Apple meldingen toe.
 
 ## Instellingen (omgevingsvariabelen)
 
@@ -18,7 +20,7 @@ Bij elke nieuwe boeking gaat er een pushmelding naar je gsm via de gratis app
 | `DATABASE_URL` | Verbindingsregel van de Postgres-database (Neon). Verplicht. |
 | `ADMIN_PASSWORD` | Het wachtwoord van het beheerscherm. Verplicht. |
 | `SESSION_SECRET` | Lange willekeurige tekst waarmee het inloggen beveiligd wordt. Verplicht. |
-| `NTFY_TOPIC` | Naam van je meldingskanaal in de ntfy-app. Leeg = geen meldingen. |
+| `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY` | Sleutelpaar waarmee de server pushmeldingen mag versturen. Maak het één keer aan met `npx web-push generate-vapid-keys`. Leeg = geen meldingen. Verander je het, dan moet elk toestel de meldingen opnieuw aanzetten. |
 | `PUBLIC_ORIGINS` | Adres(sen) van de website die mogen boeken, gescheiden door komma's. Standaard `https://weblity.onrender.com`. |
 
 Zet nooit een van deze waarden in de code of in git.
@@ -52,3 +54,5 @@ Op `localhost` praat de boekpagina vanzelf met de lokale server.
   geannuleerde boeking geeft het uur weer vrij.
 - De pushmelding bevat alleen naam, dienst en tijdstip. Telefoonnummer en
   e-mailadres staan er bewust niet in.
+- De meldingen gaan rechtstreeks naar de pushdienst van Apple, Google of
+  Mozilla. De app ntfy bleek vanaf Render niet bereikbaar en wordt niet gebruikt.

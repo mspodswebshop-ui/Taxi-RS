@@ -7,6 +7,12 @@
 <meta name="theme-color" content="#0b0b0f">
 <title>Weblity · Boekingen</title>
 <link rel="icon" href="icon.svg">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="app.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Weblity">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="stylesheet" href="beheer.css">
 </head>
 <body>
@@ -42,19 +48,27 @@
   </section>
 
   <details class="meldingen" id="meldingen">
-    <summary>Meldingen op je gsm <span class="pil" id="meldStatus"></span></summary>
+    <summary>Meldingen op dit toestel <span class="pil" id="meldStatus"></span></summary>
     <div class="meldingen__inhoud">
-      <ol id="meldUitleg">
-        <li>Installeer de gratis app <b>ntfy</b> (App Store of Google Play).</li>
-        <li>Open de app, tik op <b>+</b> en vul dit kanaal in: <code id="kanaal"></code> <button class="knop knop--mini" id="kopieer" type="button">Kopieer</button></li>
-        <li>Klaar. Bij elke nieuwe boeking krijg je meteen een melding.</li>
-      </ol>
-      <p class="klein">Houd de naam van het kanaal voor jezelf: wie hem kent, kan de meldingen meelezen. Er staat alleen een naam, dienst en tijdstip in, nooit een telefoonnummer of e-mailadres.</p>
+      <!-- iPhone in Safari: eerst op het beginscherm zetten -->
+      <div id="meldIphone" hidden>
+        <p>Op een iPhone werken meldingen alleen als je deze pagina als app op je beginscherm zet:</p>
+        <ol>
+          <li>Tik onderaan in Safari op de <b>deelknop</b> (het vierkantje met de pijl omhoog).</li>
+          <li>Kies <b>Zet op beginscherm</b> en tik op <b>Voeg toe</b>.</li>
+          <li>Open <b>Weblity</b> via het nieuwe icoon op je beginscherm en log opnieuw in.</li>
+          <li>Tik daar op <b>Meldingen aanzetten</b>.</li>
+        </ol>
+      </div>
+      <p id="meldNiet" hidden>Deze browser kan geen meldingen tonen. Probeer Chrome, Edge, Firefox of Safari.</p>
+      <p id="meldUitleg" hidden>Zet de meldingen aan en je krijgt bij elke nieuwe boeking meteen een melding op dit toestel, ook als deze pagina dicht is. Dat kan op meerdere toestellen tegelijk.</p>
       <div class="rij">
-        <button class="knop" id="testmelding" type="button">Stuur een testmelding</button>
-        <button class="knop" id="browsermelding" type="button">Ook melden in deze browser</button>
+        <button class="knop knop--goud" id="meldAan" type="button" hidden>Meldingen aanzetten</button>
+        <button class="knop" id="testmelding" type="button" hidden>Stuur een testmelding</button>
+        <button class="knop knop--stil" id="meldUit" type="button" hidden>Uitzetten op dit toestel</button>
       </div>
       <p class="klein" id="meldResultaat" role="status"></p>
+      <p class="klein">In een melding staat alleen een naam, dienst en tijdstip, nooit een telefoonnummer of e-mailadres.</p>
     </div>
   </details>
 

@@ -8,17 +8,18 @@
 // Instellingen staan in omgevingsvariabelen, zie README.md.
 
 import crypto from 'node:crypto';
-import https from 'node:https';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import express from 'express';
 import pg from 'pg';
+import * as webpush from 'web-push';
 
 const {
   DATABASE_URL,
   ADMIN_PASSWORD = '',
   SESSION_SECRET = '',
-  NTFY_TOPIC = '',
+  VAPID_PUBLIC_KEY = '',
+  VAPID_PRIVATE_KEY = '',
   PUBLIC_ORIGINS = 'https://weblity.onrender.com',
   RENDER_EXTERNAL_URL = '',
   NODE_ENV = 'development',
@@ -69,6 +70,13 @@ async function maakTabellen() {
   await db.query(`
     CREATE UNIQUE INDEX IF NOT EXISTS boekingen_uur
       ON boekingen (datum, tijd) WHERE status <> 'geannuleerd'`);
+  // De toestellen die een melding willen krijgen bij een nieuwe boeking.
+  await db.query(`
+    CREATE TABLE IF NOT EXISTS push_abonnementen (
+      endpoint    TEXT PRIMARY KEY,
+      sleutels    JSONB NOT NULL,
+      aangemaakt  TIMESTAMPTZ NOT NULL DEFAULT now()
+    )`);
 }
 
 // ---------- Datum en tijd (altijd Belgische tijd) ----------
@@ -158,43 +166,43 @@ function alleenBeheerder(req, res, next) {
   next();
 }
 
-// ---------- Melding naar je gsm (ntfy) ----------
-// Eén poging over IPv4 of IPv6. Geeft de statuscode terug, of gooit een fout.
-function ntfyVerzoek(methode, pad, body, family) {
-  return new Promise((klaar, mis) => {
-    const req = https.request({
-      host: 'ntfy.sh', path: pad, method: methode, family, timeout: 8000,
-      headers: body ? { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(body) } : {},
-    }, res => { res.resume(); res.on('end', () => klaar(res.statusCode)); });
-    req.on('timeout', () => req.destroy(new Error('geen antwoord binnen 8 seconden')));
-    req.on('error', mis);
-    req.end(body);
-  });
-}
+// ---------- Melding naar je toestellen (web push) ----------
+// De melding gaat rechtstreeks naar de pushdienst van Apple, Google of Mozilla,
+// die ze op je toestel aflevert. Er zit geen andere dienst tussen.
+const PUSH_AAN = Boolean(VAPID_PUBLIC_KEY && VAPID_PRIVATE_KEY);
+if (PUSH_AAN) webpush.setVapidDetails(PUBLIC_ORIGINS.split(',')[0].trim(), VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY);
 
-// Sommige hosts kunnen ntfy maar langs één van beide netwerken bereiken;
-// daarom proberen we eerst IPv4 en daarna IPv6.
-async function ntfy(methode, pad, body) {
-  let laatste;
-  for (const family of [4, 6]) {
-    try { return await ntfyVerzoek(methode, pad, body, family); }
-    catch (err) { laatste = err; console.error(`ntfy via IPv${family} mislukt: ${err.code || ''} ${err.message}`); }
-  }
-  throw laatste;
-}
-
-async function stuurMelding(titel, bericht) {
-  if (!NTFY_TOPIC) return false;
+// Alleen de echte pushdiensten zijn toegestaan als bestemming.
+const PUSH_HOSTS = /(^|\.)(push\.apple\.com|googleapis\.com|push\.services\.mozilla\.com|notify\.windows\.com)$/;
+function geldigAbonnement(a) {
   try {
-    const status = await ntfy('POST', '/', JSON.stringify({
-      topic: NTFY_TOPIC, title: titel, message: bericht, priority: 4, tags: ['calendar'],
-      ...(RENDER_EXTERNAL_URL ? { click: RENDER_EXTERNAL_URL } : {}),
-    }));
-    if (status >= 300) console.error('Melding geweigerd door ntfy, status', status);
-    return status < 300;
-  } catch {
-    return false;
-  }
+    const u = new URL(a?.endpoint);
+    return u.protocol === 'https:' && PUSH_HOSTS.test(u.hostname)
+      && typeof a.keys?.p256dh === 'string' && typeof a.keys?.auth === 'string'
+      && a.endpoint.length < 1000 && a.keys.p256dh.length < 200 && a.keys.auth.length < 100;
+  } catch { return false; }
+}
+
+/** Stuurt de melding naar elk aangemeld toestel. Geeft terug hoeveel er aankwamen. */
+async function stuurMelding(titel, bericht) {
+  if (!PUSH_AAN) return 0;
+  const { rows } = await db.query('SELECT endpoint, sleutels FROM push_abonnementen');
+  const inhoud = JSON.stringify({ titel, bericht });
+  const uitslag = await Promise.all(rows.map(async r => {
+    try {
+      await webpush.sendNotification({ endpoint: r.endpoint, keys: r.sleutels }, inhoud, { TTL: 86_400, urgency: 'high', timeout: 10_000 });
+      return true;
+    } catch (err) {
+      // 404 of 410: dit toestel heeft de meldingen uitgezet of de app verwijderd.
+      if (err.statusCode === 404 || err.statusCode === 410) {
+        await db.query('DELETE FROM push_abonnementen WHERE endpoint = $1', [r.endpoint]).catch(() => {});
+      } else {
+        console.error('Melding mislukt:', err.statusCode || err.code || '', err.body || err.message);
+      }
+      return false;
+    }
+  }));
+  return uitslag.filter(Boolean).length;
 }
 
 const datumTekst = datum => new Intl.DateTimeFormat('nl-BE', {
@@ -213,7 +221,7 @@ app.use((req, res, next) => {
     'X-Frame-Options': 'DENY',
     'Referrer-Policy': 'same-origin',
     'X-Robots-Tag': 'noindex, nofollow',
-    'Content-Security-Policy': "default-src 'self'; img-src 'self' data:; frame-ancestors 'none'; base-uri 'none'; form-action 'self'",
+    'Content-Security-Policy': "default-src 'self'; img-src 'self' data:; worker-src 'self'; manifest-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'",
   });
   next();
 });
@@ -275,7 +283,7 @@ app.post('/api/boekingen', async (req, res) => {
        VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id`,
       [dienst, datum, tijd, naam, telefoon, email, bericht]);
     // De melding bevat bewust geen telefoonnummer of e-mailadres.
-    stuurMelding('Nieuwe boeking', `${naam} · ${dienst}\n${datumTekst(datum)} om ${tijd}`);
+    stuurMelding('Nieuwe boeking', `${naam} · ${dienst}\n${datumTekst(datum)} om ${tijd}`).catch(err => console.error('Melding mislukt:', err.message));
     res.status(201).json({ ok: true, id: rows[0].id, datum, tijd });
   } catch (err) {
     if (err.code === '23505') return res.status(409).json({ fout: 'Dat uur is net door iemand anders geboekt. Kies een ander uur.' });
@@ -301,7 +309,7 @@ app.get('/api/beheer/boekingen', async (req, res) => {
   const { rows } = await db.query(
     `SELECT id, aangemaakt, dienst, datum, tijd, naam, telefoon, email, bericht, status
        FROM boekingen ORDER BY datum, tijd LIMIT 1000`);
-  res.set('Cache-Control', 'no-store').json({ vandaag: nu().datum, meldingen: Boolean(NTFY_TOPIC), kanaal: NTFY_TOPIC, boekingen: rows });
+  res.set('Cache-Control', 'no-store').json({ vandaag: nu().datum, boekingen: rows });
 });
 
 app.patch('/api/beheer/boekingen/:id', async (req, res) => {
@@ -323,10 +331,32 @@ app.delete('/api/beheer/boekingen/:id', async (req, res) => {
   res.json({ ok: true });
 });
 
+// Meldingen: de sleutel waarmee een toestel zich aanmeldt, en hoeveel toestellen er aangemeld zijn.
+app.get('/api/beheer/push', async (req, res) => {
+  const { rows } = await db.query('SELECT count(*)::int AS n FROM push_abonnementen');
+  res.set('Cache-Control', 'no-store').json({ sleutel: VAPID_PUBLIC_KEY, toestellen: rows[0].n });
+});
+
+app.post('/api/beheer/push', async (req, res) => {
+  if (!PUSH_AAN) return res.status(503).json({ fout: 'Meldingen zijn op de server nog niet ingesteld.' });
+  const a = req.body?.abonnement;
+  if (!geldigAbonnement(a)) return res.status(400).json({ fout: 'Dit toestel kon niet aangemeld worden.' });
+  await db.query(
+    `INSERT INTO push_abonnementen (endpoint, sleutels) VALUES ($1, $2)
+     ON CONFLICT (endpoint) DO UPDATE SET sleutels = EXCLUDED.sleutels`,
+    [a.endpoint, { p256dh: a.keys.p256dh, auth: a.keys.auth }]);
+  res.json({ ok: true });
+});
+
+app.delete('/api/beheer/push', async (req, res) => {
+  await db.query('DELETE FROM push_abonnementen WHERE endpoint = $1', [tekst(req.body?.endpoint, 1000)]);
+  res.json({ ok: true });
+});
+
 app.post('/api/beheer/testmelding', async (req, res) => {
-  if (!NTFY_TOPIC) return res.status(400).json({ fout: 'Er is geen meldingskanaal ingesteld (NTFY_TOPIC).' });
-  const ok = await stuurMelding('Testmelding van Weblity', 'Als je dit ziet, werken de meldingen.');
-  res.status(ok ? 200 : 502).json(ok ? { ok: true } : { fout: 'De melding kon niet verstuurd worden.' });
+  const n = await stuurMelding('Testmelding van Weblity', 'Als je dit ziet, werken de meldingen.');
+  if (!n) return res.status(502).json({ fout: 'De testmelding kwam op geen enkel toestel aan. Zet de meldingen op dit toestel uit en weer aan.' });
+  res.json({ ok: true, toestellen: n });
 });
 
 const hier = path.dirname(fileURLToPath(import.meta.url));
@@ -343,11 +373,3 @@ app.use((err, req, res, next) => {
 
 await maakTabellen();
 app.listen(PORT, () => console.log(`Weblity-beheer draait op poort ${PORT}`));
-
-// Bij het opstarten even nagaan of ntfy bereikbaar is, zodat een probleem
-// meteen in het logboek staat en niet pas bij de eerste boeking.
-if (NTFY_TOPIC) {
-  ntfy('GET', '/v1/health').then(
-    status => console.log('ntfy bereikbaar, status', status),
-    () => console.error('ntfy is niet bereikbaar vanaf deze server; meldingen zullen mislukken.'));
-}
