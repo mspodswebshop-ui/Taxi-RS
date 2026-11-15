@@ -29,9 +29,27 @@ const {
 const PRODUCTIE = NODE_ENV === 'production';
 
 // ---------- Wanneer kan er geboekt worden? ----------
-// Pas deze drie regels aan als je andere uren wilt.
-const OPEN_DAGEN = [1, 2, 3, 4, 5, 6];            // 0 = zondag, 1 = maandag ... 6 = zaterdag
-const UREN = ['09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00'];
+// Pas dit blok aan als je andere uren wilt.
+// Per weekdag de blokken waarin je gesprekken aanneemt: [van, tot]. Elk gesprek
+// duurt een uur, dus "16 tot 18" geeft de uren 16:00 en 17:00. 24 = middernacht.
+const OPENINGSUREN = {
+  1: [[16, 18], [20, 22]],   // maandag
+  2: [[16, 22]],             // dinsdag
+  3: [[13, 18], [20, 22]],   // woensdag
+  4: [[16, 22]],             // donderdag
+  5: [[16, 18], [20, 24]],   // vrijdag
+  6: [[7, 24]],              // zaterdag
+  0: [[7, 22]],              // zondag
+};
+
+/** De beginuren van een weekdag, bv. ['16:00', '17:00', '20:00', '21:00']. */
+function urenVan(dag) {
+  const uren = [];
+  for (const [van, tot] of OPENINGSUREN[dag] || []) {
+    for (let u = van; u < tot; u++) uren.push(String(u).padStart(2, '0') + ':00');
+  }
+  return uren;
+}
 const DAGEN_VOORUIT = 14;                         // zoveel open dagen toont de website
 
 const DIENSTEN = ['Website', 'Webshop', 'Webapp', 'AI-toepassing', 'Iets anders'];
@@ -101,9 +119,9 @@ function openDagen() {
   const dagen = [];
   for (let i = 0; dagen.length < DAGEN_VOORUIT && i < 60; i++) {
     const datum = plusDagen(vandaag, i);
-    if (!OPEN_DAGEN.includes(weekdag(datum))) continue;
+    const alle = urenVan(weekdag(datum));
     // Vandaag kan je alleen nog uren boeken die minstens een uur verder liggen.
-    const uren = i === 0 ? UREN.filter(u => u > plusUur(tijd)) : UREN;
+    const uren = i === 0 ? alle.filter(u => u > plusUur(tijd)) : alle;
     if (uren.length) dagen.push({ datum, uren });
   }
   return dagen;

@@ -31,8 +31,10 @@ weigert de server de boekingen van daar.
 
 ## Openingsuren aanpassen
 
-Bovenaan `server.js` staan drie regels: op welke dagen (`OPEN_DAGEN`), op welke
-uren (`UREN`) en hoeveel dagen vooruit (`DAGEN_VOORUIT`) er geboekt kan worden.
+Bovenaan `server.js` staat `OPENINGSUREN`: per weekdag de blokken waarin je
+gesprekken aanneemt. Elk gesprek duurt een uur, dus "16 tot 18" geeft de uren
+16:00 en 17:00. Met `DAGEN_VOORUIT` stel je in hoeveel dagen vooruit er geboekt
+kan worden.
 
 ## Lokaal uitproberen
 
