@@ -335,8 +335,19 @@ em { color: var(--goud); font-style: italic; }
     $('#korrel').style.transform = `translate(${(n * 73) % 160 - 80}px, ${(n * 131) % 160 - 80}px)`;
   }
 
-  window.DUUR = DUUR;
-  window.zetTijd = zet;
+  // Rustig tempo voor de versie met stem: elke scène wordt wat uitgerekt zodat
+  // de ingesproken zin erin past. [begin in de bron, begin in de video]
+  const TEMPO = [[0, 0], [3.5, 4.4], [6.9, 9.4], [11.5, 16.4], [15.7, 20.6], [20.1, 25.2], [24, 30.2]];
+  function rustig(tUit) {
+    for (let i = 1; i < TEMPO.length; i++) {
+      const [b0, u0] = TEMPO[i - 1], [b1, u1] = TEMPO[i];
+      if (tUit <= u1) return b0 + (tUit - u0) / (u1 - u0) * (b1 - b0);
+    }
+    return DUUR;
+  }
+  const traag = new URLSearchParams(location.search).has('rustig');
+  window.DUUR = traag ? TEMPO.at(-1)[1] : DUUR;
+  window.zetTijd = traag ? t => zet(rustig(t)) : zet;
   zet(0);
 
   // Gewoon in de browser geopend: speel af in een lus, geschaald naar het venster.
