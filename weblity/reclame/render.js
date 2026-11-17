@@ -12,7 +12,10 @@ const path = require('node:path');
 const FPS = 30;
 // --rustig: trager tempo (30 seconden), bedoeld voor de versie met ingesproken stem.
 const rustig = process.argv.includes('--rustig');
-const bron = 'file://' + path.join(__dirname, 'reclame.html') + '?render' + (rustig ? '&rustig' : '');
+// --tempo 3.7,4.1,5.9,3.4,3.8,4.2: eigen lengte per scène, in seconden.
+const ti = process.argv.indexOf('--tempo');
+const tempo = ti > -1 ? process.argv[ti + 1] : '';
+const bron = 'file://' + path.join(__dirname, 'reclame.html') + '?render' + (rustig ? '&rustig' : '') + (tempo ? '&tempo=' + tempo : '');
 
 (async () => {
   const browser = await chromium.launch();
@@ -35,7 +38,7 @@ const bron = 'file://' + path.join(__dirname, 'reclame.html') + '?render' + (rus
     return;
   }
 
-  const uit = path.join(__dirname, rustig ? 'weblity-reclame-rustig.mp4' : 'weblity-reclame.mp4');
+  const uit = path.join(__dirname, tempo ? 'weblity-reclame-tempo.mp4' : rustig ? 'weblity-reclame-rustig.mp4' : 'weblity-reclame.mp4');
   const ffmpeg = spawn('ffmpeg', [
     '-y', '-loglevel', 'error', '-f', 'image2pipe', '-c:v', 'mjpeg', '-framerate', String(FPS), '-i', '-',
     '-c:v', 'libx264', '-preset', 'slow', '-crf', '24', '-pix_fmt', 'yuv420p', '-movflags', '+faststart', uit,

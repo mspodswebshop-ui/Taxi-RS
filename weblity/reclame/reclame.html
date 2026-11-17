@@ -345,7 +345,13 @@ em { color: var(--goud); font-style: italic; }
     }
     return DUUR;
   }
-  const traag = new URLSearchParams(location.search).has('rustig');
+  // ?tempo=3.7,4.1,... geeft elke scène een eigen lengte in seconden (voor een andere stem).
+  const eigen = new URLSearchParams(location.search).get('tempo');
+  if (eigen) {
+    let t = 0;
+    eigen.split(',').map(Number).forEach((lengte, i) => { t += lengte; TEMPO[i + 1][1] = t; });
+  }
+  const traag = new URLSearchParams(location.search).has('rustig') || Boolean(eigen);
   window.DUUR = traag ? TEMPO.at(-1)[1] : DUUR;
   window.zetTijd = traag ? t => zet(rustig(t)) : zet;
   zet(0);
