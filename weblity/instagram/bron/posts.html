@@ -60,6 +60,20 @@ body { margin: 0; padding: 40px; display: flex; flex-wrap: wrap; gap: 40px; alig
 .mock .regels div, .mock .ai .ik { opacity: 1; transform: none; transition: none; }
 .mock .ai .bot::after { display: none; }
 .mock .scherm-wrap::before { inset: -10%; }
+/* Lijsten in de stories */
+.dlijst, .stappenlijst { display: grid; gap: 34px; margin-top: 60px; }
+.dregel, .sregel { display: grid; grid-template-columns: auto 1fr; gap: 30px; align-items: start; }
+.dregel .ico { width: 110px; height: 110px; border-radius: 30px; margin: 0; }
+.dregel .ico svg { width: 60px; height: 60px; }
+.dregel b, .sregel b { display: block; font: 400 62px/1.05 var(--serif); letter-spacing: -.02em; }
+.dregel span, .sregel span { display: block; font-size: 34px; line-height: 1.4; color: var(--zacht); margin-top: 8px; }
+/* .sregel span geldt ook voor het nummer, daarom specifieker. */
+.sregel .snr { margin: 0; font: italic 400 90px/.9 var(--serif); color: var(--goud); width: 110px; }
+.uren { margin-top: 50px; display: grid; gap: 4px; border-top: 2px solid var(--lijn); }
+.uren div { display: flex; justify-content: space-between; padding: 18px 6px; border-bottom: 2px solid var(--lijn); font-size: 42px; }
+.uren span { color: var(--zacht); }
+.uren b { font-weight: 600; font-variant-numeric: tabular-nums; }
+.story .mock { margin-top: 70px; }
 /* Hoogtepunt-icoon: alleen het midden is zichtbaar in de cirkel. */
 .icoon .rond { width: 560px; height: 560px; border-radius: 50%; border: 3px solid rgba(232, 180, 90, .5); display: grid; place-items: center; color: var(--goud); position: relative; z-index: 1; }
 .icoon .rond svg { width: 260px; height: 260px; }
@@ -152,6 +166,21 @@ K.push(['09-reel-omslag', 'story midden', `<div class="kicker">Reclame</div><div
 K.push(['story-1-welkom', 'story', `<div class="kicker">Nieuw op Instagram</div><h1 style="font-size:170px">Hallo, wij zijn Web<em>lity.</em></h1><p>We bouwen websites, webshops en webapps die klanten opleveren. Volg mee voor tips, projecten en wat we aan het bouwen zijn.</p>${voet('@weblity')}`]);
 K.push(['story-2-boeken', 'story', `<div class="ico">${ICOON.agenda}</div><div class="kicker">Gratis kennismaking</div><h1 style="font-size:150px">Boek je <em>gesprek.</em></h1><p>Kies zelf je dag en uur. Het gesprek is gratis en verplicht je tot niets.</p><div class="sticker">Zet hier de link-sticker</div>${voet('weblity.onrender.com')}`]);
 K.push(['story-3-vraag', 'story', `<div class="ico">${ICOON.chat}</div><div class="kicker">Vraag?</div><h1 style="font-size:150px">Stuur ons een <em>bericht.</em></h1><p>Via een DM hier, of op WhatsApp:</p><p class="wa" style="font-size:56px">${WA} 0469 22 60 35</p><div class="sticker">Zet hier een vragen-sticker</div>${voet()}`]);
+
+// Extra stories voor de hoogtepunten
+K.push(['story-4-diensten', 'story', `<div class="kicker">Diensten</div><h1 style="font-size:140px">Wat we voor je <em>bouwen.</em></h1>
+  <div class="dlijst">${DIENSTEN.map(([ic, t, kort]) => `<div class="dregel"><div class="ico">${ICOON[ic]}</div><div><b>${t.replace('&', '&amp;')}</b><span>${kort}</span></div></div>`).join('')}</div>${voet()}`]);
+K.push(['story-5-paylity', 'story', `<div class="kicker">Project · Betaalplatform</div><h1 style="font-size:150px">Pay<em style="color:#6f9dff">lity</em></h1><p>Betaallinks, een checkout met Bancontact en kaart, één dashboard en een API voor webshops.</p>${PAY}${voet('Gebouwd door Weblity')}`]);
+K.push(['story-6-mijn-ai', 'story', `<div class="kicker">Project · AI-chatapp</div><h1 style="font-size:150px">Mijn <em style="color:#e58a66">AI</em></h1><p>Je eigen assistent, onder je eigen naam en in je eigen huisstijl.</p>${AI}${voet('Gebouwd door Weblity')}`]);
+K.push(['story-7-werkwijze', 'story', `<div class="kicker">Werkwijze</div><h1 style="font-size:140px">Van idee tot <em>online.</em></h1>
+  <div class="stappenlijst">${STAPPEN.map(([t, p], i) => `<div class="sregel"><span class="snr">0${i + 1}</span><div><b>${t}</b><span>${p}</span></div></div>`).join('')}</div>${voet()}`]);
+const UREN = [['Maandag', '16–18 · 20–22'], ['Dinsdag', '16–22'], ['Woensdag', '13–18 · 20–22'], ['Donderdag', '16–22'], ['Vrijdag', '16–18 · 20–24'], ['Zaterdag', '07–24'], ['Zondag', '07–22']];
+K.push(['story-8-uren', 'story', `<div class="kicker">Gratis kennismaking</div><h1 style="font-size:130px">Wanneer kan je <em>boeken?</em></h1>
+  <div class="uren">${UREN.map(([d, u]) => `<div><span>${d}</span><b>${u}</b></div>`).join('')}</div><p style="font-size:38px">Kies je uur op weblity.onrender.com</p><div class="sticker">Zet hier de link-sticker</div>${voet()}`]);
+K.push(['story-9-prijs', 'story', `<div class="kicker">Veelgestelde vraag</div><h1 style="font-size:140px">Wat kost een <em>website?</em></h1>
+  <p>Dat hangt af van wat je nodig hebt: een onepager is iets anders dan een webshop.</p>
+  <ul class="lijstje"><li>Eerst een gratis gesprek</li><li>Daarna een duidelijke offerte</li><li>Je weet vooraf wat je betaalt</li></ul>
+  <div class="sticker">Zet hier een vragen-sticker</div>${voet()}`]);
 
 // Hoogtepunt-iconen
 [['hoogtepunt-diensten', 'web'], ['hoogtepunt-projecten', 'app'], ['hoogtepunt-werkwijze', 'stappen'], ['hoogtepunt-boeken', 'agenda'], ['hoogtepunt-contact', 'chat']]

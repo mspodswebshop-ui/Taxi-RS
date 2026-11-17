@@ -189,15 +189,28 @@ vast bovenaan je profiel: tik op de drie puntjes van de post → "Vastzetten op 
   `https://weblity.onrender.com/boeken.html?ref=instagram`, tekst "Boek je gesprek"
 - `story-3-vraag.png` → voeg een **vragen-sticker** toe op de gestippelde plek
 
+**Stories voor de hoogtepunten** (plaats ze als story en zet ze daarna in het juiste hoogtepunt):
+
+- `story-4-diensten.png`: je vier diensten
+- `story-5-paylity.png` en `story-6-mijn-ai.png`: je projecten
+- `story-7-werkwijze.png`: de vier stappen
+- `story-8-uren.png`: wanneer je een gesprek kan boeken → link-sticker met
+  `https://weblity.onrender.com/boeken.html?ref=instagram`
+- `story-9-prijs.png`: "Wat kost een website?" → vragen-sticker
+
 **Hoogtepunten:** maak er vijf aan met deze namen en iconen (bij "Omslag bewerken"):
 
-| Naam | Icoon | Wat erin |
+| Naam | Icoon | Stories erin |
 |---|---|---|
-| Diensten | `hoogtepunt-diensten.png` | story's over je diensten |
-| Projecten | `hoogtepunt-projecten.png` | Paylity, Mijn AI en nieuw werk |
-| Werkwijze | `hoogtepunt-werkwijze.png` | hoe het werkt |
-| Boeken | `hoogtepunt-boeken.png` | `story-2-boeken.png` |
-| Contact | `hoogtepunt-contact.png` | `story-1-welkom.png`, `story-3-vraag.png` |
+| Diensten | `hoogtepunt-diensten.png` | `story-4-diensten`, `story-9-prijs` |
+| Projecten | `hoogtepunt-projecten.png` | `story-5-paylity`, `story-6-mijn-ai` |
+| Werkwijze | `hoogtepunt-werkwijze.png` | `story-7-werkwijze` |
+| Boeken | `hoogtepunt-boeken.png` | `story-2-boeken`, `story-8-uren` |
+| Contact | `hoogtepunt-contact.png` | `story-1-welkom`, `story-3-vraag` |
+
+Zo maak je een hoogtepunt: plaats de story, tik er daarna onderaan op **Hoogtepunt**
+(het hartje), kies **Nieuw**, geef de naam en kies bij **Omslag bewerken** het icoon
+uit je foto's. Volgende stories voeg je op dezelfde manier toe aan een bestaand hoogtepunt.
 
 ---
 
