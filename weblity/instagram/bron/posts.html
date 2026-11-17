@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<title>Weblity — Instagram (bron)</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<!-- De schermen van Paylity en Mijn AI komen uit de stijl van de website. -->
+<link rel="stylesheet" href="../../styles.css">
+<style>
+/* Elk kader is één afbeelding. maak.js maakt er een png van. */
+html, body { background: #222; }
+body { margin: 0; padding: 40px; display: flex; flex-wrap: wrap; gap: 40px; align-items: flex-start; }
+.k {
+  position: relative; overflow: hidden; flex: none; color: var(--inkt); font-family: var(--sans);
+  background: radial-gradient(ellipse 90% 60% at 85% 0%, rgba(232, 180, 90, .2), transparent 60%), #08080b;
+  display: flex; flex-direction: column; padding: 96px 90px 90px;
+}
+.post { width: 1080px; height: 1350px; }
+.story { width: 1080px; height: 1920px; padding: 260px 90px 300px; }
+.icoon { width: 1080px; height: 1080px; padding: 0; display: grid; place-items: center; background: radial-gradient(circle at 50% 35%, rgba(232, 180, 90, .22), transparent 65%), #08080b; }
+.k::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none; opacity: .07;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.k .kicker { font-size: 26px; letter-spacing: .24em; }
+.k h1, .k h2 { font-family: var(--serif); font-weight: 400; letter-spacing: -.03em; margin: 0; text-wrap: balance; }
+.k h1 { font-size: 150px; line-height: .92; margin-top: 34px; }
+.k h2 { font-size: 104px; line-height: .95; margin-top: 30px; }
+.k em { color: var(--goud); }
+.k p { font-size: 40px; line-height: 1.45; color: var(--zacht); margin: 34px 0 0; max-width: 24em; }
+.k p b { color: var(--inkt); font-weight: 600; }
+.voet { margin-top: auto; display: flex; justify-content: space-between; align-items: center; font: 500 26px var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--dof); position: relative; z-index: 1; }
+.voet .merk { font: 400 46px var(--serif); letter-spacing: -.02em; text-transform: none; color: var(--inkt); }
+.voet .merk em { color: var(--goud); }
+.veeg { color: var(--goud); }
+.groot-logo { font: 400 300px/.9 var(--serif); letter-spacing: -.04em; margin-top: auto; }
+.lijn { width: 220px; height: 4px; background: var(--goud); margin-top: 50px; border-radius: 2px; }
+.nr { font: italic 400 220px/.8 var(--serif); color: var(--goud); }
+.ico { width: 150px; height: 150px; border-radius: 40px; background: rgba(232, 180, 90, .13); display: grid; place-items: center; color: var(--goud); margin-bottom: 20px; }
+.ico svg { width: 82px; height: 82px; }
+.lijstje { list-style: none; margin: 40px 0 0; padding: 0; display: grid; gap: 22px; }
+.lijstje li { position: relative; padding-left: 64px; font-size: 40px; line-height: 1.35; color: var(--zacht); }
+.lijstje li::before { content: ""; position: absolute; left: 0; top: 8px; width: 40px; height: 40px; border-radius: 50%; background: rgba(232, 180, 90, .16) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 18'%3E%3Cpath d='M5 9.400l2.600 2.600L13 6.600' fill='none' stroke='%23e8b45a' stroke-width='1.800' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain; }
+.knopje { display: inline-flex; align-items: center; gap: 20px; margin-top: 50px; align-self: flex-start; background: var(--goud); color: #17120a; font-weight: 700; font-size: 40px; padding: 30px 48px; border-radius: 99px; }
+.wa { display: inline-flex; align-items: center; gap: 18px; color: #5be08f; font-weight: 600; }
+.wa svg { width: 46px; height: 46px; }
+.midden { justify-content: center; text-align: center; align-items: center; }
+.midden .knopje { align-self: center; }
+.citaat { font: italic 400 112px/1.02 var(--serif); letter-spacing: -.02em; margin-top: 60px; text-wrap: balance; }
+.citaat::before { content: "“"; display: block; font-size: 260px; line-height: .6; color: var(--goud); font-style: normal; }
+/* Inhoud verticaal in het midden, de voet onderaan. */
+.k > :first-child { margin-top: auto; }
+.k .groot-logo { margin-top: 0; }
+.k h2 { font-size: 116px; }
+.k p { font-size: 44px; }
+/* Schermen van de projecten: zonder animatie, meteen in beeld. */
+.mock { margin: 54px -10px 0; }
+.mock .scherm-wrap .scherm { opacity: 1; transform: rotateY(-9deg) rotateX(5deg); }
+.mock .grafiek i { height: var(--h); transition: none; }
+.mock .regels div, .mock .ai .ik { opacity: 1; transform: none; transition: none; }
+.mock .ai .bot::after { display: none; }
+.mock .scherm-wrap::before { inset: -10%; }
+/* Hoogtepunt-icoon: alleen het midden is zichtbaar in de cirkel. */
+.icoon .rond { width: 560px; height: 560px; border-radius: 50%; border: 3px solid rgba(232, 180, 90, .5); display: grid; place-items: center; color: var(--goud); position: relative; z-index: 1; }
+.icoon .rond svg { width: 260px; height: 260px; }
+/* Story: plek vrijlaten voor de link-sticker. */
+.sticker { margin-top: 70px; align-self: center; border: 4px dashed rgba(242, 237, 228, .35); border-radius: 28px; padding: 30px 50px; font: 500 30px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--dof); }
+</style>
+</head>
+<body>
+<div id="alle"></div>
+<script>
+const ICOON = {
+  web: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2.5"/><path d="M3 9h18M7 6.5h.01M10 6.5h.01"/></svg>',
+  shop: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8h14l-1 12H6L5 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>',
+  app: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5M4 19h16M8 16v-5M12 16V8M16 16v-3M20 16V6"/></svg>',
+  ai: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3zM19 16l.7 2.3L22 19l-2.3.7L19 22l-.7-2.3L16 19l2.3-.7L19 16z"/></svg>',
+  stappen: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 18h4v-4h4v-4h4V6h4"/></svg>',
+  agenda: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4M8.5 14.5l2 2 4-4"/></svg>',
+  chat: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5a8.5 8.5 0 0 0-7.4 12.7L3.5 20.5l4.4-1.1A8.5 8.5 0 1 0 12 3.5z"/></svg>',
+};
+const WA = '<svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 0 0-7.8 13.5L3 21l4.6-1.2A9 9 0 1 0 12 3z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 8.5c-.3 1 .2 2.6 1.7 4.1s3.1 2 4.1 1.7l.7-1.4-1.8-1-.8.8c-.6-.2-1.9-1.5-2.1-2.1l.8-.8-1-1.8L9 8.5z" fill="currentColor"/></svg>';
+const MERK = '<span class="merk">Web<em>lity</em></span>';
+const voet = (rechts = 'weblity.onrender.com') => `<div class="voet">${MERK}<span>${rechts}</span></div>`;
+const veeg = (n, tot) => `<div class="voet">${MERK}<span>${n} / ${tot}${n < tot ? ' &nbsp;<span class="veeg">→</span>' : ''}</span></div>`;
+
+const PAY = `<div class="mock"><div class="scherm-wrap gloed in"><div class="scherm pay"><div class="scherm__balk"><i></i><i></i><i></i><span>paylity / dashboard</span></div><div class="scherm__in"><aside><strong>Paylity</strong><span class="aan">Overzicht</span><span>Betalingen</span><span>Betaallinks</span><span>Klanten</span><span>Facturen</span><span>Analytics</span></aside><main><header><b>Overzicht</b><span class="badge">TEST MODE</span></header><div class="tegels"><div class="tegel"><small>Omzet vandaag</small><b>€ 1.284,50</b></div><div class="tegel"><small>Geslaagd</small><b>37</b></div><div class="tegel"><small>Slagingskans</small><b>96%</b></div></div><div class="grafiek"><i style="--h:38%"></i><i style="--h:55%"></i><i style="--h:44%"></i><i style="--h:70%"></i><i style="--h:62%"></i><i style="--h:84%"></i><i style="--h:100%"></i></div><div class="regels"><div><b>Bestelling #1042</b><span>Bancontact</span><span class="pil">betaald</span></div><div><b>Betaallink · Workshop</b><span>Kaart</span><span class="pil pil--wacht">in afwachting</span></div></div></main></div></div></div></div>`;
+const AI = `<div class="mock"><div class="scherm-wrap gloed in" style="--gloed:rgba(196,95,60,.28)"><div class="scherm ai"><div class="scherm__balk"><i></i><i></i><i></i><span>mijn ai</span></div><div class="scherm__in"><aside><strong>Mijn AI</strong><span class="aan">Welkomstmail klanten</span><span>Ideeën voor de zomeractie</span><span>Offerte nalezen</span><span>Planning volgende week</span></aside><main><span class="chip">Fable 5 · denkkracht max</span><div class="ik">Schrijf een korte welkomstmail voor nieuwe klanten.</div><div class="bot">Hallo en welkom!\n\nFijn dat je voor ons gekozen hebt. Vanaf vandaag staan we voor je klaar: heb je een vraag, dan krijg je snel antwoord van een echt mens.\n\nTot snel,\nhet team</div><div class="invoer"><span>Stel een vraag…</span><b>↑</b></div></main></div></div></div></div>`;
+
+// [bestandsnaam, soort, html]
+const K = [];
+const post = (naam, html, klasse = '') => K.push([naam, 'post ' + klasse, html]);
+
+// 1 — Kennismaking
+post('01-welkom', `<div class="kicker">Webdesign &amp; development · België</div>
+  <div class="groot-logo">Web<em>lity</em></div>
+  <h2 style="font-size:84px;margin-top:40px">Websites die <em>blijven hangen.</em></h2>
+  <div class="lijn"></div>
+  <p>Websites, webshops en webapps die snel laden, strak ogen en <b>klanten opleveren.</b></p>
+  ${voet()}`);
+
+// 2 — Diensten (carrousel)
+const DIENSTEN = [
+  ['web', 'Websites', 'Een site die je zaak in één oogopslag uitlegt en bezoekers laat bellen, boeken of kopen.', ['Ontwerp op maat van je merk', 'Strak op gsm en computer', 'Klaar om gevonden te worden op Google']],
+  ['shop', 'Webshops & betalingen', 'Verkoop online zonder gedoe: van productpagina tot betaling.', ['Betalen met Bancontact en kaart', 'Betaallinks en QR-codes', 'Overzicht van bestellingen en omzet']],
+  ['app', 'Webapps & dashboards', 'Software op maat, gewoon in de browser.', ['Boekings- en reservatiesystemen', 'Dashboards met je cijfers', 'Inloggen en veilige opslag']],
+  ['ai', 'AI-toepassingen', 'Een eigen assistent die je klanten of je team verder helpt.', ['Eigen chat in je huisstijl', 'Teksten en antwoorden in seconden', 'Gebouwd op de modellen van Claude']],
+];
+post('02-diensten-1', `<div class="kicker">Diensten</div><h1>Wat we voor je <em>bouwen.</em></h1><p>Vier dingen waar we goed in zijn. Swipe om ze te zien.</p>${veeg(1, 6)}`);
+DIENSTEN.forEach(([ic, t, kort, punten], i) => post(`02-diensten-${i + 2}`, `<div class="ico">${ICOON[ic]}</div><div class="kicker">Dienst 0${i + 1}</div><h2>${t.replace('&', '&amp;')}</h2><p>${kort}</p><ul class="lijstje">${punten.map(p => `<li>${p}</li>`).join('')}</ul>${veeg(i + 2, 6)}`));
+post('02-diensten-6', `<div class="kicker">Gratis kennismaking</div><h2>Niet zeker wat je <em>nodig hebt?</em></h2><p>Dat zoeken we samen uit. Kies zelf een moment, het gesprek is gratis.</p><div class="knopje">Boek via de link in bio →</div>${veeg(6, 6)}`);
+
+// 3 — Paylity
+post('03-paylity', `<div class="kicker">Project · Betaalplatform</div><h2>Pay<em style="color:#6f9dff">lity</em></h2><p style="margin-top:20px">Betaallinks, checkout met Bancontact en kaart, één dashboard en een API voor webshops.</p>${PAY}${voet('Gebouwd door Weblity')}`);
+
+// 4 — Mijn AI
+post('04-mijn-ai', `<div class="kicker">Project · AI-chatapp</div><h2>Mijn <em style="color:#e58a66">AI</em></h2><p style="margin-top:20px">Je eigen assistent, onder je eigen naam. Antwoorden die live binnenstromen.</p>${AI}${voet('Gebouwd door Weblity')}`);
+
+// 5 — Werkwijze (carrousel)
+const STAPPEN = [
+  ['Kennismaken', 'Je boekt een gratis gesprek. We luisteren: wat doet je zaak, wie wil je bereiken en wat moet de site opleveren?'],
+  ['Ontwerp', 'Je krijgt een voorstel te zien, scherm voor scherm. Je weet hoe het eruit zal zien voordat er gebouwd wordt.'],
+  ['Bouwen', 'We bouwen de site: snel en strak op elk scherm. Je kijkt tussendoor mee en stuurt bij.'],
+  ['Live', 'De site gaat online op je eigen domeinnaam. Daarna blijven we bereikbaar voor aanpassingen.'],
+];
+post('05-werkwijze-1', `<div class="kicker">Werkwijze</div><h1>Van idee tot <em>online.</em></h1><p>Vier stappen, geen verrassingen.</p>${veeg(1, 6)}`);
+STAPPEN.forEach(([t, p], i) => post(`05-werkwijze-${i + 2}`, `<div class="nr">0${i + 1}</div><h2 style="margin-top:60px">${t}</h2><p>${p}</p>${veeg(i + 2, 6)}`));
+post('05-werkwijze-6', `<div class="kicker">Stap 1 begint hier</div><h2>Zullen we <em>beginnen?</em></h2><p>Boek je gratis gesprek via de link in bio, of stuur een bericht.</p><div class="knopje">Boek een gratis gesprek →</div>${veeg(6, 6)}`);
+
+// 6 — Tips (carrousel, levert waarde op en wordt bewaard en gedeeld)
+const TIPS = [
+  ['Laadt hij snel op een gsm?', 'De meeste bezoekers komen via hun gsm. Moeten ze lang wachten, dan zijn ze weg voor ze je aanbod gezien hebben.'],
+  ['Zie je meteen wat je doet?', 'Een bezoeker moet in een paar seconden weten wie je bent, wat je aanbiedt en voor wie.'],
+  ['Eén duidelijke knop', 'Bellen, boeken of bestellen: maak de volgende stap groot en overal zichtbaar.'],
+  ['Kan Google je vinden?', 'Duidelijke titels, een beschrijving per pagina en tekst over je regio helpen je hoger te komen.'],
+  ['Wekt hij vertrouwen?', 'Echte foto’s, je contactgegevens en wat je al gemaakt hebt maken van een bezoeker een klant.'],
+];
+post('06-tips-1', `<div class="kicker">Check je eigen website</div><h1>5 dingen die je site <em>moet hebben.</em></h1><p>Bewaar deze post en loop je site eens na.</p>${veeg(1, 7)}`);
+TIPS.forEach(([t, p], i) => post(`06-tips-${i + 2}`, `<div class="nr">${i + 1}</div><h2 style="margin-top:60px">${t}</h2><p>${p}</p>${veeg(i + 2, 7)}`));
+post('06-tips-7', `<div class="kicker">Gratis</div><h2>Twijfel je over <em>jouw site?</em></h2><p>In een gratis gesprek kijken we er samen naar en zeggen we eerlijk wat beter kan.</p><div class="knopje">Boek via de link in bio →</div>${veeg(7, 7)}`);
+
+// 7 — Citaat
+post('07-citaat', `<div class="kicker">Weblity</div><div class="citaat">Je website is je <em>beste verkoper</em> als hij goed gebouwd is.</div>${voet()}`);
+
+// 8 — Boek een gesprek
+post('08-boeken', `<div class="ico">${ICOON.agenda}</div><div class="kicker">Gratis kennismaking</div><h1>Boek je <em>gesprek.</em></h1><p>Kies zelf je dag en uur op onze site. Liever meteen iemand spreken?</p><p class="wa" style="margin-top:30px">${WA} 0469 22 60 35</p><div class="knopje">weblity.onrender.com →</div>${voet('Link in bio')}`);
+
+// Reel-omslag (9:16) voor de reclamevideo
+K.push(['09-reel-omslag', 'story midden', `<div class="kicker">Reclame</div><div class="groot-logo" style="margin-top:60px;font-size:250px">Web<em>lity</em></div><h2 style="font-size:96px;margin-top:50px">Websites die <em>blijven hangen.</em></h2><div class="lijn" style="align-self:center"></div>`]);
+
+// Stories
+K.push(['story-1-welkom', 'story', `<div class="kicker">Nieuw op Instagram</div><h1 style="font-size:170px">Hallo, wij zijn Web<em>lity.</em></h1><p>We bouwen websites, webshops en webapps die klanten opleveren. Volg mee voor tips, projecten en wat we aan het bouwen zijn.</p>${voet('@weblity')}`]);
+K.push(['story-2-boeken', 'story', `<div class="ico">${ICOON.agenda}</div><div class="kicker">Gratis kennismaking</div><h1 style="font-size:150px">Boek je <em>gesprek.</em></h1><p>Kies zelf je dag en uur. Het gesprek is gratis en verplicht je tot niets.</p><div class="sticker">Zet hier de link-sticker</div>${voet('weblity.onrender.com')}`]);
+K.push(['story-3-vraag', 'story', `<div class="ico">${ICOON.chat}</div><div class="kicker">Vraag?</div><h1 style="font-size:150px">Stuur ons een <em>bericht.</em></h1><p>Via een DM hier, of op WhatsApp:</p><p class="wa" style="font-size:56px">${WA} 0469 22 60 35</p><div class="sticker">Zet hier een vragen-sticker</div>${voet()}`]);
+
+// Hoogtepunt-iconen
+[['hoogtepunt-diensten', 'web'], ['hoogtepunt-projecten', 'app'], ['hoogtepunt-werkwijze', 'stappen'], ['hoogtepunt-boeken', 'agenda'], ['hoogtepunt-contact', 'chat']]
+  .forEach(([naam, ic]) => K.push([naam, 'icoon', `<div class="rond">${ICOON[ic]}</div>`]));
+
+document.getElementById('alle').innerHTML = K.map(([naam, klasse, html]) => `<section class="k ${klasse}" data-naam="${naam}">${html}</section>`).join('');
+</script>
+</body>
+</html>
