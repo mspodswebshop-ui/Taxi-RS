@@ -95,6 +95,30 @@ async function maakTabellen() {
       sleutels    JSONB NOT NULL,
       aangemaakt  TIMESTAMPTZ NOT NULL DEFAULT now()
     )`);
+  // Bezoeken van de website. Er wordt geen IP-adres en geen cookie bewaard: alleen
+  // een code die per dag verandert, zodat één bezoeker per dag één keer telt.
+  await db.query(`
+    CREATE TABLE IF NOT EXISTS bezoeken (
+      id         BIGSERIAL PRIMARY KEY,
+      tijd       TIMESTAMPTZ NOT NULL DEFAULT now(),
+      dag        DATE NOT NULL,
+      pad        TEXT NOT NULL,
+      bron       TEXT NOT NULL DEFAULT '',
+      apparaat   TEXT NOT NULL DEFAULT '',
+      bezoeker   TEXT NOT NULL
+    )`);
+  await db.query('CREATE INDEX IF NOT EXISTS bezoeken_dag ON bezoeken (dag)');
+  // Wat je verdiend hebt, in centen. Optioneel gekoppeld aan een boeking.
+  await db.query(`
+    CREATE TABLE IF NOT EXISTS inkomsten (
+      id            BIGSERIAL PRIMARY KEY,
+      aangemaakt    TIMESTAMPTZ NOT NULL DEFAULT now(),
+      datum         DATE NOT NULL,
+      omschrijving  TEXT NOT NULL,
+      bedrag_cent   INTEGER NOT NULL CHECK (bedrag_cent > 0),
+      boeking_id    BIGINT REFERENCES boekingen (id) ON DELETE SET NULL
+    )`);
+  await db.query('CREATE INDEX IF NOT EXISTS inkomsten_datum ON inkomsten (datum)');
 }
 
 // ---------- Datum en tijd (altijd Belgische tijd) ----------
@@ -259,6 +283,56 @@ function openbaar(req, res, next) {
   next();
 }
 
+// ---------- Bezoekers tellen ----------
+const ROBOT = /bot|crawl|spider|slurp|preview|facebookexternalhit|whatsapp|telegram|headless|lighthouse|pingdom|uptime|curl|wget|python|axios|node-fetch/i;
+const telRem = rem(300, 60 * 60_000);   // ruim genoeg voor een echte bezoeker, te weinig om de cijfers op te blazen
+
+/** Een code die dezelfde bezoeker op dezelfde dag herkent, maar niet terug te rekenen is naar een IP-adres. */
+function bezoekerCode(dag, ip, ua) {
+  const dagSleutel = crypto.createHmac('sha256', sessieSleutel).update('bezoek:' + dag).digest();
+  return crypto.createHmac('sha256', dagSleutel).update(ip + '|' + ua).digest('hex').slice(0, 16);
+}
+
+/** Maakt van een verwijzende pagina of ?ref= een leesbare bron. */
+function bronVan(ref, verwijzer) {
+  const r = tekst(ref, 40).toLowerCase().replace(/[^a-z0-9 _-]/g, '');
+  const NAMEN = { instagram: 'Instagram', ig: 'Instagram', tiktok: 'TikTok', whatsapp: 'WhatsApp', wa: 'WhatsApp',
+    facebook: 'Facebook', fb: 'Facebook', google: 'Google', linkedin: 'LinkedIn', youtube: 'YouTube', snapchat: 'Snapchat' };
+  if (r) return NAMEN[r] || r.charAt(0).toUpperCase() + r.slice(1);
+  let host = '';
+  try { host = new URL(verwijzer).hostname.replace(/^www\./, ''); } catch { return ''; }
+  if (toegestaan.some(o => { try { return new URL(o).hostname === host; } catch { return false; } })) return 'intern';
+  const bekend = [
+    [/(^|\.)google\./, 'Google'], [/(^|\.)bing\.com$/, 'Bing'], [/duckduckgo/, 'DuckDuckGo'],
+    [/instagram\.com$/, 'Instagram'], [/(facebook\.com|fb\.com|fb\.me)$/, 'Facebook'],
+    [/(tiktok\.com)$/, 'TikTok'], [/(whatsapp\.com|wa\.me)$/, 'WhatsApp'],
+    [/(linkedin\.com|lnkd\.in)$/, 'LinkedIn'], [/(t\.co|x\.com|twitter\.com)$/, 'X'],
+    [/snapchat\.com$/, 'Snapchat'], [/youtube\.com$/, 'YouTube'],
+  ];
+  for (const [re, naam] of bekend) if (re.test(host)) return naam;
+  return host.slice(0, 60);
+}
+
+// De website stuurt dit als platte tekst (sendBeacon), zodat de browser geen extra controlevraag stuurt.
+app.post('/api/bezoek', express.text({ type: '*/*', limit: '2kb' }), (req, res) => {
+  res.status(204).end();
+  const origin = req.headers.origin || '';
+  const lokaal = !PRODUCTIE && /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin);
+  if (!toegestaan.includes(origin) && !lokaal) return;
+  const ua = String(req.headers['user-agent'] || '');
+  if (!ua || ROBOT.test(ua) || !telRem(req.ip)) return;
+  let b = {};
+  try { b = JSON.parse(typeof req.body === 'string' ? req.body : '{}'); } catch { return; }
+  const pad = '/' + tekst(b.pad, 120).replace(/^\/+/, '').replace(/\.html$/, '').replace(/^index$/, '');
+  if (!/^\/[a-z0-9/_-]*$/i.test(pad)) return;
+  const bron = bronVan(b.ref, tekst(b.verwijzer, 300));
+  const apparaat = /Mobi|Android|iPhone|iPod/i.test(ua) ? 'gsm' : /iPad|Tablet/i.test(ua) ? 'tablet' : 'computer';
+  const dag = nu().datum;
+  db.query('INSERT INTO bezoeken (dag, pad, bron, apparaat, bezoeker) VALUES ($1, $2, $3, $4, $5)',
+    [dag, pad, bron === 'intern' ? '' : bron, apparaat, bezoekerCode(dag, req.ip, ua)])
+    .catch(err => console.error('Bezoek niet bewaard:', err.message));
+});
+
 // Wekt de server alvast als de bezoeker de boekpagina opent.
 app.use('/api/ping', openbaar, (req, res) => res.json({ ok: true }));
 
@@ -325,8 +399,9 @@ app.use('/api/beheer', alleenBeheerder);
 
 app.get('/api/beheer/boekingen', async (req, res) => {
   const { rows } = await db.query(
-    `SELECT id, aangemaakt, dienst, datum, tijd, naam, telefoon, email, bericht, status
-       FROM boekingen ORDER BY datum, tijd LIMIT 1000`);
+    `SELECT b.id, b.aangemaakt, b.dienst, b.datum, b.tijd, b.naam, b.telefoon, b.email, b.bericht, b.status,
+            COALESCE((SELECT sum(i.bedrag_cent) FROM inkomsten i WHERE i.boeking_id = b.id), 0)::int AS ontvangen_cent
+       FROM boekingen b ORDER BY b.datum, b.tijd LIMIT 1000`);
   res.set('Cache-Control', 'no-store').json({ vandaag: nu().datum, boekingen: rows });
 });
 
@@ -346,6 +421,68 @@ app.patch('/api/beheer/boekingen/:id', async (req, res) => {
 app.delete('/api/beheer/boekingen/:id', async (req, res) => {
   if (!/^\d+$/.test(req.params.id)) return res.status(400).json({ fout: 'Ongeldige boeking.' });
   await db.query('DELETE FROM boekingen WHERE id = $1', [req.params.id]);
+  res.json({ ok: true });
+});
+
+// ---------- Bezoekers ----------
+app.get('/api/beheer/bezoekers', async (req, res) => {
+  const dagen = [7, 30, 90].includes(Number(req.query.dagen)) ? Number(req.query.dagen) : 30;
+  const tot = nu().datum, van = plusDagen(tot, -(dagen - 1));
+  const [perDag, paginas, bronnen, apparaten, boekingen, totaal] = await Promise.all([
+    db.query(`SELECT dag, count(DISTINCT bezoeker)::int AS bezoekers, count(*)::int AS weergaven
+                FROM bezoeken WHERE dag BETWEEN $1 AND $2 GROUP BY dag`, [van, tot]),
+    db.query(`SELECT pad, count(DISTINCT dag || bezoeker)::int AS bezoekers FROM bezoeken
+               WHERE dag BETWEEN $1 AND $2 GROUP BY pad ORDER BY 2 DESC LIMIT 8`, [van, tot]),
+    db.query(`SELECT bron, count(DISTINCT dag || bezoeker)::int AS bezoekers FROM bezoeken
+               WHERE dag BETWEEN $1 AND $2 AND bron <> '' GROUP BY bron ORDER BY 2 DESC LIMIT 8`, [van, tot]),
+    db.query(`SELECT apparaat, count(DISTINCT dag || bezoeker)::int AS bezoekers FROM bezoeken
+               WHERE dag BETWEEN $1 AND $2 GROUP BY apparaat ORDER BY 2 DESC`, [van, tot]),
+    db.query(`SELECT count(*)::int AS n FROM boekingen WHERE aangemaakt >= ($1::date)::timestamp AT TIME ZONE 'Europe/Brussels'`, [van]),
+    db.query(`SELECT count(DISTINCT dag || bezoeker)::int AS bezoekers FROM bezoeken`),
+  ]);
+  const map = new Map(perDag.rows.map(r => [r.dag, r]));
+  const reeks = [];
+  for (let i = 0; i < dagen; i++) {
+    const dag = plusDagen(van, i), r = map.get(dag);
+    reeks.push({ dag, bezoekers: r?.bezoekers || 0, weergaven: r?.weergaven || 0 });
+  }
+  res.set('Cache-Control', 'no-store').json({
+    vandaag: tot, dagen: reeks, paginas: paginas.rows, bronnen: bronnen.rows,
+    apparaten: apparaten.rows, boekingen: boekingen.rows[0].n, ooit: totaal.rows[0].bezoekers,
+  });
+});
+
+// ---------- Inkomsten ----------
+app.get('/api/beheer/inkomsten', async (req, res) => {
+  const { rows } = await db.query(
+    `SELECT i.id, i.datum, i.omschrijving, i.bedrag_cent, i.boeking_id, b.naam AS boeking_naam
+       FROM inkomsten i LEFT JOIN boekingen b ON b.id = i.boeking_id
+      ORDER BY i.datum DESC, i.id DESC LIMIT 2000`);
+  res.set('Cache-Control', 'no-store').json({ vandaag: nu().datum, inkomsten: rows });
+});
+
+app.post('/api/beheer/inkomsten', async (req, res) => {
+  const b = req.body || {};
+  const omschrijving = tekst(b.omschrijving, 120), datum = tekst(b.datum, 10);
+  const cent = Number(b.bedrag_cent);
+  if (omschrijving.length < 2) return res.status(400).json({ fout: 'Vul een omschrijving in.' });
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(datum) || datum > plusDagen(nu().datum, 1)) return res.status(400).json({ fout: 'Kies een geldige datum.' });
+  if (!Number.isInteger(cent) || cent < 1 || cent > 100_000_000) return res.status(400).json({ fout: 'Vul een geldig bedrag in.' });
+  const boekingId = /^\d+$/.test(String(b.boeking_id ?? '')) ? String(b.boeking_id) : null;
+  try {
+    const { rows } = await db.query(
+      'INSERT INTO inkomsten (datum, omschrijving, bedrag_cent, boeking_id) VALUES ($1, $2, $3, $4) RETURNING id',
+      [datum, omschrijving, cent, boekingId]);
+    res.status(201).json({ ok: true, id: rows[0].id });
+  } catch (err) {
+    if (err.code === '23503') return res.status(400).json({ fout: 'Die boeking bestaat niet meer.' });
+    throw err;
+  }
+});
+
+app.delete('/api/beheer/inkomsten/:id', async (req, res) => {
+  if (!/^\d+$/.test(req.params.id)) return res.status(400).json({ fout: 'Ongeldige inkomst.' });
+  await db.query('DELETE FROM inkomsten WHERE id = $1', [req.params.id]);
   res.json({ ok: true });
 });
 

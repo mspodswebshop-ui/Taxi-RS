@@ -121,7 +121,7 @@
     $('nVandaag').textContent = boekingen.filter(b => actief(b) && b.datum === vandaag).length;
     $('nKomend').textContent = boekingen.filter(filters.komend).length;
     $('nTotaal').textContent = boekingen.length;
-    document.title = (boekingen.filter(filters.nieuw).length ? `(${boekingen.filter(filters.nieuw).length}) ` : '') + 'Weblity · Boekingen';
+    document.title = (boekingen.filter(filters.nieuw).length ? `(${boekingen.filter(filters.nieuw).length}) ` : '') + 'Weblity · Beheer';
 
     const q = zoekterm.toLowerCase();
     let lijst = boekingen.filter(filters[filter]);
@@ -159,6 +159,8 @@
     k('.js-mail').hidden = !b.email;
     if (b.email) k('.js-mail').href = 'mailto:' + b.email;
     k('.js-meta').textContent = 'Geboekt op ' + ontvangenFmt.format(new Date(b.aangemaakt));
+    if (b.ontvangen_cent > 0) k('.js-betaald').textContent = '✓ ' + new Intl.NumberFormat('nl-BE', { style: 'currency', currency: 'EUR' }).format(b.ontvangen_cent / 100) + ' ontvangen';
+    k('.js-betaling').onclick = () => dispatchEvent(new CustomEvent('weblity:betaling', { detail: b }));
 
     const voornaam = b.naam.split(' ')[0];
     const bericht = `Dag ${voornaam}, hier Weblity. Je gesprek over "${b.dienst}" op ${langFmt.format(alsDatum(b.datum))} om ${b.tijd} is bevestigd. Tot dan!`;
@@ -281,9 +283,12 @@
     $('app').hidden = false;
     laad();
     toonMeldingen();
+    dispatchEvent(new Event('weblity:start'));
     clearInterval(timer);
     timer = setInterval(() => { if (!document.hidden) laad(); }, VERVERS_MS);
   }
+  addEventListener('weblity:toast', e => toast(e.detail));
+  addEventListener('weblity:herlaad', () => laad());
   document.addEventListener('visibilitychange', () => { if (!document.hidden && !$('app').hidden) laad(); });
 
   fetch('/api/sessie').then(r => r.json()).then(s => (s.ingelogd ? start() : toonLogin())).catch(toonLogin);

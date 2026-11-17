@@ -148,6 +148,22 @@
     requestAnimationFrame(teken);
   }
 
+  /* ---------- Bezoek tellen ---------- */
+  // Zonder cookies: de server bewaart geen IP-adres, alleen een code die elke dag verandert.
+  // Open de site één keer met ?niet-tellen om je eigen bezoeken op dat toestel niet mee te tellen.
+  try {
+    const q = new URLSearchParams(location.search);
+    if (q.has('niet-tellen')) localStorage.setItem('weblity-niet-tellen', '1');
+    if (q.has('wel-tellen')) localStorage.removeItem('weblity-niet-tellen');
+    const lokaal = ['localhost', '127.0.0.1'].includes(location.hostname);
+    if (localStorage.getItem('weblity-niet-tellen') !== '1' && (lokaal || location.protocol === 'https:') && navigator.sendBeacon) {
+      const API = lokaal ? 'http://localhost:4200' : 'https://weblity-beheer.onrender.com';
+      navigator.sendBeacon(API + '/api/bezoek', new Blob([JSON.stringify({
+        pad: location.pathname, ref: q.get('ref') || q.get('utm_source') || '', verwijzer: document.referrer,
+      })], { type: 'text/plain' }));
+    }
+  } catch { /* tellen is nooit belangrijker dan de site */ }
+
   const jaar = $('#jaar');
   if (jaar) jaar.textContent = new Date().getFullYear();
 })();

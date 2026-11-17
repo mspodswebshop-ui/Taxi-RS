@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#0b0b0f">
-<title>Weblity · Boekingen</title>
+<title>Weblity · Beheer</title>
 <link rel="icon" href="icon.svg">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="manifest" href="app.webmanifest">
@@ -33,13 +33,20 @@
 <!-- Beheerscherm -->
 <div class="app" id="app" hidden>
   <header class="kop">
-    <div class="logo">Web<em>lity</em> <span>boekingen</span></div>
+    <div class="logo">Web<em>lity</em> <span>beheer</span></div>
     <div class="kop__rechts">
       <span class="live" id="live" title="Wordt automatisch ververst"><i></i>live</span>
       <button class="knop knop--stil" id="uitloggen" type="button">Uitloggen</button>
     </div>
   </header>
 
+  <nav class="tabs" id="tabs" role="tablist" aria-label="Onderdelen">
+    <button type="button" role="tab" data-tab="boekingen" aria-selected="true">Boekingen</button>
+    <button type="button" role="tab" data-tab="bezoekers" aria-selected="false">Bezoekers</button>
+    <button type="button" role="tab" data-tab="verdiend" aria-selected="false">Verdiend</button>
+  </nav>
+
+  <div id="tabBoekingen" role="tabpanel">
   <section class="cijfers" aria-label="Overzicht">
     <div class="cijfer cijfer--goud"><b id="nNieuw">0</b><span>nieuw</span></div>
     <div class="cijfer"><b id="nVandaag">0</b><span>vandaag</span></div>
@@ -85,7 +92,77 @@
 
   <main class="lijst" id="lijst" aria-live="polite"></main>
   <p class="leeg" id="leeg" hidden>Hier staat nog niets.</p>
+  </div>
+
+  <!-- Bezoekers van de website -->
+  <div id="tabBezoekers" role="tabpanel" hidden>
+    <nav class="filters" id="periode" aria-label="Periode">
+      <button type="button" data-dagen="7">7 dagen</button>
+      <button type="button" data-dagen="30" class="aan">30 dagen</button>
+      <button type="button" data-dagen="90">90 dagen</button>
+    </nav>
+    <section class="cijfers cijfers--3" aria-label="Bezoekers">
+      <div class="cijfer cijfer--goud"><b id="bVandaag">0</b><span>vandaag</span></div>
+      <div class="cijfer"><b id="bPeriode">0</b><span id="bPeriodeTekst">30 dagen</span></div>
+      <div class="cijfer"><b id="bBoekingen">0</b><span>boekingen</span></div>
+    </section>
+    <section class="paneel">
+      <h3>Bezoekers per dag</h3>
+      <p class="klein" id="bUitleg"></p>
+      <div class="grafiek" id="bGrafiek"></div>
+      <details class="tabel"><summary>Toon als tabel</summary><div id="bTabel"></div></details>
+    </section>
+    <div class="twee">
+      <section class="paneel"><h3>Waar komen ze vandaan?</h3><div class="meters" id="bBronnen"></div></section>
+      <section class="paneel"><h3>Meest bekeken pagina's</h3><div class="meters" id="bPaginas"></div></section>
+    </div>
+    <section class="paneel"><h3>Toestel</h3><div class="meters" id="bApparaten"></div></section>
+    <details class="meldingen">
+      <summary>Hoe wordt er geteld?</summary>
+      <div class="meldingen__inhoud">
+        <p>Elke bezoeker telt één keer per dag, ook als hij meerdere pagina's bekijkt. Er worden geen cookies gebruikt en geen IP-adressen bewaard. Robots en zoekmachines worden niet meegeteld.</p>
+        <p class="ruimte"><b>Wil je weten hoeveel mensen via Instagram komen?</b> Zet in je bio deze link: <code id="bLinkInsta"></code> Dan staat "Instagram" netjes bij de bronnen. Hetzelfde kan met <code>?ref=tiktok</code>, <code>?ref=whatsapp</code> enz.</p>
+        <p class="ruimte"><b>Je eigen bezoeken niet meetellen?</b> Open op elk toestel waarmee je zelf je site bekijkt één keer deze link: <code id="bLinkNiet"></code></p>
+      </div>
+    </details>
+  </div>
+
+  <!-- Wat je verdiend hebt -->
+  <div id="tabVerdiend" role="tabpanel" hidden>
+    <section class="cijfers cijfers--3" aria-label="Verdiend">
+      <div class="cijfer cijfer--goud"><b id="vMaand">€ 0</b><span>deze maand</span></div>
+      <div class="cijfer"><b id="vJaar">€ 0</b><span id="vJaarTekst">dit jaar</span></div>
+      <div class="cijfer"><b id="vTotaal">€ 0</b><span>totaal</span></div>
+    </section>
+    <section class="paneel">
+      <h3>Verdiend per maand</h3>
+      <p class="klein">De laatste 12 maanden.</p>
+      <div class="grafiek" id="vGrafiek"></div>
+      <details class="tabel"><summary>Toon als tabel</summary><div id="vTabel"></div></details>
+    </section>
+    <form class="paneel inkomst" id="vForm">
+      <h3 id="vFormTitel">Betaling toevoegen</h3>
+      <div class="velden">
+        <label>Omschrijving<input id="vOmschrijving" required maxlength="120" placeholder="Bv. website bakkerij Peeters"></label>
+        <label>Bedrag (€)<input id="vBedrag" required inputmode="decimal" placeholder="750,00"></label>
+        <label>Datum<input id="vDatum" type="date" required></label>
+      </div>
+      <input type="hidden" id="vBoeking">
+      <p class="klein" id="vKoppel" hidden></p>
+      <div class="rij">
+        <button class="knop knop--goud" type="submit">Toevoegen</button>
+        <button class="knop knop--stil" type="button" id="vAnnuleer" hidden>Annuleren</button>
+      </div>
+      <p class="fout" id="vFout" role="alert"></p>
+    </form>
+    <section class="paneel">
+      <h3>Alle betalingen</h3>
+      <div class="inkomsten" id="vLijst"></div>
+    </section>
+  </div>
 </div>
+
+<div class="tip" id="tip" role="tooltip" hidden></div>
 
 <div class="toast" id="toast" role="status"></div>
 
@@ -101,10 +178,12 @@
         <a class="js-mail"></a>
       </div>
       <div class="kaart__meta js-meta"></div>
+      <div class="kaart__betaald js-betaald"></div>
       <div class="kaart__acties">
         <button class="knop knop--goud js-bevestig" type="button">Bevestigen</button>
         <a class="knop knop--groen js-whatsapp" target="_blank" rel="noopener">WhatsApp</a>
         <button class="knop js-afrond" type="button">Afgerond</button>
+        <button class="knop js-betaling" type="button">€ Betaling</button>
         <button class="knop js-annuleer" type="button">Annuleren</button>
         <button class="knop js-herstel" type="button">Terugzetten</button>
         <button class="knop knop--rood js-verwijder" type="button">Verwijderen</button>
@@ -114,5 +193,6 @@
 </template>
 
 <script src="beheer.js"></script>
+<script src="statistiek.js"></script>
 </body>
 </html>

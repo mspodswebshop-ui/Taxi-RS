@@ -13,6 +13,17 @@ meldingen hebt aangezet. Dat doe je in het beheerscherm zelf, onder "Meldingen
 op dit toestel". Op een iPhone moet je het beheerscherm eerst op je beginscherm
 zetten (deelknop > Zet op beginscherm); pas dan laat Apple meldingen toe.
 
+Het beheerscherm heeft drie tabbladen:
+
+- **Boekingen**: wie er geboekt heeft.
+- **Bezoekers**: hoeveel mensen de website bekeken, per dag, met bron (Instagram,
+  Google ...), meest bekeken pagina's en toestel. Er worden geen cookies gebruikt
+  en geen IP-adressen bewaard; elke bezoeker telt één keer per dag. Zet `?ref=instagram`
+  achter een link om die bron te herkennen. Met `?niet-tellen` (één keer openen per
+  toestel) tellen je eigen bezoeken niet mee; `?wel-tellen` zet het terug.
+- **Verdiend**: betalingen die je zelf invoert, los of gekoppeld aan een boeking,
+  met totalen per maand en per jaar.
+
 ## Instellingen (omgevingsvariabelen)
 
 | Naam | Waarvoor |

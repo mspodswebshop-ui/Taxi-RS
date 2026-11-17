@@ -114,3 +114,66 @@ code { font: 13px ui-monospace, Menlo, Consolas, monospace; background: var(--bg
   .cijfer b { font-size: 32px; }
 }
 @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+
+/* ---------- Tabbladen ---------- */
+.tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 4px; background: var(--vlak); border: 1px solid var(--lijn); border-radius: 14px; margin-bottom: 14px; }
+.tabs button { padding: 10px 6px; border: 0; border-radius: 10px; background: none; cursor: pointer; font-weight: 650; font-size: 14px; color: var(--zacht); transition: background .2s, color .2s; }
+.tabs button[aria-selected="true"] { background: var(--inkt); color: #111; }
+[role="tabpanel"] { animation: in .3s both; }
+.cijfers--3 { grid-template-columns: repeat(3, 1fr); }
+.cijfer b { overflow-wrap: anywhere; }
+#tabBezoekers .filters, #tabVerdiend .filters { margin-top: 0; margin-bottom: 12px; }
+.ruimte { margin-top: 10px; }
+
+/* ---------- Panelen en grafieken ---------- */
+.paneel { margin-top: 12px; background: var(--vlak); border: 1px solid var(--lijn); border-radius: 16px; padding: 16px; min-width: 0; }
+.paneel h3 { margin: 0; font-size: 15px; }
+.paneel > .klein:first-of-type { margin-top: 2px; }
+.twee { display: grid; gap: 0 12px; }
+@media (min-width: 720px) { .twee { grid-template-columns: 1fr 1fr; } }
+.grafiek { margin-top: 12px; position: relative; }
+.grafiek svg { display: block; width: 100%; height: auto; overflow: visible; touch-action: pan-y; }
+.grafiek .as { fill: var(--dof); font: 11px ui-sans-serif, -apple-system, system-ui, sans-serif; }
+.grafiek .rooster { stroke: rgba(242, 237, 228, .09); stroke-width: 1; }
+.grafiek .basis { stroke: rgba(242, 237, 228, .22); stroke-width: 1; }
+.grafiek .staaf { fill: var(--goud); transition: opacity .15s; }
+.grafiek .staaf.nul { fill: rgba(242, 237, 228, .12); }
+.grafiek.focus .staaf:not(.aan) { opacity: .45; }
+.grafiek .vang { fill: transparent; cursor: crosshair; }
+.grafiek .leeg-tekst { fill: var(--dof); font-size: 13px; }
+.tip { position: fixed; z-index: 20; pointer-events: none; background: var(--inkt); color: #111; border-radius: 10px; padding: 7px 10px; font-size: 13px; line-height: 1.35; box-shadow: 0 8px 30px rgba(0, 0, 0, .45); transform: translate(-50%, calc(-100% - 10px)); white-space: nowrap; }
+.tip b { display: block; font-size: 15px; font-variant-numeric: tabular-nums; }
+.tabel { margin-top: 10px; font-size: 13px; color: var(--zacht); }
+.tabel summary { cursor: pointer; color: var(--dof); }
+.tabel table { width: 100%; border-collapse: collapse; margin-top: 8px; font-variant-numeric: tabular-nums; }
+.tabel th, .tabel td { text-align: left; padding: 5px 6px; border-bottom: 1px solid var(--lijn); }
+.tabel td:last-child, .tabel th:last-child { text-align: right; }
+
+/* Lijst met naam, balk en getal */
+.meters { display: grid; gap: 10px; margin-top: 12px; }
+.meter { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 12px; align-items: center; font-size: 14px; }
+.meter span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.meter b { font-variant-numeric: tabular-nums; }
+.meter i { grid-column: 1 / -1; height: 6px; border-radius: 3px; background: rgba(242, 237, 228, .08); overflow: hidden; }
+.meter i::before { content: ""; display: block; height: 100%; width: var(--w); background: var(--goud); border-radius: 3px; }
+.meters .leeg-tekst { color: var(--dof); font-size: 14px; margin: 0; }
+
+/* Betalingen */
+.inkomst .velden { display: grid; gap: 10px; margin-top: 12px; }
+@media (min-width: 640px) { .inkomst .velden { grid-template-columns: 2fr 1fr 1fr; } }
+.inkomst label { display: grid; gap: 5px; font-size: 13px; color: var(--zacht); }
+.inkomst input { width: 100%; padding: 11px 12px; border-radius: 10px; border: 1px solid var(--lijn); background: var(--bg); font-size: 16px; color-scheme: dark; }
+.inkomst.koppel { border-color: rgba(232, 180, 90, .55); }
+.inkomsten { display: grid; margin-top: 8px; }
+.inkomsten .regel { display: grid; grid-template-columns: auto minmax(0, 1fr) auto auto; gap: 12px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--lijn); font-size: 14px; }
+.inkomsten .regel:last-child { border-bottom: 0; }
+.inkomsten time { color: var(--dof); font-size: 13px; font-variant-numeric: tabular-nums; }
+.inkomsten .wat { overflow-wrap: anywhere; }
+.inkomsten .wat small { display: block; color: var(--dof); }
+.inkomsten b { font-variant-numeric: tabular-nums; }
+.inkomsten button { background: none; border: 0; color: var(--dof); cursor: pointer; font-size: 18px; padding: 4px 6px; border-radius: 6px; }
+.inkomsten button:hover { color: var(--rood); }
+.kaart__betaald { margin-top: 6px; font-size: 13px; color: var(--groen); font-weight: 600; }
+.kaart__betaald:empty { display: none; }
+/* Bedragen en getallen in de tegels nooit midden in een getal afbreken. */
+.cijfers--3 .cijfer b { white-space: nowrap; overflow-wrap: normal; font-size: clamp(15px, 4.6vw, 32px); line-height: 1.3; }
