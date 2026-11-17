@@ -197,6 +197,7 @@ vast bovenaan je profiel: tik op de drie puntjes van de post → "Vastzetten op 
 - `story-8-uren.png`: wanneer je een gesprek kan boeken → link-sticker met
   `https://weblity.onrender.com/boeken.html?ref=instagram`
 - `story-9-prijs.png`: "Wat kost een website?" → vragen-sticker
+- `story-10-contact.png`: je contactgegevens → link-sticker naar `https://weblity.onrender.com/?ref=instagram`
 
 **Hoogtepunten:** maak er vijf aan met deze namen en iconen (bij "Omslag bewerken"):
 
@@ -206,7 +207,7 @@ vast bovenaan je profiel: tik op de drie puntjes van de post → "Vastzetten op 
 | Projecten | `hoogtepunt-projecten.png` | `story-5-paylity`, `story-6-mijn-ai` |
 | Werkwijze | `hoogtepunt-werkwijze.png` | `story-7-werkwijze` |
 | Boeken | `hoogtepunt-boeken.png` | `story-2-boeken`, `story-8-uren` |
-| Contact | `hoogtepunt-contact.png` | `story-1-welkom`, `story-3-vraag` |
+| Contact | `hoogtepunt-contact.png` | `story-10-contact`, `story-1-welkom`, `story-3-vraag` |
 
 Zo maak je een hoogtepunt: plaats de story, tik er daarna onderaan op **Hoogtepunt**
 (het hartje), kies **Nieuw**, geef de naam en kies bij **Omslag bewerken** het icoon

@@ -74,6 +74,14 @@ body { margin: 0; padding: 40px; display: flex; flex-wrap: wrap; gap: 40px; alig
 .uren span { color: var(--zacht); }
 .uren b { font-weight: 600; font-variant-numeric: tabular-nums; }
 .story .mock { margin-top: 70px; }
+/* Contactgegevens */
+.contact { display: grid; gap: 26px; margin-top: 70px; }
+.cregel { display: grid; grid-template-columns: auto 1fr; gap: 32px; align-items: center; padding: 26px 30px; border-radius: 34px; background: rgba(242, 237, 228, .05); border: 2px solid rgba(242, 237, 228, .1); }
+.cregel .ico { width: 110px; height: 110px; border-radius: 30px; margin: 0; }
+.cregel .ico svg { width: 58px; height: 58px; }
+.cregel:first-child .ico { color: #5be08f; background: rgba(37, 211, 102, .14); }
+.cregel small { display: block; font: 500 26px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--dof); }
+.cregel b { display: block; font-size: 50px; font-weight: 600; margin-top: 6px; letter-spacing: -.01em; }
 /* Hoogtepunt-icoon: alleen het midden is zichtbaar in de cirkel. */
 .icoon .rond { width: 560px; height: 560px; border-radius: 50%; border: 3px solid rgba(232, 180, 90, .5); display: grid; place-items: center; color: var(--goud); position: relative; z-index: 1; }
 .icoon .rond svg { width: 260px; height: 260px; }
@@ -181,6 +189,16 @@ K.push(['story-9-prijs', 'story', `<div class="kicker">Veelgestelde vraag</div><
   <p>Dat hangt af van wat je nodig hebt: een onepager is iets anders dan een webshop.</p>
   <ul class="lijstje"><li>Eerst een gratis gesprek</li><li>Daarna een duidelijke offerte</li><li>Je weet vooraf wat je betaalt</li></ul>
   <div class="sticker">Zet hier een vragen-sticker</div>${voet()}`]);
+
+K.push(['story-10-contact', 'story', `<div class="kicker">Contact</div><h1 style="font-size:150px">Neem <em>contact</em> op.</h1>
+  <div class="contact">
+    <div class="cregel"><div class="ico">${WA}</div><div><small>WhatsApp</small><b>0469 22 60 35</b></div></div>
+    <div class="cregel"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg></div><div><small>Bellen</small><b>0469 22 60 35</b></div></div>
+    <div class="cregel"><div class="ico">${ICOON.web}</div><div><small>Website</small><b>weblity.onrender.com</b></div></div>
+    <div class="cregel"><div class="ico">${ICOON.agenda}</div><div><small>Gratis gesprek</small><b>Boek via de link in bio</b></div></div>
+    <div class="cregel"><div class="ico">${ICOON.chat}</div><div><small>Instagram</small><b>Stuur ons een DM</b></div></div>
+  </div>
+  <div class="sticker">Zet hier de link-sticker</div>${voet('België')}`]);
 
 // Hoogtepunt-iconen
 [['hoogtepunt-diensten', 'web'], ['hoogtepunt-projecten', 'app'], ['hoogtepunt-werkwijze', 'stappen'], ['hoogtepunt-boeken', 'agenda'], ['hoogtepunt-contact', 'chat']]
