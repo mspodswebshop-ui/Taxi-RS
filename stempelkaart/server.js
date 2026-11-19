@@ -44,7 +44,10 @@ const SESSIE_DAGEN = 30;
 // Binnen deze tijd vraagt de app of een tweede stempel echt de bedoeling is.
 const DUBBEL_MS = 2 * 60 * 1000;
 
-const opslag = maakOpslag(process.env.DATA_DIR || path.join(here, "data"));
+const opslag = await maakOpslag({
+  map: process.env.DATA_DIR || path.join(here, "data"),
+  databaseUrl: process.env.DATABASE_URL,
+});
 const apple = maakApple(instellingen);
 const google = maakGoogle(instellingen);
 
@@ -440,7 +443,7 @@ app.use((_req, res) => res.status(404).sendFile(path.join(here, "public", "index
 
 app.listen(PORT, () => {
   console.log(`Stempelkaart draait op http://localhost:${PORT}`);
-  console.log(`Kaarten worden bewaard in ${opslag.bestand}`);
+  console.log(`Kaarten worden bewaard in ${opslag.waar}`);
   console.log(`Apple Wallet: ${apple.ingesteld ? "aan" : `uit${apple.fout ? ` (${apple.fout})` : " (geen certificaten)"}`}`);
   if (apple.ingesteld && !apple.webServiceURL) {
     console.log("  Let op: BASE_URL is geen https, dus Apple-kaarten werken zichzelf niet bij.");
