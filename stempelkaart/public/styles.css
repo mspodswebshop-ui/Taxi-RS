@@ -1,0 +1,158 @@
+/* =====================================================================
+   Stempelkaart Taxi R.S. — zelfde huisstijl als de betaalterminal.
+   ===================================================================== */
+
+:root {
+  --bg: #111110;
+  --surface: #1c1b19;
+  --surface-2: #262421;
+  --line: #34322e;
+  --text: #f7f5f0;
+  --text-soft: #b3aea4;
+  --text-muted: #7d7870;
+  --geel: #ffcc00;
+  --groen: #34c759;
+  --rood: #ff453a;
+  --radius: 16px;
+  --sans: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { margin: 0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+[hidden] { display: none !important; }
+a { color: var(--geel); }
+button, input { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--geel); outline-offset: 2px; }
+
+.app {
+  max-width: 460px;
+  margin: 0 auto;
+  padding: max(16px, env(safe-area-inset-top)) 16px max(24px, env(safe-area-inset-bottom));
+}
+
+.top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 18px; }
+.brand-mark {
+  width: 32px; height: 32px; border-radius: 9px; background: var(--geel);
+  background-image: conic-gradient(#111 25%, transparent 0 50%, #111 0 75%, transparent 0);
+  background-size: 12px 12px; background-position: 4px 4px;
+}
+.link-btn { background: none; border: 0; color: var(--text-soft); padding: 8px; cursor: pointer; }
+
+h1 { font-size: 28px; line-height: 1.15; margin: 8px 0 8px; letter-spacing: -0.01em; }
+h2 { font-size: 18px; margin: 28px 0 10px; }
+.lead { color: var(--text-soft); margin: 0 0 24px; }
+.muted { color: var(--text-muted); font-size: 14px; }
+
+/* ---------- Formulieren ---------- */
+
+label { display: block; font-size: 14px; color: var(--text-soft); margin: 14px 0 6px; }
+input {
+  width: 100%; padding: 14px 16px; border-radius: 12px;
+  border: 1px solid var(--line); background: var(--surface); font-size: 17px;
+}
+input:focus { border-color: var(--geel); outline: none; }
+
+.btn {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  width: 100%; min-height: 54px; padding: 14px 18px; margin-top: 12px;
+  border-radius: 14px; border: 0; cursor: pointer;
+  font-weight: 700; font-size: 17px; text-decoration: none;
+  background: var(--geel); color: #111;
+}
+.btn:disabled { opacity: 0.5; cursor: default; }
+.btn.secundair { background: var(--surface-2); color: var(--text); border: 1px solid var(--line); }
+.btn.gevaar { background: transparent; color: var(--rood); border: 1px solid var(--line); }
+.btn.groot { min-height: 72px; font-size: 22px; }
+
+.fout { color: var(--rood); min-height: 1.5em; margin: 10px 0 0; font-size: 15px; }
+
+/* ---------- De kaart ---------- */
+
+.kaart {
+  background: #111110;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 18px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
+}
+.kaart-kop { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.kaart-label { font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--geel); font-weight: 700; }
+.kaart-waarde { font-size: 20px; font-weight: 700; }
+.kaart-teller { font-size: 28px; font-weight: 800; text-align: right; }
+
+.stempels {
+  display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px;
+  margin: 18px 0 14px;
+}
+.stempel {
+  aspect-ratio: 1; border-radius: 50%;
+  border: 3px solid #5c5850;
+  display: grid; place-items: center;
+}
+.stempel svg { width: 55%; height: 55%; }
+.stempel.vol { background: var(--geel); border-color: var(--geel); color: #111; }
+.stempel.ster { border-color: var(--geel); color: var(--geel); }
+.stempel.nieuw { animation: plof 0.5s cubic-bezier(0.2, 1.6, 0.4, 1); }
+@keyframes plof { from { transform: scale(0.3); } to { transform: scale(1); } }
+
+.tegoed {
+  background: var(--geel); color: #111; border-radius: 12px;
+  padding: 12px 14px; font-weight: 700; margin-top: 6px;
+}
+.kaart-voet { display: flex; justify-content: space-between; color: var(--text-muted); font-size: 13px; margin-top: 12px; }
+
+/* ---------- Wallet-knoppen ---------- */
+
+.wallet { display: grid; gap: 10px; margin-top: 20px; }
+.wallet-btn {
+  display: flex; align-items: center; justify-content: center; gap: 12px;
+  min-height: 56px; border-radius: 14px; padding: 10px 16px;
+  background: #000; color: #fff; border: 1px solid #3a3a3a;
+  text-decoration: none; font-weight: 600; font-size: 16px;
+}
+.wallet-btn svg { width: 28px; height: 28px; flex: none; }
+.wallet-btn small { display: block; font-weight: 400; font-size: 12px; opacity: 0.8; line-height: 1.1; }
+.wallet-btn span { line-height: 1.2; text-align: left; }
+
+.qr {
+  background: #fff; border-radius: 14px; padding: 14px;
+  width: 220px; margin: 16px auto 6px;
+}
+.qr img { display: block; width: 100%; height: auto; }
+
+/* ---------- Chauffeur ---------- */
+
+.paneel {
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: var(--radius); padding: 16px; margin-top: 20px;
+}
+.paneel h2 { margin-top: 0; }
+.melding {
+  border-radius: 12px; padding: 12px 14px; margin-top: 12px; font-weight: 600;
+  background: rgba(52, 199, 89, 0.15); color: var(--groen);
+}
+.melding.feest { background: var(--geel); color: #111; }
+
+.lijst { list-style: none; margin: 12px 0 0; padding: 0; }
+.lijst li a {
+  display: flex; justify-content: space-between; gap: 12px; align-items: center;
+  padding: 14px 4px; border-bottom: 1px solid var(--line);
+  color: var(--text); text-decoration: none;
+}
+.lijst .rechts { color: var(--text-soft); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.badge { background: var(--geel); color: #111; border-radius: 999px; padding: 2px 8px; font-size: 12px; font-weight: 700; margin-left: 6px; }
+
+.historie { list-style: none; padding: 0; margin: 8px 0 0; font-size: 14px; color: var(--text-soft); }
+.historie li { padding: 6px 0; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; }
+
+.pin { font-size: 28px; letter-spacing: 0.4em; text-align: center; }

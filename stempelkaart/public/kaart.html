@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Mijn stempelkaart</title>
+  <meta name="theme-color" content="#111110">
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="/logo.png">
+  <link rel="apple-touch-icon" href="/logo.png">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<main class="app">
+  <header class="top">
+    <div class="brand"><span class="brand-mark"></span><span class="bedrijf">Taxi R.S.</span></div>
+    <a class="link-btn" href="/chauffeur" id="chauffeurLink" hidden>Chauffeur</a>
+  </header>
+
+  <p class="fout" id="laadFout" hidden></p>
+
+  <section id="inhoud" hidden>
+    <div class="kaart" aria-live="polite">
+      <div class="kaart-kop">
+        <div>
+          <div class="kaart-label">Stempelkaart</div>
+          <div class="kaart-waarde" id="naam"></div>
+        </div>
+        <div>
+          <div class="kaart-label" style="text-align:right">Stempels</div>
+          <div class="kaart-teller" id="teller"></div>
+        </div>
+      </div>
+      <div class="stempels" id="stempels"></div>
+      <div class="tegoed" id="tegoed" hidden></div>
+      <div class="kaart-voet"><span id="uitleg"></span><span>Code <strong id="code"></strong></span></div>
+    </div>
+
+    <!-- ===== Chauffeur: alleen zichtbaar na inloggen ===== -->
+    <section class="paneel" id="chauffeur" hidden>
+      <h2>Chauffeur</h2>
+      <button class="btn groot" id="stempelBtn">+1 stempel</button>
+      <div class="melding" id="melding" hidden></div>
+      <button class="btn" id="inwisselBtn" hidden>Beloning inwisselen</button>
+      <button class="btn gevaar" id="correctieBtn">Laatste stempel weghalen</button>
+      <p class="fout" id="chauffeurFout" role="alert"></p>
+      <details>
+        <summary class="muted">Geschiedenis</summary>
+        <ul class="historie" id="historie"></ul>
+      </details>
+    </section>
+
+    <!-- ===== Klant: kaart in de Wallet zetten ===== -->
+    <section id="klant">
+      <div class="wallet" id="wallet">
+        <a class="wallet-btn" id="appleBtn" hidden>
+          <svg viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="6" width="26" height="20" rx="4" fill="#fff"/><rect x="3" y="9" width="26" height="4" fill="#ffcc00"/><rect x="3" y="13" width="26" height="4" fill="#34c759"/><rect x="3" y="17" width="26" height="4" fill="#0a84ff"/><path d="M3 21h9a4 4 0 0 0 8 0h9v1a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4z" fill="#d0d0d0"/></svg>
+          <span><small>Toevoegen aan</small>Apple Wallet</span>
+        </a>
+        <a class="wallet-btn" id="googleBtn" hidden>
+          <svg viewBox="0 0 32 32" aria-hidden="true"><rect x="4" y="5" width="24" height="9" rx="3" fill="#ea4335"/><rect x="4" y="9" width="24" height="9" rx="3" fill="#fbbc04"/><rect x="4" y="13" width="24" height="9" rx="3" fill="#34a853"/><rect x="4" y="17" width="24" height="10" rx="3" fill="#4285f4"/></svg>
+          <span><small>Toevoegen aan</small>Google Wallet</span>
+        </a>
+      </div>
+
+      <div class="paneel" id="geenWallet" hidden>
+        <h2>Bewaar deze pagina</h2>
+        <p class="muted" style="margin:0">
+          Dit is je stempelkaart. Zet hem op je beginscherm of bewaar de link,
+          en laat bij elke rit de QR-code hieronder scannen.
+        </p>
+      </div>
+
+      <div class="qr"><img id="qr" alt="QR-code van je stempelkaart"></div>
+      <p class="muted" style="text-align:center">Laat deze code scannen bij elke rit.</p>
+    </section>
+  </section>
+</main>
+<script src="/kaart.js" type="module"></script>
+</body>
+</html>

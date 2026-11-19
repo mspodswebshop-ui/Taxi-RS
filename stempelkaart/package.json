@@ -1,0 +1,23 @@
+{
+  "name": "taxi-stempelkaart",
+  "version": "1.0.0",
+  "description": "Digitale stempelkaart voor Taxi R.S., in Apple Wallet en Google Wallet",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "dotenv": "^18.0.10",
+    "express": "^5.3.0",
+    "passkit-generator": "^3.7.0",
+    "qrcode": "^1.5.4"
+  },
+  "overrides": {
+    "joi": "^18.3.2"
+  }
+}

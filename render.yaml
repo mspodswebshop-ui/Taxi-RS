@@ -56,3 +56,47 @@ services:
         sync: false
       - key: NODE_VERSION
         value: "22"
+
+  - type: web
+    name: taxi-stempelkaart
+    runtime: node
+    # Een Disk (om de kaarten te bewaren) kan niet op het gratis plan.
+    # Zonder Disk ben je bij elke herstart alle stempels kwijt.
+    plan: starter
+    rootDir: stempelkaart
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/config
+    disk:
+      name: stempelkaart-data
+      mountPath: /var/data
+      sizeGB: 1
+    envVars:
+      - key: DATA_DIR
+        value: /var/data
+      - key: BASE_URL
+        sync: false
+      - key: CHAUFFEUR_PIN
+        sync: false
+      - key: SESSIE_GEHEIM
+        generateValue: true
+      - key: BEDRIJF_TELEFOON
+        value: "+32 484 90 81 95"
+      - key: APPLE_PASS_TYPE_ID
+        sync: false
+      - key: APPLE_TEAM_ID
+        sync: false
+      - key: APPLE_WWDR_CERT
+        sync: false
+      - key: APPLE_SIGNER_CERT
+        sync: false
+      - key: APPLE_SIGNER_KEY
+        sync: false
+      - key: APPLE_SIGNER_KEY_PASSPHRASE
+        sync: false
+      - key: GOOGLE_ISSUER_ID
+        sync: false
+      - key: GOOGLE_SERVICE_ACCOUNT
+        sync: false
+      - key: NODE_VERSION
+        value: "22"

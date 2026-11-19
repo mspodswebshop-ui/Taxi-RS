@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Chauffeur — Stempelkaart</title>
+  <meta name="theme-color" content="#111110">
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="/logo.png">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<main class="app">
+  <header class="top">
+    <div class="brand"><span class="brand-mark"></span><span class="bedrijf">Taxi R.S.</span></div>
+    <button class="link-btn" id="uitloggen" hidden>Uitloggen</button>
+  </header>
+
+  <!-- ===== Inloggen ===== -->
+  <section id="login" hidden>
+    <h1>Chauffeur</h1>
+    <p class="lead">Log één keer in op je telefoon. Daarna kun je stempels zetten door de QR-code op de kaart van de klant te scannen met je gewone camera.</p>
+    <form id="loginForm">
+      <label for="pin">Pincode</label>
+      <input id="pin" class="pin" type="password" inputmode="numeric" autocomplete="current-password" required>
+      <button class="btn" type="submit">Inloggen</button>
+      <p class="fout" id="loginFout" role="alert"></p>
+    </form>
+  </section>
+
+  <p class="fout" id="uit" hidden>
+    Stempels zetten staat uit: er is geen CHAUFFEUR_PIN ingesteld op de server.
+  </p>
+
+  <!-- ===== Ingelogd ===== -->
+  <section id="binnen" hidden>
+    <h1>Stempels zetten</h1>
+    <p class="lead">
+      Open de camera van je telefoon en richt hem op de QR-code in de Wallet
+      van de klant. Tik op de link die verschijnt en dan op <strong>+1 stempel</strong>.
+    </p>
+
+    <div class="paneel">
+      <h2>Klant zoeken</h2>
+      <p class="muted" style="margin-top:0">Scannen lukt niet? Zoek op naam, kaartcode of telefoonnummer.</p>
+      <input id="zoek" type="search" placeholder="Naam, code of telefoon" autocomplete="off">
+      <ul class="lijst" id="lijst"></ul>
+      <p class="muted" id="totaal"></p>
+    </div>
+
+    <div class="paneel">
+      <h2>Nieuwe klant</h2>
+      <p class="muted" style="margin-top:0">Laat de klant deze code scannen. Die maakt dan zelf een kaart aan op zijn eigen telefoon.</p>
+      <div class="qr"><img src="/api/aanmelden-qr.svg" alt="QR-code naar de aanmeldpagina"></div>
+      <a class="btn secundair" href="/">Of maak de kaart hier aan</a>
+    </div>
+  </section>
+</main>
+<script src="/chauffeur.js" type="module"></script>
+</body>
+</html>

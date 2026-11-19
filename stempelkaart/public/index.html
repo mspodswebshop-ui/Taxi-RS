@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Stempelkaart — Taxi R.S.</title>
+  <meta name="theme-color" content="#111110">
+  <link rel="icon" href="/logo.png">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<main class="app">
+  <header class="top">
+    <div class="brand"><span class="brand-mark"></span><span class="bedrijf">Taxi R.S.</span></div>
+  </header>
+
+  <section id="bestaand" hidden>
+    <div class="paneel">
+      <p style="margin:0">Je hebt al een stempelkaart op deze telefoon.</p>
+      <a class="btn" id="naarKaart" href="#">Open mijn kaart</a>
+    </div>
+  </section>
+
+  <h1>Spaar voor een <span id="beloningTitel">gratis rit</span></h1>
+  <p class="lead">
+    Bij elke rit krijg je een stempel. Na <strong id="nodig">10</strong> stempels
+    is je volgende rit: <strong id="beloning">gratis rit</strong>.
+    Je kaart staat gewoon in Apple Wallet of Google Wallet.
+  </p>
+
+  <form id="aanmelden" novalidate>
+    <label for="naam">Je naam</label>
+    <input id="naam" name="naam" autocomplete="name" maxlength="40" required placeholder="Bijv. Sara">
+
+    <label for="telefoon">Telefoonnummer <span class="muted">(niet verplicht)</span></label>
+    <input id="telefoon" name="telefoon" type="tel" autocomplete="tel" maxlength="20" placeholder="Zo vinden we je kaart terug">
+
+    <button class="btn" type="submit" id="maakBtn">Maak mijn stempelkaart</button>
+    <p class="fout" id="fout" role="alert"></p>
+  </form>
+
+  <p class="muted">
+    We bewaren alleen je naam, je stempels en (als je dat invult) je
+    telefoonnummer, en gebruiken die alleen voor deze kaart.
+  </p>
+</main>
+<script src="/index.js" type="module"></script>
+</body>
+</html>
