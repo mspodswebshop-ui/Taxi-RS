@@ -1,0 +1,18 @@
+{
+  "name": "Examen studie 1Af",
+  "short_name": "Studie 1Af",
+  "description": "Elke dag nieuwe oefenvragen, flashcards en leerstof voor de examens van klas 1Af.",
+  "lang": "nl",
+  "start_url": "./#vandaag",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f7f8fb",
+  "theme_color": "#2348c8",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}
