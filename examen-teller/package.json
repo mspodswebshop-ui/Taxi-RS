@@ -1,0 +1,10 @@
+{
+  "name": "examen-teller",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Anonieme teller voor Examen studie 1Af: telt hoeveel toestellen de app openen.",
+  "main": "server.js",
+  "scripts": { "start": "node server.js" },
+  "engines": { "node": ">=20" },
+  "dependencies": { "pg": "^8.13.1" }
+}
