@@ -1,5 +1,5 @@
 /* Service worker Examen studie 1Af: offline werken en dagelijkse herinneringen. */
-const VERSIE = "es1af-v2";
+const VERSIE = "es1af-v3";
 const BESTANDEN = ["./", "index.html", "app.js", "vragen.js", "leerstof.js", "manifest.webmanifest", "icon.svg", "icon-192.png", "icon-512.png", "icon-180.png"];
 
 self.addEventListener("install", e => {

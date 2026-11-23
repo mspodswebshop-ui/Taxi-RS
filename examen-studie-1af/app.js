@@ -194,6 +194,13 @@
     const naam = S.lastStudy === t ? "Goed bezig vandaag!" : "Hoi! Klaar om te studeren?";
     v.append(el("div", { class: "sheet hero" }, buddyEl(true), el("div", { class: "bubble" }, el("b", { text: naam }), el("p", { style: "margin:.3em 0 0", text: motivatie() }))));
 
+    if (S.teller && S.teller.totaal) {
+      v.append(el("div", { class: "sheet row between" },
+        el("div", null, el("b", { style: "font-size:1.1rem", text: "Samen studeren" }), el("div", { class: "small muted", text: "Zoveel toestellen gebruiken deze app" })),
+        el("div", { class: "row", style: "gap:18px" },
+          el("div", { style: "text-align:center" }, el("div", { class: "countdown", style: "font-size:1.9rem", text: S.teller.vandaag }), el("div", { class: "small muted", text: "vandaag" })),
+          el("div", { style: "text-align:center" }, el("div", { class: "countdown", style: "font-size:1.9rem", text: S.teller.totaal }), el("div", { class: "small muted", text: "in totaal" })))));
+    }
     if (up.length) {
       const e = up[0], n = daysUntil(e.datum);
       v.append(el("div", { class: "sheet row between" },
@@ -528,9 +535,27 @@
     toon(S.streak > 0 ? "Hou je reeks van " + S.streak + " dagen vol!" : "Tijd om te studeren!", motivatie(7));
   }
 
+  /* ---------- TELLER (anoniem) ---------- */
+  const TELLER = "https://examen-studie-teller.onrender.com";
+  function toestelId() {
+    try {
+      let id = localStorage.getItem("es1af:id");
+      if (!id) { id = (crypto.randomUUID ? crypto.randomUUID() : "xxxxxxxx-xxxx-4xxx-8xxx-xxxxxxxxxxxx".replace(/x/g, () => (Math.random() * 16 | 0).toString(16))); localStorage.setItem("es1af:id", id); }
+      return id;
+    } catch (e) { return null; }
+  }
+  async function tel() {
+    const id = toestelId(); if (!id || !navigator.onLine) return;
+    try {
+      const r = await fetch(TELLER + "/hit", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ id }) });
+      if (!r.ok) return; const d = await r.json();
+      S.teller = { totaal: d.totaal, vandaag: d.vandaag }; save(); if (view === "vandaag") rVandaag();
+    } catch (e) {}
+  }
+
   /* ---------- start ---------- */
   if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
-  route(); syncSwState();
+  route(); syncSwState(); tel();
   setInterval(herinnerCheck, 60000); setTimeout(herinnerCheck, 4000);
   document.addEventListener("visibilitychange", () => { if (!document.hidden) { render(); herinnerCheck(); } });
 })();
