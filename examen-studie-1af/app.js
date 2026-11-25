@@ -150,7 +150,7 @@
   }
 
   /* ---------- routing ---------- */
-  const VIEWS = ["vandaag", "oefenen", "flashcards", "leerstof", "planning", "winkel"];
+  const VIEWS = ["vandaag", "oefenen", "flashcards", "leerstof", "planning", "klas", "winkel"];
   let view = "vandaag";
   function route() {
     let v = (location.hash || "").slice(1); if (!VIEWS.includes(v)) v = "vandaag"; view = v;
@@ -158,7 +158,7 @@
     document.querySelectorAll("nav.tabs a").forEach(a => a.setAttribute("aria-current", a.getAttribute("href") === "#" + v ? "page" : "false"));
     render(); window.scrollTo(0, 0);
   }
-  function render() { renderStats(); ({ vandaag: rVandaag, oefenen: rOefenen, flashcards: rFlash, leerstof: rLeerstof, planning: rPlanning, winkel: rWinkel })[view](); }
+  function render() { renderStats(); ({ vandaag: rVandaag, oefenen: rOefenen, flashcards: rFlash, leerstof: rLeerstof, planning: rPlanning, klas: rKlas, winkel: rWinkel })[view](); }
   window.addEventListener("hashchange", route);
   const go = h => { if (location.hash === "#" + h) route(); else location.hash = h; };
 
@@ -327,7 +327,7 @@
       badge("eerste"); if (c >= 5.5) badge("voldoende");
       if (quiz.first) { const bonus = quiz.good === quiz.qs.length ? 80 : 30; quiz.earned += bonus; addMomoj(bonus, true); if (quiz.good === quiz.qs.length) badge("perfect"); }
     }
-    checkBadges(); checkQuests(); save();
+    checkBadges(); checkQuests(); save(); klasSync();
   }
   function rResult(v, top) {
     const c = cijfer(quiz.good, quiz.qs.length);
@@ -379,7 +379,7 @@
   function kaart(c, ok) {
     S.leitner[c.id] = ok ? Math.min(5, box(c.id) + 1) : 1; S.cards++; bump("cards", 1);
     if (ok) { fc.known++; addMomoj(3); }
-    fc.i++; fc.flipped = false; studied(); checkBadges(); checkQuests(); save(); rFlash();
+    fc.i++; fc.flipped = false; studied(); checkBadges(); checkQuests(); save(); klasSync(); rFlash();
   }
   function chipRow(cur, onPick) {
     const r = el("div", { class: "chips", role: "group", "aria-label": "Kies een vak" });
@@ -451,7 +451,7 @@
         const heb = it.prijs === 0 || S.owned.includes(it.id), aan = cur === it.id;
         g.append(el("div", { class: "ware" + (aan ? " on" : "") }, el("span", { class: "em", "aria-hidden": "true", text: it.em || "—" }), el("b", { text: it.naam }),
           aan ? el("span", { class: "small", style: "color:var(--blue);font-weight:700", text: "Gekozen" })
-            : heb ? el("button", { class: "ghost", type: "button", onclick: () => { kies(it.id); save(); rWinkel(); } }, "Kies")
+            : heb ? el("button", { class: "ghost", type: "button", onclick: () => { kies(it.id); save(); klasSync(); rWinkel(); } }, "Kies")
               : el("button", { type: "button", disabled: S.momoj < it.prijs, onclick: () => koop(it, kies) }, coinSvg(), it.prijs)));
       });
       return el("div", { class: "sheet stack" }, el("h2", { text: titel }), g);
@@ -464,7 +464,7 @@
   }
   function koop(it, kies) {
     if (S.momoj < it.prijs) return; S.momoj -= it.prijs; S.owned.push(it.id); kies(it.id); save();
-    toast(it.naam + " gekocht!"); rWinkel();
+    toast(it.naam + " gekocht!"); klasSync(); rWinkel();
   }
 
   /* ---------- APP INSTALLEREN ---------- */
@@ -553,9 +553,92 @@
     } catch (e) {}
   }
 
+
+  /* ---------- KLAS (vrienden) ---------- */
+  let klasData = null, klasFout = "", klasBezig = false;
+  async function klasApi(pad, extra) {
+    const r = await fetch(TELLER + pad, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(Object.assign({ id: toestelId(), code: S.klas && S.klas.code }, extra || {})) });
+    let d = {}; try { d = await r.json(); } catch (e) {}
+    if (!r.ok) throw new Error(d.fout || "Er ging iets mis. Probeer het later opnieuw.");
+    return d;
+  }
+  function mijnGegevens() {
+    return { naam: S.klas.naam, buddy: S.buddy, acc: S.acc, xp: S.xp, streak: S.streak, laatst: S.lastStudy, quizzenVandaag: Object.keys(S.days[today()] || {}).length };
+  }
+  async function klasLaden(metUpdate) {
+    if (!S.klas || klasBezig) return; klasBezig = true; klasFout = "";
+    try { klasData = await klasApi(metUpdate ? "/speler" : "/klas", metUpdate ? mijnGegevens() : null); S.klas.gesync = Date.now(); save(); }
+    catch (e) { klasFout = navigator.onLine ? e.message : "Je bent offline. De klaslijst laadt zodra je weer internet hebt."; }
+    klasBezig = false; if (view === "klas") rKlas();
+  }
+  let syncT;
+  function klasSync() { if (!S.klas) return; clearTimeout(syncT); syncT = setTimeout(() => klasLaden(true), 4000); }
+  const miniBuddy = (b, a) => {
+    const bb = BUDDIES.find(x => x.id === b) || BUDDIES[0], aa = ACCS.find(x => x.id === a);
+    return el("div", { class: "mini", "aria-hidden": "true" }, bb.em, aa && aa.em ? el("span", { class: "acc", text: aa.em }) : null);
+  };
+  function rKlas() {
+    const v = $("#v-klas"); v.textContent = "";
+    if (!S.klas) {
+      const naam = el("input", { id: "klasNaam", maxlength: "20", autocomplete: "nickname", placeholder: "bv. Mo, Lina, Voetbalkoning" });
+      const code = el("input", { id: "klasCode", maxlength: "30", autocomplete: "off", autocapitalize: "off", placeholder: "krijg je van je klasgenoten" });
+      const msg = el("p", { class: "small", role: "alert", style: "margin:0;color:var(--bad)" });
+      const btn = el("button", { class: "blue", type: "submit" }, "Doe mee");
+      const form = el("form", { class: "stack", novalidate: true },
+        el("div", { class: "field" }, el("label", { for: "klasNaam", text: "Jouw bijnaam" }), naam),
+        el("div", { class: "field" }, el("label", { for: "klasCode", text: "Klascode" }), code), msg, el("div", null, btn));
+      form.addEventListener("submit", async e => {
+        e.preventDefault(); msg.textContent = "";
+        if (naam.value.trim().length < 2) { msg.textContent = "Kies een bijnaam van minstens 2 tekens."; naam.focus(); return; }
+        if (!code.value.trim()) { msg.textContent = "Vul de klascode in."; code.focus(); return; }
+        btn.disabled = true; btn.textContent = "Even geduld …";
+        S.klas = { naam: naam.value.trim(), code: code.value.trim() };
+        try { klasData = await klasApi("/speler", mijnGegevens()); save(); toast("Welkom in de klas, " + S.klas.naam + "!"); rKlas(); }
+        catch (err) { S.klas = null; msg.textContent = err.message + (/fetch|network/i.test(err.message) ? "" : ""); btn.disabled = false; btn.textContent = "Doe mee"; }
+      });
+      v.append(el("div", { class: "sheet stack" }, el("h2", { text: "Studeer samen met je klas" }),
+        el("p", { class: "muted", style: "margin:0", text: "Zie wie er meestudeert, wie de langste reeks heeft en wie vandaag al geoefend heeft. Je klasgenoten zien je bijnaam, buddy, xp en reeks. Je antwoorden en fouten blijven privé." }),
+        el("p", { class: "small muted", style: "margin:0", text: "Gebruik een bijnaam, niet je volledige naam. De eerste keer kan het tot 30 seconden duren." }), form));
+      return;
+    }
+    const top = el("div", { class: "row between" }, el("h2", { text: "Klas 1Af" }), el("button", { class: "ghost", type: "button", disabled: klasBezig, onclick: () => klasLaden(true) }, klasBezig ? "Laden …" : "Vernieuwen"));
+    const s = el("div", { class: "sheet stack" }, top);
+    if (klasFout) s.append(el("p", { class: "small", role: "alert", style: "margin:0;color:var(--bad)", text: klasFout }));
+    if (!klasData) { s.append(el("div", { class: "empty", text: klasBezig ? "De klaslijst wordt geladen. De eerste keer kan dat tot 30 seconden duren." : "Tik op Vernieuwen om de klaslijst te laden." })); if (!klasBezig && !klasFout) klasLaden(true); }
+    else {
+      const sp = klasData.spelers || [], vandaag = sp.filter(x => x.vandaag).length;
+      s.append(el("p", { class: "small muted", style: "margin:0", text: sp.length + (sp.length === 1 ? " klasgenoot doet mee" : " klasgenoten doen mee") + " · " + vandaag + " studeerden vandaag" }));
+      const lijst = el("div");
+      sp.forEach((x, i) => lijst.append(el("div", { class: "rank" + (x.jij ? " jij" : "") },
+        el("span", { class: "pos", text: i + 1 }), miniBuddy(x.buddy, x.acc),
+        el("div", { style: "min-width:0" }, el("b", { style: "overflow-wrap:anywhere", text: x.naam + (x.jij ? " (jij)" : "") }),
+          el("div", { class: "row", style: "gap:6px;margin-top:2px" },
+            x.vandaag ? el("span", { class: "pill ok", text: "✓ vandaag gestudeerd" + (x.quizzenVandaag ? " · " + x.quizzenVandaag + " quiz" + (x.quizzenVandaag > 1 ? "zen" : "") : "") }) : el("span", { class: "pill", text: "nog niet vandaag" }),
+            x.streak ? el("span", { class: "pill", text: "▲ " + x.streak + (x.streak === 1 ? " dag" : " dagen") }) : null)),
+        el("span", { class: "mono", style: "font-weight:700;text-align:right", text: x.xp + " xp" }))));
+      if (!sp.length) lijst.append(el("div", { class: "empty", text: "Nog niemand. Stuur de klascode naar je klasgenoten!" }));
+      s.append(lijst);
+    }
+    v.append(s);
+    const naamIn = el("input", { id: "klasNieuwNaam", maxlength: "20", value: S.klas.naam });
+    v.append(el("div", { class: "sheet stack" }, el("h3", { text: "Jouw instellingen" }),
+      el("p", { class: "small muted", style: "margin:0", text: "Klasgenoten uitnodigen? Stuur hen de link van de app en de klascode: " + S.klas.code }),
+      el("div", { class: "row" }, el("div", { class: "field", style: "flex:1 1 180px" }, el("label", { for: "klasNieuwNaam", text: "Bijnaam wijzigen" }), naamIn),
+        el("button", { class: "ghost", type: "button", style: "align-self:flex-end", onclick: () => { const n = naamIn.value.trim(); if (n.length < 2) { toast("Minstens 2 tekens."); return; } S.klas.naam = n; save(); klasLaden(true); } }, "Opslaan")),
+      el("div", null, el("button", { class: "link", type: "button", style: "color:var(--bad);padding:0", onclick: verlaatKlas }, "Verlaat de klaslijst"))));
+  }
+  let verlaatArmed = false;
+  async function verlaatKlas(e) {
+    const b = e.currentTarget;
+    if (!verlaatArmed) { verlaatArmed = true; b.textContent = "Zeker? Tik nog eens om te verlaten"; setTimeout(() => { verlaatArmed = false; if (b.isConnected) b.textContent = "Verlaat de klaslijst"; }, 4000); return; }
+    verlaatArmed = false;
+    try { await klasApi("/verlaat"); } catch (err) {}
+    S.klas = null; klasData = null; save(); toast("Je staat niet meer op de klaslijst."); rKlas();
+  }
+
   /* ---------- start ---------- */
   if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
-  route(); syncSwState(); tel();
+  route(); syncSwState(); tel(); if (S.klas) klasLaden(true);
   setInterval(herinnerCheck, 60000); setTimeout(herinnerCheck, 4000);
   document.addEventListener("visibilitychange", () => { if (!document.hidden) { render(); herinnerCheck(); } });
 })();
