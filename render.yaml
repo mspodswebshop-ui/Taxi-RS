@@ -56,3 +56,37 @@ services:
         sync: false
       - key: NODE_VERSION
         value: "22"
+
+  # Toonbank: het e-commerceplatform. Zie toonbank/README.md.
+  - type: web
+    name: toonbank
+    runtime: node
+    plan: free
+    rootDir: toonbank
+    buildCommand: npm install && npm run build && npx prisma migrate deploy
+    startCommand: npm start
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: toonbank-db
+          property: connectionString
+      # Het adres dat Render je geeft, zonder slash op het eind.
+      - key: BASE_URL
+        sync: false
+      # Laat de Stripe-sleutels leeg om in testmodus te draaien.
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
+      - key: STRIPE_PRO_PRICE_ID
+        sync: false
+      - key: PLATFORM_FEE_PERCENT_FREE
+        value: "2"
+      - key: PLATFORM_FEE_PERCENT_PRO
+        value: "0.5"
+      - key: NODE_VERSION
+        value: "22"
+
+databases:
+  - name: toonbank-db
+    plan: free
